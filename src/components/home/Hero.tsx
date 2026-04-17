@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { ArrowRight, Code, Smartphone, Layout } from 'lucide-react';
 import Link from 'next/link';
@@ -60,10 +61,12 @@ export default function Hero() {
             <div className="relative w-full aspect-square max-w-lg mx-auto">
               {/* Main Circle */}
               <div className="absolute inset-8 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 shadow-2xl shadow-blue-600/30 flex items-center justify-center overflow-hidden border-4 border-white/10">
-                <img 
-                  src="/logo.png" 
+                <Image 
+                  src="/logo.jpg" 
                   alt="Zaya Code Hub Logo" 
-                  className="w-full h-full object-cover rounded-full" 
+                  fill
+                  unoptimized
+                  className="object-cover" 
                 />
               </div>
               {/* Floating Cards */}
