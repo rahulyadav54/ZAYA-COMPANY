@@ -14,7 +14,8 @@ import {
   Code2,
   Users,
   Settings,
-  FileText
+  FileText,
+  Briefcase
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -34,6 +35,7 @@ export default function DashboardLayout({
         { name: 'Applications', href: '/admin/applications', icon: FileText },
         { name: 'Manage Interns', href: '/admin/interns', icon: Users },
         { name: 'Submissions', href: '/admin/submissions', icon: CheckSquare },
+        { name: 'Manage Careers', href: '/admin/careers', icon: Briefcase },
         { name: 'Settings', href: '/admin/settings', icon: Settings },
       ]
     : [
