@@ -32,8 +32,8 @@ export default function ApplicationsPage() {
       .eq('id', id);
     
     if (!error) {
-      // If accepted, send the congratulatory email
-      if (newStatus === 'accepted' && appData) {
+      // If status changed to accepted or rejected, send the email
+      if ((newStatus === 'accepted' || newStatus === 'rejected') && appData) {
         try {
           await fetch('/api/send-acceptance', {
             method: 'POST',
@@ -42,12 +42,13 @@ export default function ApplicationsPage() {
               email: appData.email,
               fullName: appData.full_name,
               position: appData.position,
+              status: newStatus
             }),
           });
-          alert(`Success! Application accepted and congratulatory email sent to ${appData.email}`);
+          alert(`Success! Application ${newStatus} and email sent to ${appData.email}`);
         } catch (err) {
           console.error('Failed to send email:', err);
-          alert('Application accepted, but there was an error sending the confirmation email.');
+          alert(`Application ${newStatus}, but there was an error sending the confirmation email.`);
         }
       }
       fetchApplications();
