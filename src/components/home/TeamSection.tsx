@@ -12,7 +12,7 @@ const teamMembers = [
     role: "CEO & Founder",
     bio: "The visionary leader behind ZAYA CODE HUB. Driving strategic innovation and global business growth.",
     skills: ["Executive Leadership", "Strategic Vision", "Innovation"],
-    image: "/Teams/Rahul Kumar Yadav.jpg",
+    image: "/Teams/Rahul Kumar Yadav.png",
     socials: { linkedin: "#", github: "#", email: "rahul@zayacodehub.in" }
   },
   {
