@@ -17,7 +17,8 @@ import {
   FileText,
   Briefcase,
   Newspaper,
-  ShieldCheck
+  ShieldCheck,
+  Mail
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -38,6 +39,7 @@ export default function DashboardLayout({
         { name: 'Manage Interns', href: '/admin/interns', icon: Users },
         { name: 'Submissions', href: '/admin/submissions', icon: CheckSquare },
         { name: 'User Management', href: '/admin/users', icon: ShieldCheck },
+        { name: 'Messages', href: '/admin/messages', icon: Mail },
         { name: 'Manage Careers', href: '/admin/careers', icon: Briefcase },
         { name: 'Manage Magazine', href: '/admin/magazine', icon: Newspaper },
         { name: 'Settings', href: '/admin/settings', icon: Settings },
