@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { createClient } from '@supabase/supabase-js';
-import { Users, Search, Mail, Loader2, UserX, Plus, Send, X } from 'lucide-react';
+import { Users, Search, Mail, Loader2, UserX, Plus, Send, X, Trash2 } from 'lucide-react';
 
 export default function ManageInternsPage() {
   const [interns, setInterns] = useState<any[]>([]);
@@ -32,6 +32,24 @@ export default function ManageInternsPage() {
   useEffect(() => {
     fetchInterns();
   }, []);
+
+  const handleDeleteIntern = async (id: string, name: string) => {
+    if (!confirm(`Are you sure you want to PERMANENTLY delete ${name}? This will remove all their tasks, submissions, and profile data everywhere.`)) return;
+
+    setIsLoading(true);
+    const { error } = await supabase
+      .from('profiles')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      alert(`Error deleting intern: ${error.message}`);
+    } else {
+      setInterns(interns.filter(intern => intern.id !== id));
+      alert('Intern deleted successfully from everywhere.');
+    }
+    setIsLoading(false);
+  };
 
   const handleCreateIntern = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -148,7 +166,16 @@ export default function ManageInternsPage() {
           </div>
         ) : (
           interns.map((intern) => (
-            <div key={intern.id} className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 flex flex-col items-center text-center hover:shadow-lg transition-shadow">
+            <div key={intern.id} className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 flex flex-col items-center text-center hover:shadow-lg transition-all relative group">
+              {/* Delete Button */}
+              <button 
+                onClick={() => handleDeleteIntern(intern.id, intern.full_name)}
+                className="absolute top-4 right-4 p-2 text-slate-300 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition-all opacity-0 group-hover:opacity-100"
+                title="Delete Intern Permanently"
+              >
+                <Trash2 className="h-5 w-5" />
+              </button>
+
               <div className="h-20 w-20 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 font-bold text-2xl mb-4">
                 {intern.full_name?.charAt(0) || 'U'}
               </div>
