@@ -8,12 +8,20 @@ import Link from 'next/link';
 
 const teamMembers = [
   {
+    name: "Rahul Kumar Yadav",
+    role: "CEO & Founder",
+    bio: "The visionary leader behind ZAYA CODE HUB. Driving strategic innovation and global business growth.",
+    skills: ["Executive Leadership", "Strategic Vision", "Innovation"],
+    image: "/Teams/Rahul Kumar Yadav.jpg",
+    socials: { linkedin: "#", github: "#", email: "rahul@zayacodehub.in" }
+  },
+  {
     name: "Shivshankar Kr Jaysawal",
     role: "Co-Founder",
     bio: "Driving the strategic vision and long-term business growth of ZAYA CODE HUB.",
     skills: ["Business Strategy", "Leadership", "Innovation"],
     image: "/Teams/Shivshankar Kr Jaysawal.jpeg",
-    socials: { linkedin: "#", github: "#", email: "#" }
+    socials: { linkedin: "#", github: "#", email: "shiva@zayacodehub.in" }
   },
   {
     name: "Rohith P",
@@ -92,7 +100,7 @@ export default function TeamSection() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
               viewport={{ once: true }}
-              className="group relative bg-white dark:bg-slate-900 rounded-[32px] p-8 border border-slate-200 dark:border-slate-800 hover:shadow-2xl hover:border-blue-600/50 transition-all duration-500 hover:-translate-y-2"
+              className="group relative bg-white dark:bg-slate-900 rounded-[32px] p-8 border border-slate-200 dark:border-slate-800 hover:shadow-2xl hover:border-blue-600/50 transition-all duration-500 hover:-translate-y-2 flex flex-col h-full"
             >
               {/* Profile Image */}
               <div className="relative w-24 h-24 mb-6">
@@ -122,7 +130,7 @@ export default function TeamSection() {
               </p>
 
               {/* Skills */}
-              <div className="flex flex-wrap gap-2 mb-8">
+              <div className="flex flex-wrap gap-2 mb-8 mt-auto">
                 {member.skills.map(skill => (
                   <span key={skill} className="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-[10px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-tighter">
                     {skill}
@@ -138,7 +146,7 @@ export default function TeamSection() {
                 <a href={member.socials.github} className="p-2 rounded-lg bg-slate-50 dark:bg-slate-950 text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
                   <ExternalLink className="h-4 w-4" />
                 </a>
-                <a href={member.socials.email} className="p-2 rounded-lg bg-slate-50 dark:bg-slate-950 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all">
+                <a href={member.socials.email === "#" ? `mailto:${member.name.toLowerCase().replace(/ /g, '.')}@zayacodehub.in` : `mailto:${member.socials.email}`} className="p-2 rounded-lg bg-slate-50 dark:bg-slate-950 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all">
                   <Mail className="h-4 w-4" />
                 </a>
               </div>
