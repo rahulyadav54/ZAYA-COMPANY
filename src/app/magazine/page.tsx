@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { supabase } from '@/lib/supabaseClient';
 import { Newspaper, ChevronRight, Loader2, Calendar, User } from 'lucide-react';
@@ -128,9 +129,12 @@ export default function MagazinePage() {
                     </p>
 
                     <div className="mt-auto">
-                      <button className="flex items-center text-blue-600 font-black text-sm uppercase tracking-widest hover:translate-x-2 transition-transform">
+                      <Link
+                        href={`/magazine/${post.id}`}
+                        className="inline-flex items-center text-blue-600 font-black text-sm uppercase tracking-widest hover:translate-x-2 transition-transform"
+                      >
                         Read Full Story <ChevronRight className="ml-2 h-4 w-4" />
-                      </button>
+                      </Link>
                     </div>
                   </div>
                 </motion.article>
