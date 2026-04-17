@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Code2, Lock, Mail, Loader2, ArrowRight, AlertCircle, CheckCircle2, Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
@@ -15,6 +15,7 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -78,10 +79,10 @@ export default function LoginPage() {
           profile = newProfile;
         }
 
-        const targetPath = profile?.role === 'admin' ? '/admin' : '/intern';
-        console.log('Forcing hard redirect to:', targetPath);
+        const nextPath = searchParams.get('next');
+        const targetPath = nextPath || (profile?.role === 'admin' ? '/admin' : '/intern');
+        console.log('Redirecting to:', targetPath);
         
-        // Use a hard redirect to bypass any potential client-side routing issues
         window.location.href = targetPath;
       }
     } catch (err: any) {
