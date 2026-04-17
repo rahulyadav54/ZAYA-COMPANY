@@ -12,7 +12,7 @@ const teamMembers = [
     role: "Co-Founder",
     bio: "Driving the strategic vision and long-term business growth of ZAYA CODE HUB.",
     skills: ["Business Strategy", "Leadership", "Innovation"],
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=400&h=400",
+    image: "/Teams/Shivshankar Kr Jaysawal.jpeg",
     socials: { linkedin: "#", github: "#", email: "#" }
   },
   {
@@ -20,7 +20,7 @@ const teamMembers = [
     role: "Chief Technology Officer (CTO)",
     bio: "Leading our technical architecture and ensuring engineering excellence across all projects.",
     skills: ["Tech Architecture", "Cloud Systems", "Backend"],
-    image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=400&h=400",
+    image: "/Teams/Rohith p .jpeg",
     socials: { linkedin: "#", github: "#", email: "#" }
   },
   {
@@ -36,7 +36,7 @@ const teamMembers = [
     role: "Operations Manager",
     bio: "Optimizing workflow efficiency and overseeing daily business operations.",
     skills: ["Operations", "Workflow", "Efficiency"],
-    image: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=400&h=400",
+    image: "/Teams/Sujan Khatri.jpeg",
     socials: { linkedin: "#", github: "#", email: "#" }
   },
   {
@@ -44,7 +44,7 @@ const teamMembers = [
     role: "Marketing",
     bio: "Leading our brand strategy and digital marketing campaigns to expand our global reach.",
     skills: ["Digital Marketing", "Branding", "Strategy"],
-    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=400&h=400",
+    image: "/Teams/Aditya Chaurasiya.jpg",
     socials: { linkedin: "#", github: "#", email: "#" }
   }
 ];
