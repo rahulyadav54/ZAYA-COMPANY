@@ -1,5 +1,6 @@
 import Hero from "@/components/home/Hero";
 import ServicesGrid from "@/components/home/ServicesGrid";
+import TeamSection from "@/components/home/TeamSection";
 import Testimonials from "@/components/home/Testimonials";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
@@ -78,6 +79,7 @@ export default function Home() {
       </section>
 
       <ServicesGrid />
+      <TeamSection />
 
       {/* Testimonials */}
       <Testimonials />
