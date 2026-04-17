@@ -25,13 +25,31 @@ export default function ApplicationsPage() {
     fetchApplications();
   }, []);
 
-  const updateStatus = async (id: number, newStatus: string) => {
+  const updateStatus = async (id: number, newStatus: string, appData?: any) => {
     const { error } = await supabase
       .from('applications')
       .update({ status: newStatus })
       .eq('id', id);
     
     if (!error) {
+      // If accepted, send the congratulatory email
+      if (newStatus === 'accepted' && appData) {
+        try {
+          await fetch('/api/send-acceptance', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: appData.email,
+              fullName: appData.full_name,
+              position: appData.position,
+            }),
+          });
+          alert(`Success! Application accepted and congratulatory email sent to ${appData.email}`);
+        } catch (err) {
+          console.error('Failed to send email:', err);
+          alert('Application accepted, but there was an error sending the confirmation email.');
+        }
+      }
       fetchApplications();
     }
   };
@@ -123,14 +141,14 @@ export default function ApplicationsPage() {
                             </a>
                           )}
                           <button 
-                            onClick={() => updateStatus(app.id, 'accepted')}
+                            onClick={() => updateStatus(app.id, 'accepted', app)}
                             className="p-2 text-slate-400 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg transition-colors"
                             title="Accept Intern"
                           >
                             <CheckCircle className="h-4 w-4" />
                           </button>
                           <button 
-                            onClick={() => updateStatus(app.id, 'rejected')}
+                            onClick={() => updateStatus(app.id, 'rejected', app)}
                             className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                             title="Reject Intern"
                           >
