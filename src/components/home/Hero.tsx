@@ -27,7 +27,7 @@ export default function Hero() {
             <div className="inline-flex items-center px-4 py-2 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-sm font-bold mb-8 border border-blue-100 dark:border-blue-800">
               🚀 Building the Future of Technology
             </div>
-            <h1 className="text-5xl lg:text-7xl font-black text-foreground mb-8 leading-tight tracking-tight">
+            <h1 className="text-4xl md:text-5xl lg:text-7xl font-black text-foreground mb-8 leading-tight tracking-tight">
               We Build
               <br />
               <span className="text-blue-600">Digital Excellence</span>
@@ -68,17 +68,17 @@ export default function Hero() {
                   className="object-contain" 
                 />
               </div>
-              {/* Floating Cards */}
-              <div className="absolute top-0 right-8 p-4 rounded-2xl bg-white dark:bg-slate-800 shadow-xl border border-slate-100 dark:border-slate-700 animate-float">
+              {/* Floating Cards - Desktop Only */}
+              <div className="hidden sm:block absolute top-0 right-8 p-4 rounded-2xl bg-white dark:bg-slate-800 shadow-xl border border-slate-100 dark:border-slate-700 animate-float">
                 <Smartphone className="h-8 w-8 text-blue-600" />
                 <p className="text-xs font-bold mt-2 text-slate-800 dark:text-white">Mobile Apps</p>
               </div>
-              <div className="absolute bottom-8 left-0 p-4 rounded-2xl bg-white dark:bg-slate-800 shadow-xl border border-slate-100 dark:border-slate-700 animate-float" style={{ animationDelay: '1.5s' }}>
+              <div className="hidden sm:block absolute bottom-8 left-0 p-4 rounded-2xl bg-white dark:bg-slate-800 shadow-xl border border-slate-100 dark:border-slate-700 animate-float" style={{ animationDelay: '1.5s' }}>
                 <Layout className="h-8 w-8 text-indigo-600" />
                 <p className="text-xs font-bold mt-2 text-slate-800 dark:text-white">Web Design</p>
               </div>
-              {/* Stats Badge */}
-              <div className="absolute bottom-0 right-0 px-6 py-4 rounded-2xl bg-white dark:bg-slate-800 shadow-xl border border-slate-100 dark:border-slate-700">
+              {/* Stats Badge - Desktop Only */}
+              <div className="hidden sm:block absolute bottom-0 right-0 px-6 py-4 rounded-2xl bg-white dark:bg-slate-800 shadow-xl border border-slate-100 dark:border-slate-700">
                 <div className="text-2xl font-black text-blue-600">150+</div>
                 <div className="text-xs font-bold text-slate-900 dark:text-slate-100">Projects Done</div>
               </div>

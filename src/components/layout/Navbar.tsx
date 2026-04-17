@@ -122,10 +122,10 @@ export default function Navbar() {
                   href={link.href}
                   onClick={() => setIsOpen(false)}
                   className={cn(
-                    'text-lg font-bold py-3 px-4 rounded-xl transition-colors',
+                    'text-xl font-bold py-4 px-6 rounded-2xl transition-all active:scale-95',
                     pathname === link.href
-                      ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600'
-                      : 'text-foreground hover:bg-slate-50 dark:hover:bg-slate-800'
+                      ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20'
+                      : 'text-foreground hover:bg-slate-100 dark:hover:bg-slate-800'
                   )}
                 >
                   {link.name}

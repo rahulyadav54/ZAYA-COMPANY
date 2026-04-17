@@ -136,22 +136,22 @@ export default function PortfolioPage() {
       {/* Stats Section */}
       <section className="py-24 bg-blue-600">
         <div className="container mx-auto px-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-12 text-center text-white">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 text-center text-white">
             <div>
-              <div className="text-5xl font-black mb-2">150+</div>
-              <div className="text-blue-100 font-medium uppercase tracking-widest text-sm">Projects Delivered</div>
+              <div className="text-3xl md:text-5xl font-black mb-2">150+</div>
+              <div className="text-blue-100 font-medium uppercase tracking-widest text-[10px] md:text-sm">Projects Delivered</div>
             </div>
             <div>
-              <div className="text-5xl font-black mb-2">50+</div>
-              <div className="text-blue-100 font-medium uppercase tracking-widest text-sm">Global Clients</div>
+              <div className="text-3xl md:text-5xl font-black mb-2">50+</div>
+              <div className="text-blue-100 font-medium uppercase tracking-widest text-[10px] md:text-sm">Global Clients</div>
             </div>
             <div>
-              <div className="text-5xl font-black mb-2">12+</div>
-              <div className="text-blue-100 font-medium uppercase tracking-widest text-sm">Awards Won</div>
+              <div className="text-3xl md:text-5xl font-black mb-2">12+</div>
+              <div className="text-blue-100 font-medium uppercase tracking-widest text-[10px] md:text-sm">Awards Won</div>
             </div>
             <div>
-              <div className="text-5xl font-black mb-2">99%</div>
-              <div className="text-blue-100 font-medium uppercase tracking-widest text-sm">Happy Clients</div>
+              <div className="text-3xl md:text-5xl font-black mb-2">99%</div>
+              <div className="text-blue-100 font-medium uppercase tracking-widest text-[10px] md:text-sm">Happy Clients</div>
             </div>
           </div>
         </div>
