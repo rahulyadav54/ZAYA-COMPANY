@@ -139,7 +139,7 @@ export default function ContactPage() {
                       </div>
                       <div className="space-y-2">
                         <label className="text-sm font-bold text-foreground">Email</label>
-                        <input name="email" required type="email" className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-foreground focus:ring-2 focus:ring-blue-600/50 outline-none" placeholder="john@example.com" />
+                        <input name="email" required type="email" className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-foreground focus:ring-2 focus:ring-blue-600/50 outline-none" placeholder="zayacodehub@gmail.com" />
                       </div>
                     </div>
                     <div className="space-y-2">

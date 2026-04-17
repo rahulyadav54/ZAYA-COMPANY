@@ -139,7 +139,7 @@ Code Confidence: ${confidence}/10`,
             required
             name="email"
             type="email"
-            placeholder="john@example.com"
+            placeholder="zayacodehub@gmail.com"
             className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 focus:outline-none focus:ring-2 focus:ring-blue-600/50 transition-all"
           />
         </div>
@@ -152,7 +152,7 @@ Code Confidence: ${confidence}/10`,
             required
             name="phone"
             type="tel"
-            placeholder="+1 (555) 000-0000"
+            placeholder="+91 7033399183"
             className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 focus:outline-none focus:ring-2 focus:ring-blue-600/50 transition-all"
           />
         </div>
@@ -162,7 +162,7 @@ Code Confidence: ${confidence}/10`,
             required
             name="location"
             type="text"
-            placeholder="New York, NY"
+            placeholder="Salem, Tamil Nadu"
             className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 focus:outline-none focus:ring-2 focus:ring-blue-600/50 transition-all"
           />
         </div>
