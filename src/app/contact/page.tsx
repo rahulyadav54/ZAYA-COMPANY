@@ -110,10 +110,15 @@ export default function ContactPage() {
                 <div className="relative z-10">
                   <h3 className="text-2xl font-bold mb-4">Quick WhatsApp Chat</h3>
                   <p className="text-blue-100 mb-6">Need an instant response? Chat with our experts on WhatsApp.</p>
-                  <button className="flex items-center space-x-2 px-6 py-3 bg-white text-blue-600 font-bold rounded-xl hover:bg-blue-50 transition-colors">
+                  <a 
+                    href="https://wa.me/917033399183" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center space-x-2 px-6 py-3 bg-white text-blue-600 font-bold rounded-xl hover:bg-blue-50 transition-colors"
+                  >
                     <MessageCircle className="h-5 w-5" />
                     <span>Start Chat</span>
-                  </button>
+                  </a>
                 </div>
                 <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
               </div>
