@@ -68,7 +68,7 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <h4 className="font-bold text-foreground mb-1">Email Us</h4>
-                      <p className="text-foreground">contact@zayacodehub.com</p>
+                      <p className="text-foreground">zayacodehub@gmail.com</p>
                       <p className="text-foreground text-sm font-bold">Response within 24 hours</p>
                     </div>
                   </div>
@@ -78,7 +78,7 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <h4 className="font-bold text-foreground mb-1">Call Us</h4>
-                      <p className="text-foreground">+1 (555) 000-0000</p>
+                      <p className="text-foreground">+91 7033399183</p>
                       <p className="text-foreground text-sm font-bold">Mon-Fri, 9am - 6pm</p>
                     </div>
                   </div>
@@ -88,8 +88,8 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <h4 className="font-bold text-foreground mb-1">Visit Us</h4>
-                      <p className="text-foreground">123 Tech Avenue, Suite 500</p>
-                      <p className="text-foreground">Silicon Valley, CA 94025</p>
+                      <p className="text-foreground">Subramania Nagar</p>
+                      <p className="text-foreground">Salem, Tamil Nadu – 636005</p>
                     </div>
                   </div>
                 </div>
@@ -167,7 +167,7 @@ export default function ContactPage() {
           <div className="text-center">
             <MapPin className="h-12 w-12 text-blue-600 mx-auto mb-4" />
             <p className="text-foreground font-bold">Interactive Google Map Placeholder</p>
-            <p className="text-sm text-foreground font-bold">Silicon Valley, CA</p>
+            <p className="text-sm text-foreground font-bold">Salem, Tamil Nadu</p>
           </div>
         </div>
       </section>

@@ -91,15 +91,15 @@ export default function Footer() {
             <div className="space-y-4">
               <div className="flex items-start space-x-3 text-slate-100 font-bold">
                 <MapPin className="h-5 w-5 text-blue-500 mt-1 shrink-0" />
-                <span>123 Tech Avenue, Silicon Valley, CA 94025</span>
+                <span>Subramania Nagar, Salem, Tamil Nadu – 636005</span>
               </div>
               <div className="flex items-center space-x-3 text-slate-100 font-bold">
                 <Phone className="h-5 w-5 text-blue-500 shrink-0" />
-                <span>+1 (555) 000-0000</span>
+                <span>+91 7033399183</span>
               </div>
               <div className="flex items-center space-x-3 text-slate-100 font-bold">
                 <Mail className="h-5 w-5 text-blue-500 shrink-0" />
-                <span>contact@zayacodehub.com</span>
+                <span>zayacodehub@gmail.com</span>
               </div>
             </div>
           </div>

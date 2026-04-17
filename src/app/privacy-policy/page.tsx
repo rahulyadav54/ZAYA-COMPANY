@@ -79,8 +79,8 @@ export default function PrivacyPolicyPage() {
             <p className="leading-relaxed">
               If you have any questions about this Privacy Policy, please contact us at:<br /><br />
               <strong>ZAYA CODE HUB</strong><br />
-              Email: privacy@zayacodehub.com<br />
-              Address: 123 Tech Avenue, Suite 500, Silicon Valley, CA 94025
+              Email: zayacodehub@gmail.com<br />
+              Address: Subramania Nagar, Salem, Tamil Nadu – 636005
             </p>
           </section>
         </div>
