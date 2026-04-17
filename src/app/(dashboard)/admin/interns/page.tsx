@@ -93,47 +93,27 @@ export default function ManageInternsPage() {
     const password = formData.get('password') as string;
     const fullName = formData.get('fullName') as string;
 
-    // Use a secondary client so we don't accidentally log the Admin out!
-    const tempClient = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      { auth: { persistSession: false } }
-    );
-
-    const { data, error } = await tempClient.auth.signUp({
-      email,
-      password,
-      options: { data: { full_name: fullName } }
-    });
-
-    if (error) {
-      alert(`Error creating intern: ${error.message}`);
-    } else if (data.user) {
-      // Check if user already exists (Supabase returns a user with empty identities to prevent email enumeration)
-      if (data.user.identities && data.user.identities.length === 0) {
-        alert("This email is already registered! If you tried to create this before, go to your Supabase Dashboard -> Authentication -> Users, DELETE the old user, and try again.");
-        setIsSubmitting(false);
-        return;
-      }
-
-      // Create profile using tempClient (which is now logged in as the new user in memory)
-      const { error: profileError } = await tempClient.from('profiles').upsert({
-        id: data.user.id,
-        email: email,
-        full_name: fullName,
-        role: 'intern'
+    try {
+      const res = await fetch('/api/admin/create-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password, fullName, role: 'intern' })
       });
 
-      if (profileError) {
-        console.error('Profile Creation Error:', profileError);
-        alert(`Auth account created, but failed to save profile: ${profileError.message}. Ensure RLS allows users to insert their own profile.`);
+      const data = await res.json();
+
+      if (data.error) {
+        alert(`Error creating intern: ${data.error}`);
       } else {
         alert('Intern account created successfully!');
         setShowCreateModal(false);
         fetchInterns();
       }
+    } catch (err: any) {
+      alert(`Network error: ${err.message}`);
+    } finally {
+      setIsSubmitting(false);
     }
-    setIsSubmitting(false);
   };
 
   const handleSendTask = async (e: React.FormEvent<HTMLFormElement>) => {

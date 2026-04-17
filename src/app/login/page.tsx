@@ -212,11 +212,8 @@ export default function LoginPage() {
           </form>
 
           <div className="mt-8 pt-8 border-t border-slate-100 dark:border-slate-800 text-center">
-            <p className="text-sm text-foreground">
-              Don&apos;t have an account? <Link href="/register" className="text-blue-600 font-bold hover:underline">Sign Up</Link>
-            </p>
-            <p className="text-xs text-slate-400 mt-4">
-              Note: Registration is only open for accepted applicants.
+            <p className="text-xs text-slate-400">
+              Access is restricted to authorized team members and interns.
             </p>
           </div>
         </div>
