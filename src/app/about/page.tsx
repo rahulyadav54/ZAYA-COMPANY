@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Target, Eye, Award, Users2, ShieldCheck, Zap } from 'lucide-react';
 import TeamSection from '@/components/home/TeamSection';
@@ -98,8 +99,8 @@ export default function AboutPage() {
                 Our team is comprised of industry veterans and passionate innovators who share a common goal: excellence. We believe in collaborative growth and constant learning.
               </p>
               <div className="flex items-center space-x-4 mb-8">
-                <div className="h-16 w-16 rounded-full overflow-hidden border-2 border-blue-600 shadow-lg">
-                  <img src="/ceo.png" alt="Rahul Kumar Yadav" className="w-full h-full object-cover" />
+                <div className="h-16 w-16 rounded-full overflow-hidden border-2 border-blue-600 shadow-lg relative">
+                  <Image src="/ceo.png" alt="Rahul Kumar Yadav" fill className="object-cover" />
                 </div>
                 <div>
                   <h4 className="font-bold text-xl text-foreground uppercase tracking-tight">RAHUL KUMAR YADAV</h4>
@@ -114,8 +115,8 @@ export default function AboutPage() {
               </button>
             </div>
             <div className="flex-1 relative">
-              <div className="aspect-square rounded-[3rem] overflow-hidden shadow-2xl border-4 border-white dark:border-slate-800">
-                <img src="/ceo.png" alt="Rahul Kumar Yadav" className="w-full h-full object-cover" />
+              <div className="aspect-square rounded-[3rem] overflow-hidden shadow-2xl border-4 border-white dark:border-slate-800 relative">
+                <Image src="/ceo.png" alt="Rahul Kumar Yadav" fill className="object-cover" />
               </div>
               {/* Floating Stat */}
               <div className="absolute -bottom-6 -left-6 p-6 rounded-2xl bg-white dark:bg-slate-900 shadow-2xl border border-slate-200 dark:border-slate-800">

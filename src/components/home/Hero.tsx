@@ -3,7 +3,7 @@
 import React from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { ArrowRight, Code, Smartphone, Layout } from 'lucide-react';
+import { ArrowRight, Smartphone, Layout } from 'lucide-react';
 import Link from 'next/link';
 
 export default function Hero() {

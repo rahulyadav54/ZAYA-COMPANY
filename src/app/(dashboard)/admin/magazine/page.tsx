@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { supabase } from '@/lib/supabaseClient';
 import { 
   Plus, 
@@ -150,8 +151,8 @@ export default function AdminMagazinePage() {
             <div key={post.id} className="group bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 overflow-hidden hover:shadow-xl transition-all flex flex-col">
               {post.image_url ? (
                 <div className="h-48 overflow-hidden relative">
-                  <img src={post.image_url} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                  <div className="absolute top-4 left-4 px-3 py-1 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md rounded-full text-[10px] font-bold uppercase tracking-wider text-blue-600">
+                  <Image src={post.image_url} alt={post.title} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <div className="absolute top-4 left-4 px-3 py-1 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md rounded-full text-[10px] font-bold uppercase tracking-wider text-blue-600 z-10">
                     {post.category}
                   </div>
                 </div>
@@ -252,7 +253,7 @@ export default function AdminMagazinePage() {
                 <div className="flex items-center gap-4">
                   {previewUrl ? (
                     <div className="relative w-32 h-32 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800">
-                      <img src={previewUrl} alt="Preview" className="w-full h-full object-cover" />
+                      <Image src={previewUrl} alt="Preview" fill className="object-cover" />
                       <button 
                         type="button"
                         onClick={() => {

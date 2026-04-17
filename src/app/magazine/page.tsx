@@ -93,11 +93,14 @@ export default function MagazinePage() {
                   {/* Image Container */}
                   <div className="relative h-64 overflow-hidden">
                     {post.image_url ? (
-                      <img 
-                        src={post.image_url} 
-                        alt={post.title} 
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
-                      />
+                      <div className="relative w-full h-full">
+                        <Image 
+                          src={post.image_url} 
+                          alt={post.title} 
+                          fill
+                          className="object-cover transition-transform duration-700 group-hover:scale-110" 
+                        />
+                      </div>
                     ) : (
                       <div className="w-full h-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
                         <Newspaper className="h-16 w-16 text-slate-300" />
