@@ -3,7 +3,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { Linkedin, Github, Mail, ArrowRight } from 'lucide-react';
+import { Globe, ExternalLink, Mail, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
 const teamMembers = [
@@ -133,10 +133,10 @@ export default function TeamSection() {
               {/* Socials */}
               <div className="flex items-center space-x-3 border-t border-slate-100 dark:border-slate-800 pt-6">
                 <a href={member.socials.linkedin} className="p-2 rounded-lg bg-slate-50 dark:bg-slate-950 text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all">
-                  <Linkedin className="h-4 w-4" />
+                  <Globe className="h-4 w-4" />
                 </a>
                 <a href={member.socials.github} className="p-2 rounded-lg bg-slate-50 dark:bg-slate-950 text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
-                  <Github className="h-4 w-4" />
+                  <ExternalLink className="h-4 w-4" />
                 </a>
                 <a href={member.socials.email} className="p-2 rounded-lg bg-slate-50 dark:bg-slate-950 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all">
                   <Mail className="h-4 w-4" />

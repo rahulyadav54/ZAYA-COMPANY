@@ -1,17 +1,10 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { supabase } from '@/lib/supabaseClient';
-import { 
-  Newspaper, 
-  Clock, 
-  User, 
-  ChevronRight, 
-  Loader2,
-  Calendar,
-  Tag
-} from 'lucide-react';
+import { Newspaper, ChevronRight, Loader2, Calendar, User } from 'lucide-react';
 
 export default function MagazinePage() {
   const [posts, setPosts] = useState<any[]>([]);
