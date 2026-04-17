@@ -60,12 +60,13 @@ export default function Hero() {
           >
             <div className="relative w-full aspect-square max-w-lg mx-auto">
               {/* Main Circle */}
-              <div className="absolute inset-8 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 shadow-2xl shadow-blue-600/30 flex items-center justify-center overflow-hidden border-4 border-white/10 p-12">
+              <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 shadow-2xl shadow-blue-600/30 flex items-center justify-center overflow-hidden border-4 border-white/10">
                 <Image 
                   src="/logo.png" 
                   alt="Zaya Code Hub Logo" 
                   fill
-                  className="object-contain" 
+                  unoptimized
+                  className="object-contain p-4" 
                 />
               </div>
               {/* Floating Cards - Desktop Only */}
