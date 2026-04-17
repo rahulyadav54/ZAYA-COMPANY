@@ -1,0 +1,167 @@
+'use client';
+
+import React, { useEffect, useState } from 'react';
+import { supabase } from '@/lib/supabaseClient';
+import { FileText, Search, MoreVertical, Loader2, Download, CheckCircle, XCircle } from 'lucide-react';
+
+export default function ApplicationsPage() {
+  const [applications, setApplications] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const fetchApplications = async () => {
+    setIsLoading(true);
+    const { data, error } = await supabase
+      .from('applications')
+      .select('*')
+      .order('applied_at', { ascending: false });
+
+    if (!error && data) {
+      setApplications(data);
+    }
+    setIsLoading(false);
+  };
+
+  useEffect(() => {
+    fetchApplications();
+  }, []);
+
+  const updateStatus = async (id: number, newStatus: string) => {
+    const { error } = await supabase
+      .from('applications')
+      .update({ status: newStatus })
+      .eq('id', id);
+    
+    if (!error) {
+      fetchApplications();
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <h1 className="text-2xl font-bold text-foreground">Job Applications</h1>
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+          <input 
+            type="text" 
+            placeholder="Search applicants..." 
+            className="pl-10 pr-4 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600/50 w-full sm:w-64 text-foreground"
+          />
+        </div>
+      </div>
+
+      <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left">
+            <thead>
+              <tr className="bg-slate-50 dark:bg-slate-950/50 text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider border-b border-slate-200 dark:border-slate-800">
+                <th className="px-6 py-4">Applicant</th>
+                <th className="px-6 py-4">Position</th>
+                <th className="px-6 py-4">Applied</th>
+                <th className="px-6 py-4">Status</th>
+                <th className="px-6 py-4">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+              {isLoading ? (
+                <tr>
+                  <td colSpan={5} className="px-6 py-12 text-center text-slate-500">
+                    <Loader2 className="h-6 w-6 animate-spin mx-auto" />
+                  </td>
+                </tr>
+              ) : applications.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="px-6 py-12 text-center text-slate-500">
+                    No applications found.
+                  </td>
+                </tr>
+              ) : (
+                applications.map((app) => (
+                  <React.Fragment key={app.id}>
+                    <tr className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                      <td className="px-6 py-4">
+                        <div className="font-bold text-foreground">{app.full_name}</div>
+                        <div className="text-xs text-slate-500 dark:text-slate-400">{app.email}</div>
+                        <div className="text-xs text-slate-500 dark:text-slate-400">{app.phone}</div>
+                      </td>
+                      <td className="px-6 py-4 text-foreground text-sm font-medium">
+                        {app.position}
+                      </td>
+                      <td className="px-6 py-4 text-slate-500 dark:text-slate-400 text-sm">
+                        {new Date(app.applied_at).toLocaleDateString()}
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className={`px-3 py-1 rounded-full text-xs font-bold inline-flex items-center gap-1 ${
+                          app.status === 'accepted' ? 'bg-green-100 text-green-600 dark:bg-green-900/30' : 
+                          app.status === 'rejected' ? 'bg-red-100 text-red-600 dark:bg-red-900/30' : 
+                          'bg-orange-100 text-orange-600 dark:bg-orange-900/30'
+                        }`}>
+                          {app.status.toUpperCase()}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center space-x-2">
+                          <button 
+                            onClick={() => {
+                              const el = document.getElementById(`details-${app.id}`);
+                              if (el) el.classList.toggle('hidden');
+                            }}
+                            className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+                            title="View Full Questionnaire Details"
+                          >
+                            <FileText className="h-4 w-4" />
+                          </button>
+                          {app.resume_url && (
+                            <a 
+                              href={app.resume_url} 
+                              target="_blank" 
+                              rel="noreferrer"
+                              className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+                              title="Download Resume"
+                            >
+                              <Download className="h-4 w-4" />
+                            </a>
+                          )}
+                          <button 
+                            onClick={() => updateStatus(app.id, 'accepted')}
+                            className="p-2 text-slate-400 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg transition-colors"
+                            title="Accept Intern"
+                          >
+                            <CheckCircle className="h-4 w-4" />
+                          </button>
+                          <button 
+                            onClick={() => updateStatus(app.id, 'rejected')}
+                            className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                            title="Reject Intern"
+                          >
+                            <XCircle className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr id={`details-${app.id}`} className="hidden bg-slate-50 dark:bg-slate-900/50 border-t border-slate-100 dark:border-slate-800">
+                      <td colSpan={5} className="px-6 py-6">
+                        <div className="max-w-3xl">
+                          <h4 className="text-sm font-bold text-foreground mb-4 border-b border-slate-200 dark:border-slate-700 pb-2">Full Questionnaire Responses</h4>
+                          {app.portfolio_url && (
+                            <p className="text-sm mb-4">
+                              <span className="font-semibold text-slate-500">Portfolio/GitHub:</span>{' '}
+                              <a href={app.portfolio_url} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">{app.portfolio_url}</a>
+                            </p>
+                          )}
+                          <div className="text-sm text-foreground whitespace-pre-wrap leading-relaxed font-mono bg-white dark:bg-slate-950 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
+                            {app.cover_letter || 'No details provided.'}
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  </React.Fragment>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+}
