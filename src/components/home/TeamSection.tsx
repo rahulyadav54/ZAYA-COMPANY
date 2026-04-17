@@ -13,51 +13,43 @@ import Link from 'next/link';
 
 const teamMembers = [
   {
-    name: "Rahul Kumar Yadav",
-    role: "Founder & CEO",
-    bio: "Leading innovation, business growth, and strategic direction at ZAYA CODE HUB.",
-    skills: ["Leadership", "Strategy", "Business Development"],
-    image: "/ceo.png", // Using the photo you already added
-    socials: { linkedin: "#", github: "#", email: "mailto:zayacodehub@gmail.com" }
-  },
-  {
-    name: "Aman Sharma",
-    role: "Chief Technology Officer (CTO)",
-    bio: "Managing technical architecture, scalable systems, and product engineering.",
-    skills: ["System Design", "Backend", "Architecture"],
-    image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=400&h=400",
-    socials: { linkedin: "#", github: "#", email: "#" }
-  },
-  {
-    name: "Priya Singh",
-    role: "Full Stack Developer",
-    bio: "Building modern websites, APIs, and complete digital platforms.",
-    skills: ["React", "Node.js", "Database"],
-    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=400&h=400",
-    socials: { linkedin: "#", github: "#", email: "#" }
-  },
-  {
-    name: "Vikram Malhotra",
-    role: "Android App Developer",
-    bio: "Creating powerful Android applications with clean UI and smooth performance.",
-    skills: ["Kotlin", "Java", "Firebase"],
+    name: "Shivshankar Kr Jaysawal",
+    role: "Co-Founder",
+    bio: "Driving the strategic vision and long-term business growth of ZAYA CODE HUB.",
+    skills: ["Business Strategy", "Leadership", "Innovation"],
     image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=400&h=400",
     socials: { linkedin: "#", github: "#", email: "#" }
   },
   {
-    name: "Sanya Gupta",
-    role: "UI/UX Designer",
-    bio: "Designing user-friendly, modern, and engaging digital experiences.",
-    skills: ["Figma", "UI Design", "UX Research"],
-    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=400&h=400",
+    name: "Rohith P",
+    role: "Chief Technology Officer (CTO)",
+    bio: "Leading our technical architecture and ensuring engineering excellence across all projects.",
+    skills: ["Tech Architecture", "Cloud Systems", "Backend"],
+    image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=400&h=400",
     socials: { linkedin: "#", github: "#", email: "#" }
   },
   {
-    name: "Neha Verma",
-    role: "HR & Operations Manager",
-    bio: "Handling recruitment, communication, workflow, and daily operations.",
-    skills: ["Hiring", "Communication", "Management"],
-    image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=400&h=400",
+    name: "Akash Adhikari",
+    role: "Human Resources (HR)",
+    bio: "Managing talent acquisition and building a world-class team culture at ZAYA HUB.",
+    skills: ["Recruitment", "Team Culture", "Communication"],
+    image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=400&h=400",
+    socials: { linkedin: "#", github: "#", email: "#" }
+  },
+  {
+    name: "Sujan Khatri",
+    role: "Operations Manager",
+    bio: "Optimizing workflow efficiency and overseeing daily business operations.",
+    skills: ["Operations", "Workflow", "Efficiency"],
+    image: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=400&h=400",
+    socials: { linkedin: "#", github: "#", email: "#" }
+  },
+  {
+    name: "Aditya Chaurasiya",
+    role: "Marketing",
+    bio: "Leading our brand strategy and digital marketing campaigns to expand our global reach.",
+    skills: ["Digital Marketing", "Branding", "Strategy"],
+    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=400&h=400",
     socials: { linkedin: "#", github: "#", email: "#" }
   }
 ];
