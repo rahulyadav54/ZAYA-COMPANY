@@ -94,10 +94,12 @@ export default function AboutPage() {
                 Our team is comprised of industry veterans and passionate innovators who share a common goal: excellence. We believe in collaborative growth and constant learning.
               </p>
               <div className="flex items-center space-x-4 mb-8">
-                <div className="h-16 w-16 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-2xl shadow-lg">ZC</div>
+                <div className="h-16 w-16 rounded-full overflow-hidden border-2 border-blue-600 shadow-lg">
+                  <img src="/ceo.png" alt="Rahul Kumar Yadav" className="w-full h-full object-cover" />
+                </div>
                 <div>
-                  <h4 className="font-bold text-xl text-foreground">Founder Name</h4>
-                  <p className="text-blue-600 font-semibold text-sm uppercase tracking-wider">CEO & Chief Architect</p>
+                  <h4 className="font-bold text-xl text-foreground uppercase tracking-tight">RAHUL KUMAR YADAV</h4>
+                  <p className="text-blue-600 font-bold text-sm uppercase tracking-wider">CEO / FOUNDER</p>
                 </div>
               </div>
               <button className="px-8 py-4 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold hover:opacity-90 transition-all flex items-center">
@@ -105,10 +107,8 @@ export default function AboutPage() {
               </button>
             </div>
             <div className="flex-1 relative">
-              <div className="aspect-square rounded-[3rem] bg-gradient-to-tr from-slate-200 to-slate-100 dark:from-slate-800 dark:to-slate-900 overflow-hidden shadow-2xl">
-                <div className="absolute inset-0 flex items-center justify-center">
-                   <Users2 className="w-1/2 h-1/2 text-slate-400 dark:text-slate-600" />
-                </div>
+              <div className="aspect-square rounded-[3rem] overflow-hidden shadow-2xl border-4 border-white dark:border-slate-800">
+                <img src="/ceo.png" alt="Rahul Kumar Yadav" className="w-full h-full object-cover" />
               </div>
               {/* Floating Stat */}
               <div className="absolute -bottom-6 -left-6 p-6 rounded-2xl bg-white dark:bg-slate-900 shadow-2xl border border-slate-200 dark:border-slate-800">
