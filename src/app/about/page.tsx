@@ -3,8 +3,12 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Target, Eye, Award, Users2, ShieldCheck, Zap } from 'lucide-react';
+import TeamSection from '@/components/home/TeamSection';
 
 export default function AboutPage() {
+  const scrollToTeam = () => {
+    document.getElementById('team-section')?.scrollIntoView({ behavior: 'smooth' });
+  };
   return (
     <div className="bg-white dark:bg-slate-950">
       {/* Hero */}
@@ -102,7 +106,10 @@ export default function AboutPage() {
                   <p className="text-blue-600 font-bold text-sm uppercase tracking-wider">CEO / FOUNDER</p>
                 </div>
               </div>
-              <button className="px-8 py-4 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold hover:opacity-90 transition-all flex items-center">
+              <button 
+                onClick={scrollToTeam}
+                className="px-8 py-4 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold hover:opacity-90 transition-all flex items-center"
+              >
                 <Users2 className="mr-2 h-5 w-5" /> View Full Team
               </button>
             </div>
@@ -119,6 +126,9 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
+
+      {/* Full Team Grid */}
+      <TeamSection />
     </div>
   );
 }
