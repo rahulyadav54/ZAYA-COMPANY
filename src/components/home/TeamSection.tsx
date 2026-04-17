@@ -2,13 +2,12 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import { 
   Linkedin, 
   Github, 
   Mail, 
-  Users, 
-  ArrowRight,
-  ExternalLink
+  ArrowRight
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -111,11 +110,14 @@ export default function TeamSection() {
               {/* Profile Image */}
               <div className="relative w-24 h-24 mb-6">
                 <div className="absolute inset-0 bg-blue-600 rounded-full blur-2xl opacity-20 group-hover:opacity-40 transition-opacity"></div>
-                <img 
-                  src={member.image} 
-                  alt={member.name} 
-                  className="w-full h-full object-cover rounded-full border-2 border-white dark:border-slate-800 shadow-xl relative z-10"
-                />
+                <div className="relative w-full h-full rounded-full overflow-hidden border-2 border-white dark:border-slate-800 shadow-xl z-10">
+                  <Image 
+                    src={member.image} 
+                    alt={member.name} 
+                    fill
+                    className="object-cover"
+                  />
+                </div>
               </div>
 
               {/* Info */}
