@@ -18,6 +18,11 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "ZAYA CODE HUB | Leading IT Solutions & Training",
   description: "ZAYA CODE HUB provides top-tier software development, mobile apps, and internship programs for aspiring tech professionals.",
+  icons: {
+    icon: "/favicon.png",
+    shortcut: "/favicon.png",
+    apple: "/favicon.png",
+  },
 };
 
 export default function RootLayout({
