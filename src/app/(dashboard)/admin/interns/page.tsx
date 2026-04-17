@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { createClient } from '@supabase/supabase-js';
-import { Users, Search, Mail, Loader2, UserX, Plus, Send, X, Trash2 } from 'lucide-react';
+import { Users, Search, Mail, Loader2, UserX, Plus, Send, X, Trash2, Download } from 'lucide-react';
 
 export default function ManageInternsPage() {
   const [interns, setInterns] = useState<any[]>([]);
@@ -33,7 +33,40 @@ export default function ManageInternsPage() {
     fetchInterns();
   }, []);
 
+  const downloadCSV = () => {
+    if (interns.length === 0) return;
+
+    // Define headers
+    const headers = ["ID", "Full Name", "Email", "Joined Date"];
+    
+    // Format rows
+    const rows = interns.map(intern => [
+      intern.id,
+      intern.full_name || "N/A",
+      intern.email,
+      new Date(intern.created_at).toLocaleDateString()
+    ]);
+
+    // Construct CSV content
+    const csvContent = [
+      headers.join(","),
+      ...rows.map(row => row.map(cell => `"${cell}"`).join(","))
+    ].join("\n");
+
+    // Create and trigger download
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", `zaya_interns_export_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const handleDeleteIntern = async (id: string, name: string) => {
+// ... existing handleDeleteIntern ...
     if (!confirm(`Are you sure you want to PERMANENTLY delete ${name}? This will remove all their tasks, submissions, and profile data everywhere.`)) return;
 
     setIsLoading(true);
@@ -137,8 +170,8 @@ export default function ManageInternsPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <h1 className="text-2xl font-bold text-foreground">Manage Interns</h1>
-        <div className="flex items-center gap-4">
-          <div className="relative hidden sm:block">
+        <div className="flex items-center gap-2">
+          <div className="relative hidden sm:block mr-2">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
             <input 
               type="text" 
@@ -146,6 +179,12 @@ export default function ManageInternsPage() {
               className="pl-10 pr-4 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600/50 w-64 text-foreground"
             />
           </div>
+          <button 
+            onClick={downloadCSV}
+            className="flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors font-bold text-sm"
+          >
+            <Download className="h-4 w-4" /> Download CSV
+          </button>
           <button 
             onClick={() => setShowCreateModal(true)}
             className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-bold text-sm"
