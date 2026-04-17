@@ -3,12 +3,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { 
-  Linkedin, 
-  Github, 
-  Mail, 
-  ArrowRight
-} from 'lucide-react';
+import { Linkedin, Github, Mail, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
 const teamMembers = [
