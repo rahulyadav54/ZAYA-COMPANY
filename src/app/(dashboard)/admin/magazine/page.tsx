@@ -242,7 +242,7 @@ export default function AdminMagazinePage() {
                   <label className="text-sm font-bold text-foreground">Author Display Name</label>
                   <input 
                     name="author"
-                    defaultValue={editingPost?.author || 'ZAYA HUB Admin'}
+                    defaultValue={editingPost?.author || 'ZAYA CODE HUB Admin'}
                     className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-foreground focus:ring-2 focus:ring-blue-600/50 outline-none" 
                   />
                 </div>

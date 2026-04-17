@@ -131,7 +131,7 @@ export default function LoginPage() {
             </span>
           </Link>
           <h1 className="text-2xl font-bold text-foreground">Portal Login</h1>
-          <p className="text-foreground mt-2">Sign in to ZAYA HUB Portal</p>
+          <p className="text-foreground mt-2">Sign in to ZAYA CODE HUB Portal</p>
         </div>
 
         <div className="bg-white dark:bg-slate-900 p-8 rounded-3xl shadow-xl border border-slate-200 dark:border-slate-800">

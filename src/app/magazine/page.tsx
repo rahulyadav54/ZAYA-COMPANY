@@ -37,7 +37,7 @@ export default function MagazinePage() {
             className="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-blue-600/20 border border-blue-600/30 text-blue-400 text-sm font-bold mb-6"
           >
             <Newspaper className="h-4 w-4" />
-            <span>ZAYA HUB MAGAZINE</span>
+            <span>ZAYA CODE HUB MAGAZINE</span>
           </motion.div>
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
@@ -53,7 +53,7 @@ export default function MagazinePage() {
             transition={{ delay: 0.2 }}
             className="text-xl text-slate-400 max-w-2xl mx-auto"
           >
-            Stay updated with the latest technological trends, company announcements, and career opportunities at ZAYA HUB.
+            Stay updated with the latest technological trends, company announcements, and career opportunities at ZAYA CODE HUB.
           </motion.p>
         </div>
       </section>

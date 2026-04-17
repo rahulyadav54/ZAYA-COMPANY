@@ -60,7 +60,7 @@ export default function DashboardLayout({
           <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
             <Link href="/" className="flex items-center space-x-2">
               <Code2 className="h-8 w-8 text-blue-600" />
-              <span className="text-xl font-bold tracking-tight">ZAYA HUB</span>
+              <span className="text-xl font-bold tracking-tight">ZAYA CODE HUB</span>
             </Link>
             <button onClick={() => setIsSidebarOpen(false)} className="lg:hidden">
               <X className="h-6 w-6" />
@@ -107,7 +107,7 @@ export default function DashboardLayout({
           
           <div className="flex-1 px-4 lg:px-0">
             <h2 className="text-lg font-bold text-slate-800 dark:text-white capitalize">
-              ZAYA HUB Portal
+              ZAYA CODE HUB Portal
             </h2>
           </div>
 

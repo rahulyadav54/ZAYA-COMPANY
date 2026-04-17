@@ -26,7 +26,7 @@ const teamMembers = [
   {
     name: "Akash Adhikari",
     role: "Human Resources (HR)",
-    bio: "Managing talent acquisition and building a world-class team culture at ZAYA HUB.",
+    bio: "Managing talent acquisition and building a world-class team culture at ZAYA CODE HUB.",
     skills: ["Recruitment", "Team Culture", "Communication"],
     image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=400&h=400",
     socials: { linkedin: "#", github: "#", email: "#" }
@@ -70,7 +70,7 @@ export default function TeamSection() {
             viewport={{ once: true }}
             className="text-3xl md:text-5xl font-black text-foreground mt-6 mb-6"
           >
-            Meet the Team Behind <span className="text-blue-600">ZAYA HUB</span>
+            Meet the Team Behind <span className="text-blue-600">ZAYA CODE HUB</span>
           </motion.h2>
           <motion.p 
             initial={{ opacity: 0, y: 20 }}

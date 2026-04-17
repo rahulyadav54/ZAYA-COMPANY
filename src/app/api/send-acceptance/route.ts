@@ -14,7 +14,7 @@ export async function POST(request: Request) {
     let htmlContent = '';
 
     if (status === 'accepted') {
-      subject = `Congratulations! Your Application for ${position} at ZAYA HUB`;
+      subject = `Congratulations! Your Application for ${position} at ZAYA CODE HUB`;
       htmlContent = `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 12px;">
           <h1 style="color: #2563eb; font-size: 24px;">Congratulations, ${fullName}!</h1>
@@ -33,7 +33,7 @@ export async function POST(request: Request) {
             </ul>
           </div>
           <p style="font-size: 16px; color: #475569;">
-            Welcome to the ZAYA HUB family. We look forward to working with you!
+            Welcome to the ZAYA CODE HUB family. We look forward to working with you!
           </p>
           <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0;" />
           <p style="font-size: 12px; color: #94a3b8; text-align: center;">
@@ -42,7 +42,7 @@ export async function POST(request: Request) {
         </div>
       `;
     } else {
-      subject = `Update regarding your application for ${position} at ZAYA HUB`;
+      subject = `Update regarding your application for ${position} at ZAYA CODE HUB`;
       htmlContent = `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 12px;">
           <h1 style="color: #1e293b; font-size: 24px;">Hello, ${fullName}</h1>
