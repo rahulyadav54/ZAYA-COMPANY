@@ -111,9 +111,9 @@ export default function OfferLetterPage() {
                 </div>
               </div>
               <div className="space-y-1 text-slate-500 text-sm font-medium">
-                <div className="flex items-center gap-2"><MapPin className="h-3 w-3" /> Noida, Uttar Pradesh, India</div>
-                <div className="flex items-center gap-2"><Mail className="h-3 w-3" /> contact@zayacodehub.in</div>
-                <div className="flex items-center gap-2"><Phone className="h-3 w-3" /> +91-XXXXXXXXXX</div>
+                <div className="flex items-center gap-2"><MapPin className="h-3 w-3" /> Salem, Tamil Nadu, India</div>
+                <div className="flex items-center gap-2"><Mail className="h-3 w-3" /> hr@zayacodehub.in</div>
+                <div className="flex items-center gap-2"><Phone className="h-3 w-3" /> +91 70333 99183</div>
               </div>
             </div>
             <div className="text-right">
