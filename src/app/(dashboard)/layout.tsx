@@ -22,6 +22,7 @@ import {
   Award
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { supabase } from '@/lib/supabaseClient';
 
 export default function DashboardLayout({
   children,
@@ -32,6 +33,12 @@ export default function DashboardLayout({
   const pathname = usePathname();
   const router = useRouter();
   const isAdmin = pathname.startsWith('/admin');
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.push('/login');
+    router.refresh(); // Clear any cached state
+  };
 
   const links = isAdmin 
     ? [
@@ -93,7 +100,7 @@ export default function DashboardLayout({
 
           <div className="p-4 border-t border-slate-100 dark:border-slate-800">
             <button 
-              onClick={() => router.push('/login')}
+              onClick={handleLogout}
               className="flex items-center space-x-3 px-4 py-3 w-full rounded-xl text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all font-medium"
             >
               <LogOut className="h-5 w-5" />
