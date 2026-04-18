@@ -9,9 +9,10 @@ interface CertificateProps {
   internName: string;
   taskTitle: string;
   completionDate: string;
+  certificateId?: string;
 }
 
-export default function Certificate({ internName, taskTitle, completionDate }: CertificateProps) {
+export default function Certificate({ internName, taskTitle, completionDate, certificateId }: CertificateProps) {
   const certificateRef = useRef<HTMLDivElement>(null);
 
   const downloadPDF = async () => {
@@ -98,7 +99,7 @@ export default function Certificate({ internName, taskTitle, completionDate }: C
           </p>
 
           {/* Footer Grid for Signatures and Seal */}
-          <div className="w-full mt-auto mb-20 flex justify-between items-center">
+          <div className="w-full mb-12 flex justify-between items-center">
             {/* CEO Signature */}
             <div className="flex flex-col items-center w-[300px]">
               <p className="text-[32px] text-slate-800 mb-1" style={{ fontFamily: "'Dancing Script', cursive" }}>Rahul Kr Yadav</p>
@@ -114,7 +115,7 @@ export default function Certificate({ internName, taskTitle, completionDate }: C
                </div>
                {/* Ribbons */}
                <div className="absolute top-[70%] left-[20%] w-10 h-16 bg-[#A67C00] [clip-path:polygon(0_0,100%_0,50%_100%)] rotate-[20deg] z-0" />
-               <div className="absolute top-[70%] right-[20%] w-10 h-16 bg-[#A67C00] [clip-path:polygon(0_0,100%_0,50%_100%)] rotate-[-20deg] z-0" />
+               <div className="absolute top-[70%] right-[20%] w-10 h-16 bg-[#A67C00] [clip-path:polygon(0_0,100%_0,50%_100%)] rotate-[-15deg] z-0" />
                <p className="mt-8 text-[10px] font-black text-slate-400 uppercase tracking-widest">Dated: {new Date(completionDate).toLocaleDateString()}</p>
             </div>
 
@@ -126,6 +127,14 @@ export default function Certificate({ internName, taskTitle, completionDate }: C
               <p className="text-[10px] text-slate-400 font-bold uppercase tracking-[2px]">Project Manager</p>
             </div>
           </div>
+
+          {/* Verification Info */}
+          {certificateId && (
+            <div className="absolute bottom-6 w-full px-32 flex justify-between items-end text-[9px] font-bold uppercase tracking-[2px] text-slate-400">
+               <p>Credential ID: <span className="text-[#002B5B]">{certificateId}</span></p>
+               <p>Verify at: <span className="text-blue-600 lowercase tracking-normal">zayacodehub.com/verify</span></p>
+            </div>
+          )}
         </div>
 
         {/* Global CSS for Fonts */}
