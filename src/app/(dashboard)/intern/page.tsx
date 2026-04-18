@@ -2,11 +2,13 @@
 
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
-import { Clock, CheckCircle2, AlertCircle, FileUp, Trophy, Calendar, Loader2, ArrowRight, X } from 'lucide-react';
+import { Clock, CheckCircle2, AlertCircle, FileUp, Trophy, Calendar, Loader2, ArrowRight, X, Award } from 'lucide-react';
+import Link from 'next/link';
 
 export default function InternDashboard() {
   const [profile, setProfile] = useState<any>(null);
   const [tasks, setTasks] = useState<any[]>([]);
+  const [certificates, setCertificates] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -28,6 +30,15 @@ export default function InternDashboard() {
         if (!taskError && taskData) {
           setTasks(taskData);
         }
+
+        // Fetch approved certificates
+        const { data: certData } = await supabase
+          .from('submissions')
+          .select('*, tasks(title)')
+          .eq('intern_id', user.id)
+          .eq('review_status', 'approved');
+        
+        if (certData) setCertificates(certData);
       }
       setIsLoading(false);
     }
@@ -71,6 +82,42 @@ export default function InternDashboard() {
           </div>
         ))}
       </div>
+
+      {/* Certificates Section (Only show if available) */}
+      {certificates.length > 0 && (
+        <div className="bg-gradient-to-br from-slate-900 to-blue-900/20 rounded-[2.5rem] border border-blue-500/20 p-8 shadow-2xl">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="p-3 bg-blue-600 rounded-2xl shadow-lg shadow-blue-600/30">
+              <Award className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-black text-white tracking-tight">My Certificates</h2>
+              <p className="text-slate-400 font-medium">You've successfully completed these programs!</p>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {certificates.map((cert) => (
+              <div key={cert.id} className="bg-white/5 backdrop-blur-md rounded-3xl p-6 border border-white/5 flex items-center justify-between group hover:border-blue-500/30 transition-all">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center border border-blue-500/20">
+                    <Trophy className="h-6 w-6 text-blue-500" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-white">{cert.tasks?.title}</h4>
+                    <p className="text-xs text-slate-500 font-bold uppercase tracking-widest mt-1">Completion ID: #{cert.id.slice(0,8)}</p>
+                  </div>
+                </div>
+                <Link 
+                  href={`/intern/certificate/${cert.id}`}
+                  className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-sm transition-all shadow-lg active:scale-95 whitespace-nowrap"
+                >
+                  View Certificate
+                </Link>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Progress Bar */}
       <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6">
