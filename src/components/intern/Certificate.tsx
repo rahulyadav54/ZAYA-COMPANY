@@ -76,31 +76,37 @@ export default function Certificate({ internName, taskTitle, completionDate }: C
         <div className="absolute bottom-10 right-10 w-40 h-40 border-r-4 border-b-4 border-[#C5A021] z-10 opacity-60" />
 
         {/* Content Area */}
-        <div className="relative z-20 h-full w-full flex flex-col items-center pt-24 px-20 text-center">
-          <h1 className="text-[72px] font-serif tracking-[10px] text-[#0f172a] mb-2 uppercase">Certificate</h1>
-          <h2 className="text-[32px] font-serif tracking-[4px] text-[#1e293b] mb-12 uppercase italic">Of Internship</h2>
+        <div className="relative z-20 h-full w-full flex flex-col items-center pt-16 px-20 text-center">
+          {/* Logo and Company Name */}
+          <div className="flex flex-col items-center gap-4 mb-8">
+            <img src="/logo.png" alt="ZAYA CODE HUB" className="h-24 w-auto object-contain" />
+            <h3 className="text-2xl font-black text-[#002B5B] tracking-[4px] uppercase">Zaya Code Hub</h3>
+          </div>
+
+          <h1 className="text-[64px] font-serif tracking-[10px] text-[#0f172a] mb-2 uppercase">Certificate</h1>
+          <h2 className="text-[28px] font-serif tracking-[4px] text-[#1e293b] mb-10 uppercase italic">Of Internship</h2>
           
           <div className="w-[60%] h-[1px] bg-slate-300 mb-8" />
           
-          <p className="text-[18px] font-medium text-slate-500 uppercase tracking-[2px] mb-8">This Internship Program Certificate is proudly awarded to</p>
+          <p className="text-[16px] font-medium text-slate-500 uppercase tracking-[2px] mb-8">This Internship Program Certificate is proudly awarded to</p>
           
-          <p className="text-[84px] text-[#002B5B] mb-8" style={{ fontFamily: "'Great Vibes', cursive" }}>
+          <p className="text-[72px] text-[#002B5B] mb-6" style={{ fontFamily: "'Great Vibes', cursive" }}>
             {internName}
           </p>
           
           <div className="w-[70%] h-[2px] bg-[#C5A021] mb-8" />
           
-          <p className="text-[20px] text-slate-600 leading-relaxed max-w-[800px] font-medium">
-            This certificate is given to <span className="font-bold text-slate-800">{internName}</span> for his/her outstanding completion of the internship program at <span className="font-bold text-slate-800">ZAYA COMPANY</span> for the project <span className="italic text-[#002B5B]">"{taskTitle}"</span> completed on {new Date(completionDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}.
+          <p className="text-[18px] text-slate-600 leading-relaxed max-w-[800px] font-medium">
+            This certificate is given to <span className="font-bold text-slate-800">{internName}</span> for his/her outstanding completion of the internship program at <span className="font-bold text-slate-800 text-[#002B5B]">ZAYA CODE HUB</span> for the project <span className="italic text-[#002B5B]">"{taskTitle}"</span> completed on {new Date(completionDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}.
           </p>
 
           {/* Footer Section (Signatures) */}
-          <div className="absolute bottom-24 w-full px-32 flex justify-between items-end">
+          <div className="absolute bottom-20 w-full px-32 flex justify-between items-end">
             <div className="text-center w-[250px]">
-              <p className="text-3xl mb-1 text-slate-800" style={{ fontFamily: "'Great Vibes', cursive" }}>Rahul Yadav</p>
+              <p className="text-3xl mb-1 text-slate-800" style={{ fontFamily: "'Great Vibes', cursive" }}>Rahul Kr Yadav</p>
               <div className="w-full h-[1px] bg-slate-400 mb-2" />
-              <p className="text-sm font-bold text-slate-800 uppercase tracking-widest">Rahul Yadav</p>
-              <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">CEO</p>
+              <p className="text-sm font-bold text-slate-800 uppercase tracking-widest">Rahul Kr Yadav</p>
+              <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">CEO & Founder</p>
             </div>
 
             {/* Gold Seal */}
@@ -113,11 +119,11 @@ export default function Certificate({ internName, taskTitle, completionDate }: C
                <div className="absolute top-[80%] right-[20%] w-8 h-12 bg-[#C5A021] [clip-path:polygon(0_0,100%_0,50%_100%)] rotate-[-15deg] z-[-1]" />
             </div>
 
-            <div className="text-center w-[250px]">
-              <p className="text-3xl mb-1 text-slate-800" style={{ fontFamily: "'Great Vibes', cursive" }}>Admin</p>
+            <div className="text-center w-[300px]">
+              <p className="text-3xl mb-1 text-slate-800" style={{ fontFamily: "'Great Vibes', cursive" }}>Shivshankar Jaysawal</p>
               <div className="w-full h-[1px] bg-slate-400 mb-2" />
-              <p className="text-sm font-bold text-slate-800 uppercase tracking-widest">Zaya Admin</p>
-              <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Program Manager</p>
+              <p className="text-sm font-bold text-slate-800 uppercase tracking-widest">Shivshankar Jaysawal</p>
+              <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Project Manager</p>
             </div>
           </div>
         </div>
