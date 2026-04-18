@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
-import { Clock, CheckCircle2, AlertCircle, FileUp, Trophy, Calendar, Loader2, ArrowRight, X, Award } from 'lucide-react';
+import { Clock, CheckCircle2, AlertCircle, FileUp, Trophy, Calendar, Loader2, ArrowRight, X, Award, FileText } from 'lucide-react';
 import Link from 'next/link';
 
 export default function InternDashboard() {
@@ -246,6 +246,22 @@ export default function InternDashboard() {
             <Link href="/contact" className="inline-block px-10 py-4 bg-white text-blue-600 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-blue-50 transition-all">
                Contact Mentor
             </Link>
+          </div>
+
+          <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-[3rem] p-10 text-white shadow-2xl border border-white/5 relative overflow-hidden group">
+            <div className="relative z-10">
+              <div className="h-12 w-12 bg-blue-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <FileText className="h-6 w-6 text-white" />
+              </div>
+              <h3 className="text-2xl font-black uppercase italic mb-4">Offer Letter</h3>
+              <p className="text-slate-400 mb-8 font-medium leading-relaxed">Download your official internship offer letter for your records.</p>
+              <Link href="/intern/offer-letter" className="inline-block px-10 py-4 bg-blue-600 text-white rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20">
+                 View & Download
+              </Link>
+            </div>
+            <div className="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity">
+               <FileText className="h-32 w-32 rotate-12" />
+            </div>
           </div>
           
           <div className="bg-white dark:bg-slate-900 rounded-[3rem] border border-slate-200 dark:border-slate-800 p-10">
