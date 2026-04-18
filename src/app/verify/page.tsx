@@ -10,6 +10,8 @@ export default function VerifyPage() {
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [statusMsg, setStatusMsg] = useState('Initializing Scan...');
 
   const handleVerify = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -18,6 +20,25 @@ export default function VerifyPage() {
     setIsVerifying(true);
     setError('');
     setResult(null);
+    setProgress(0);
+    setStatusMsg('Connecting to Zaya Registry...');
+
+    // Simulate progress
+    const interval = setInterval(() => {
+      setProgress((prev) => {
+        const next = prev + Math.floor(Math.random() * 15) + 5;
+        if (next >= 10) setStatusMsg('Searching Records...');
+        if (next >= 40) setStatusMsg('Verifying Digital Signature...');
+        if (next >= 70) setStatusMsg('Authenticating Credential ID...');
+        if (next >= 90) setStatusMsg('Finalizing Result...');
+        
+        if (next >= 100) {
+          clearInterval(interval);
+          return 100;
+        }
+        return next;
+      });
+    }, 150);
 
     try {
       const { data, error: fetchError } = await supabase
@@ -31,14 +52,19 @@ export default function VerifyPage() {
         .eq('review_status', 'approved')
         .single();
 
-      if (fetchError || !data) {
-        setError('Invalid Certificate ID. Please check the ID and try again.');
-      } else {
-        setResult(data);
-      }
+      // Wait for progress to reach 100 before showing result
+      setTimeout(() => {
+        if (fetchError || !data) {
+          setError('Invalid Certificate ID. Please check the ID and try again.');
+          setIsVerifying(false);
+        } else {
+          setResult(data);
+          setIsVerifying(false);
+        }
+      }, 2500);
+
     } catch (err) {
       setError('An error occurred while verifying. Please try again later.');
-    } finally {
       setIsVerifying(false);
     }
   };
@@ -93,8 +119,32 @@ export default function VerifyPage() {
           )}
         </div>
 
+        {/* Processing / Scanning UI */}
+        {isVerifying && (
+          <div className="bg-slate-900/80 backdrop-blur-2xl rounded-[3rem] border border-blue-500/20 shadow-3xl overflow-hidden animate-in fade-in zoom-in-95 duration-300">
+             <div className="p-16 flex flex-col items-center space-y-10">
+                <div className="relative">
+                   <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-2xl animate-pulse" />
+                   <ShieldCheck className="h-24 w-24 text-blue-500 relative z-10 animate-bounce" />
+                </div>
+                
+                <div className="text-center space-y-2">
+                   <h2 className="text-4xl font-black italic uppercase tracking-tight">{progress}%</h2>
+                   <p className="text-blue-400 font-black uppercase tracking-[0.3em] text-xs">{statusMsg}</p>
+                </div>
+
+                <div className="w-full max-w-md h-3 bg-white/5 rounded-full overflow-hidden border border-white/5">
+                   <div 
+                      className="h-full bg-blue-600 transition-all duration-300 ease-out shadow-[0_0_20px_rgba(37,99,235,0.5)]"
+                      style={{ width: `${progress}%` }}
+                   />
+                </div>
+             </div>
+          </div>
+        )}
+
         {/* Result Card */}
-        {result && (
+        {result && !isVerifying && (
           <div className="bg-slate-900/80 backdrop-blur-2xl rounded-[3rem] border border-blue-500/20 shadow-3xl overflow-hidden animate-in zoom-in-95 duration-500">
             <div className="p-12 space-y-10">
               <div className="flex items-center justify-between">
