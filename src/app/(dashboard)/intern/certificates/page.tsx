@@ -134,8 +134,10 @@ export default function InternCertificatesPage() {
                 <X className="h-6 w-6" />
               </button>
 
-              <div className="flex-1 w-full overflow-auto p-4 md:p-10 flex flex-col items-center justify-center">
-                <div className="transform scale-[0.45] sm:scale-[0.6] lg:scale-[0.8] transition-all origin-center my-4">
+            {/* Modal Body */}
+            <div className="flex-1 w-full overflow-y-auto p-4 md:p-8 lg:p-12 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm">
+              <div className="relative transform scale-[0.4] sm:scale-[0.6] md:scale-[0.75] lg:scale-[0.9] xl:scale-[1.0] transition-all duration-500 origin-center">
+                <div className="shadow-[0_0_100px_rgba(0,0,0,0.5)] rounded-sm overflow-hidden">
                   <Certificate 
                     internName={selectedCert.cert_full_name || "Intern Name"} 
                     taskTitle={selectedCert.tasks?.title || "Project Title"} 
@@ -145,6 +147,7 @@ export default function InternCertificatesPage() {
                   />
                 </div>
               </div>
+            </div>
 
               <div className="mt-4 pb-8 flex flex-col items-center space-y-2">
                  <p className="text-slate-400 font-bold uppercase tracking-widest text-sm">Official Zaya Code Hub Digital Credential</p>
