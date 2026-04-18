@@ -10,9 +10,10 @@ interface CertificateProps {
   taskTitle: string;
   completionDate: string;
   certificateId?: string;
+  hideButtons?: boolean;
 }
 
-export default function Certificate({ internName, taskTitle, completionDate, certificateId }: CertificateProps) {
+export default function Certificate({ internName, taskTitle, completionDate, certificateId, hideButtons = false }: CertificateProps) {
   const certificateRef = useRef<HTMLDivElement>(null);
 
   const downloadPDF = async () => {
@@ -42,22 +43,24 @@ export default function Certificate({ internName, taskTitle, completionDate, cer
   return (
     <div className="flex flex-col items-center gap-10 p-4">
       {/* Action Buttons */}
-      <div className="flex gap-4 no-print">
-        <button 
-          onClick={downloadPDF}
-          className="flex items-center gap-2 px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-black transition-all shadow-xl active:scale-95"
-        >
-          <Download className="h-5 w-5" />
-          Download Certificate (PDF)
-        </button>
-        <button 
-          onClick={() => window.print()}
-          className="flex items-center gap-2 px-8 py-4 bg-slate-800 hover:bg-slate-700 text-white rounded-2xl font-black transition-all shadow-xl active:scale-95"
-        >
-          <Printer className="h-5 w-5" />
-          Print
-        </button>
-      </div>
+      {!hideButtons && (
+        <div className="flex gap-4 no-print">
+          <button 
+            onClick={downloadPDF}
+            className="flex items-center gap-2 px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-black transition-all shadow-xl active:scale-95"
+          >
+            <Download className="h-5 w-5" />
+            Download Certificate (PDF)
+          </button>
+          <button 
+            onClick={() => window.print()}
+            className="flex items-center gap-2 px-8 py-4 bg-slate-800 hover:bg-slate-700 text-white rounded-2xl font-black transition-all shadow-xl active:scale-95"
+          >
+            <Printer className="h-5 w-5" />
+            Print
+          </button>
+        </div>
+      )}
 
       {/* Certificate Container */}
       <div 
