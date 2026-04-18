@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/lib/supabaseClient';
-import { Send, Loader2, User, MessageCircle, Clock, Search, ChevronRight, Plus, X } from 'lucide-react';
+import { Send, Loader2, User, MessageCircle, Clock, Search, ChevronRight, Plus, X, Paperclip, FileText, Image as ImageIcon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function AdminMessagesPage() {
@@ -15,7 +15,11 @@ export default function AdminMessagesPage() {
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
   const [showNewMessageModal, setShowNewMessageModal] = useState(false);
   const [newMessage, setNewMessage] = useState('');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [filePreview, setFilePreview] = useState<string | null>(null);
   const [isSending, setIsSending] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const fetchConversations = async () => {
@@ -59,7 +63,6 @@ export default function AdminMessagesPage() {
     setShowNewMessageModal(false);
   };
 
-  // Load messages for selected intern
   useEffect(() => {
     if (selectedIntern) {
       loadMessages(selectedIntern.intern_id);
@@ -86,17 +89,56 @@ export default function AdminMessagesPage() {
     }
   }, [messages]);
 
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      if (file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onloadend = () => setFilePreview(reader.result as string);
+        reader.readAsDataURL(file);
+      } else {
+        setFilePreview(null);
+      }
+    }
+  };
+
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newMessage.trim() || isSending || !selectedIntern) return;
+    if ((!newMessage.trim() && !selectedFile) || isSending || !selectedIntern) return;
 
     setIsSending(true);
+    let fileUrl = null;
+    let fileType = null;
+
     try {
+      if (selectedFile) {
+        setIsUploading(true);
+        const fileExt = selectedFile.name.split('.').pop();
+        const fileName = `${Math.random()}.${fileExt}`;
+        const filePath = `admin/${selectedIntern.intern_id}/${fileName}`;
+
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('messages')
+          .upload(filePath, selectedFile);
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('messages')
+          .getPublicUrl(filePath);
+        
+        fileUrl = publicUrl;
+        fileType = selectedFile.type.startsWith('image/') ? 'image' : 'pdf';
+      }
+
       const { error } = await supabase.from('intern_messages').insert({
         intern_id: selectedIntern.intern_id,
         intern_name: selectedIntern.intern_name,
         content: newMessage.trim(),
-        sender_type: 'admin'
+        sender_type: 'admin',
+        file_url: fileUrl,
+        file_type: fileType
       });
 
       if (!error) {
@@ -104,14 +146,20 @@ export default function AdminMessagesPage() {
             id: Date.now(),
             content: newMessage.trim(),
             sender_type: 'admin',
-            created_at: new Date().toISOString()
+            created_at: new Date().toISOString(),
+            file_url: fileUrl,
+            file_type: fileType
         }]);
         setNewMessage('');
+        setSelectedFile(null);
+        setFilePreview(null);
       }
     } catch (err) {
       console.error(err);
+      alert('Action failed. Ensure the storage bucket "messages" exists.');
     } finally {
       setIsSending(false);
+      setIsUploading(false);
     }
   };
 
@@ -199,6 +247,18 @@ export default function AdminMessagesPage() {
                             ? 'bg-blue-600 text-white rounded-tr-none' 
                             : 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-tl-none shadow-sm'
                         }`}>
+                          {msg.file_url && (
+                            <div className="mb-2">
+                              {msg.file_type === 'image' ? (
+                                <img src={msg.file_url} alt="Uploaded" className="max-w-full rounded-xl cursor-pointer hover:opacity-90" onClick={() => window.open(msg.file_url, '_blank')} />
+                              ) : (
+                                <a href={msg.file_url} target="_blank" rel="noreferrer" className={`flex items-center gap-2 p-3 rounded-xl transition-all ${isAdmin ? 'bg-white/10 hover:bg-white/20' : 'bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600'}`}>
+                                  <FileText className="h-5 w-5" />
+                                  <span className="underline truncate text-[10px]">View Document</span>
+                                </a>
+                              )}
+                            </div>
+                          )}
                           {msg.content}
                         </div>
                         <p className={`text-[9px] font-bold text-slate-400 mt-1 ${isAdmin ? 'text-right' : 'text-left'}`}>
@@ -213,21 +273,65 @@ export default function AdminMessagesPage() {
 
             {/* Input */}
             <div className="p-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/50">
-              <form onSubmit={handleSendMessage} className="relative">
-                <input
-                  type="text"
-                  value={newMessage}
-                  onChange={(e) => setNewMessage(e.target.value)}
-                  placeholder="Type your reply..."
-                  className="w-full pl-6 pr-16 py-4 bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-800 rounded-[2rem] text-sm font-medium focus:border-blue-600 outline-none transition-all shadow-sm text-foreground"
+              <AnimatePresence>
+                {selectedFile && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    className="mb-4 p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl flex items-center justify-between shadow-sm"
+                  >
+                    <div className="flex items-center gap-3">
+                       {filePreview ? (
+                         <img src={filePreview} className="h-10 w-10 rounded-lg object-cover" />
+                       ) : (
+                         <div className="h-10 w-10 rounded-lg bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center">
+                            <FileText className="h-5 w-5 text-blue-600" />
+                         </div>
+                       )}
+                       <div>
+                          <p className="text-[10px] font-bold text-slate-900 dark:text-white truncate max-w-[150px]">{selectedFile.name}</p>
+                       </div>
+                    </div>
+                    <button onClick={() => {setSelectedFile(null); setFilePreview(null);}} className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full">
+                       <X className="h-4 w-4 text-slate-400" />
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              <form onSubmit={handleSendMessage} className="relative flex items-center gap-2">
+                <input 
+                  type="file" 
+                  ref={fileInputRef} 
+                  onChange={handleFileSelect} 
+                  className="hidden" 
+                  accept="image/*,application/pdf"
                 />
                 <button
-                  type="submit"
-                  disabled={!newMessage.trim() || isSending}
-                  className="absolute right-2 top-2 bottom-2 px-6 bg-blue-600 text-white rounded-[1.5rem] font-black text-xs uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20 active:scale-95 disabled:opacity-50"
+                  type="button"
+                  disabled={isSending}
+                  onClick={() => fileInputRef.current?.click()}
+                  className="p-4 bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-800 rounded-[2rem] text-slate-400 hover:text-blue-600 hover:border-blue-600 transition-all active:scale-95 disabled:opacity-50"
                 >
-                  {isSending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                  <Paperclip className="h-5 w-5" />
                 </button>
+                <div className="flex-1 relative">
+                  <input
+                    type="text"
+                    value={newMessage}
+                    onChange={(e) => setNewMessage(e.target.value)}
+                    placeholder="Type your reply..."
+                    className="w-full pl-6 pr-16 py-4 bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-800 rounded-[2rem] text-sm font-medium focus:border-blue-600 outline-none transition-all shadow-sm text-foreground"
+                  />
+                  <button
+                    type="submit"
+                    disabled={(!newMessage.trim() && !selectedFile) || isSending}
+                    className="absolute right-2 top-2 bottom-2 px-6 bg-blue-600 text-white rounded-[1.5rem] font-black text-xs uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20 active:scale-95 disabled:opacity-50"
+                  >
+                    {isSending || isUploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                  </button>
+                </div>
               </form>
             </div>
           </>
