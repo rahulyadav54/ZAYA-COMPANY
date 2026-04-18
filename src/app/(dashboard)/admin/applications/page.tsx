@@ -231,6 +231,8 @@ export default function ApplicationsPage() {
             </tbody>
           </table>
         </div>
+      </div>
+
       {/* Add Application Modal */}
       <AnimatePresence>
         {showAddModal && (
