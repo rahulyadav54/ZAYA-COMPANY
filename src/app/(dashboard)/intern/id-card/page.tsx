@@ -18,9 +18,17 @@ export default function InternIDCardPage() {
     async function loadProfile() {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single();
-        if (data) {
-          setProfile({ ...data, ...user.user_metadata });
+        const { data: profileData } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+        if (profileData) {
+          // Fetch application for position
+          const { data: appData } = await supabase
+            .from('applications')
+            .select('position')
+            .eq('email', profileData.email)
+            .eq('status', 'accepted')
+            .maybeSingle();
+
+          setProfile({ ...profileData, ...user.user_metadata, position: appData?.position });
         }
       }
       setLoading(false);

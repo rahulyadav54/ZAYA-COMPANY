@@ -132,13 +132,21 @@ export default function OfferLetterPage() {
             <div className="mb-8">
               <p className="font-bold text-slate-900">To,</p>
               <p className="font-black text-xl text-blue-600 mt-1">{profile?.full_name}</p>
-              <p className="font-medium text-slate-500">{application?.position || 'Software Engineering Intern'}</p>
+              <p className="font-medium text-slate-500">
+                {application?.position 
+                  ? (application.position.toLowerCase().includes('intern') ? application.position : `${application.position} Intern`) 
+                  : 'Software Engineering Intern'}
+              </p>
             </div>
 
             <p>Dear <span className="font-bold text-slate-900">{profile?.full_name?.split(' ')[0]}</span>,</p>
             
             <p>
-              We are delighted to offer you an opportunity to join our team as an <span className="font-bold text-slate-900">{application?.position || 'Intern'}</span> at <span className="font-bold text-blue-600">ZAYA CODE HUB</span>. 
+              We are delighted to offer you an opportunity to join our team as an <span className="font-bold text-slate-900">
+                {application?.position 
+                  ? (application.position.toLowerCase().includes('intern') ? application.position : `${application.position} Intern`) 
+                  : 'Intern'}
+              </span> at <span className="font-bold text-blue-600">ZAYA CODE HUB</span>. 
               The term of your placement will be for a duration of <span className="font-bold text-slate-900">{application?.duration || '3-6'} months</span>, starting from <span className="font-bold text-slate-900">{currentDate}</span>.
             </p>
 
