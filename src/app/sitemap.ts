@@ -43,7 +43,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '/terms-of-service',
     '/cookie-policy',
     '/verify',
-    'verify-id',
+    '/verify-id',
   ].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date(),
