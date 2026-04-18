@@ -8,6 +8,7 @@ export default function InternProfilePage() {
   const [profile, setProfile] = useState<any>(null);
   const [fullName, setFullName] = useState('');
   const [isUpdating, setIsUpdating] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [updateSuccess, setUpdateSuccess] = useState(false);
 
   useEffect(() => {
@@ -23,6 +24,47 @@ export default function InternProfilePage() {
     }
     loadProfile();
   }, []);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('No user found');
+
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}-${Date.now()}.${fileExt}`;
+      const filePath = `avatars/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('resumes')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const avatarUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/resumes/${filePath}`;
+
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ avatar_url: avatarUrl })
+        .eq('id', user.id);
+
+      if (updateError) throw updateError;
+
+      // Refresh profile data
+      const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+      if (data) setProfile(data);
+      
+      setUpdateSuccess(true);
+      setTimeout(() => setUpdateSuccess(false), 3000);
+    } catch (err: any) {
+      alert(err.message);
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   const handleUpdate = async () => {
     setIsUpdating(true);
@@ -58,7 +100,7 @@ export default function InternProfilePage() {
         <h1 className="text-2xl font-bold text-foreground">My Profile</h1>
         <button 
           onClick={handleUpdate}
-          disabled={isUpdating}
+          disabled={isUpdating || isUploading}
           className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl transition-all font-bold shadow-lg shadow-blue-600/20 disabled:bg-blue-400 active:scale-95"
         >
           {isUpdating ? (
@@ -80,16 +122,33 @@ export default function InternProfilePage() {
       <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xl">
         <div className="p-10 flex flex-col sm:flex-row items-center gap-8 border-b border-slate-100 dark:border-slate-800">
           <div className="relative group">
-            <div className="h-32 w-32 rounded-[2rem] bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white font-black text-4xl shadow-xl shadow-blue-600/20 border-4 border-white dark:border-slate-800">
-              {profile?.full_name?.charAt(0) || 'U'}
+            <div className="h-40 w-40 rounded-[2.5rem] bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white font-black text-5xl shadow-xl shadow-blue-600/20 border-4 border-white dark:border-slate-800 overflow-hidden">
+              {profile?.avatar_url ? (
+                <img src={profile.avatar_url} alt={profile.full_name} className="w-full h-full object-cover" />
+              ) : (
+                profile?.full_name?.charAt(0) || 'U'
+              )}
+              {isUploading && (
+                <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-8 w-8 border-2 border-white border-t-transparent" />
+                </div>
+              )}
             </div>
-            <button className="absolute -bottom-2 -right-2 p-3 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-xl hover:text-blue-600 transition-all active:scale-90">
+            <label className="absolute -bottom-2 -right-2 p-3 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-xl hover:text-blue-600 transition-all active:scale-90 cursor-pointer">
               <Camera className="h-5 w-5" />
-            </button>
+              <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} disabled={isUploading} />
+            </label>
           </div>
-          <div className="text-center sm:text-left space-y-1">
-            <h2 className="text-3xl font-black text-slate-900 dark:text-white">{profile?.full_name || 'Loading...'}</h2>
-            <p className="text-blue-600 font-bold uppercase tracking-widest text-xs">{profile?.role || 'Intern'}</p>
+          <div className="text-center sm:text-left space-y-2">
+            <h2 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">{profile?.full_name || 'Loading...'}</h2>
+            <div className="flex flex-wrap justify-center sm:justify-start gap-2">
+              <span className="px-4 py-1.5 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-[10px] font-black uppercase tracking-widest rounded-full border border-blue-100 dark:border-blue-800/50">
+                Active Intern
+              </span>
+              <span className="px-4 py-1.5 bg-slate-50 dark:bg-slate-800/50 text-slate-500 text-[10px] font-black uppercase tracking-widest rounded-full border border-slate-100 dark:border-slate-800">
+                {profile?.role || 'Intern'}
+              </span>
+            </div>
           </div>
         </div>
 

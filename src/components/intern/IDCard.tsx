@@ -1,7 +1,5 @@
-'use client';
-
 import React from 'react';
-import { ShieldCheck, MapPin, Globe, Mail, Phone, Calendar } from 'lucide-react';
+import { ShieldCheck, Globe, Mail, Calendar, Code2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface IDCardProps {
@@ -11,6 +9,7 @@ interface IDCardProps {
     role: string;
     id: string;
     created_at: string;
+    avatar_url?: string;
   };
 }
 
@@ -21,95 +20,107 @@ export default function IDCard({ profile }: IDCardProps) {
 
   return (
     <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="relative w-[380px] h-[580px] mx-auto group perspective-1000"
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      className="relative w-[400px] h-[620px] mx-auto group"
     >
       {/* Front of ID Card */}
-      <div className="relative w-full h-full bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-800 flex flex-col transition-all duration-500 group-hover:shadow-blue-500/10">
+      <div className="relative w-full h-full bg-white dark:bg-slate-900 rounded-[3rem] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.2)] dark:shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6)] overflow-hidden border border-slate-200 dark:border-slate-800 flex flex-col transition-all duration-500">
         
         {/* Header Branding */}
-        <div className="bg-blue-600 h-32 relative flex items-center justify-center overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-10 -mt-10 blur-2xl" />
-          <div className="absolute bottom-0 left-0 w-24 h-24 bg-black/10 rounded-full -ml-10 -mb-10 blur-xl" />
+        <div className="bg-blue-600 h-48 relative flex flex-col items-center pt-10 overflow-hidden shrink-0">
+          {/* Decorative Elements */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32 blur-3xl animate-pulse" />
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-black/10 rounded-full -ml-24 -mb-24 blur-2xl" />
           
-          <div className="z-10 text-center">
-            <h2 className="text-white text-2xl font-black tracking-tighter italic">ZAYA CODE HUB</h2>
-            <p className="text-blue-100 text-[10px] font-bold uppercase tracking-[0.3em] opacity-80">Official Intern Identity</p>
+          <div className="z-10 flex flex-col items-center space-y-2">
+            <div className="flex items-center gap-3">
+               <div className="p-2 bg-white rounded-xl shadow-lg shadow-blue-900/20">
+                  <Code2 className="h-6 w-6 text-blue-600" />
+               </div>
+               <h2 className="text-white text-2xl font-black tracking-tighter italic">ZAYA CODE HUB</h2>
+            </div>
+            <div className="h-px w-32 bg-gradient-to-r from-transparent via-white/30 to-transparent" />
+            <p className="text-blue-100 text-[10px] font-black uppercase tracking-[0.4em] opacity-90">Official Internship Identity</p>
           </div>
         </div>
 
-        {/* Profile Section */}
-        <div className="px-8 -mt-12 z-20 flex flex-col items-center">
-          <div className="w-32 h-32 rounded-3xl bg-white dark:bg-slate-800 p-1.5 shadow-xl">
-             <div className="w-full h-full rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-800 flex items-center justify-center text-slate-400 dark:text-slate-500 overflow-hidden relative group-hover:scale-[1.02] transition-transform">
-                <span className="text-4xl font-black text-blue-600">{profile.full_name?.charAt(0) || 'U'}</span>
+        {/* Profile Image Section */}
+        <div className="px-8 -mt-20 z-20 flex flex-col items-center">
+          <div className="w-40 h-40 rounded-[2.5rem] bg-white dark:bg-slate-800 p-2 shadow-2xl">
+             <div className="w-full h-full rounded-[2rem] bg-slate-50 dark:bg-slate-950 flex items-center justify-center text-slate-400 dark:text-slate-500 overflow-hidden relative border-2 border-slate-100 dark:border-slate-800">
+                {profile.avatar_url ? (
+                  <img src={profile.avatar_url} alt={profile.full_name} className="w-full h-full object-cover" />
+                ) : (
+                  <span className="text-6xl font-black text-blue-600">{profile.full_name?.charAt(0) || 'U'}</span>
+                )}
                 <div className="absolute inset-0 bg-blue-600/5 opacity-0 group-hover:opacity-100 transition-opacity" />
              </div>
           </div>
           
-          <div className="mt-6 text-center space-y-1">
-            <h3 className="text-2xl font-black text-slate-900 dark:text-white leading-tight uppercase tracking-tight">{profile.full_name || 'Loading...'}</h3>
-            <p className="text-blue-600 font-black text-xs uppercase tracking-widest bg-blue-50 dark:bg-blue-900/20 px-4 py-1.5 rounded-full inline-block">
-              Software Intern
-            </p>
+          <div className="mt-8 text-center space-y-2">
+            <h3 className="text-2xl font-black text-slate-900 dark:text-white leading-tight uppercase tracking-tight px-4">{profile.full_name || 'Loading...'}</h3>
+            <div className="inline-flex items-center gap-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/50 px-5 py-2 rounded-2xl">
+              <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+              <p className="text-blue-600 dark:text-blue-400 font-black text-[10px] uppercase tracking-widest">
+                Software Development Intern
+              </p>
+            </div>
           </div>
         </div>
 
         {/* Details Section */}
-        <div className="mt-8 px-10 space-y-5 flex-1">
-          <div className="space-y-1">
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Intern ID Number</p>
-            <p className="text-sm font-bold text-slate-800 dark:text-slate-200">{internId}</p>
+        <div className="mt-10 px-10 space-y-6 flex-1">
+          <div className="p-4 bg-slate-50 dark:bg-slate-800/30 rounded-2xl border border-slate-100 dark:border-slate-800">
+            <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1">Intern ID Number</p>
+            <p className="text-sm font-black text-slate-800 dark:text-slate-200 font-mono tracking-tighter">{internId}</p>
           </div>
 
-          <div className="grid grid-cols-2 gap-6">
-            <div className="space-y-1">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Valid From</p>
-              <div className="flex items-center gap-2 text-xs font-bold text-slate-800 dark:text-slate-200">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1 pl-2">
+              <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">Valid From</p>
+              <div className="flex items-center gap-2 text-xs font-black text-slate-800 dark:text-slate-200">
                 <Calendar className="h-3 w-3 text-blue-500" />
                 {validFrom}
               </div>
             </div>
-            <div className="space-y-1">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Expires On</p>
-              <div className="flex items-center gap-2 text-xs font-bold text-slate-800 dark:text-slate-200">
-                <Calendar className="h-3 w-3 text-red-500" />
+            <div className="space-y-1 border-l border-slate-100 dark:border-slate-800 pl-4">
+              <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">Expires On</p>
+              <div className="flex items-center gap-2 text-xs font-black text-slate-800 dark:text-slate-200">
+                <Calendar className="h-3 w-3 text-orange-500" />
                 {validTo}
               </div>
             </div>
           </div>
 
-          <div className="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-3">
-             <div className="flex items-center gap-3 text-xs font-medium text-slate-500 dark:text-slate-400">
-                <Mail className="h-3.5 w-3.5 text-slate-400" />
+          <div className="pt-4 space-y-3">
+             <div className="flex items-center gap-3 text-xs font-bold text-slate-500 dark:text-slate-400">
+                <Mail className="h-4 w-4 text-slate-300 dark:text-slate-600" />
                 {profile.email}
              </div>
-             <div className="flex items-center gap-3 text-xs font-medium text-slate-500 dark:text-slate-400">
-                <Globe className="h-3.5 w-3.5 text-slate-400" />
-                zayacodehub.com
+             <div className="flex items-center gap-3 text-xs font-bold text-slate-500 dark:text-slate-400">
+                <Globe className="h-4 w-4 text-slate-300 dark:text-slate-600" />
+                zayacodehub.in
              </div>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="p-8 bg-slate-50 dark:bg-slate-800/50 flex items-center justify-between border-t border-slate-100 dark:border-slate-800">
+        <div className="p-8 mt-auto flex items-center justify-between border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/50">
           <div className="flex items-center gap-2">
-            <ShieldCheck className="h-5 w-5 text-green-500" />
-            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Verified Intern</span>
+            <div className="bg-green-500/10 p-1 rounded-full">
+              <ShieldCheck className="h-5 w-5 text-green-500" />
+            </div>
+            <span className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">Verified Identity</span>
           </div>
-          <div className="w-12 h-12 bg-white dark:bg-slate-900 p-1.5 rounded-lg border border-slate-200 dark:border-slate-800">
-             {/* Simple visual placeholder for QR */}
-             <div className="w-full h-full bg-slate-900 dark:bg-slate-100 rounded-[2px]" />
+          <div className="w-14 h-14 bg-white dark:bg-slate-900 p-2 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+             <div className="w-full h-full bg-slate-900 dark:bg-slate-100 rounded-md opacity-20" />
           </div>
         </div>
 
         {/* Top Accent Strip */}
-        <div className="absolute top-0 left-0 right-0 h-1.5 bg-yellow-400" />
+        <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-blue-400 via-blue-600 to-blue-800" />
       </div>
-      
-      {/* Decorative Shadows */}
-      <div className="absolute -inset-4 bg-blue-500/5 blur-3xl -z-10 group-hover:bg-blue-500/10 transition-all duration-500" />
     </motion.div>
   );
 }
