@@ -165,9 +165,9 @@ export default function Certificate({
 
           {/* Validation Footer */}
           {certificateId && (
-            <div className="absolute bottom-[48px] left-32 right-32 flex justify-between items-center text-[10px] font-black uppercase tracking-[2px] text-slate-500 border-t-[1px] border-slate-300 pt-3 z-40 bg-[#fdfcfbf0]/80 px-4 rounded-t-lg backdrop-blur-sm">
+            <div className="absolute bottom-[48px] left-[320px] right-[320px] flex justify-between items-center text-[10px] font-black uppercase tracking-[2px] text-slate-500 pt-3 z-40">
                <p>Credential ID: <span className="text-[#002855] font-black text-[11px]">{certificateId}</span></p>
-               <p>Verify Authenticity: <span className="text-blue-600 font-black lowercase tracking-normal">{typeof window !== 'undefined' ? window.location.hostname : 'zayacodehub.in'}/verify</span></p>
+               <p>Verify: <span className="text-blue-600 font-black lowercase tracking-normal">{typeof window !== 'undefined' ? window.location.hostname : 'zayacodehub.in'}/verify</span></p>
             </div>
           )}
         </div>
