@@ -2,11 +2,23 @@
 
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
-import { FileText, Search, MoreVertical, Loader2, Download, CheckCircle, XCircle } from 'lucide-react';
+import { FileText, Search, MoreVertical, Loader2, Download, CheckCircle, XCircle, Plus, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function ApplicationsPage() {
   const [applications, setApplications] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    full_name: '',
+    email: '',
+    phone: '',
+    position: '',
+    portfolio_url: '',
+    resume_url: '',
+    cover_letter: ''
+  });
 
   const fetchApplications = async () => {
     setIsLoading(true);
@@ -21,6 +33,37 @@ export default function ApplicationsPage() {
     setIsLoading(false);
   };
 
+  const handleAddApplication = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    const { error } = await supabase
+      .from('applications')
+      .insert([
+        { 
+          ...formData, 
+          status: 'pending',
+          applied_at: new Date().toISOString()
+        }
+      ]);
+    
+    if (error) {
+      alert('Error adding application: ' + error.message);
+    } else {
+      setShowAddModal(false);
+      setFormData({
+        full_name: '',
+        email: '',
+        phone: '',
+        position: '',
+        portfolio_url: '',
+        resume_url: '',
+        cover_letter: ''
+      });
+      fetchApplications();
+    }
+    setIsSubmitting(false);
+  };
+
   useEffect(() => {
     fetchApplications();
   }, []);
@@ -32,7 +75,6 @@ export default function ApplicationsPage() {
       .eq('id', id);
     
     if (!error) {
-      // If status changed to accepted or rejected, send the email
       if ((newStatus === 'accepted' || newStatus === 'rejected') && appData) {
         try {
           await fetch('/api/send-acceptance', {
@@ -64,8 +106,22 @@ export default function ApplicationsPage() {
           <input 
             type="text" 
             placeholder="Search applicants..." 
-            className="pl-10 pr-4 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600/50 w-full sm:w-64 text-foreground"
-          />
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <input 
+              type="text" 
+              placeholder="Search applicants..." 
+              className="pl-10 pr-4 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600/50 w-full sm:w-64 text-foreground"
+            />
+          </div>
+          <button 
+            onClick={() => setShowAddModal(true)}
+            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-sm font-bold transition-colors"
+          >
+            <Plus className="h-4 w-4" />
+            Add Application
+          </button>
         </div>
       </div>
 
