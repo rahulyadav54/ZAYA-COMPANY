@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
-import { Clock, CheckCircle2, AlertCircle, FileUp, Trophy, Calendar, Loader2 } from 'lucide-react';
+import { Clock, CheckCircle2, AlertCircle, FileUp, Trophy, Calendar, Loader2, ArrowRight, X } from 'lucide-react';
 
 export default function InternDashboard() {
   const [profile, setProfile] = useState<any>(null);
@@ -97,22 +97,93 @@ export default function InternDashboard() {
               <div className="p-6 text-center text-slate-500">No tasks assigned yet.</div>
             ) : (
               tasks.map((task) => (
-                <div key={task.id} className="p-6 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors flex items-center justify-between">
-                  <div className="flex items-start space-x-4">
-                    <div className={`mt-1 h-2 w-2 rounded-full ${task.status === 'completed' ? 'bg-green-500' : 'bg-orange-500'}`} />
-                    <div>
-                      <h4 className="font-bold text-foreground">{task.title}</h4>
-                      <p className="text-sm text-slate-500 mt-1">{task.description}</p>
-                      <div className="flex items-center text-xs text-foreground mt-2">
-                        <Calendar className="h-3 w-3 mr-1" />
-                        Assigned: {new Date(task.created_at).toLocaleDateString()}
+                <div key={task.id} className="group p-8 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all duration-300 border-b border-slate-100 dark:border-slate-800 last:border-0">
+                  <div className="flex flex-col gap-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className={`h-2.5 w-2.5 rounded-full ${task.status === 'completed' ? 'bg-green-500' : 'bg-orange-500 shadow-[0_0_10px_rgba(249,115,22,0.4)]'}`} />
+                        <h4 className="text-lg font-black text-white tracking-tight leading-tight">{task.title}</h4>
+                      </div>
+                      <div className={`px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest ${
+                        task.status === 'completed' ? 'bg-green-500/10 text-green-500 border border-green-500/20' : 'bg-orange-500/10 text-orange-500 border border-orange-500/20'
+                      }`}>
+                        {task.status}
                       </div>
                     </div>
+
+                    <div className="relative">
+                      <p className="text-sm text-slate-400 leading-relaxed line-clamp-3 whitespace-pre-wrap font-medium italic">
+                        {task.description}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center justify-between pt-2">
+                      <div className="flex items-center gap-4">
+                        <div className="flex items-center text-[11px] font-bold text-slate-500 uppercase tracking-wider bg-white/5 px-3 py-1 rounded-lg">
+                          <Calendar className="h-3.5 w-3.5 mr-2 text-blue-500" />
+                          Assigned: {new Date(task.created_at).toLocaleDateString()}
+                        </div>
+                      </div>
+                      
+                      <button 
+                        onClick={() => {
+                          const modal = document.getElementById(`modal-${task.id}`);
+                          if (modal) modal.style.display = 'flex';
+                        }}
+                        className="text-xs font-black text-blue-500 hover:text-blue-400 uppercase tracking-widest flex items-center gap-2 group/btn"
+                      >
+                        Read Full Scope
+                        <ArrowRight className="h-3 w-3 group-hover/btn:translate-x-1 transition-transform" />
+                      </button>
+                    </div>
                   </div>
-                  <div className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                    task.status === 'completed' ? 'bg-green-100 text-green-600' : 'bg-orange-100 text-orange-600'
-                  }`}>
-                    {task.status}
+
+                  {/* Enhanced Modal for Task Details */}
+                  <div 
+                    id={`modal-${task.id}`} 
+                    className="fixed inset-0 bg-black/80 backdrop-blur-md z-[100] hidden items-center justify-center p-6 animate-in fade-in duration-300"
+                    onClick={(e) => {
+                      if (e.target === e.currentTarget) e.currentTarget.style.display = 'none';
+                    }}
+                  >
+                    <div className="bg-slate-900 border border-white/10 w-full max-w-2xl rounded-[2.5rem] shadow-2xl overflow-hidden scale-in-center">
+                      <div className="p-10 space-y-8">
+                        <div className="flex justify-between items-start">
+                          <div className="space-y-2">
+                            <span className="text-[10px] font-black text-blue-500 uppercase tracking-[0.2em]">Project Task Details</span>
+                            <h2 className="text-3xl font-black text-white leading-tight">{task.title}</h2>
+                          </div>
+                          <button 
+                            onClick={() => {
+                              const modal = document.getElementById(`modal-${task.id}`);
+                              if (modal) modal.style.display = 'none';
+                            }}
+                            className="p-3 bg-white/5 hover:bg-white/10 rounded-full text-slate-400 hover:text-white transition-colors"
+                          >
+                            <X className="h-6 w-6" />
+                          </button>
+                        </div>
+
+                        <div className="bg-black/40 rounded-3xl p-8 max-h-[50vh] overflow-y-auto custom-scrollbar border border-white/5">
+                          <div className="text-slate-300 text-base leading-relaxed whitespace-pre-wrap font-medium">
+                            {task.description}
+                          </div>
+                        </div>
+
+                        <div className="flex items-center justify-between pt-4 border-t border-white/5">
+                          <div className="flex items-center gap-3">
+                            <Calendar className="h-5 w-5 text-blue-500" />
+                            <span className="text-sm font-bold text-slate-400">Published on {new Date(task.created_at).toLocaleDateString()}</span>
+                          </div>
+                          <button 
+                            onClick={() => window.location.href='/intern/submit'}
+                            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-2xl font-black text-sm tracking-widest uppercase transition-all shadow-xl shadow-blue-600/20 active:scale-95"
+                          >
+                            Proceed to Submit
+                          </button>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               ))
