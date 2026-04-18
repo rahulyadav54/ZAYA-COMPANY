@@ -17,6 +17,25 @@ function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
+  // Auto-redirect if already logged in
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', session.user.id)
+          .maybeSingle();
+        
+        const nextPath = searchParams.get('next');
+        const targetPath = nextPath || (profile?.role === 'admin' ? '/admin' : '/intern');
+        window.location.href = targetPath;
+      }
+    };
+    checkUser();
+  }, [searchParams]);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
