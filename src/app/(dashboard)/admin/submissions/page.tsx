@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
-import { Loader2, CheckCircle, XCircle, Search, FileText, Download, Code } from 'lucide-react';
+import { Loader2, CheckCircle, XCircle, Search, FileText, Download, Code, CreditCard, ExternalLink, Eye } from 'lucide-react';
 
 export default function AdminSubmissionsPage() {
   const [submissions, setSubmissions] = useState<any[]>([]);
@@ -11,7 +11,6 @@ export default function AdminSubmissionsPage() {
   useEffect(() => {
     async function fetchSubmissions() {
       setIsLoading(true);
-      // Fetch submissions and join with profiles and tasks to get names/titles
       const { data, error } = await supabase
         .from('submissions')
         .select(`
@@ -39,6 +38,21 @@ export default function AdminSubmissionsPage() {
       alert(`Failed to update status: ${error.message}`);
     } else {
       setSubmissions(submissions.map(s => s.id === id ? { ...s, review_status: status } : s));
+    }
+  };
+
+  const approvePayment = async (id: string) => {
+    if (!confirm('Are you sure you want to approve this payment?')) return;
+
+    const { error } = await supabase
+      .from('submissions')
+      .update({ payment_status: 'paid' })
+      .eq('id', id);
+
+    if (error) {
+      alert(`Error: ${error.message}`);
+    } else {
+      setSubmissions(submissions.map(s => s.id === id ? { ...s, payment_status: 'paid' } : s));
     }
   };
 
@@ -133,10 +147,33 @@ export default function AdminSubmissionsPage() {
                         {sub.payment_status === 'paid' ? (
                           <div className="flex flex-col">
                             <span className="text-xs font-black text-green-600 bg-green-500/10 px-2 py-0.5 rounded-md w-fit">PAID</span>
-                            <span className="text-[10px] text-slate-400 font-mono mt-1">{sub.payment_id}</span>
+                          </div>
+                        ) : sub.payment_status === 'pending_verification' ? (
+                          <div className="flex flex-col gap-2">
+                            <span className="text-xs font-black text-blue-600 bg-blue-500/10 px-2 py-0.5 rounded-md w-fit flex items-center gap-1">
+                              <Loader2 className="h-3 w-3 animate-spin" /> PENDING
+                            </span>
+                            {sub.payment_proof_url && (
+                              <div className="flex gap-2">
+                                <a 
+                                  href={sub.payment_proof_url} 
+                                  target="_blank" 
+                                  rel="noreferrer"
+                                  className="text-[10px] text-blue-500 hover:underline flex items-center gap-1"
+                                >
+                                  <Eye className="h-3 w-3" /> View Proof
+                                </a>
+                                <button 
+                                  onClick={() => approvePayment(sub.id)}
+                                  className="text-[10px] text-green-600 hover:underline font-bold"
+                                >
+                                  Verify
+                                </button>
+                              </div>
+                            )}
                           </div>
                         ) : (
-                          <span className="text-xs font-bold text-slate-400 italic">Unpaid / N/A</span>
+                          <span className="text-xs font-bold text-slate-400 italic">UNPAID</span>
                         )}
                       </td>
                       <td className="px-6 py-4">
@@ -169,7 +206,7 @@ export default function AdminSubmissionsPage() {
                       </td>
                     </tr>
                     <tr id={`sub-details-${sub.id}`} className="hidden bg-slate-50 dark:bg-slate-900/50 border-t border-slate-100 dark:border-slate-800">
-                      <td colSpan={5} className="px-6 py-6">
+                      <td colSpan={6} className="px-6 py-6">
                         <div className="max-w-3xl space-y-4">
                           <h4 className="text-sm font-bold text-foreground border-b border-slate-200 dark:border-slate-700 pb-2">Submission Details</h4>
                           
@@ -187,6 +224,22 @@ export default function AdminSubmissionsPage() {
                               <span className="font-semibold text-slate-500">Attachment:</span>{' '}
                               <a href={sub.file_url} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">Download Attached File</a>
                             </p>
+                          )}
+
+                          {sub.payment_proof_url && (
+                            <div className="p-4 bg-blue-500/5 rounded-2xl border border-blue-500/10">
+                              <p className="text-xs font-bold text-blue-500 uppercase tracking-widest mb-2 flex items-center gap-2">
+                                <CreditCard className="h-3 w-3" /> Payment Proof Screenshot
+                              </p>
+                              <a href={sub.payment_proof_url} target="_blank" rel="noreferrer" className="relative block group">
+                                <div className="aspect-video w-64 bg-slate-200 dark:bg-slate-800 rounded-xl overflow-hidden border border-slate-300 dark:border-slate-700">
+                                   <img src={sub.payment_proof_url} alt="Payment Proof" className="w-full h-full object-cover" />
+                                   <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                      <ExternalLink className="text-white h-6 w-6" />
+                                   </div>
+                                </div>
+                              </a>
+                            </div>
                           )}
 
                           <div>
@@ -214,3 +267,4 @@ export default function AdminSubmissionsPage() {
     </div>
   );
 }
+

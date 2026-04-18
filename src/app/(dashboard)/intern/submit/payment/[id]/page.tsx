@@ -1,31 +1,32 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { CreditCard, Loader2, CheckCircle2, ShieldCheck, AlertCircle } from 'lucide-react';
+import { CreditCard, Loader2, CheckCircle2, ShieldCheck, AlertCircle, QrCode, Upload, Image as ImageIcon, Copy, Check } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
-
-declare global {
-  interface Window {
-    Razorpay: any;
-  }
-}
+import Image from 'next/image';
 
 export default function PaymentPage() {
   const { id } = useParams();
   const router = useRouter();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  
   const [submission, setSubmission] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [screenshot, setScreenshot] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  const UPI_ID = "zayacodehub@okhdfcbank";
+  const ACCOUNT_NAME = "ZAYA CODE HUB";
+
+  // Dynamic QR Code generation for UPI
+  const upiUrl = `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(ACCOUNT_NAME)}&am=125&cu=INR`;
+  const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(upiUrl)}`;
 
   useEffect(() => {
-    // Load Razorpay Script
-    const script = document.createElement('script');
-    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-    script.async = true;
-    document.body.appendChild(script);
-
     async function fetchSubmission() {
       const { data, error } = await supabase
         .from('submissions')
@@ -46,113 +47,70 @@ export default function PaymentPage() {
     }
 
     fetchSubmission();
-
-    return () => {
-      document.body.removeChild(script);
-    };
   }, [id]);
 
-  const handlePayment = async () => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setScreenshot(file);
+      setPreviewUrl(URL.createObjectURL(file));
+    }
+  };
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(UPI_ID);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleSubmitPayment = async () => {
+    if (!screenshot) {
+      alert('Please upload a payment screenshot first.');
+      return;
+    }
+
     setIsProcessing(true);
 
     try {
-      // 1. Create Razorpay Order
-      const orderResponse = await fetch('/api/razorpay/order', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount: 125 }),
-      });
-      const order = await orderResponse.json();
+      // 1. Upload Screenshot to Supabase Storage
+      const fileExt = screenshot.name.split('.').pop();
+      const fileName = `${id}-${Math.random()}.${fileExt}`;
+      const filePath = `payment_proofs/${fileName}`;
 
-      if (order.error) throw new Error(order.error);
+      const { error: uploadError } = await supabase.storage
+        .from('submissions')
+        .upload(filePath, screenshot);
 
-      // 2. Open Razorpay Checkout
-      const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-        amount: order.amount,
-        currency: order.currency,
-        name: 'Zaya Company',
-        description: `Certificate Fee for ${submission.tasks?.title}`,
-        order_id: order.id,
-        handler: async function (response: any) {
-          // 3. Verify Payment
-          const verifyResponse = await fetch('/api/razorpay/verify', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              razorpay_order_id: response.razorpay_order_id,
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_signature: response.razorpay_signature,
-            }),
-          });
+      if (uploadError) throw uploadError;
 
-          const verifyData = await verifyResponse.json();
+      const { data: { publicUrl } } = supabase.storage
+        .from('submissions')
+        .getPublicUrl(filePath);
 
-          if (verifyData.success) {
-            await finalizePayment(response.razorpay_payment_id);
-          } else {
-            alert('Payment verification failed.');
-            setIsProcessing(false);
-          }
-        },
-        prefill: {
-          name: submission.profiles?.full_name || '',
-          email: submission.profiles?.email || '',
-        },
-        theme: { color: '#2563eb' },
-        modal: {
-          ondismiss: function() { setIsProcessing(false); }
-        }
-      };
+      // 2. Update status in Supabase
+      const { error: updateError } = await supabase
+        .from('submissions')
+        .update({ 
+          payment_status: 'pending_verification', 
+          payment_id: `MANUAL-${Date.now()}`,
+          payment_proof_url: publicUrl
+        })
+        .eq('id', id);
 
-      const rzp = new window.Razorpay(options);
-      rzp.open();
+      if (updateError) throw updateError;
+
+      // 3. Update task status
+      await supabase.from('tasks').update({ status: 'submitted' }).eq('id', submission.task_id);
+
+      setIsSuccess(true);
+      setTimeout(() => {
+        router.push('/intern/submissions');
+      }, 4000);
 
     } catch (error: any) {
       alert(`Error: ${error.message}`);
       setIsProcessing(false);
     }
-  };
-
-  const finalizePayment = async (paymentId: string) => {
-    // 1. Update status in Supabase
-    const { error } = await supabase
-      .from('submissions')
-      .update({ 
-        payment_status: 'paid', 
-        payment_id: paymentId 
-      })
-      .eq('id', id);
-
-    if (error) {
-      alert('Error updating payment record. Please contact support.');
-      return;
-    }
-
-    // 2. Update task status
-    await supabase.from('tasks').update({ status: 'submitted' }).eq('id', submission.task_id);
-
-    // 3. Send confirmation email
-    try {
-      await fetch('/api/send-submission-confirmation', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: submission.profiles?.email,
-          fullName: submission.profiles?.full_name,
-          taskTitle: submission.tasks?.title,
-          paymentId: paymentId,
-          amount: 125
-        })
-      });
-    } catch (e) {
-      console.error('Email notification failed');
-    }
-
-    setIsSuccess(true);
-    setTimeout(() => {
-      router.push('/intern/submissions'); // Redirect to submissions list
-    }, 3000);
   };
 
   if (isLoading) return (
@@ -171,78 +129,154 @@ export default function PaymentPage() {
   );
 
   if (isSuccess) return (
-    <div className="max-w-xl mx-auto flex flex-col items-center justify-center min-h-[60vh] text-center space-y-6">
-      <div className="bg-green-500/10 p-6 rounded-full">
-        <CheckCircle2 className="h-20 w-20 text-green-500" />
+    <div className="max-w-xl mx-auto flex flex-col items-center justify-center min-h-[60vh] text-center space-y-6 px-6">
+      <div className="bg-blue-500/10 p-6 rounded-full">
+        <Loader2 className="h-20 w-20 text-blue-500 animate-spin" />
       </div>
-      <h1 className="text-4xl font-black text-white">Payment Successful!</h1>
-      <p className="text-slate-400 text-lg">Your project has been officially submitted. Redirecting you to your submissions...</p>
+      <h1 className="text-4xl font-black text-white">Verification Pending</h1>
+      <p className="text-slate-400 text-lg">
+        Thank you! Your payment screenshot has been uploaded. Our team will verify it within 12-24 hours and issue your certificate.
+      </p>
+      <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
+        <p className="text-sm text-slate-500">Redirecting to your dashboard...</p>
+      </div>
     </div>
   );
 
   return (
-    <div className="max-w-2xl mx-auto space-y-8 py-10">
+    <div className="max-w-4xl mx-auto space-y-8 py-10 px-6">
       <div className="text-center space-y-2">
-        <h1 className="text-4xl font-black text-white tracking-tight">Step 2: Complete Payment</h1>
-        <p className="text-slate-400 text-lg">Process the certificate and processing fee to finalize your submission.</p>
+        <h1 className="text-4xl font-black text-white tracking-tight">Step 2: Payment & Verification</h1>
+        <p className="text-slate-400 text-lg">Pay via UPI and upload the screenshot to complete your submission.</p>
       </div>
 
-      <div className="bg-slate-900/80 backdrop-blur-2xl rounded-[3rem] border border-white/10 shadow-3xl overflow-hidden">
-        <div className="p-10 space-y-8">
-          <div className="space-y-6">
-            <div className="flex items-center justify-between border-b border-white/5 pb-6">
-              <div>
-                <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Intern Name</p>
-                <p className="text-xl font-bold text-white">{submission.profiles?.full_name}</p>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Left Side: Order Summary & QR */}
+        <div className="space-y-6">
+          <div className="bg-slate-900/80 backdrop-blur-2xl rounded-[2.5rem] border border-white/10 p-8 shadow-2xl">
+            <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+              <QrCode className="text-blue-500" /> 1. Pay via UPI
+            </h3>
+            
+            <div className="flex flex-col items-center gap-6">
+              {/* Dynamic QR Code */}
+              <div className="relative p-6 bg-white rounded-[2rem] shadow-2xl">
+                <div className="w-48 h-48 relative">
+                   <img src={qrCodeUrl} alt="UPI QR Code" className="w-full h-full" />
+                </div>
+                <div className="mt-4 text-center">
+                    <p className="text-[10px] font-black text-slate-900 uppercase tracking-tighter">Scan with any UPI App</p>
+                    <div className="flex justify-center gap-2 mt-2">
+                       <div className="h-4 w-4 bg-blue-600 rounded-sm" />
+                       <div className="h-4 w-4 bg-orange-500 rounded-sm" />
+                       <div className="h-4 w-4 bg-green-500 rounded-sm" />
+                    </div>
+                </div>
               </div>
-              <div className="text-right">
-                <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Project Task</p>
-                <p className="text-xl font-bold text-white">{submission.tasks?.title}</p>
-              </div>
-            </div>
 
-            <div className="bg-black/40 rounded-3xl p-8 space-y-4">
-              <div className="flex justify-between text-slate-400">
-                <span>Certification Fee</span>
-                <span>₹100.00</span>
-              </div>
-              <div className="flex justify-between text-slate-400">
-                <span>Processing & Hosting</span>
-                <span>₹25.00</span>
-              </div>
-              <div className="pt-4 border-t border-white/10 flex justify-between items-center">
-                <span className="text-lg font-bold text-white">Total Amount</span>
-                <span className="text-3xl font-black text-blue-500">₹125.00</span>
+              <div className="w-full space-y-4">
+                <div className="p-4 bg-black/40 rounded-2xl border border-white/5 space-y-1">
+                  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Account Holder</p>
+                  <p className="text-white font-bold">{ACCOUNT_NAME}</p>
+                </div>
+
+                <div className="p-4 bg-black/40 rounded-2xl border border-white/5 flex items-center justify-between">
+                  <div>
+                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">UPI ID</p>
+                    <p className="text-white font-bold">{UPI_ID}</p>
+                  </div>
+                  <button 
+                    onClick={copyToClipboard}
+                    className="p-2 hover:bg-white/10 rounded-xl transition-colors text-blue-400"
+                  >
+                    {copied ? <Check className="h-5 w-5" /> : <Copy className="h-5 w-5" />}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
 
-          <div className="space-y-4">
+          <div className="bg-blue-600/10 border border-blue-500/20 rounded-3xl p-6">
+             <div className="flex gap-4">
+                <AlertCircle className="text-blue-500 h-6 w-6 shrink-0" />
+                <p className="text-sm text-blue-100 leading-relaxed">
+                  Make sure to pay exactly <span className="font-bold text-white">₹125.00</span>. Any other amount might delay the verification process.
+                </p>
+             </div>
+          </div>
+        </div>
+
+        {/* Right Side: Upload Proof */}
+        <div className="space-y-6">
+          <div className="bg-slate-900/80 backdrop-blur-2xl rounded-[2.5rem] border border-white/10 p-8 shadow-2xl h-full flex flex-col">
+            <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+              <ImageIcon className="text-green-500" /> 2. Upload Screenshot
+            </h3>
+
+            <div 
+              onClick={() => fileInputRef.current?.click()}
+              className={`flex-1 border-2 border-dashed rounded-[2rem] transition-all cursor-pointer flex flex-col items-center justify-center p-8 text-center gap-4 ${
+                previewUrl ? 'border-green-500/50 bg-green-500/5' : 'border-white/10 hover:border-blue-500/50 hover:bg-blue-500/5'
+              }`}
+            >
+              <input 
+                type="file" 
+                ref={fileInputRef} 
+                onChange={handleFileChange} 
+                className="hidden" 
+                accept="image/*" 
+              />
+              
+              {previewUrl ? (
+                <div className="relative w-full aspect-[3/4] rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
+                  <Image src={previewUrl} alt="Screenshot Preview" fill className="object-cover" />
+                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                    <p className="text-white font-bold">Change Image</p>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <div className="p-6 bg-white/5 rounded-full">
+                    <Upload className="h-10 w-10 text-slate-400" />
+                  </div>
+                  <div>
+                    <p className="text-lg font-bold text-white">Click to Upload</p>
+                    <p className="text-slate-500 text-sm">Upload payment success screenshot (JPG, PNG)</p>
+                  </div>
+                </>
+              )}
+            </div>
+
             <button
-              onClick={handlePayment}
-              disabled={isProcessing}
-              className="w-full py-6 bg-blue-600 hover:bg-blue-700 disabled:bg-white/10 text-white rounded-[2rem] font-black text-xl transition-all flex items-center justify-center gap-4 shadow-2xl shadow-blue-600/30 active:scale-95"
+              onClick={handleSubmitPayment}
+              disabled={isProcessing || !screenshot}
+              className="w-full mt-8 py-6 bg-blue-600 hover:bg-blue-700 disabled:bg-white/5 disabled:text-slate-500 text-white rounded-[2rem] font-black text-xl transition-all flex items-center justify-center gap-4 shadow-2xl shadow-blue-600/30 active:scale-95"
             >
               {isProcessing ? (
                 <>
                   <Loader2 className="h-6 w-6 animate-spin" />
-                  <span>Processing...</span>
+                  <span>Uploading Proof...</span>
                 </>
               ) : (
                 <>
-                  <CreditCard className="h-6 w-6" />
-                  <span>Pay Now</span>
+                  <ShieldCheck className="h-6 w-6" />
+                  <span>Submit for Verification</span>
                 </>
               )}
             </button>
-            
-            <div className="flex items-center justify-center gap-2 text-slate-500 text-sm font-medium">
-              <ShieldCheck className="h-4 w-4 text-green-500/50" />
-              <span>Secure Encrypted Payment by Razorpay</span>
-            </div>
           </div>
         </div>
+      </div>
+
+      <div className="flex items-center justify-center gap-6 text-slate-500 text-sm font-medium pt-4">
+        <div className="flex items-center gap-2">
+          <ShieldCheck className="h-4 w-4 text-green-500/50" />
+          <span>Manual Verification Secure</span>
+        </div>
+        <div className="w-1 h-1 bg-slate-700 rounded-full" />
+        <span>24/7 Support Available</span>
       </div>
     </div>
   );
 }
+
