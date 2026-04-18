@@ -135,9 +135,9 @@ export default function InternCertificatesPage() {
               </button>
 
             {/* Modal Body */}
-            <div className="flex-1 w-full overflow-y-auto p-4 md:p-8 lg:p-12 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm">
-              <div className="relative transform scale-[0.4] sm:scale-[0.6] md:scale-[0.75] lg:scale-[0.9] xl:scale-[1.0] transition-all duration-500 origin-center">
-                <div className="shadow-[0_0_100px_rgba(0,0,0,0.5)] rounded-sm overflow-hidden">
+            <div className="flex-1 w-full overflow-y-auto p-4 md:p-8 flex flex-col items-center justify-start bg-slate-950/90 backdrop-blur-md">
+              <div className="relative transform scale-[0.4] sm:scale-[0.6] md:scale-[0.75] lg:scale-[0.85] xl:scale-[1.0] transition-all duration-500 origin-top mt-4 mb-20">
+                <div className="shadow-[0_0_80px_rgba(0,0,0,0.6)] rounded-sm overflow-hidden bg-white">
                   <Certificate 
                     internName={selectedCert.cert_full_name || "Intern Name"} 
                     taskTitle={selectedCert.tasks?.title || "Project Title"} 

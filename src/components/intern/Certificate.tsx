@@ -114,51 +114,51 @@ export default function Certificate({
              <div className="w-16 h-[2px] bg-slate-200" />
           </div>
           
-          {/* THE NAME - Corrected size to fit perfectly */}
+          {/* THE NAME - Alex Brush for clean, elegant cursive */}
           <div className="mb-4 min-h-[100px] flex items-center justify-center">
-            <h2 className="text-[64px] text-[#1a365d] leading-none text-center" style={{ fontFamily: "'Great Vibes', cursive" }}>
+            <h2 className="text-[64px] text-[#1a365d] leading-none text-center" style={{ fontFamily: "'Alex Brush', cursive" }}>
               {internName}
             </h2>
           </div>
           
-          <p className="text-[17px] text-slate-600 leading-relaxed max-w-[850px] font-serif mb-16 px-10 italic">
+          <p className="text-[17px] text-slate-600 leading-relaxed max-w-[850px] font-serif px-10 italic">
             For their exceptional performance and dedication during the internship program at <span className="font-bold text-slate-900 not-italic">Zaya Code Hub</span>. They have successfully completed the project <span className="font-bold text-[#C5A021] not-italic">"{taskTitle}"</span> showcasing professional excellence from <span className="font-bold text-slate-900 not-italic">{dateRange}</span>.
           </p>
 
           {/* Signatures */}
-          <div className="w-full flex justify-between items-end mt-4 mb-12 px-10">
+          <div className="absolute bottom-[80px] w-full px-20 flex justify-between items-end">
             <div className="flex flex-col items-center w-[250px]">
-              <p className="text-3xl mb-1 text-[#1a365d]" style={{ fontFamily: "'Great Vibes', cursive" }}>Rahul Kr Yadav</p>
+              <p className="text-[32px] text-[#1a365d] leading-none mb-1" style={{ fontFamily: "'Alex Brush', cursive" }}>Rahul Kr Yadav</p>
               <div className="w-full h-[1px] bg-slate-300 mb-2" />
-              <p className="text-[11px] font-black text-slate-800 uppercase tracking-[2px]">CEO & Founder</p>
+              <p className="text-[10px] font-black text-slate-800 uppercase tracking-[2px]">CEO & Founder</p>
             </div>
 
             {/* Central Seal */}
-            <div className="relative flex flex-col items-center justify-center -mb-4">
+            <div className="relative flex flex-col items-center justify-center">
                <div className="w-28 h-28 bg-gradient-to-br from-[#C5A021] to-[#A67C00] rounded-full shadow-2xl flex items-center justify-center border-[6px] border-white relative z-10">
                   <Award className="h-14 w-14 text-white" />
                </div>
             </div>
 
             <div className="flex flex-col items-center w-[250px]">
-              <p className="text-3xl mb-1 text-[#1a365d]" style={{ fontFamily: "'Great Vibes', cursive" }}>Shivshankar Jaysawal</p>
+              <p className="text-[32px] text-[#1a365d] leading-none mb-1" style={{ fontFamily: "'Alex Brush', cursive" }}>Shivshankar Jaysawal</p>
               <div className="w-full h-[1px] bg-slate-300 mb-2" />
-              <p className="text-[11px] font-black text-slate-800 uppercase tracking-[2px]">Project Manager</p>
+              <p className="text-[10px] font-black text-slate-800 uppercase tracking-[2px]">Project Manager</p>
             </div>
           </div>
 
           {/* Footer ID */}
           {certificateId && (
-            <div className="absolute bottom-10 w-full px-40 flex justify-between items-end text-[9px] font-bold uppercase tracking-[3px] text-slate-400">
+            <div className="absolute bottom-6 w-full px-20 flex justify-between items-center text-[9px] font-bold uppercase tracking-[3px] text-slate-400">
                <p>Credential ID: <span className="text-slate-900 font-black">{certificateId}</span></p>
-               <p>Verify Authenticity: <span className="text-blue-600 font-black underline">zayacodehub.com/verify</span></p>
+               <p>Verify Authenticity: <span className="text-blue-600 font-black underline lowercase tracking-normal">zayacodehub.in/verify</span></p>
             </div>
           )}
         </div>
 
         {/* Global CSS */}
         <style jsx global>{`
-          @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,900&display=swap');
+          @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Alex+Brush&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,900&display=swap');
           @media print {
             .no-print { display: none; }
             body { margin: 0; padding: 0; }
