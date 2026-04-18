@@ -109,57 +109,57 @@ export default function InternSubmitPage() {
     <div className="max-w-[1400px] mx-auto space-y-8 pb-20">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h1 className="text-4xl font-black text-white tracking-tight italic uppercase">Project Submission</h1>
-          <p className="text-slate-400 mt-2 text-lg">Step 1: Upload your work and verify certificate details.</p>
+          <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight italic uppercase">Project Submission</h1>
+          <p className="text-slate-500 dark:text-slate-400 mt-2 text-lg">Step 1: Upload your work and verify certificate details.</p>
         </div>
         <div className="px-6 py-3 bg-blue-600/10 border border-blue-500/20 rounded-2xl flex items-center gap-3">
           <Award className="h-5 w-5 text-blue-500" />
-          <span className="text-sm font-bold text-blue-100">Earn your ZAYA CODE HUB Certification</span>
+          <span className="text-sm font-bold text-blue-600 dark:text-blue-100">Earn your ZAYA CODE HUB Certification</span>
         </div>
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-5 gap-10 items-start">
         {/* Left: Form (3 columns) */}
-        <div className="xl:col-span-3 bg-slate-900/50 backdrop-blur-xl rounded-[3rem] border border-white/10 shadow-2xl overflow-hidden">
+        <div className="xl:col-span-3 bg-white dark:bg-slate-900/50 backdrop-blur-xl rounded-[3rem] border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden">
           <form onSubmit={handleSubmit} className="p-10 space-y-8">
             
             {/* Section: Certificate Information */}
-            <div className="space-y-6 border-b border-white/5 pb-8">
-              <h3 className="text-xl font-bold text-blue-500 flex items-center gap-2">
-                <span className="bg-blue-500/10 p-2 rounded-lg">🎓</span>
+            <div className="space-y-6 border-b border-slate-100 dark:border-slate-800 pb-8">
+              <h3 className="text-xl font-black text-blue-600 flex items-center gap-2 italic uppercase tracking-tight">
+                <span className="bg-blue-600/10 p-2 rounded-lg">🎓</span>
                 Certificate Information
               </h3>
               <div className="grid md:grid-cols-1 gap-6">
                 <div className="space-y-3">
-                  <label className="text-sm font-bold text-slate-400 uppercase tracking-wider ml-1">Full Name (As on Certificate)</label>
+                  <label className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">Full Name (As on Certificate)</label>
                   <input 
                     name="certFullName"
                     type="text" 
                     required
                     placeholder="Enter your legal full name"
-                    className="w-full px-5 py-4 rounded-2xl border-2 border-white/5 bg-black/20 focus:border-blue-500 focus:ring-0 transition-all text-white font-medium"
+                    className="w-full px-5 py-4 rounded-2xl border-2 border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/50 focus:border-blue-500 focus:ring-0 transition-all text-slate-900 dark:text-white font-bold"
                   />
                 </div>
               </div>
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-3">
-                  <label className="text-sm font-bold text-slate-400 uppercase tracking-wider ml-1">College / University</label>
+                  <label className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">College / University</label>
                   <input 
                     name="certCollege"
                     type="text" 
                     required
                     placeholder="e.g. Salem Institute of Technology"
-                    className="w-full px-5 py-4 rounded-2xl border-2 border-white/5 bg-black/20 focus:border-blue-500 focus:ring-0 transition-all text-white font-medium"
+                    className="w-full px-5 py-4 rounded-2xl border-2 border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/50 focus:border-blue-500 focus:ring-0 transition-all text-slate-900 dark:text-white font-bold"
                   />
                 </div>
                 <div className="space-y-3">
-                  <label className="text-sm font-bold text-slate-400 uppercase tracking-wider ml-1">Department / Field</label>
+                  <label className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">Department / Field</label>
                   <input 
                     name="certDept"
                     type="text" 
                     required
                     placeholder="e.g. Computer Science Engineering"
-                    className="w-full px-5 py-4 rounded-2xl border-2 border-white/5 bg-black/20 focus:border-blue-500 focus:ring-0 transition-all text-white font-medium"
+                    className="w-full px-5 py-4 rounded-2xl border-2 border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/50 focus:border-blue-500 focus:ring-0 transition-all text-slate-900 dark:text-white font-bold"
                   />
                 </div>
               </div>
@@ -167,44 +167,44 @@ export default function InternSubmitPage() {
 
             {/* Section: Project Submission */}
             <div className="space-y-6">
-              <h3 className="text-xl font-bold text-blue-500 flex items-center gap-2">
-                <span className="bg-blue-500/10 p-2 rounded-lg">🚀</span>
+              <h3 className="text-xl font-black text-blue-600 flex items-center gap-2 italic uppercase tracking-tight">
+                <span className="bg-blue-600/10 p-2 rounded-lg">🚀</span>
                 Project Submission
               </h3>
               <div className="grid md:grid-cols-2 gap-8">
                 <div className="space-y-3">
-                  <label className="text-sm font-bold text-slate-400 uppercase tracking-wider ml-1">Select Assignment</label>
+                  <label className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">Select Assignment</label>
                   <div className="relative">
                     <select 
                       required 
                       name="taskId" 
-                      className="w-full px-5 py-4 rounded-2xl border-2 border-white/5 bg-black/20 focus:border-blue-500 focus:ring-0 transition-all text-white font-medium appearance-none"
+                      className="w-full px-5 py-4 rounded-2xl border-2 border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/50 focus:border-blue-500 focus:ring-0 transition-all text-slate-900 dark:text-white font-bold appearance-none"
                     >
                       <option value="">Select your task...</option>
                       {tasks.map(t => (
-                        <option key={t.id} value={t.id}>{t.title}</option>
+                        <option key={t.id} value={t.id} className="bg-white dark:bg-slate-900">{t.title}</option>
                       ))}
                     </select>
                     <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none">
-                      <div className="w-2 h-2 border-r-2 border-b-2 border-slate-500 rotate-45" />
+                      <div className="w-2 h-2 border-r-2 border-b-2 border-slate-400 rotate-45" />
                     </div>
                   </div>
                 </div>
 
                 <div className="space-y-3">
-                  <label className="text-sm font-bold text-slate-400 uppercase tracking-wider ml-1">GitHub Link</label>
+                  <label className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">GitHub Link</label>
                   <input 
                     name="githubLink"
                     type="url" 
                     required
                     placeholder="https://github.com/..."
-                    className="w-full px-5 py-4 rounded-2xl border-2 border-white/5 bg-black/20 focus:border-blue-500 focus:ring-0 transition-all text-white font-medium"
+                    className="w-full px-5 py-4 rounded-2xl border-2 border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/50 focus:border-blue-500 focus:ring-0 transition-all text-slate-900 dark:text-white font-bold"
                   />
                 </div>
               </div>
 
               <div className="space-y-3">
-                <label className="text-sm font-bold text-slate-400 uppercase tracking-wider ml-1">Project Files / Documentation</label>
+                <label className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">Project Files / Documentation</label>
                 <div className="relative group">
                   <input
                     name="file"
@@ -212,24 +212,24 @@ export default function InternSubmitPage() {
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                     onChange={(e) => setFileName(e.target.files?.[0]?.name || null)}
                   />
-                  <div className={`w-full px-6 py-12 rounded-3xl border-2 border-dashed transition-all duration-300 flex flex-col items-center justify-center ${fileName ? 'border-blue-500 bg-blue-500/5' : 'border-white/10 bg-black/10 group-hover:border-blue-500/50'}`}>
-                    <Upload className={`h-10 w-10 mb-4 ${fileName ? 'text-blue-500' : 'text-slate-500 group-hover:text-blue-500'}`} />
-                    <p className="text-lg font-bold text-white">
+                  <div className={`w-full px-6 py-12 rounded-3xl border-2 border-dashed transition-all duration-300 flex flex-col items-center justify-center ${fileName ? 'border-blue-500 bg-blue-500/5' : 'border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/50 group-hover:border-blue-500/50'}`}>
+                    <Upload className={`h-10 w-10 mb-4 ${fileName ? 'text-blue-500' : 'text-slate-400 group-hover:text-blue-500'}`} />
+                    <p className={`text-lg font-bold ${fileName ? 'text-blue-600' : 'text-slate-400 dark:text-slate-500'}`}>
                       {fileName ? fileName : 'Drop your project archive here'}
                     </p>
-                    <p className="text-sm text-slate-500 mt-2 font-medium">ZIP, PDF or Images (Max 50MB)</p>
+                    <p className="text-xs text-slate-400 mt-2 font-black uppercase tracking-widest">ZIP, PDF or Images (Max 50MB)</p>
                   </div>
                 </div>
               </div>
 
               <div className="space-y-3">
-                <label className="text-sm font-bold text-slate-400 uppercase tracking-wider ml-1">Submission Notes</label>
+                <label className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">Submission Notes</label>
                 <textarea 
                   name="message"
                   required
                   rows={4}
                   placeholder="Tell us about your implementation details..."
-                  className="w-full px-5 py-4 rounded-2xl border-2 border-white/5 bg-black/20 focus:border-blue-500 focus:ring-0 transition-all text-white font-medium resize-none"
+                  className="w-full px-5 py-4 rounded-2xl border-2 border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/50 focus:border-blue-500 focus:ring-0 transition-all text-slate-900 dark:text-white font-bold resize-none"
                 ></textarea>
               </div>
             </div>
@@ -238,7 +238,7 @@ export default function InternSubmitPage() {
               <button 
                 type="submit"
                 disabled={isSubmitting || tasks.length === 0}
-                className="group relative w-full py-5 bg-blue-600 hover:bg-blue-700 disabled:bg-white/5 text-white rounded-[1.5rem] font-black text-lg transition-all duration-300 flex items-center justify-center gap-3 shadow-xl shadow-blue-600/20 active:scale-[0.98]"
+                className="group relative w-full py-5 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-200 dark:disabled:bg-slate-800 text-white rounded-[1.5rem] font-black text-lg transition-all duration-300 flex items-center justify-center gap-3 shadow-xl shadow-blue-600/20 active:scale-[0.98]"
               >
                 {isSubmitting ? (
                   <><Loader2 className="h-6 w-6 animate-spin" /><span>Saving details...</span></>
@@ -250,16 +250,17 @@ export default function InternSubmitPage() {
           </form>
         </div>
 
+
         {/* Right: Certificate Sample (2 columns) */}
         <div className="xl:col-span-2 space-y-6 sticky top-10">
-           <div className="bg-slate-900/50 backdrop-blur-xl rounded-[3rem] border border-white/10 p-10 shadow-2xl flex flex-col items-center overflow-hidden">
+           <div className="bg-white dark:bg-slate-900/50 backdrop-blur-xl rounded-[3rem] border border-slate-200 dark:border-slate-800 p-10 shadow-2xl flex flex-col items-center overflow-hidden">
               <div className="text-center mb-10">
-                 <h2 className="text-2xl font-black text-white italic uppercase tracking-wider">Your Final Reward</h2>
-                 <p className="text-slate-400 text-sm mt-1 font-medium italic">This is exactly how your official certificate will look.</p>
+                 <h2 className="text-2xl font-black text-slate-900 dark:text-white italic uppercase tracking-wider">Your Final Reward</h2>
+                 <p className="text-slate-500 dark:text-slate-400 text-sm mt-1 font-medium italic">This is exactly how your official certificate will look.</p>
               </div>
               
               {/* Perfect Scaling Container */}
-              <div className="w-full flex justify-center items-center overflow-hidden h-[300px] md:h-[400px] xl:h-[450px] relative rounded-2xl bg-black/20 border border-white/5">
+              <div className="w-full flex justify-center items-center overflow-hidden h-[300px] md:h-[400px] xl:h-[450px] relative rounded-3xl bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800">
                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 scale-[0.22] md:scale-[0.32] lg:scale-[0.42] xl:scale-[0.48] 2xl:scale-[0.52] origin-center transition-all">
                     <Certificate 
                       internName="Intern Name Here" 
@@ -274,15 +275,15 @@ export default function InternSubmitPage() {
                  <div className="p-5 bg-blue-600/10 rounded-[2rem] border border-blue-500/20 flex items-center gap-5">
                     <div className="p-3 bg-blue-500/10 rounded-xl"><Award className="h-6 w-6 text-blue-500" /></div>
                     <div>
-                       <p className="text-sm text-white font-black uppercase tracking-wider leading-tight">Industry Recognized</p>
-                       <p className="text-xs text-slate-400 font-medium italic">Verified by Zaya Code Hub Authority</p>
+                       <p className="text-sm text-blue-600 dark:text-white font-black uppercase tracking-wider leading-tight">Industry Recognized</p>
+                       <p className="text-xs text-slate-500 dark:text-slate-400 font-medium italic">Verified by Zaya Code Hub Authority</p>
                     </div>
                  </div>
                  <div className="p-5 bg-green-500/10 rounded-[2rem] border border-green-500/20 flex items-center gap-5">
                     <div className="p-3 bg-green-500/10 rounded-xl"><ShieldCheck className="h-6 w-6 text-green-500" /></div>
                     <div>
-                       <p className="text-sm text-white font-black uppercase tracking-wider leading-tight">Verifiable Credential</p>
-                       <p className="text-xs text-slate-400 font-medium italic">Blockchain-Ready QR & ID Tracking</p>
+                       <p className="text-sm text-green-600 dark:text-white font-black uppercase tracking-wider leading-tight">Verifiable Credential</p>
+                       <p className="text-xs text-slate-500 dark:text-slate-400 font-medium italic">Blockchain-Ready QR & ID Tracking</p>
                     </div>
                  </div>
               </div>
