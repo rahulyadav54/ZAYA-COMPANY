@@ -1,15 +1,53 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { Award, Download, ExternalLink, Loader2, ShieldCheck, Search, FileCheck, X } from 'lucide-react';
 import Certificate from '@/components/intern/Certificate';
 import Link from 'next/link';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 
 export default function InternCertificatesPage() {
   const [certificates, setCertificates] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isDownloading, setIsDownloading] = useState(false);
   const [selectedCert, setSelectedCert] = useState<any>(null);
+  const certificateRef = useRef<HTMLDivElement>(null);
+
+  const handleDownloadPDF = async () => {
+    if (!certificateRef.current) return;
+    
+    setIsDownloading(true);
+    try {
+      const element = certificateRef.current;
+      const canvas = await html2canvas(element, {
+        scale: 3, // High quality
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#ffffff'
+      });
+      
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF({
+        orientation: 'landscape',
+        unit: 'mm',
+        format: 'a4'
+      });
+      
+      const imgProps = pdf.getImageProperties(imgData);
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+      
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      pdf.save(`Zaya_Certificate_${selectedCert.certificate_id}.pdf`);
+    } catch (error) {
+      console.error('PDF Generation Error:', error);
+      alert('Failed to generate PDF. Please try again.');
+    } finally {
+      setIsDownloading(false);
+    }
+  };
 
   useEffect(() => {
     async function fetchCertificates() {
@@ -125,19 +163,27 @@ export default function InternCertificatesPage() {
 
       {/* Full View Modal */}
       {selectedCert && (
-        <div className="fixed inset-0 bg-black/95 backdrop-blur-2xl z-[100] flex items-center justify-center p-6 animate-in fade-in duration-300">
-           <div className="relative w-full max-w-7xl h-full flex flex-col items-center justify-center">
-              <button 
-                onClick={() => setSelectedCert(null)}
-                className="absolute top-4 right-4 z-10 p-3 bg-white/10 text-white rounded-full hover:bg-red-500 transition-colors"
-              >
-                <X className="h-6 w-6" />
-              </button>
+        <div className="fixed inset-0 bg-black/95 backdrop-blur-3xl z-[100] flex items-center justify-center p-6 overflow-hidden">
+           <div className="relative w-full max-w-7xl h-full flex flex-col">
+              <div className="flex justify-between items-center p-4">
+                 <div className="flex items-center gap-3">
+                    <div className="p-2 bg-blue-600 rounded-lg">
+                       <Award className="h-5 w-5 text-white" />
+                    </div>
+                    <span className="text-white font-black uppercase tracking-widest text-sm">Certificate Preview</span>
+                 </div>
+                 <button 
+                  onClick={() => setSelectedCert(null)}
+                  className="p-3 bg-white/10 text-white rounded-full hover:bg-red-500 transition-colors"
+                >
+                  <X className="h-6 w-6" />
+                </button>
+              </div>
 
             {/* Modal Body */}
-            <div className="flex-1 w-full overflow-y-auto p-4 md:p-8 flex flex-col items-center justify-start bg-slate-950/90 backdrop-blur-md">
-              <div className="relative transform scale-[0.4] sm:scale-[0.6] md:scale-[0.75] lg:scale-[0.85] xl:scale-[1.0] transition-all duration-500 origin-top mt-4 mb-20">
-                <div className="shadow-[0_0_80px_rgba(0,0,0,0.6)] rounded-sm overflow-hidden bg-white">
+            <div className="flex-1 w-full overflow-y-auto p-4 md:p-8 flex flex-col items-center justify-start custom-scrollbar">
+              <div className="relative transform scale-[0.4] sm:scale-[0.55] md:scale-[0.7] lg:scale-[0.85] xl:scale-[1.0] transition-all duration-500 origin-top mt-4 mb-10">
+                <div ref={certificateRef} className="shadow-[0_0_80px_rgba(0,0,0,0.8)] rounded-sm overflow-hidden bg-white">
                   <Certificate 
                     internName={selectedCert.cert_full_name || "Intern Name"} 
                     taskTitle={selectedCert.tasks?.title || "Project Title"} 
@@ -147,12 +193,33 @@ export default function InternCertificatesPage() {
                   />
                 </div>
               </div>
-            </div>
 
-              <div className="mt-4 pb-8 flex flex-col items-center space-y-2">
-                 <p className="text-slate-400 font-bold uppercase tracking-widest text-sm">Official Zaya Code Hub Digital Credential</p>
-                 <p className="text-slate-600 text-xs">Verify this document at zayacodehub.com/verify</p>
+              {/* Download Button */}
+              <div className="w-full max-w-2xl mt-8">
+                 <button 
+                   onClick={handleDownloadPDF}
+                   disabled={isDownloading}
+                   className="w-full py-6 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-black text-xl uppercase tracking-[0.2em] transition-all shadow-2xl shadow-blue-600/40 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-4"
+                 >
+                   {isDownloading ? (
+                     <>
+                       <Loader2 className="h-6 w-6 animate-spin" />
+                       <span>Generating PDF...</span>
+                     </>
+                   ) : (
+                     <>
+                       <Download className="h-6 w-6" />
+                       <span>Download Certificate (PDF)</span>
+                     </>
+                   )}
+                 </button>
+                 
+                 <div className="mt-8 flex flex-col items-center space-y-2 opacity-50">
+                    <p className="text-white font-bold uppercase tracking-widest text-sm">Official Zaya Code Hub Digital Credential</p>
+                    <p className="text-slate-400 text-xs">Credential ID: {selectedCert.certificate_id}</p>
+                 </div>
               </div>
+            </div>
            </div>
         </div>
       )}
