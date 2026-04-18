@@ -111,11 +111,26 @@ export default function IDCard({ profile }: IDCardProps) {
             <div className="bg-green-500/10 p-1 rounded-full">
               <ShieldCheck className="h-5 w-5 text-green-500" />
             </div>
-            <span className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">Verified Identity</span>
+            <div className="flex flex-col">
+              <span className="text-[10px] font-black text-slate-800 dark:text-slate-200 uppercase tracking-[0.2em]">Verified Identity</span>
+              <span className="text-[8px] font-bold text-slate-400 uppercase tracking-[0.1em]">zayacodehub.in/verify-id</span>
+            </div>
           </div>
-          <div className="w-14 h-14 bg-white dark:bg-slate-900 p-2 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
-             <div className="w-full h-full bg-slate-900 dark:bg-slate-100 rounded-md opacity-20" />
-          </div>
+          <a 
+            href="/verify-id" 
+            target="_blank" 
+            className="w-16 h-16 bg-white dark:bg-slate-900 p-2 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm hover:scale-110 transition-transform flex flex-col items-center justify-center gap-1 group/qr"
+          >
+             {/* Realistic QR Placeholder */}
+             <div className="w-full h-full relative opacity-80 group-hover:opacity-100 transition-opacity">
+                <div className="absolute inset-0 grid grid-cols-4 grid-rows-4 gap-[2px]">
+                   {[...Array(16)].map((_, i) => (
+                      <div key={i} className={`rounded-[1px] ${Math.random() > 0.4 ? 'bg-slate-900 dark:bg-slate-100' : 'bg-transparent'}`} />
+                   ))}
+                </div>
+             </div>
+             <span className="text-[5px] font-black text-slate-400 uppercase tracking-tighter">Scan to Verify</span>
+          </a>
         </div>
 
         {/* Top Accent Strip */}
