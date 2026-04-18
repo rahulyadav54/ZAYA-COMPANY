@@ -114,9 +114,9 @@ export default function Certificate({
              <div className="w-16 h-[2px] bg-slate-200" />
           </div>
           
-          {/* THE NAME - Pinyon Script for Elegance */}
-          <div className="mb-8 min-h-[140px] flex items-center justify-center">
-            <h2 className="text-[90px] text-[#003366] leading-tight" style={{ fontFamily: "'Pinyon Script', cursive" }}>
+          {/* THE NAME - Great Vibes as requested */}
+          <div className="mb-6 min-h-[150px] flex items-center justify-center">
+            <h2 className="text-[96px] text-[#1a365d] leading-none" style={{ fontFamily: "'Great Vibes', cursive" }}>
               {internName}
             </h2>
           </div>
@@ -128,7 +128,7 @@ export default function Certificate({
           {/* Signatures */}
           <div className="w-full flex justify-between items-end mt-4 mb-12 px-10">
             <div className="flex flex-col items-center w-[250px]">
-              <p className="text-3xl mb-1 text-[#003366]" style={{ fontFamily: "'Pinyon Script', cursive" }}>Rahul Kr Yadav</p>
+              <p className="text-3xl mb-1 text-[#1a365d]" style={{ fontFamily: "'Great Vibes', cursive" }}>Rahul Kr Yadav</p>
               <div className="w-full h-[1px] bg-slate-300 mb-2" />
               <p className="text-[11px] font-black text-slate-800 uppercase tracking-[2px]">CEO & Founder</p>
             </div>
@@ -141,7 +141,7 @@ export default function Certificate({
             </div>
 
             <div className="flex flex-col items-center w-[250px]">
-              <p className="text-3xl mb-1 text-[#003366]" style={{ fontFamily: "'Pinyon Script', cursive" }}>Shivshankar Jaysawal</p>
+              <p className="text-3xl mb-1 text-[#1a365d]" style={{ fontFamily: "'Great Vibes', cursive" }}>Shivshankar Jaysawal</p>
               <div className="w-full h-[1px] bg-slate-300 mb-2" />
               <p className="text-[11px] font-black text-slate-800 uppercase tracking-[2px]">Project Manager</p>
             </div>
@@ -158,7 +158,7 @@ export default function Certificate({
 
         {/* Global CSS */}
         <style jsx global>{`
-          @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Pinyon+Script&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,900&display=swap');
+          @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,900&display=swap');
           @media print {
             .no-print { display: none; }
             body { margin: 0; padding: 0; }
