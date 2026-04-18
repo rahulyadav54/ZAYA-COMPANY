@@ -107,7 +107,7 @@ export default function ApplicationsPage() {
                         {app.position}
                       </td>
                       <td className="px-6 py-4 text-slate-500 dark:text-slate-400 text-sm">
-                        {new Date(app.applied_at).toLocaleDateString()}
+                        {new Date(app.applied_at).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}
                       </td>
                       <td className="px-6 py-4">
                         <span className={`px-3 py-1 rounded-full text-xs font-bold inline-flex items-center gap-1 ${
