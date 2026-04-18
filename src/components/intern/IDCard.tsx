@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShieldCheck, Globe, Mail, Calendar, Code2 } from 'lucide-react';
+import { Mail, Calendar, ShieldCheck, Globe } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface IDCardProps {
@@ -20,120 +20,117 @@ export default function IDCard({ profile }: IDCardProps) {
 
   return (
     <motion.div 
-      initial={{ opacity: 0, scale: 0.9 }}
+      initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="relative w-[400px] h-[620px] mx-auto group"
+      className="relative w-[420px] h-[680px] mx-auto group shadow-[0_50px_100px_-20px_rgba(0,0,0,0.3)] rounded-[3rem] overflow-hidden bg-white"
     >
-      {/* Front of ID Card */}
-      <div className="relative w-full h-full bg-white dark:bg-slate-900 rounded-[3rem] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.2)] dark:shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6)] overflow-hidden border border-slate-200 dark:border-slate-800 flex flex-col transition-all duration-500">
-        
-        {/* Header Branding */}
-        <div className="bg-blue-600 h-48 relative flex flex-col items-center pt-8 overflow-hidden shrink-0">
-          {/* Decorative Elements */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32 blur-3xl animate-pulse" />
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-black/10 rounded-full -ml-24 -mb-24 blur-2xl" />
-          
-          <div className="z-10 flex flex-col items-center space-y-2">
-            <div className="flex flex-col items-center gap-1">
-               <img src="/logo.png" alt="ZAYA Logo" className="h-20 w-auto object-contain brightness-0 invert" />
-               <h2 className="text-white text-xl font-black tracking-tighter italic mt-1">ZAYA CODE HUB</h2>
-            </div>
-            <div className="h-px w-32 bg-gradient-to-r from-transparent via-white/30 to-transparent" />
-            <p className="text-blue-100 text-[10px] font-black uppercase tracking-[0.4em] opacity-90">Official Internship Identity</p>
-          </div>
-        </div>
-
-        {/* Profile Image Section */}
-        <div className="px-8 -mt-20 z-20 flex flex-col items-center">
-          <div className="w-40 h-40 rounded-[2.5rem] bg-white dark:bg-slate-800 p-2 shadow-2xl">
-             <div className="w-full h-full rounded-[2rem] bg-slate-50 dark:bg-slate-950 flex items-center justify-center text-slate-400 dark:text-slate-500 overflow-hidden relative border-2 border-slate-100 dark:border-slate-800">
-                {profile.avatar_url ? (
-                  <img src={profile.avatar_url} alt={profile.full_name} className="w-full h-full object-cover" />
-                ) : (
-                  <span className="text-6xl font-black text-blue-600">{profile.full_name?.charAt(0) || 'U'}</span>
-                )}
-                <div className="absolute inset-0 bg-blue-600/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-             </div>
-          </div>
-          
-          <div className="mt-8 text-center space-y-2">
-            <h3 className="text-2xl font-black text-slate-900 dark:text-white leading-tight uppercase tracking-tight px-4">{profile.full_name || 'Loading...'}</h3>
-            <div className="inline-flex items-center gap-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/50 px-5 py-2 rounded-2xl">
-              <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
-              <p className="text-blue-600 dark:text-blue-400 font-black text-[10px] uppercase tracking-widest">
-                Software Development Intern
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Details Section */}
-        <div className="mt-10 px-10 space-y-6 flex-1">
-          <div className="p-4 bg-slate-50 dark:bg-slate-800/30 rounded-2xl border border-slate-100 dark:border-slate-800">
-            <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1">Intern ID Number</p>
-            <p className="text-sm font-black text-slate-800 dark:text-slate-200 font-mono tracking-tighter">{internId}</p>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1 pl-2">
-              <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">Valid From</p>
-              <div className="flex items-center gap-2 text-xs font-black text-slate-800 dark:text-slate-200">
-                <Calendar className="h-3 w-3 text-blue-500" />
-                {validFrom}
-              </div>
-            </div>
-            <div className="space-y-1 border-l border-slate-100 dark:border-slate-800 pl-4">
-              <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">Expires On</p>
-              <div className="flex items-center gap-2 text-xs font-black text-slate-800 dark:text-slate-200">
-                <Calendar className="h-3 w-3 text-orange-500" />
-                {validTo}
-              </div>
-            </div>
-          </div>
-
-          <div className="pt-4 space-y-3">
-             <div className="flex items-center gap-3 text-xs font-bold text-slate-500 dark:text-slate-400">
-                <Mail className="h-4 w-4 text-slate-300 dark:text-slate-600" />
-                {profile.email}
-             </div>
-             <div className="flex items-center gap-3 text-xs font-bold text-slate-500 dark:text-slate-400">
-                <Globe className="h-4 w-4 text-slate-300 dark:text-slate-600" />
-                zayacodehub.in
-             </div>
-          </div>
-        </div>
-
-        {/* Footer */}
-        <div className="p-8 mt-auto flex items-center justify-between border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/50">
-          <div className="flex items-center gap-2">
-            <div className="bg-green-500/10 p-1.5 rounded-full">
-              <ShieldCheck className="h-6 w-6 text-green-500" />
-            </div>
-            <div className="flex flex-col">
-              <span className="text-[10px] font-black text-slate-800 dark:text-slate-200 uppercase tracking-[0.2em]">Verified Identity</span>
-              <span className="text-[8px] font-bold text-slate-400 uppercase tracking-[0.1em]">zayacodehub.in/verify-id</span>
-            </div>
-          </div>
-          <a 
-            href="/verify-id" 
-            target="_blank" 
-            className="w-20 h-20 bg-white dark:bg-slate-100 p-2.5 rounded-2xl border-2 border-slate-200 dark:border-slate-300 shadow-xl hover:scale-110 transition-transform flex flex-col items-center justify-center gap-1 group/qr"
-          >
-             {/* Realistic QR Placeholder - Higher Contrast */}
-             <div className="w-full h-full relative group-hover:opacity-100 transition-opacity">
-                <div className="absolute inset-0 grid grid-cols-5 grid-rows-5 gap-[1.5px]">
-                   {[...Array(25)].map((_, i) => (
-                      <div key={i} className={`rounded-[1px] ${Math.random() > 0.4 ? 'bg-black' : 'bg-transparent'}`} />
-                   ))}
-                </div>
-             </div>
-             <span className="text-[6px] font-black text-black uppercase tracking-tighter mt-1">Verify ID</span>
-          </a>
-        </div>
-
-        {/* Top Accent Strip */}
-        <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-blue-400 via-blue-600 to-blue-800" />
+      {/* Lanyard Hole */}
+      <div className="absolute top-4 left-1/2 -translate-x-1/2 w-16 h-4 bg-slate-200 dark:bg-slate-800 rounded-full z-30 flex items-center justify-center">
+         <div className="w-10 h-1.5 bg-slate-400/30 rounded-full" />
       </div>
+
+      {/* Decorative Corner Accents (Top Left) */}
+      <div className="absolute top-0 left-0 w-32 h-32 z-20 overflow-hidden pointer-events-none">
+         <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-blue-900 to-transparent rotate-45 -translate-x-1/2 -translate-y-1/2" />
+         <div className="absolute top-2 left-2 w-full h-full border-t-4 border-l-4 border-yellow-500/30 rounded-tl-[3rem]" />
+      </div>
+
+      {/* Header Section */}
+      <div className="relative h-[280px] bg-[#0A192F] flex flex-col items-center pt-12 overflow-hidden">
+        {/* Background Patterns */}
+        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/10 rounded-full -mr-32 -mt-32 blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-black/20 to-transparent" />
+        
+        {/* Logo */}
+        <div className="z-10 flex flex-col items-center">
+           <img src="/logo.png" alt="ZAYA Logo" className="h-28 w-auto object-contain mb-2" />
+           <h2 className="text-white text-2xl font-black tracking-tight uppercase">ZAYA CODE HUB</h2>
+           <p className="text-blue-400 text-[10px] font-bold uppercase tracking-[0.3em] mt-1">Innovate • Build • Excel</p>
+        </div>
+
+        {/* Curved Bottom Clip */}
+        <div className="absolute bottom-0 left-0 right-0 h-16 bg-white" style={{ clipPath: 'ellipse(60% 100% at 50% 100%)' }} />
+      </div>
+
+      {/* Profile Image Section */}
+      <div className="relative -mt-20 z-20 flex flex-col items-center">
+        <div className="w-44 h-44 rounded-[2.5rem] bg-white p-2 shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-slate-100">
+           <div className="w-full h-full rounded-[2rem] bg-slate-50 flex items-center justify-center text-slate-400 overflow-hidden relative border-2 border-slate-100">
+              {profile.avatar_url ? (
+                <img src={profile.avatar_url} alt={profile.full_name} className="w-full h-full object-cover" />
+              ) : (
+                <span className="text-7xl font-black text-[#0A192F] opacity-20">{profile.full_name?.charAt(0) || 'U'}</span>
+              )}
+           </div>
+        </div>
+        
+        <div className="mt-6 text-center space-y-1">
+          <h3 className="text-2xl font-black text-slate-900 leading-tight uppercase tracking-tight">{profile.full_name || 'Loading...'}</h3>
+          <p className="text-blue-600 font-bold text-xs uppercase tracking-widest">
+            Software Development Intern
+          </p>
+        </div>
+      </div>
+
+      {/* Separator with Dot */}
+      <div className="mt-6 flex items-center justify-center gap-4 px-20">
+         <div className="h-px flex-1 bg-gradient-to-r from-transparent to-blue-200" />
+         <div className="w-2 h-2 rounded-full bg-blue-600" />
+         <div className="h-px flex-1 bg-gradient-to-l from-transparent to-blue-200" />
+      </div>
+
+      {/* Details Section */}
+      <div className="mt-8 px-12 space-y-6">
+        <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 text-center">
+          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Intern ID Number</p>
+          <p className="text-sm font-black text-slate-800 font-mono tracking-tighter">{internId}</p>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-1 text-center">
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Valid From</p>
+            <div className="flex items-center justify-center gap-2 text-xs font-black text-slate-800">
+              <Calendar className="h-3 w-3 text-blue-500" />
+              {validFrom}
+            </div>
+          </div>
+          <div className="space-y-1 text-center border-l border-slate-100">
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Expires On</p>
+            <div className="flex items-center justify-center gap-2 text-xs font-black text-slate-800">
+              <Calendar className="h-3 w-3 text-orange-500" />
+              {validTo}
+            </div>
+          </div>
+        </div>
+
+        <div className="pt-4 flex flex-col items-center space-y-3">
+           <div className="flex items-center gap-2 text-xs font-bold text-slate-500">
+              <Mail className="h-4 w-4 text-slate-300" />
+              {profile.email}
+           </div>
+        </div>
+      </div>
+
+      {/* Decorative Bottom Accents */}
+      <div className="absolute bottom-0 left-0 right-0 h-16 pointer-events-none">
+         {/* Gold/Blue corner patterns */}
+         <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-[#0A192F] to-transparent rotate-12 -translate-x-8 translate-y-8" />
+         <div className="absolute bottom-0 right-0 w-24 h-24 bg-gradient-to-tl from-[#0A192F] to-transparent -rotate-12 translate-x-8 translate-y-8" />
+         
+         <div className="absolute bottom-2 left-1/2 -translate-x-1/2">
+            <p className="text-[8px] font-black text-slate-400 uppercase tracking-[0.4em] italic">Building the Future Together</p>
+         </div>
+      </div>
+
+      {/* Verification Link Overlay (Invisible but functional) */}
+      <a 
+        href="/verify-id" 
+        target="_blank" 
+        className="absolute bottom-10 right-10 w-12 h-12 bg-white/10 opacity-0 hover:opacity-100 flex items-center justify-center rounded-xl transition-all"
+        title="Verify ID"
+      >
+         <ShieldCheck className="h-6 w-6 text-green-500" />
+      </a>
     </motion.div>
   );
 }
