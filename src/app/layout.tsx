@@ -18,8 +18,19 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ZAYA CODE HUB | Leading IT Solutions & Training",
-  description: "ZAYA CODE HUB provides top-tier software development, mobile apps, and internship programs for aspiring tech professionals.",
+  title: {
+    default: "ZAYA CODE HUB | Internships, Software Development & Training",
+    template: "%s | ZAYA CODE HUB"
+  },
+  description: "Join the best internship at Zaya Code Hub. We provide top-tier software development, mobile app development, and hands-on internship programs with verifiable certificates.",
+  keywords: ["internship at zaya code hub", "zaya code hub internship", "zaya code hub certificate verify", "software development internship", "IT training", "Zaya Code Hub"],
+  openGraph: {
+    title: "ZAYA CODE HUB | Internships & IT Solutions",
+    description: "Launch your career with an internship at Zaya Code Hub. Verifiable certificates, real-world projects, and expert mentorship.",
+    url: "https://zayacodehub.in",
+    siteName: "ZAYA CODE HUB",
+    type: "website",
+  },
   icons: {
     icon: "/favicon.png",
     shortcut: "/favicon.png",
