@@ -40,6 +40,7 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [user, setUser] = useState<any>(null);
+  const [role, setRole] = useState<string>('intern');
   const pathname = usePathname();
 
   useEffect(() => {
@@ -49,14 +50,22 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
+    const fetchUserAndRole = async (sessionUser: any) => {
+      setUser(sessionUser);
+      if (sessionUser) {
+        const { data } = await supabase.from('profiles').select('role').eq('id', sessionUser.id).maybeSingle();
+        if (data) setRole(data.role);
+      }
+    };
+
     // Check active session
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
+      fetchUserAndRole(session?.user ?? null);
     });
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
+      fetchUserAndRole(session?.user ?? null);
     });
 
     return () => subscription.unsubscribe();
@@ -103,7 +112,7 @@ export default function Navbar() {
           <ThemeToggle />
           {user ? (
             <Link
-              href="/login"
+              href={`/${role}`}
               className="flex items-center gap-2 px-5 py-2 rounded-full bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/20"
             >
               <UserIcon className="h-4 w-4" />
@@ -160,7 +169,7 @@ export default function Navbar() {
               <div className="pt-4">
                 {user ? (
                   <Link
-                    href="/login"
+                    href={`/${role}`}
                     onClick={() => setIsOpen(false)}
                     className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/20"
                   >
