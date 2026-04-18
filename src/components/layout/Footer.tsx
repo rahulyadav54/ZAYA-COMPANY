@@ -1,5 +1,8 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Code2, Globe, ExternalLink, GitFork, Mail, Phone, MapPin } from 'lucide-react';
 
 const footerLinks = {
@@ -29,6 +32,11 @@ const socialLinks = [
 ];
 
 export default function Footer() {
+  const pathname = usePathname();
+  const isDashboard = pathname?.startsWith('/admin') || pathname?.startsWith('/intern');
+
+  if (isDashboard) return null;
+
   return (
     <footer className="bg-slate-900 dark:bg-slate-950 border-t border-slate-800 pt-16 pb-8">
       <div className="container mx-auto px-6">

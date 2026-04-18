@@ -22,7 +22,6 @@ const navLinks = [
 function ThemeToggle() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
-  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => setMounted(true), []);
   if (!mounted) return <div className="w-9 h-9" />;
   return (
@@ -58,18 +57,19 @@ export default function Navbar() {
       }
     };
 
-    // Check active session
     supabase.auth.getSession().then(({ data: { session } }) => {
       fetchUserAndRole(session?.user ?? null);
     });
 
-    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       fetchUserAndRole(session?.user ?? null);
     });
 
     return () => subscription.unsubscribe();
   }, []);
+
+  const isDashboard = pathname?.startsWith('/admin') || pathname?.startsWith('/intern');
+  if (isDashboard) return null;
 
   return (
     <nav
@@ -81,7 +81,6 @@ export default function Navbar() {
       )}
     >
       <div className="container mx-auto px-6 flex justify-between items-center">
-        {/* Logo */}
         <Link href="/" className="flex items-center space-x-2">
           <Code2 className="h-8 w-8 text-blue-600" />
           <span className="text-2xl font-bold tracking-tight text-foreground">
@@ -89,7 +88,6 @@ export default function Navbar() {
           </span>
         </Link>
 
-        {/* Desktop Nav */}
         <div className="hidden md:flex items-center space-x-8">
           {navLinks.map((link) => (
             <Link
@@ -107,7 +105,6 @@ export default function Navbar() {
           ))}
         </div>
 
-        {/* Actions */}
         <div className="hidden md:flex items-center space-x-3">
           <ThemeToggle />
           {user ? (
@@ -128,20 +125,17 @@ export default function Navbar() {
           )}
         </div>
 
-        {/* Mobile Menu Button */}
         <div className="md:hidden flex items-center space-x-2">
           <ThemeToggle />
           <button
             onClick={() => setIsOpen(!isOpen)}
             className="p-2 text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors"
-            aria-label="Toggle menu"
           >
             {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
         </div>
       </div>
 
-      {/* Mobile Nav Dropdown */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
