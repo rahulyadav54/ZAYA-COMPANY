@@ -252,14 +252,14 @@ export default function InternSubmitPage() {
 
         {/* Right: Certificate Sample (2 columns) */}
         <div className="xl:col-span-2 space-y-6 sticky top-10">
-           <div className="bg-slate-900/50 backdrop-blur-xl rounded-[3rem] border border-white/10 p-8 shadow-2xl flex flex-col items-center overflow-hidden">
+           <div className="bg-slate-900/50 backdrop-blur-xl rounded-[3rem] border border-white/10 p-8 shadow-2xl flex flex-col items-center overflow-hidden min-h-[700px]">
               <div className="text-center mb-8">
                  <h2 className="text-2xl font-black text-white italic uppercase tracking-wider">Your Final Reward</h2>
-                 <p className="text-slate-400 text-sm mt-1 font-medium">This is a sample of your official ZAYA CODE HUB certificate.</p>
+                 <p className="text-slate-400 text-sm mt-1 font-medium">This is exactly how your official certificate will look.</p>
               </div>
               
-              {/* Scaled down preview */}
-              <div className="w-full flex justify-center scale-[0.3] md:scale-[0.4] xl:scale-[0.45] 2xl:scale-[0.5] origin-top h-[400px]">
+              {/* Scaled down preview - Fixed sizing */}
+              <div className="w-full flex justify-center scale-[0.35] md:scale-[0.4] lg:scale-[0.5] xl:scale-[0.55] 2xl:scale-[0.6] origin-top mb-[-250px]">
                  <Certificate 
                    internName="Intern Name Here" 
                    taskTitle="Completed Internship Project" 
@@ -267,14 +267,14 @@ export default function InternSubmitPage() {
                  />
               </div>
 
-              <div className="mt-6 w-full space-y-4">
+              <div className="w-full space-y-4 relative z-20 bg-slate-900/80 backdrop-blur-md p-4 rounded-3xl border border-white/5 mt-auto">
                  <div className="p-4 bg-white/5 rounded-2xl border border-white/5 flex items-center gap-4">
                     <div className="p-2 bg-green-500/10 rounded-lg"><CheckCircle2 className="h-4 w-4 text-green-500" /></div>
-                    <p className="text-xs text-slate-300 font-medium">Industry Recognized Certification</p>
+                    <p className="text-xs text-slate-300 font-medium italic">Industry Recognized Certification</p>
                  </div>
                  <div className="p-4 bg-white/5 rounded-2xl border border-white/5 flex items-center gap-4">
                     <div className="p-2 bg-blue-500/10 rounded-lg"><Award className="h-4 w-4 text-blue-500" /></div>
-                    <p className="text-xs text-slate-300 font-medium">Verifiable QR & ID Technology</p>
+                    <p className="text-xs text-slate-300 font-medium italic">Verifiable QR & ID Technology</p>
                  </div>
               </div>
            </div>

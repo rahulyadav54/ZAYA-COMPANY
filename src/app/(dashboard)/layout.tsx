@@ -18,7 +18,8 @@ import {
   Briefcase,
   Newspaper,
   ShieldCheck,
-  Mail
+  Mail,
+  Award
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -47,6 +48,7 @@ export default function DashboardLayout({
     : [
         { name: 'My Tasks', href: '/intern', icon: CheckSquare },
         { name: 'Submission', href: '/intern/submit', icon: FileText },
+        { name: 'My Certificates', href: '/intern/certificates', icon: Award },
         { name: 'My Profile', href: '/intern/profile', icon: User },
         { name: 'Settings', href: '/intern/settings', icon: Settings },
       ];
