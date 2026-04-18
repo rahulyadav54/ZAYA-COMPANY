@@ -29,32 +29,55 @@ export default function InternIDCardPage() {
   }, []);
 
   const handleDownloadID = async () => {
-    if (!idCardRef.current) return;
+    if (!idCardRef.current || !profile) return;
     setIsDownloading(true);
+    
     try {
+      // Small delay to ensure any layout shifts or animations are settled
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
       const element = idCardRef.current;
       const canvas = await html2canvas(element, {
-        scale: 3, // High quality
+        scale: 2, // 2x is plenty for a crisp ID card and more stable
         useCORS: true,
-        logging: false,
-        backgroundColor: '#ffffff',
+        logging: true,
+        backgroundColor: null, // Maintain transparency if possible, or null to inherit
+        scrollX: 0,
+        scrollY: -window.scrollY, // Fix for scrolled pages
+        onclone: (clonedDoc) => {
+          // Ensure the cloned element is visible and animations are disabled
+          const clonedElement = clonedDoc.getElementById('id-card-capture');
+          if (clonedElement) {
+             clonedElement.style.opacity = '1';
+             clonedElement.style.transform = 'none';
+          }
+        }
       });
       
       const imgData = canvas.toDataURL('image/png');
       const pdf = new jsPDF({
         orientation: 'portrait',
         unit: 'mm',
-        format: [canvas.width / 3.78, canvas.height / 3.78] // Matches aspect ratio
+        format: 'a4'
       });
       
+      // Calculate dimensions to fit the ID card nicely on an A4 page
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = pdf.internal.pageSize.getHeight();
+      const imgWidth = 100; // 10cm wide ID card on PDF
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
       
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-      pdf.save(`ZAYA_ID_${profile?.full_name?.replace(/\s+/g, '_')}.pdf`);
+      // Center the ID card on the page
+      const x = (pdfWidth - imgWidth) / 2;
+      const y = (pdfHeight - imgHeight) / 2;
+      
+      pdf.addImage(imgData, 'PNG', x, y, imgWidth, imgHeight);
+      pdf.save(`ZAYA_ID_${profile.full_name.replace(/\s+/g, '_')}.pdf`);
+      
+      alert('Success! Your ID Card has been downloaded.');
     } catch (error) {
-      console.error('Download Error:', error);
-      alert('Failed to generate ID Card PDF.');
+      console.error('Download System Error:', error);
+      alert('Critical Error: Failed to generate ID Card. Please try again or take a screenshot.');
     } finally {
       setIsDownloading(false);
     }
@@ -123,7 +146,7 @@ export default function InternIDCardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         {/* Left: ID Card Preview */}
         <div className="py-10 flex justify-center print:p-0">
-           <div ref={idCardRef} className="bg-transparent rounded-[3rem] overflow-hidden">
+           <div ref={idCardRef} id="id-card-capture" className="bg-transparent rounded-[3rem] overflow-hidden">
               {profile && <IDCard profile={profile} />}
            </div>
         </div>
