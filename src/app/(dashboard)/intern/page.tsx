@@ -13,34 +13,41 @@ export default function InternDashboard() {
 
   useEffect(() => {
     async function loadData() {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (user) {
-        // Fetch profile
-        const { data: profileData } = await supabase.from('profiles').select('*').eq('id', user.id).single();
-        if (profileData) setProfile(profileData);
-
-        // Fetch assigned tasks
-        const { data: taskData, error: taskError } = await supabase
-          .from('tasks')
-          .select('*')
-          .eq('intern_id', user.id)
-          .order('created_at', { ascending: false });
-
-        if (!taskError && taskData) {
-          setTasks(taskData);
-        }
-
-        // Fetch approved certificates
-        const { data: certData } = await supabase
-          .from('submissions')
-          .select('*, tasks(title)')
-          .eq('intern_id', user.id)
-          .eq('review_status', 'approved');
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
         
-        if (certData) setCertificates(certData);
+        if (user) {
+          // Fetch profile
+          const { data: profileData } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+          if (profileData) setProfile(profileData);
+
+          // Fetch assigned tasks
+          const { data: taskData } = await supabase
+            .from('tasks')
+            .select('*')
+            .eq('intern_id', user.id)
+            .order('created_at', { ascending: false });
+
+          if (taskData) {
+            setTasks(taskData);
+          }
+
+          // Fetch approved certificates safely
+          const { data: certData, error: certError } = await supabase
+            .from('submissions')
+            .select('*, tasks(title)')
+            .eq('intern_id', user.id)
+            .eq('review_status', 'approved');
+          
+          if (!certError && certData) {
+            setCertificates(certData);
+          }
+        }
+      } catch (err) {
+        console.error('Error loading dashboard data:', err);
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     }
     loadData();
   }, []);
