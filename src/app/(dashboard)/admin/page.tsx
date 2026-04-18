@@ -16,7 +16,7 @@ import {
 import Link from 'next/link';
 
 export default function AdminDashboard() {
-  const [stats, setStats] = useState({ totalApps: 0, activeInterns: 0, pendingReviews: 0, successRate: 0 });
+  const [stats, setStats] = useState({ totalApps: 0, activeInterns: 0, pendingReviews: 0, totalRevenue: 0 });
   const [recentApps, setRecentApps] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -36,17 +36,22 @@ export default function AdminDashboard() {
         .select('*', { count: 'exact', head: true })
         .eq('role', 'intern');
 
+      // Fetch Revenue (from paid submissions)
+      const { data: paidSubmissions } = await supabase
+        .from('submissions')
+        .select('id')
+        .eq('payment_status', 'paid');
+
       if (apps) {
         const total = apps.length;
         const pending = apps.filter(a => a.status === 'pending').length;
-        const accepted = apps.filter(a => a.status === 'accepted').length;
-        const rate = total > 0 ? Math.round((accepted / total) * 100) : 0;
+        const revenue = (paidSubmissions?.length || 0) * 125;
 
         setStats({
           totalApps: total,
           activeInterns: internCount || 0,
           pendingReviews: pending,
-          successRate: rate
+          totalRevenue: revenue
         });
 
         setRecentApps(apps.slice(0, 5));
@@ -61,10 +66,10 @@ export default function AdminDashboard() {
       {/* Overview Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {[
-          { label: 'Total Applications', value: stats.totalApps.toString(), change: '+0%', icon: FileText, color: 'text-blue-600', bg: 'bg-blue-100 dark:bg-blue-900/30' },
-          { label: 'Registered Interns', value: stats.activeInterns.toString(), change: '+0%', icon: Users, color: 'text-indigo-600', bg: 'bg-indigo-100 dark:bg-indigo-900/30' },
-          { label: 'Pending Reviews', value: stats.pendingReviews.toString(), change: '0%', icon: Clock, color: 'text-orange-600', bg: 'bg-orange-100 dark:bg-orange-900/30' },
-          { label: 'Acceptance Rate', value: `${stats.successRate}%`, change: '+0%', icon: CheckCircle2, color: 'text-green-600', bg: 'bg-green-100 dark:bg-green-900/30' },
+          { label: 'Total Applications', value: stats.totalApps.toString(), icon: FileText, color: 'text-blue-600', bg: 'bg-blue-100 dark:bg-blue-900/30' },
+          { label: 'Registered Interns', value: stats.activeInterns.toString(), icon: Users, color: 'text-indigo-600', bg: 'bg-indigo-100 dark:bg-indigo-900/30' },
+          { label: 'Total Revenue', value: `₹${stats.totalRevenue}`, icon: TrendingUp, color: 'text-green-600', bg: 'bg-green-100 dark:bg-green-900/30' },
+          { label: 'Pending Reviews', value: stats.pendingReviews.toString(), icon: Clock, color: 'text-orange-600', bg: 'bg-orange-100 dark:bg-orange-900/30' },
         ].map((stat) => (
           <div key={stat.label} className="p-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm transition-all hover:shadow-md">
             <div className="flex justify-between items-start mb-4">
@@ -73,7 +78,7 @@ export default function AdminDashboard() {
               </div>
             </div>
             <p className="text-sm font-medium text-foreground">{stat.label}</p>
-            <p className="text-3xl font-bold text-foreground mt-1">
+            <p className="text-3xl font-black text-foreground mt-1">
               {isLoading ? <Loader2 className="h-6 w-6 animate-spin mt-2" /> : stat.value}
             </p>
           </div>
