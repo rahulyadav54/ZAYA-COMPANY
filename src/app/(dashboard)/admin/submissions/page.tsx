@@ -87,19 +87,20 @@ export default function AdminSubmissionsPage() {
                 <th className="px-6 py-4">Task Title</th>
                 <th className="px-6 py-4">Submitted</th>
                 <th className="px-6 py-4">Status</th>
+                <th className="px-6 py-4">Payment</th>
                 <th className="px-6 py-4">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
               {isLoading ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-slate-500">
+                  <td colSpan={6} className="px-6 py-12 text-center text-slate-500">
                     <Loader2 className="h-6 w-6 animate-spin mx-auto" />
                   </td>
                 </tr>
               ) : submissions.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-slate-500">
+                  <td colSpan={6} className="px-6 py-12 text-center text-slate-500">
                     No submissions found yet.
                   </td>
                 </tr>
@@ -127,6 +128,16 @@ export default function AdminSubmissionsPage() {
                         }`}>
                           {(sub.review_status || 'pending').toUpperCase()}
                         </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        {sub.payment_status === 'paid' ? (
+                          <div className="flex flex-col">
+                            <span className="text-xs font-black text-green-600 bg-green-500/10 px-2 py-0.5 rounded-md w-fit">PAID</span>
+                            <span className="text-[10px] text-slate-400 font-mono mt-1">{sub.payment_id}</span>
+                          </div>
+                        ) : (
+                          <span className="text-xs font-bold text-slate-400 italic">Unpaid / N/A</span>
+                        )}
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center space-x-2">
