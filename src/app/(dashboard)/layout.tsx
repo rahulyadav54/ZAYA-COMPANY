@@ -56,6 +56,7 @@ export default function DashboardLayout({
     : [
         { name: 'My Tasks', href: '/intern', icon: CheckSquare },
         { name: 'Submission', href: '/intern/submit', icon: FileText },
+        { name: 'Messages', href: '/intern/messages', icon: Mail },
         { name: 'My Certificates', href: '/intern/certificates', icon: Award },
         { name: 'ID Card', href: '/intern/id-card', icon: IdCard },
         { name: 'My Profile', href: '/intern/profile', icon: User },
