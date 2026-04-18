@@ -104,7 +104,7 @@ export default function PaymentPage() {
 
       setIsSuccess(true);
       setTimeout(() => {
-        router.push('/intern/submissions');
+        router.push('/intern'); // Fixed redirect to main dashboard
       }, 4000);
 
     } catch (error: any) {
