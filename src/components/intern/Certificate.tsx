@@ -9,9 +9,10 @@ interface CertificateProps {
   internName: string;
   taskTitle: string;
   completionDate: string;
+  previewOnly?: boolean;
 }
 
-export default function Certificate({ internName, taskTitle, completionDate }: CertificateProps) {
+export default function Certificate({ internName, taskTitle, completionDate, previewOnly = false }: CertificateProps) {
   const certificateRef = useRef<HTMLDivElement>(null);
 
   const downloadPDF = async () => {
@@ -39,29 +40,31 @@ export default function Certificate({ internName, taskTitle, completionDate }: C
   };
 
   return (
-    <div className="flex flex-col items-center gap-8 p-4">
+    <div className={`flex flex-col items-center gap-8 p-4 ${previewOnly ? 'w-full scale-[0.5] origin-top transform-gpu' : ''}`}>
       {/* Action Buttons */}
-      <div className="flex gap-4 no-print">
-        <button 
-          onClick={downloadPDF}
-          className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition-all shadow-lg active:scale-95"
-        >
-          <Download className="h-5 w-5" />
-          Download PDF
-        </button>
-        <button 
-          onClick={() => window.print()}
-          className="flex items-center gap-2 px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white rounded-xl font-bold transition-all shadow-lg active:scale-95"
-        >
-          <Printer className="h-5 w-5" />
-          Print
-        </button>
-      </div>
+      {!previewOnly && (
+        <div className="flex gap-4 no-print">
+          <button 
+            onClick={downloadPDF}
+            className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition-all shadow-lg active:scale-95"
+          >
+            <Download className="h-5 w-5" />
+            Download PDF
+          </button>
+          <button 
+            onClick={() => window.print()}
+            className="flex items-center gap-2 px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white rounded-xl font-bold transition-all shadow-lg active:scale-95"
+          >
+            <Printer className="h-5 w-5" />
+            Print
+          </button>
+        </div>
+      )}
 
       {/* Certificate Container */}
       <div 
         ref={certificateRef}
-        className="relative w-[1123px] h-[794px] bg-white shadow-2xl overflow-hidden border-[20px] border-white select-none"
+        className={`relative w-[1123px] h-[794px] bg-white shadow-2xl overflow-hidden border-[20px] border-white select-none ${previewOnly ? 'shadow-none' : ''}`}
         style={{ fontFamily: "'Times New Roman', serif" }}
       >
         {/* Background Accents (Geometric Corners) */}
