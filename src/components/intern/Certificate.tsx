@@ -136,7 +136,7 @@ export default function Certificate({
           </div>
 
           {/* Footer Section (Signatures & Seal) */}
-          <div className="flex justify-between items-end w-full px-10 pb-8 relative">
+          <div className="flex justify-between items-end w-full px-24 pb-8 relative z-40">
             
             {/* Left Signature */}
             <div className="flex flex-col items-center w-[220px]">
@@ -165,9 +165,9 @@ export default function Certificate({
 
           {/* Validation Footer */}
           {certificateId && (
-            <div className="absolute bottom-[24px] left-32 right-32 flex justify-between items-center text-[8px] font-bold uppercase tracking-[2px] text-slate-400 border-t-[1px] border-slate-200 pt-2">
-               <p>Credential ID: <span className="text-[#002855] font-black">{certificateId}</span></p>
-               <p>Verify Authenticity: <span className="text-blue-600 font-black lowercase tracking-normal">zayacodehub.in/verify</span></p>
+            <div className="absolute bottom-[48px] left-32 right-32 flex justify-between items-center text-[10px] font-black uppercase tracking-[2px] text-slate-500 border-t-[1px] border-slate-300 pt-3 z-40 bg-[#fdfcfbf0]/80 px-4 rounded-t-lg backdrop-blur-sm">
+               <p>Credential ID: <span className="text-[#002855] font-black text-[11px]">{certificateId}</span></p>
+               <p>Verify Authenticity: <span className="text-blue-600 font-black lowercase tracking-normal">{typeof window !== 'undefined' ? window.location.hostname : 'zayacodehub.in'}/verify</span></p>
             </div>
           )}
         </div>
