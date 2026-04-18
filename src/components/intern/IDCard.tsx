@@ -10,6 +10,7 @@ interface IDCardProps {
     id: string;
     created_at: string;
     avatar_url?: string;
+    position?: string;
   };
 }
 
@@ -64,12 +65,15 @@ export default function IDCard({ profile }: IDCardProps) {
            </div>
         </div>
         
-        <div className="mt-6 text-center space-y-1">
-          <h3 className="text-2xl font-black text-slate-900 leading-tight uppercase tracking-tight">{profile.full_name || 'Loading...'}</h3>
-          <p className="text-blue-600 font-bold text-xs uppercase tracking-widest">
-            Software Development Intern
-          </p>
-        </div>
+        <div className="mt-8 text-center space-y-2">
+            <h3 className="text-2xl font-black text-slate-900 dark:text-white leading-tight uppercase tracking-tight px-4">{profile.full_name || 'Loading...'}</h3>
+            <div className="inline-flex items-center gap-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/50 px-5 py-2 rounded-2xl">
+              <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+              <p className="text-blue-600 dark:text-blue-400 font-black text-[10px] uppercase tracking-widest">
+                {profile.position || 'Software Development Intern'}
+              </p>
+            </div>
+          </div>
       </div>
 
       {/* Separator with Dot */}

@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
   try {
-    const { email, password, fullName, role } = await request.json();
+    const { email, password, fullName, role, position } = await request.json();
 
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -22,7 +22,10 @@ export async function POST(request: Request) {
       email,
       password,
       email_confirm: true,
-      user_metadata: { full_name: fullName }
+      user_metadata: { 
+        full_name: fullName,
+        position: position || 'Intern'
+      }
     });
 
     if (authError) throw authError;

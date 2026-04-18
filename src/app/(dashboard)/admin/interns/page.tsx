@@ -18,6 +18,7 @@ export default function ManageInternsPage() {
   
   const [selectedCandidate, setSelectedCandidate] = useState<any>(null);
   const [manualFullName, setManualFullName] = useState('');
+  const [manualPosition, setManualPosition] = useState('');
 
   const fetchInterns = async () => {
     setIsLoading(true);
@@ -36,7 +37,7 @@ export default function ManageInternsPage() {
   const fetchAcceptedCandidates = async () => {
     const { data, error } = await supabase
       .from('applications')
-      .select('id, full_name, email')
+      .select('id, full_name, email, position')
       .eq('status', 'accepted');
     
     if (!error && data) {
@@ -295,6 +296,21 @@ export default function ManageInternsPage() {
                   className={`w-full px-5 py-3 rounded-2xl border-2 border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-foreground font-bold focus:border-blue-600 outline-none transition-all ${selectedCandidate ? 'opacity-70 cursor-not-allowed' : ''}`} 
                 />
               </div>
+
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Position / Role</label>
+                <input 
+                  required 
+                  name="position" 
+                  type="text" 
+                  placeholder="e.g. Android Developer"
+                  value={selectedCandidate ? selectedCandidate.position : manualPosition}
+                  onChange={(e) => !selectedCandidate && setManualPosition(e.target.value)}
+                  readOnly={!!selectedCandidate}
+                  className={`w-full px-5 py-3 rounded-2xl border-2 border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-foreground font-bold focus:border-blue-600 outline-none transition-all ${selectedCandidate ? 'opacity-70 cursor-not-allowed' : ''}`} 
+                />
+              </div>
+
               <div className="space-y-2">
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Email Address</label>
                 <input required name="email" type="email" placeholder="intern@gmail.com" className="w-full px-5 py-3 rounded-2xl border-2 border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-foreground font-bold focus:border-blue-600 outline-none transition-all" />
