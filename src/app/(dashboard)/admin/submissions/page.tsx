@@ -29,15 +29,23 @@ export default function AdminSubmissionsPage() {
   }, []);
 
   const updateReviewStatus = async (id: string, status: string) => {
+    let updateData: any = { review_status: status };
+    
+    // If approving, generate a unique Certificate ID
+    if (status === 'approved') {
+      const uniqueId = `ZAYA-2026-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
+      updateData.certificate_id = uniqueId;
+    }
+
     const { error } = await supabase
       .from('submissions')
-      .update({ review_status: status })
+      .update(updateData)
       .eq('id', id);
 
     if (error) {
       alert(`Failed to update status: ${error.message}`);
     } else {
-      setSubmissions(submissions.map(s => s.id === id ? { ...s, review_status: status } : s));
+      setSubmissions(submissions.map(s => s.id === id ? { ...s, ...updateData } : s));
     }
   };
 
