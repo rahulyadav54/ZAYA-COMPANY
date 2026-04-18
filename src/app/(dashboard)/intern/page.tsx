@@ -29,21 +29,36 @@ export default function InternDashboard() {
            if (p) setProfile(p);
         } catch (e) { console.error("Profile load failed"); }
 
-        // Fetch Tasks
+        // Fetch Submissions
+        let allSubmissions: any[] = [];
         try {
-           const { data: t } = await supabase.from('tasks').select('*').eq('intern_id', user.id).order('created_at', { ascending: false });
-           if (t) setTasks(t);
-        } catch (e) { console.error("Tasks load failed"); }
-
-        // Fetch Certificates (Approved Submissions)
-        try {
-           const { data: c } = await supabase
+           const { data: s } = await supabase
              .from('submissions')
              .select('*, tasks(title, duration_months)')
-             .eq('intern_id', user.id)
-             .eq('review_status', 'approved');
-           if (c) setCertificates(c);
-        } catch (e) { console.error("Certificates load failed"); }
+             .eq('intern_id', user.id);
+           if (s) allSubmissions = s;
+        } catch (e) { console.error("Submissions load failed"); }
+
+        // Fetch Tasks and dynamically update their status based on submissions
+        try {
+           const { data: t } = await supabase.from('tasks').select('*').eq('intern_id', user.id).order('created_at', { ascending: false });
+           if (t) {
+             const updatedTasks = t.map(task => {
+                const sub = allSubmissions.find(s => s.task_id === task.id);
+                if (sub) {
+                   if (sub.review_status === 'approved') return { ...task, status: 'completed' };
+                   if (sub.review_status === 'pending') return { ...task, status: 'in review' };
+                   if (sub.review_status === 'rejected') return { ...task, status: 'rejected' };
+                }
+                return task;
+             });
+             setTasks(updatedTasks);
+           }
+        } catch (e) { console.error("Tasks load failed"); }
+
+        // Filter approved submissions into certificates
+        const approvedSubmissions = allSubmissions.filter(s => s.review_status === 'approved');
+        setCertificates(approvedSubmissions);
 
       } catch (err: any) {
         setError(err.message || "An unexpected error occurred.");
@@ -178,18 +193,32 @@ export default function InternDashboard() {
                           Due: {task.deadline ? new Date(task.deadline).toLocaleDateString() : 'N/A'}
                         </div>
                         <div className={`px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
-                          task.status === 'completed' ? 'bg-green-500/10 text-green-500' : 'bg-orange-500/10 text-orange-500'
+                          task.status === 'completed' ? 'bg-green-500/10 text-green-500' : 
+                          task.status === 'in review' ? 'bg-blue-500/10 text-blue-500' : 
+                          task.status === 'rejected' ? 'bg-red-500/10 text-red-500' : 
+                          'bg-orange-500/10 text-orange-500'
                         }`}>
                           {task.status}
                         </div>
                       </div>
                     </div>
-                    <button 
-                      onClick={() => window.location.href='/intern/submit'}
-                      className="p-4 bg-slate-100 dark:bg-slate-800 rounded-2xl group-hover:bg-blue-600 group-hover:text-white transition-all shadow-lg"
-                    >
-                      <FileUp className="h-6 w-6" />
-                    </button>
+                    {task.status === 'completed' ? (
+                       <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-2xl text-green-600">
+                         <CheckCircle2 className="h-6 w-6" />
+                       </div>
+                    ) : task.status === 'in review' ? (
+                       <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-2xl text-blue-600" title="Currently being reviewed by admin">
+                         <Clock className="h-6 w-6" />
+                       </div>
+                    ) : (
+                       <button 
+                         onClick={() => window.location.href='/intern/submit'}
+                         className="p-4 bg-slate-100 dark:bg-slate-800 rounded-2xl group-hover:bg-blue-600 group-hover:text-white transition-all shadow-lg"
+                         title="Submit Task"
+                       >
+                         <FileUp className="h-6 w-6" />
+                       </button>
+                    )}
                   </div>
                 </div>
               ))
