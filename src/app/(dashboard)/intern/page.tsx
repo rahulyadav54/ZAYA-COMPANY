@@ -37,7 +37,11 @@ export default function InternDashboard() {
 
         // Fetch Certificates (Approved Submissions)
         try {
-           const { data: c } = await supabase.from('submissions').select('*, tasks(title)').eq('intern_id', user.id).eq('review_status', 'approved');
+           const { data: c } = await supabase
+             .from('submissions')
+             .select('*, tasks(title, duration_months)')
+             .eq('intern_id', user.id)
+             .eq('review_status', 'approved');
            if (c) setCertificates(c);
         } catch (e) { console.error("Certificates load failed"); }
 

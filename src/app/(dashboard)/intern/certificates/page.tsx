@@ -17,7 +17,7 @@ export default function InternCertificatesPage() {
       if (user) {
         const { data, error } = await supabase
           .from('submissions')
-          .select('*, tasks(title)')
+          .select('*, tasks(title, duration_months)')
           .eq('intern_id', user.id)
           .eq('review_status', 'approved');
 
@@ -91,7 +91,9 @@ export default function InternCertificatesPage() {
                 <div className="grid grid-cols-2 gap-4">
                    <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-800">
                       <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Issue Date</p>
-                      <p className="text-sm font-black text-slate-900 dark:text-white">{new Date(cert.created_at).toLocaleDateString()}</p>
+                      <p className="text-sm font-black text-slate-900 dark:text-white">
+                        {(cert.created_at || cert.submitted_at) ? new Date(cert.created_at || cert.submitted_at).toLocaleDateString() : 'Pending'}
+                      </p>
                    </div>
                    <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-800">
                       <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Credential ID</p>
@@ -136,7 +138,8 @@ export default function InternCertificatesPage() {
                 <Certificate 
                   internName={selectedCert.cert_full_name || "Intern Name"} 
                   taskTitle={selectedCert.tasks?.title || "Project Title"} 
-                  completionDate={selectedCert.created_at}
+                  completionDate={selectedCert.created_at || selectedCert.submitted_at}
+                  durationMonths={selectedCert.tasks?.duration_months || 1}
                   certificateId={selectedCert.certificate_id}
                 />
               </div>
