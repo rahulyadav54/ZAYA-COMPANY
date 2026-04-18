@@ -147,7 +147,7 @@ export default function OfferLetterPage() {
                   ? (application.position.toLowerCase().includes('intern') ? application.position : `${application.position} Intern`) 
                   : 'Intern'}
               </span> at <span className="font-bold text-blue-600">ZAYA CODE HUB</span>. 
-              The term of your placement will be for a duration of <span className="font-bold text-slate-900">{application?.duration || '3-6'} months</span>, starting from <span className="font-bold text-slate-900">{currentDate}</span>.
+              The term of your placement will be for a duration of <span className="font-bold text-slate-900">{application?.duration || '1 month'}</span>, starting from <span className="font-bold text-slate-900">{currentDate}</span>.
             </p>
 
             <p>
