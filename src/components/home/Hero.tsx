@@ -56,32 +56,37 @@ export default function Hero() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.3 }}
-            className="flex-1 relative"
+            className="flex-1 relative w-full"
           >
-            <div className="relative w-full aspect-square max-w-lg mx-auto">
-              {/* Main Circle */}
-              <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 shadow-2xl shadow-blue-600/30 flex items-center justify-center overflow-hidden border-4 border-white/10">
-                <Image 
-                  src="/logo.png" 
-                  alt="Zaya Code Hub Logo" 
-                  fill
-                  unoptimized
-                  className="object-contain p-4" 
-                />
+            <div className="relative w-full aspect-square max-w-[300px] sm:max-w-lg mx-auto">
+              {/* Main Circle - White as per screenshot */}
+              <div className="absolute inset-0 rounded-full bg-white shadow-2xl shadow-blue-600/20 flex items-center justify-center overflow-hidden border-8 border-blue-600/10">
+                <div className="relative w-[80%] h-[80%]">
+                  <Image 
+                    src="/logo.png" 
+                    alt="Zaya Code Hub Logo" 
+                    fill
+                    unoptimized
+                    className="object-contain" 
+                  />
+                </div>
               </div>
-              {/* Floating Cards - Desktop Only */}
-              <div className="hidden sm:block absolute top-0 right-8 p-4 rounded-2xl bg-white dark:bg-slate-800 shadow-xl border border-slate-100 dark:border-slate-700 animate-float">
-                <Smartphone className="h-8 w-8 text-blue-600" />
-                <p className="text-xs font-bold mt-2 text-slate-800 dark:text-white">Mobile Apps</p>
+
+              {/* Floating Cards - Now Visible on Mobile */}
+              <div className="absolute -top-4 -right-4 sm:top-0 sm:right-8 p-3 sm:p-4 rounded-2xl bg-white dark:bg-slate-800 shadow-2xl border border-slate-100 dark:border-slate-700 animate-float z-20">
+                <Smartphone className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600" />
+                <p className="text-[10px] sm:text-xs font-black mt-2 text-slate-800 dark:text-white uppercase tracking-wider">Mobile Apps</p>
               </div>
-              <div className="hidden sm:block absolute bottom-8 left-0 p-4 rounded-2xl bg-white dark:bg-slate-800 shadow-xl border border-slate-100 dark:border-slate-700 animate-float" style={{ animationDelay: '1.5s' }}>
-                <Layout className="h-8 w-8 text-indigo-600" />
-                <p className="text-xs font-bold mt-2 text-slate-800 dark:text-white">Web Design</p>
+
+              <div className="absolute bottom-10 -left-4 sm:bottom-8 sm:left-0 p-3 sm:p-4 rounded-2xl bg-white dark:bg-slate-800 shadow-2xl border border-slate-100 dark:border-slate-700 animate-float z-20" style={{ animationDelay: '1.5s' }}>
+                <Layout className="h-6 w-6 sm:h-8 sm:w-8 text-indigo-600" />
+                <p className="text-[10px] sm:text-xs font-black mt-2 text-slate-800 dark:text-white uppercase tracking-wider">Web Design</p>
               </div>
-              {/* Stats Badge - Desktop Only */}
-              <div className="hidden sm:block absolute bottom-0 right-0 px-6 py-4 rounded-2xl bg-white dark:bg-slate-800 shadow-xl border border-slate-100 dark:border-slate-700">
-                <div className="text-2xl font-black text-blue-600">150+</div>
-                <div className="text-xs font-bold text-slate-900 dark:text-slate-100">Projects Done</div>
+
+              {/* Stats Badge - Now Visible on Mobile */}
+              <div className="absolute -bottom-4 -right-4 sm:bottom-0 sm:right-0 px-4 py-3 sm:px-6 sm:py-4 rounded-2xl bg-white dark:bg-slate-800 shadow-2xl border border-slate-100 dark:border-slate-700 z-20">
+                <div className="text-xl sm:text-2xl font-black text-blue-600">150+</div>
+                <div className="text-[10px] sm:text-xs font-black text-slate-900 dark:text-slate-100 uppercase tracking-widest">Projects Done</div>
               </div>
             </div>
           </motion.div>
