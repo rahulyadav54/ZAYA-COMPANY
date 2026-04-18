@@ -1,15 +1,17 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Upload, Send, CheckCircle2, Loader2, ArrowRight, Award } from 'lucide-react';
+import { Upload, Send, CheckCircle2, Loader2, ArrowRight, Award, X } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
 import { useRouter } from 'next/navigation';
+import Certificate from '@/components/intern/Certificate';
 
 export default function InternSubmitPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [tasks, setTasks] = useState<any[]>([]);
   const [userId, setUserId] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
+  const [showSample, setShowSample] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -96,10 +98,19 @@ export default function InternSubmitPage() {
           
           {/* Section: Certificate Information */}
           <div className="space-y-6 border-b border-white/5 pb-8">
-            <h3 className="text-xl font-bold text-blue-500 flex items-center gap-2">
-              <span className="bg-blue-500/10 p-2 rounded-lg">🎓</span>
-              Certificate Information
-            </h3>
+            <div className="flex items-center justify-between">
+              <h3 className="text-xl font-bold text-blue-500 flex items-center gap-2">
+                <span className="bg-blue-500/10 p-2 rounded-lg">🎓</span>
+                Certificate Information
+              </h3>
+              <button 
+                type="button"
+                onClick={() => setShowSample(true)}
+                className="text-[10px] font-black text-blue-500 hover:text-white transition-colors bg-blue-500/10 hover:bg-blue-600 px-4 py-2 rounded-full uppercase tracking-widest border border-blue-500/20"
+              >
+                View Sample Certificate
+              </button>
+            </div>
             <div className="grid md:grid-cols-1 gap-6">
               <div className="space-y-3">
                 <label className="text-sm font-bold text-slate-400 uppercase tracking-wider ml-1">Full Name (As on Certificate)</label>
@@ -227,6 +238,38 @@ export default function InternSubmitPage() {
           </div>
         </form>
       </div>
+
+      {/* Sample Certificate Modal */}
+      {showSample && (
+        <div className="fixed inset-0 bg-black/90 backdrop-blur-xl z-[200] flex items-center justify-center p-6 animate-in fade-in duration-300">
+           <div className="relative w-full max-w-6xl bg-slate-900/50 rounded-[3rem] border border-white/10 shadow-2xl overflow-hidden p-10 flex flex-col items-center">
+              <div className="w-full flex justify-between items-center mb-10 px-6">
+                 <div>
+                    <h2 className="text-3xl font-black text-white leading-tight">Certificate Design Sample</h2>
+                    <p className="text-slate-400 font-medium mt-1">This is exactly how your official certificate will look!</p>
+                 </div>
+                 <button 
+                    onClick={() => setShowSample(false)}
+                    className="p-4 bg-white/5 hover:bg-red-500/20 hover:text-red-500 rounded-full transition-all border border-white/5"
+                 >
+                    <X className="h-6 w-6" />
+                 </button>
+              </div>
+
+              <div className="bg-white/5 rounded-[2rem] p-8 border border-white/5 overflow-hidden w-full flex justify-center scale-[0.3] md:scale-[0.5] lg:scale-[0.7] xl:scale-[0.85] origin-top transition-all">
+                  <Certificate 
+                    internName="John Doe" 
+                    taskTitle="Web Development Internship" 
+                    completionDate={new Date().toISOString()} 
+                  />
+              </div>
+
+              <div className="mt-10 py-6 px-12 bg-blue-600 rounded-[2rem] shadow-xl shadow-blue-600/20">
+                 <p className="text-white font-black uppercase tracking-widest text-sm">Verified by Zaya Code Hub Authority</p>
+              </div>
+           </div>
+        </div>
+      )}
     </div>
   );
 }
