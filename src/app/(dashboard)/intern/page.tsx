@@ -44,7 +44,15 @@ export default function InternDashboard() {
            const { data: t } = await supabase.from('tasks').select('*').eq('intern_id', user.id).order('created_at', { ascending: false });
            if (t) {
              const updatedTasks = t.map(task => {
-                const sub = allSubmissions.find(s => s.task_id === task.id);
+                // Prioritize approved submissions if multiple exist
+                const sub = allSubmissions
+                  .filter(s => s.task_id === task.id)
+                  .sort((a, b) => {
+                    if (a.review_status === 'approved') return -1;
+                    if (b.review_status === 'approved') return 1;
+                    return 0;
+                  })[0];
+
                 if (sub) {
                    if (sub.review_status === 'approved') return { ...task, status: 'completed' };
                    if (sub.review_status === 'pending') return { ...task, status: 'in review' };
@@ -180,9 +188,13 @@ export default function InternDashboard() {
                 <div key={task.id} className="p-8 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all group">
                   <div className="flex items-start justify-between gap-4">
                     <div className="space-y-4 flex-1">
-                      <div className="flex items-center gap-3">
-                         <div className={`h-3 w-3 rounded-full ${task.status === 'completed' ? 'bg-green-500' : 'bg-orange-500 animate-pulse'}`} />
-                         <h4 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">{task.title}</h4>
+                      <div className="flex items-center space-x-4">
+                        <div className={`h-3 w-3 rounded-full ${
+                          task.status === 'completed' ? 'bg-green-500' : 
+                          task.status === 'in review' ? 'bg-blue-500' : 
+                          'bg-orange-500 animate-pulse'
+                        }`} />
+                        <h4 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">{task.title}</h4>
                       </div>
                       <p className="text-slate-500 dark:text-slate-400 line-clamp-2 text-sm leading-relaxed font-medium">
                         {task.description}
