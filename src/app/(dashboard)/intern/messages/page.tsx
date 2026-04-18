@@ -79,8 +79,8 @@ export default function InternMessagesPage() {
     if ((!newMessage.trim() && !selectedFile) || isSending) return;
 
     setIsSending(true);
-    let fileUrl = null;
-    let fileType = null;
+    let fileUrl: string | null = null;
+    let fileType: string | null = null;
 
     try {
       if (selectedFile) {

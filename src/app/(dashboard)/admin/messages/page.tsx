@@ -108,8 +108,8 @@ export default function AdminMessagesPage() {
     if ((!newMessage.trim() && !selectedFile) || isSending || !selectedIntern) return;
 
     setIsSending(true);
-    let fileUrl = null;
-    let fileType = null;
+    let fileUrl: string | null = null;
+    let fileType: string | null = null;
 
     try {
       if (selectedFile) {
