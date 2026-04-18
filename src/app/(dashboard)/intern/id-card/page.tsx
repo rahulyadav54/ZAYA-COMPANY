@@ -14,7 +14,9 @@ export default function InternIDCardPage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single();
-        if (data) setProfile(data);
+        if (data) {
+          setProfile({ ...data, ...user.user_metadata });
+        }
       }
       setLoading(false);
     }

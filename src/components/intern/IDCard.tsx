@@ -28,17 +28,15 @@ export default function IDCard({ profile }: IDCardProps) {
       <div className="relative w-full h-full bg-white dark:bg-slate-900 rounded-[3rem] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.2)] dark:shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6)] overflow-hidden border border-slate-200 dark:border-slate-800 flex flex-col transition-all duration-500">
         
         {/* Header Branding */}
-        <div className="bg-blue-600 h-48 relative flex flex-col items-center pt-10 overflow-hidden shrink-0">
+        <div className="bg-blue-600 h-48 relative flex flex-col items-center pt-8 overflow-hidden shrink-0">
           {/* Decorative Elements */}
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32 blur-3xl animate-pulse" />
           <div className="absolute bottom-0 left-0 w-48 h-48 bg-black/10 rounded-full -ml-24 -mb-24 blur-2xl" />
           
           <div className="z-10 flex flex-col items-center space-y-2">
-            <div className="flex items-center gap-3">
-               <div className="p-2 bg-white rounded-xl shadow-lg shadow-blue-900/20">
-                  <Code2 className="h-6 w-6 text-blue-600" />
-               </div>
-               <h2 className="text-white text-2xl font-black tracking-tighter italic">ZAYA CODE HUB</h2>
+            <div className="flex flex-col items-center gap-1">
+               <img src="/logo.png" alt="ZAYA Logo" className="h-20 w-auto object-contain brightness-0 invert" />
+               <h2 className="text-white text-xl font-black tracking-tighter italic mt-1">ZAYA CODE HUB</h2>
             </div>
             <div className="h-px w-32 bg-gradient-to-r from-transparent via-white/30 to-transparent" />
             <p className="text-blue-100 text-[10px] font-black uppercase tracking-[0.4em] opacity-90">Official Internship Identity</p>
@@ -108,8 +106,8 @@ export default function IDCard({ profile }: IDCardProps) {
         {/* Footer */}
         <div className="p-8 mt-auto flex items-center justify-between border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/50">
           <div className="flex items-center gap-2">
-            <div className="bg-green-500/10 p-1 rounded-full">
-              <ShieldCheck className="h-5 w-5 text-green-500" />
+            <div className="bg-green-500/10 p-1.5 rounded-full">
+              <ShieldCheck className="h-6 w-6 text-green-500" />
             </div>
             <div className="flex flex-col">
               <span className="text-[10px] font-black text-slate-800 dark:text-slate-200 uppercase tracking-[0.2em]">Verified Identity</span>
@@ -119,17 +117,17 @@ export default function IDCard({ profile }: IDCardProps) {
           <a 
             href="/verify-id" 
             target="_blank" 
-            className="w-16 h-16 bg-white dark:bg-slate-900 p-2 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm hover:scale-110 transition-transform flex flex-col items-center justify-center gap-1 group/qr"
+            className="w-20 h-20 bg-white dark:bg-slate-100 p-2.5 rounded-2xl border-2 border-slate-200 dark:border-slate-300 shadow-xl hover:scale-110 transition-transform flex flex-col items-center justify-center gap-1 group/qr"
           >
-             {/* Realistic QR Placeholder */}
-             <div className="w-full h-full relative opacity-80 group-hover:opacity-100 transition-opacity">
-                <div className="absolute inset-0 grid grid-cols-4 grid-rows-4 gap-[2px]">
-                   {[...Array(16)].map((_, i) => (
-                      <div key={i} className={`rounded-[1px] ${Math.random() > 0.4 ? 'bg-slate-900 dark:bg-slate-100' : 'bg-transparent'}`} />
+             {/* Realistic QR Placeholder - Higher Contrast */}
+             <div className="w-full h-full relative group-hover:opacity-100 transition-opacity">
+                <div className="absolute inset-0 grid grid-cols-5 grid-rows-5 gap-[1.5px]">
+                   {[...Array(25)].map((_, i) => (
+                      <div key={i} className={`rounded-[1px] ${Math.random() > 0.4 ? 'bg-black' : 'bg-transparent'}`} />
                    ))}
                 </div>
              </div>
-             <span className="text-[5px] font-black text-slate-400 uppercase tracking-tighter">Scan to Verify</span>
+             <span className="text-[6px] font-black text-black uppercase tracking-tighter mt-1">Verify ID</span>
           </a>
         </div>
 

@@ -17,7 +17,8 @@ export default function InternProfilePage() {
       if (user) {
         const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single();
         if (data) {
-          setProfile(data);
+          // Merge metadata for avatar_url
+          setProfile({ ...data, ...user.user_metadata });
           setFullName(data.full_name || '');
         }
       }
@@ -46,16 +47,15 @@ export default function InternProfilePage() {
 
       const avatarUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/resumes/${filePath}`;
 
-      const { error: updateError } = await supabase
-        .from('profiles')
-        .update({ avatar_url: avatarUrl })
-        .eq('id', user.id);
+      // Update Auth metadata instead of profiles table to avoid schema errors
+      const { error: updateError } = await supabase.auth.updateUser({
+        data: { avatar_url: avatarUrl }
+      });
 
       if (updateError) throw updateError;
 
-      // Refresh profile data
-      const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single();
-      if (data) setProfile(data);
+      // Update local state
+      setProfile((prev: any) => ({ ...prev, avatar_url: avatarUrl }));
       
       setUpdateSuccess(true);
       setTimeout(() => setUpdateSuccess(false), 3000);
