@@ -2,38 +2,62 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/lib/supabaseClient';
-import { Send, Loader2, User, MessageCircle, Clock, Search, ChevronRight } from 'lucide-react';
+import { Send, Loader2, User, MessageCircle, Clock, Search, ChevronRight, Plus, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function AdminMessagesPage() {
   const [conversations, setConversations] = useState<any[]>([]);
+  const [allInterns, setAllInterns] = useState<any[]>([]);
   const [selectedIntern, setSelectedIntern] = useState<any>(null);
   const [messages, setMessages] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingInterns, setIsLoadingInterns] = useState(false);
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
+  const [showNewMessageModal, setShowNewMessageModal] = useState(false);
   const [newMessage, setNewMessage] = useState('');
   const [isSending, setIsSending] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Load unique interns who sent messages
-  useEffect(() => {
-    async function loadConversations() {
-      setIsLoading(true);
-      const { data, error } = await supabase
-        .from('intern_messages')
-        .select('intern_id, intern_name, created_at')
-        .order('created_at', { ascending: false });
+  const fetchConversations = async () => {
+    setIsLoading(true);
+    const { data, error } = await supabase
+      .from('intern_messages')
+      .select('intern_id, intern_name, created_at')
+      .order('created_at', { ascending: false });
 
-      if (!error && data) {
-        // Group by intern_id to get unique conversations
-        const unique = Array.from(new Set(data.map(m => m.intern_id)))
-          .map(id => data.find(m => m.intern_id === id));
-        setConversations(unique);
-      }
-      setIsLoading(false);
+    if (!error && data) {
+      const unique = Array.from(new Set(data.map(m => m.intern_id)))
+        .map(id => data.find(m => m.intern_id === id));
+      setConversations(unique);
     }
-    loadConversations();
+    setIsLoading(false);
+  };
+
+  const fetchAllInterns = async () => {
+    setIsLoadingInterns(true);
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('id, full_name, email')
+      .eq('role', 'intern')
+      .order('full_name', { ascending: true });
+    
+    if (!error && data) {
+      setAllInterns(data);
+    }
+    setIsLoadingInterns(false);
+  };
+
+  useEffect(() => {
+    fetchConversations();
   }, []);
+
+  const handleStartNewMessage = (intern: any) => {
+    setSelectedIntern({
+      intern_id: intern.id,
+      intern_name: intern.full_name
+    });
+    setShowNewMessageModal(false);
+  };
 
   // Load messages for selected intern
   useEffect(() => {
@@ -96,7 +120,19 @@ export default function AdminMessagesPage() {
       {/* Sidebar: Intern List */}
       <div className="w-80 bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden flex flex-col">
         <div className="p-6 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/50">
-          <h2 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-widest mb-4">Inbox</h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-widest">Inbox</h2>
+            <button 
+              onClick={() => {
+                fetchAllInterns();
+                setShowNewMessageModal(true);
+              }}
+              className="p-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20 active:scale-95"
+              title="Start New Conversation"
+            >
+              <Plus className="h-4 w-4" />
+            </button>
+          </div>
           <div className="relative">
              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
              <input type="text" placeholder="Search interns..." className="w-full pl-9 pr-4 py-2 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-xl text-xs outline-none" />
@@ -207,6 +243,56 @@ export default function AdminMessagesPage() {
           </div>
         )}
       </div>
+
+      {/* New Message Modal */}
+      <AnimatePresence>
+        {showNewMessageModal && (
+          <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-2xl w-full max-w-md overflow-hidden border border-slate-200 dark:border-slate-800"
+            >
+              <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-950/50">
+                <h2 className="text-lg font-black text-slate-900 dark:text-white uppercase tracking-tight">Start New Chat</h2>
+                <button onClick={() => setShowNewMessageModal(false)} className="p-2 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-full transition-colors">
+                  <X className="h-5 w-5 text-slate-500" />
+                </button>
+              </div>
+              <div className="p-4">
+                <div className="relative mb-4">
+                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                   <input type="text" placeholder="Search interns..." className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-950 border-2 border-slate-100 dark:border-slate-800 rounded-2xl text-sm font-bold outline-none focus:border-blue-600 transition-all" />
+                </div>
+                <div className="max-h-[300px] overflow-y-auto space-y-2 pr-2">
+                  {isLoadingInterns ? (
+                    <div className="py-10 flex justify-center"><Loader2 className="h-6 w-6 animate-spin text-blue-600" /></div>
+                  ) : allInterns.length === 0 ? (
+                    <div className="py-10 text-center text-slate-500">No interns found</div>
+                  ) : (
+                    allInterns.map(intern => (
+                      <button
+                        key={intern.id}
+                        onClick={() => handleStartNewMessage(intern)}
+                        className="w-full p-4 flex items-center gap-3 rounded-2xl border border-transparent hover:border-blue-100 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-all text-left group"
+                      >
+                        <div className="h-10 w-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 font-bold group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                          {intern.full_name?.charAt(0) || 'I'}
+                        </div>
+                        <div>
+                          <p className="font-bold text-slate-900 dark:text-white text-sm">{intern.full_name}</p>
+                          <p className="text-[10px] text-slate-500">{intern.email}</p>
+                        </div>
+                      </button>
+                    ))
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
