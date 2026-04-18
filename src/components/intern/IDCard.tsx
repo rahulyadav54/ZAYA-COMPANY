@@ -23,7 +23,7 @@ export default function IDCard({ profile }: IDCardProps) {
     <motion.div 
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="relative w-[420px] h-[680px] mx-auto group shadow-[0_50px_100px_-20px_rgba(0,0,0,0.3)] rounded-[3rem] overflow-hidden bg-white"
+      className="relative w-[420px] h-[720px] mx-auto group shadow-[0_50px_100px_-20px_rgba(0,0,0,0.3)] rounded-[3rem] overflow-hidden bg-white flex flex-col"
     >
       {/* Lanyard Hole */}
       <div className="absolute top-4 left-1/2 -translate-x-1/2 w-16 h-4 bg-slate-200 dark:bg-slate-800 rounded-full z-30 flex items-center justify-center">
@@ -37,14 +37,14 @@ export default function IDCard({ profile }: IDCardProps) {
       </div>
 
       {/* Header Section */}
-      <div className="relative h-[280px] bg-[#0A192F] flex flex-col items-center pt-12 overflow-hidden">
+      <div className="relative h-[260px] bg-[#0A192F] flex flex-col items-center pt-10 overflow-hidden shrink-0">
         {/* Background Patterns */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/10 rounded-full -mr-32 -mt-32 blur-3xl" />
         <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-black/20 to-transparent" />
         
         {/* Logo */}
         <div className="z-10 flex flex-col items-center">
-           <img src="/logo.png" alt="ZAYA Logo" className="h-28 w-auto object-contain mb-2" />
+           <img src="/logo.png" alt="ZAYA Logo" className="h-24 w-auto object-contain mb-2" />
            <h2 className="text-white text-2xl font-black tracking-tight uppercase">ZAYA CODE HUB</h2>
            <p className="text-blue-400 text-[10px] font-bold uppercase tracking-[0.3em] mt-1">Innovate • Build • Excel</p>
         </div>
@@ -54,8 +54,8 @@ export default function IDCard({ profile }: IDCardProps) {
       </div>
 
       {/* Profile Image Section */}
-      <div className="relative -mt-20 z-20 flex flex-col items-center">
-        <div className="w-44 h-44 rounded-[2.5rem] bg-white p-2 shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-slate-100">
+      <div className="relative -mt-16 z-20 flex flex-col items-center shrink-0">
+        <div className="w-40 h-40 rounded-[2.5rem] bg-white p-2 shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-slate-100">
            <div className="w-full h-full rounded-[2rem] bg-slate-50 flex items-center justify-center text-slate-400 overflow-hidden relative border-2 border-slate-100">
               {profile.avatar_url ? (
                 <img src={profile.avatar_url} alt={profile.full_name} className="w-full h-full object-cover" />
@@ -65,26 +65,26 @@ export default function IDCard({ profile }: IDCardProps) {
            </div>
         </div>
         
-        <div className="mt-8 text-center space-y-2">
-            <h3 className="text-2xl font-black text-slate-900 dark:text-white leading-tight uppercase tracking-tight px-4">{profile.full_name || 'Loading...'}</h3>
-            <div className="inline-flex items-center gap-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/50 px-5 py-2 rounded-2xl">
-              <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
-              <p className="text-blue-600 dark:text-blue-400 font-black text-[10px] uppercase tracking-widest">
-                {profile.position || 'Software Development Intern'}
-              </p>
-            </div>
+        <div className="mt-4 text-center space-y-1">
+          <h3 className="text-2xl font-black text-slate-900 leading-tight uppercase tracking-tight">{profile.full_name || 'Loading...'}</h3>
+          <div className="inline-flex items-center gap-2 bg-blue-50 border border-blue-100 px-4 py-1.5 rounded-xl">
+             <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+             <p className="text-blue-600 font-bold text-[10px] uppercase tracking-widest">
+               {profile.position || 'Software Development Intern'}
+             </p>
           </div>
+        </div>
       </div>
 
       {/* Separator with Dot */}
-      <div className="mt-6 flex items-center justify-center gap-4 px-20">
+      <div className="mt-6 flex items-center justify-center gap-4 px-20 shrink-0">
          <div className="h-px flex-1 bg-gradient-to-r from-transparent to-blue-200" />
-         <div className="w-2 h-2 rounded-full bg-blue-600" />
+         <div className="w-1.5 h-1.5 rounded-full bg-blue-600" />
          <div className="h-px flex-1 bg-gradient-to-l from-transparent to-blue-200" />
       </div>
 
       {/* Details Section */}
-      <div className="mt-8 px-12 space-y-6">
+      <div className="mt-6 px-12 space-y-6 flex-grow">
         <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 text-center">
           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Intern ID Number</p>
           <p className="text-sm font-black text-slate-800 font-mono tracking-tighter">{internId}</p>
@@ -107,24 +107,27 @@ export default function IDCard({ profile }: IDCardProps) {
           </div>
         </div>
 
-        <div className="pt-4 flex flex-col items-center space-y-3">
-           <div className="flex items-center gap-2 text-xs font-bold text-slate-500">
-              <Mail className="h-4 w-4 text-slate-300" />
+        <div className="pt-2 flex flex-col items-center">
+           <div className="flex items-center gap-2 text-xs font-bold text-slate-400">
+              <Mail className="h-3 w-3 text-slate-300" />
               {profile.email}
            </div>
         </div>
       </div>
 
       {/* Decorative Bottom Accents */}
-      <div className="absolute bottom-0 left-0 right-0 h-16 pointer-events-none">
+      <div className="relative mt-auto h-20 pointer-events-none overflow-hidden shrink-0">
          {/* Gold/Blue corner patterns */}
-         <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-[#0A192F] to-transparent rotate-12 -translate-x-8 translate-y-8" />
-         <div className="absolute bottom-0 right-0 w-24 h-24 bg-gradient-to-tl from-[#0A192F] to-transparent -rotate-12 translate-x-8 translate-y-8" />
+         <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#0A192F] to-transparent rotate-12 -translate-x-12 translate-y-12" />
+         <div className="absolute bottom-0 right-0 w-32 h-32 bg-gradient-to-tl from-[#0A192F] to-transparent -rotate-12 translate-x-12 translate-y-12" />
          
-         <div className="absolute bottom-2 left-1/2 -translate-x-1/2">
-            <p className="text-[8px] font-black text-slate-400 uppercase tracking-[0.4em] italic">Building the Future Together</p>
+         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-full text-center">
+            <p className="text-[8px] font-black text-slate-400 uppercase tracking-[0.5em] italic">Building the Future Together</p>
          </div>
       </div>
+
+      {/* Top Accent Strip */}
+      <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-400 via-blue-600 to-blue-900 z-40" />
 
       {/* Verification Link Overlay (Invisible but functional) */}
       <a 
