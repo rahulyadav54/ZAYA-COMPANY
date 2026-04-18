@@ -129,22 +129,24 @@ export default function InternCertificatesPage() {
            <div className="relative w-full max-w-7xl h-full flex flex-col items-center justify-center">
               <button 
                 onClick={() => setSelectedCert(null)}
-                className="absolute top-0 right-0 p-4 text-white hover:text-red-500 transition-colors"
+                className="absolute top-4 right-4 z-10 p-3 bg-white/10 text-white rounded-full hover:bg-red-500 transition-colors"
               >
-                <X className="h-10 w-10" />
+                <X className="h-6 w-6" />
               </button>
 
-              <div className="scale-[0.4] md:scale-[0.6] lg:scale-[0.8] xl:scale-[1.0] transition-all transform origin-center">
-                <Certificate 
-                  internName={selectedCert.cert_full_name || "Intern Name"} 
-                  taskTitle={selectedCert.tasks?.title || "Project Title"} 
-                  completionDate={selectedCert.created_at || selectedCert.submitted_at}
-                  durationMonths={selectedCert.tasks?.duration_months || 1}
-                  certificateId={selectedCert.certificate_id}
-                />
+              <div className="flex-1 w-full overflow-auto p-4 md:p-10 flex flex-col items-center justify-center">
+                <div className="transform scale-[0.45] sm:scale-[0.6] lg:scale-[0.8] transition-all origin-center my-4">
+                  <Certificate 
+                    internName={selectedCert.cert_full_name || "Intern Name"} 
+                    taskTitle={selectedCert.tasks?.title || "Project Title"} 
+                    completionDate={selectedCert.created_at || selectedCert.submitted_at}
+                    durationMonths={selectedCert.tasks?.duration_months || 1}
+                    certificateId={selectedCert.certificate_id}
+                  />
+                </div>
               </div>
 
-              <div className="mt-10 flex flex-col items-center space-y-4">
+              <div className="mt-4 pb-8 flex flex-col items-center space-y-2">
                  <p className="text-slate-400 font-bold uppercase tracking-widest text-sm">Official Zaya Code Hub Digital Credential</p>
                  <p className="text-slate-600 text-xs">Verify this document at zayacodehub.com/verify</p>
               </div>

@@ -114,9 +114,9 @@ export default function Certificate({
              <div className="w-16 h-[2px] bg-slate-200" />
           </div>
           
-          {/* THE NAME - Great Vibes as requested */}
-          <div className="mb-6 min-h-[150px] flex items-center justify-center">
-            <h2 className="text-[96px] text-[#1a365d] leading-none" style={{ fontFamily: "'Great Vibes', cursive" }}>
+          {/* THE NAME - Corrected size to fit perfectly */}
+          <div className="mb-4 min-h-[100px] flex items-center justify-center">
+            <h2 className="text-[64px] text-[#1a365d] leading-none text-center" style={{ fontFamily: "'Great Vibes', cursive" }}>
               {internName}
             </h2>
           </div>
