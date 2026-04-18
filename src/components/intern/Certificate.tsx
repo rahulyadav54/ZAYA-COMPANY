@@ -56,6 +56,11 @@ export default function Certificate({
     pdf.save(`ZAYA_Certificate_${internName.replace(/\s+/g, '_')}.pdf`);
   };
 
+  const formatName = (name: string) => {
+    if (!name) return "";
+    return name.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
+  };
+
   return (
     <div className="flex flex-col items-center gap-10 p-4">
       {/* Action Buttons */}
@@ -81,84 +86,95 @@ export default function Certificate({
       {/* Certificate Container */}
       <div 
         ref={certificateRef}
-        className="relative w-[1123px] h-[794px] bg-white shadow-2xl overflow-hidden border-[1px] border-slate-200 select-none"
+        className="relative w-[1123px] h-[794px] bg-[#fdfcfbf0] shadow-2xl overflow-hidden border-[1px] border-slate-200 select-none"
         style={{ fontFamily: "'Playfair Display', serif" }}
       >
         {/* Borders and Patterns */}
-        <div className="absolute inset-0 border-[30px] border-white z-30 pointer-events-none" />
-        <div className="absolute inset-8 border-[2px] border-[#C5A021] z-30 pointer-events-none" />
+        <div className="absolute inset-0 border-[24px] border-white z-30 pointer-events-none" />
+        <div className="absolute inset-8 border-[1px] border-[#C5A021] z-30 pointer-events-none" />
+        <div className="absolute inset-[36px] border-[1px] border-[#C5A021] opacity-30 z-30 pointer-events-none" />
 
-        {/* TOP RIGHT Design */}
-        <div className="absolute top-0 right-0 w-[350px] h-[350px] bg-[#003366] [clip-path:polygon(100%_0,100%_100%,40%_0)] z-10" />
-        <div className="absolute top-0 right-0 w-[380px] h-[380px] bg-[#C5A021] [clip-path:polygon(100%_0,100%_100%,40%_0)] z-0 mr-[-8px]" />
+        {/* TOP RIGHT Corner Accent */}
+        <div className="absolute top-0 right-0 w-[280px] h-[280px] bg-[#002855] [clip-path:polygon(100%_0,100%_100%,0_0)] z-10" />
+        <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-[#C5A021] [clip-path:polygon(100%_0,100%_100%,0_0)] z-0" />
 
-        {/* BOTTOM LEFT Design */}
-        <div className="absolute bottom-0 left-0 w-[350px] h-[350px] bg-[#003366] [clip-path:polygon(0_100%,0_0,60%_100%)] z-10" />
-        <div className="absolute bottom-0 left-0 w-[380px] h-[380px] bg-[#C5A021] [clip-path:polygon(0_100%,0_0,60%_100%)] z-0 ml-[-8px]" />
+        {/* BOTTOM LEFT Corner Accent */}
+        <div className="absolute bottom-0 left-0 w-[280px] h-[280px] bg-[#002855] [clip-path:polygon(0_100%,0_0,100%_100%)] z-10" />
+        <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-[#C5A021] [clip-path:polygon(0_100%,0_0,100%_100%)] z-0" />
 
-        {/* Logo Section */}
-        <div className="relative z-40 h-full w-full flex flex-col items-center pt-20 px-40 text-center">
-          <div className="mb-8">
-             <div className="w-20 h-20 bg-slate-900 rounded-2xl flex items-center justify-center mx-auto mb-4 border-2 border-[#C5A021]">
-                <img src="/logo.png" alt="" className="h-14 w-14 object-contain" />
+        {/* Main Content Layout - Flex Column to prevent overlaps */}
+        <div className="relative z-40 h-full w-full flex flex-col justify-between pt-16 pb-12 px-32 text-center">
+          
+          {/* Header Section */}
+          <div className="flex flex-col items-center">
+             <div className="w-16 h-16 bg-slate-900 rounded-xl flex items-center justify-center mb-4 border-[2px] border-[#C5A021] shadow-lg">
+                <img src="/logo.png" alt="Zaya Logo" className="h-10 w-10 object-contain" />
              </div>
-             <h3 className="text-sm font-black text-[#003366] tracking-[8px] uppercase">Zaya Code Hub</h3>
+             <h3 className="text-[10px] font-black text-[#002855] tracking-[6px] uppercase mb-6">Zaya Code Hub</h3>
+             <h1 className="text-[64px] font-black text-slate-900 mb-2 uppercase tracking-[8px] leading-none" style={{ fontFamily: "'Cinzel', serif" }}>Certificate</h1>
+             <h2 className="text-[20px] font-bold text-[#C5A021] tracking-[10px] uppercase">Of Internship Completion</h2>
           </div>
 
-          <h1 className="text-[72px] font-black text-slate-900 mb-0 uppercase tracking-[6px] leading-none">Certificate</h1>
-          <h2 className="text-[24px] font-bold text-[#C5A021] mb-12 tracking-[12px] uppercase">Of Internship Completion</h2>
-          
-          <div className="flex items-center gap-6 mb-8">
-             <div className="w-16 h-[2px] bg-slate-200" />
-             <p className="text-[12px] font-bold text-slate-400 uppercase tracking-[4px]">This acknowledgment is proudly presented to</p>
-             <div className="w-16 h-[2px] bg-slate-200" />
+          {/* Body Section */}
+          <div className="flex flex-col items-center justify-center flex-grow py-4">
+             <div className="flex items-center gap-6 mb-8 w-full justify-center opacity-80">
+                <div className="w-24 h-[1px] bg-slate-400" />
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[3px]">This acknowledgment is proudly presented to</p>
+                <div className="w-24 h-[1px] bg-slate-400" />
+             </div>
+             
+             {/* THE NAME - Title Cased, Italic Playfair Display for immense elegance */}
+             <div className="mb-6 flex items-center justify-center">
+               <h2 className="text-[68px] text-[#002855] leading-none font-bold italic" style={{ fontFamily: "'Playfair Display', serif" }}>
+                 {formatName(internName)}
+               </h2>
+             </div>
+             
+             <p className="text-[16px] text-slate-700 leading-relaxed max-w-[800px] mx-auto italic">
+               For their exceptional performance and dedication during the internship program at <span className="font-bold text-[#002855] not-italic">Zaya Code Hub</span>. They have successfully completed the project <span className="font-bold text-[#C5A021] not-italic">"{taskTitle}"</span> showcasing professional excellence from <span className="font-bold text-slate-900 not-italic">{dateRange}</span>.
+             </p>
           </div>
-          
-          {/* THE NAME - Alex Brush for clean, elegant cursive */}
-          <div className="mb-4 min-h-[100px] flex items-center justify-center">
-            <h2 className="text-[64px] text-[#1a365d] leading-none text-center" style={{ fontFamily: "'Alex Brush', cursive" }}>
-              {internName}
-            </h2>
-          </div>
-          
-          <p className="text-[17px] text-slate-600 leading-relaxed max-w-[850px] font-serif px-10 italic">
-            For their exceptional performance and dedication during the internship program at <span className="font-bold text-slate-900 not-italic">Zaya Code Hub</span>. They have successfully completed the project <span className="font-bold text-[#C5A021] not-italic">"{taskTitle}"</span> showcasing professional excellence from <span className="font-bold text-slate-900 not-italic">{dateRange}</span>.
-          </p>
 
-          {/* Signatures */}
-          <div className="absolute bottom-[80px] w-full px-20 flex justify-between items-end">
-            <div className="flex flex-col items-center w-[250px]">
-              <p className="text-[32px] text-[#1a365d] leading-none mb-1" style={{ fontFamily: "'Alex Brush', cursive" }}>Rahul Kr Yadav</p>
-              <div className="w-full h-[1px] bg-slate-300 mb-2" />
-              <p className="text-[10px] font-black text-slate-800 uppercase tracking-[2px]">CEO & Founder</p>
+          {/* Footer Section (Signatures & Seal) */}
+          <div className="flex justify-between items-end w-full px-10 pb-8 relative">
+            
+            {/* Left Signature */}
+            <div className="flex flex-col items-center w-[220px]">
+              <p className="text-[36px] text-[#002855] leading-none mb-[-4px]" style={{ fontFamily: "'Dancing Script', cursive" }}>Rahul Kr Yadav</p>
+              <div className="w-full h-[1px] bg-slate-400 mb-2" />
+              <p className="text-[9px] font-black text-slate-800 uppercase tracking-[2px]">CEO & Founder</p>
             </div>
 
-            {/* Central Seal */}
-            <div className="relative flex flex-col items-center justify-center">
-               <div className="w-28 h-28 bg-gradient-to-br from-[#C5A021] to-[#A67C00] rounded-full shadow-2xl flex items-center justify-center border-[6px] border-white relative z-10">
-                  <Award className="h-14 w-14 text-white" />
+            {/* Central Seal - Positioned gracefully without breaking layout */}
+            <div className="flex flex-col items-center justify-center transform translate-y-4">
+               <div className="w-24 h-24 bg-gradient-to-br from-[#C5A021] to-[#A67C00] rounded-full shadow-[0_10px_30px_rgba(197,160,33,0.4)] flex items-center justify-center border-[4px] border-white z-10 relative">
+                  <Award className="h-10 w-10 text-white" />
+                  {/* Subtle inner ring */}
+                  <div className="absolute inset-1 border-[1px] border-white/30 rounded-full" />
                </div>
             </div>
 
-            <div className="flex flex-col items-center w-[250px]">
-              <p className="text-[32px] text-[#1a365d] leading-none mb-1" style={{ fontFamily: "'Alex Brush', cursive" }}>Shivshankar Jaysawal</p>
-              <div className="w-full h-[1px] bg-slate-300 mb-2" />
-              <p className="text-[10px] font-black text-slate-800 uppercase tracking-[2px]">Project Manager</p>
+            {/* Right Signature */}
+            <div className="flex flex-col items-center w-[220px]">
+              <p className="text-[36px] text-[#002855] leading-none mb-[-4px]" style={{ fontFamily: "'Dancing Script', cursive" }}>Shivshankar Jaysawal</p>
+              <div className="w-full h-[1px] bg-slate-400 mb-2" />
+              <p className="text-[9px] font-black text-slate-800 uppercase tracking-[2px]">Project Manager</p>
             </div>
+            
           </div>
 
-          {/* Footer ID */}
+          {/* Validation Footer */}
           {certificateId && (
-            <div className="absolute bottom-6 w-full px-20 flex justify-between items-center text-[9px] font-bold uppercase tracking-[3px] text-slate-400">
-               <p>Credential ID: <span className="text-slate-900 font-black">{certificateId}</span></p>
-               <p>Verify Authenticity: <span className="text-blue-600 font-black underline lowercase tracking-normal">zayacodehub.in/verify</span></p>
+            <div className="absolute bottom-[24px] left-32 right-32 flex justify-between items-center text-[8px] font-bold uppercase tracking-[2px] text-slate-400 border-t-[1px] border-slate-200 pt-2">
+               <p>Credential ID: <span className="text-[#002855] font-black">{certificateId}</span></p>
+               <p>Verify Authenticity: <span className="text-blue-600 font-black lowercase tracking-normal">zayacodehub.in/verify</span></p>
             </div>
           )}
         </div>
 
         {/* Global CSS */}
         <style jsx global>{`
-          @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Alex+Brush&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,900&display=swap');
+          @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Dancing+Script:wght@600;700&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&display=swap');
           @media print {
             .no-print { display: none; }
             body { margin: 0; padding: 0; }
