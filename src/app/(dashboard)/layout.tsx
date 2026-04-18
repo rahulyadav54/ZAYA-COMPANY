@@ -19,7 +19,8 @@ import {
   Newspaper,
   ShieldCheck,
   Mail,
-  Award
+  Award,
+  IdCard
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/lib/supabaseClient';
@@ -56,6 +57,7 @@ export default function DashboardLayout({
         { name: 'My Tasks', href: '/intern', icon: CheckSquare },
         { name: 'Submission', href: '/intern/submit', icon: FileText },
         { name: 'My Certificates', href: '/intern/certificates', icon: Award },
+        { name: 'ID Card', href: '/intern/id-card', icon: IdCard },
         { name: 'My Profile', href: '/intern/profile', icon: User },
         { name: 'Settings', href: '/intern/settings', icon: Settings },
       ];
