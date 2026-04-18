@@ -90,8 +90,8 @@ export default function InternDashboard() {
     );
   }
 
-  const completedCount = tasks?.filter(t => t.status === 'completed').length || 0;
-  const pendingCount = tasks?.filter(t => t.status === 'pending').length || 0;
+  const completedCount = certificates.length;
+  const pendingCount = tasks?.filter(t => t.status !== 'completed' && t.status !== 'in review').length || 0;
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
