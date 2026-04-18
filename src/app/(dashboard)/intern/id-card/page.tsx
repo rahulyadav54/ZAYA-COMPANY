@@ -38,7 +38,6 @@ export default function InternIDCardPage() {
         useCORS: true,
         logging: false,
         backgroundColor: '#ffffff',
-        borderRadius: 48
       });
       
       const imgData = canvas.toDataURL('image/png');
