@@ -3,13 +3,13 @@ import { createClient } from '@supabase/supabase-js'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://zayacodehub.in'
-  
+
   // Use env variables directly for server-side
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-  
+
   let magazineUrls: MetadataRoute.Sitemap = []
-  
+
   if (supabaseUrl && supabaseAnonKey) {
     const supabase = createClient(supabaseUrl, supabaseAnonKey)
     try {
@@ -42,6 +42,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '/privacy-policy',
     '/terms-of-service',
     '/cookie-policy',
+    '/verify',
+    'verify-id',
   ].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date(),
