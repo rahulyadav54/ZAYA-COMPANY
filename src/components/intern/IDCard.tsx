@@ -37,17 +37,23 @@ export default function IDCard({ profile }: IDCardProps) {
       </div>
 
       {/* Header Section */}
-      <div className="relative h-[260px] bg-[#0A192F] flex flex-col items-center pt-10 overflow-hidden shrink-0">
+      <div className="relative h-[240px] bg-[#0A192F] flex flex-col items-center pt-8 overflow-hidden shrink-0">
         {/* Background Patterns */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/10 rounded-full -mr-32 -mt-32 blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-black/20 to-transparent" />
+        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/5 rounded-full -mr-32 -mt-32 blur-3xl" />
+        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_20%_20%,rgba(59,130,246,0.05)_0%,transparent_50%)]" />
         
-        {/* Logo */}
-        <div className="z-10 flex flex-col items-center">
-           <img src="/logo.png" alt="ZAYA Logo" className="h-24 w-auto object-contain mb-2" />
-           <h2 className="text-white text-2xl font-black tracking-tight uppercase">ZAYA CODE HUB</h2>
-           <p className="text-blue-400 text-[10px] font-bold uppercase tracking-[0.3em] mt-1">Innovate • Build • Excel</p>
+        {/* Header Layout */}
+        <div className="z-10 w-full px-10 flex items-center justify-between">
+           <div className="flex flex-col items-start">
+              <img src="/logo.png" alt="ZAYA Logo" className="h-16 w-auto object-contain drop-shadow-2xl" />
+           </div>
+           <div className="flex flex-col items-end text-right">
+              <h2 className="text-white text-xl font-black tracking-tighter uppercase leading-none">ZAYA CODE HUB</h2>
+              <p className="text-blue-400 text-[8px] font-bold uppercase tracking-[0.3em] mt-1">Innovate • Build • Excel</p>
+           </div>
         </div>
+
+        <div className="z-10 mt-6 h-px w-4/5 bg-gradient-to-r from-transparent via-blue-500/30 to-transparent" />
 
         {/* Curved Bottom Clip */}
         <div className="absolute bottom-0 left-0 right-0 h-16 bg-white" style={{ clipPath: 'ellipse(60% 100% at 50% 100%)' }} />
