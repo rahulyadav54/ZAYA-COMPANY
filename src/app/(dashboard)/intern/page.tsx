@@ -15,36 +15,37 @@ export default function InternDashboard() {
     async function loadData() {
       try {
         const { data: { user } } = await supabase.auth.getUser();
-        
-        if (user) {
-          // Fetch profile
-          const { data: profileData } = await supabase.from('profiles').select('*').eq('id', user.id).single();
-          if (profileData) setProfile(profileData);
+        if (!user) {
+          setIsLoading(false);
+          return;
+        }
 
-          // Fetch assigned tasks
-          const { data: taskData } = await supabase
-            .from('tasks')
-            .select('*')
-            .eq('intern_id', user.id)
-            .order('created_at', { ascending: false });
+        // 1. Fetch profile (Fastest)
+        const { data: profileData } = await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle();
+        if (profileData) setProfile(profileData);
 
-          if (taskData) {
-            setTasks(taskData);
-          }
+        // 2. Fetch tasks (Independent)
+        const { data: taskData } = await supabase
+          .from('tasks')
+          .select('*')
+          .eq('intern_id', user.id)
+          .order('created_at', { ascending: false });
+        if (taskData) setTasks(taskData);
 
-          // Fetch approved certificates safely
-          const { data: certData, error: certError } = await supabase
+        // 3. Fetch certificates (Safest)
+        try {
+          const { data: certData } = await supabase
             .from('submissions')
             .select('*, tasks(title)')
             .eq('intern_id', user.id)
             .eq('review_status', 'approved');
-          
-          if (!certError && certData) {
-            setCertificates(certData);
-          }
+          if (certData) setCertificates(certData);
+        } catch (e) {
+          console.warn("Certificates query failed, but continuing...");
         }
+
       } catch (err) {
-        console.error('Error loading dashboard data:', err);
+        console.error('Dashboard load error:', err);
       } finally {
         setIsLoading(false);
       }
