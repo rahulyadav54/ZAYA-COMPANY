@@ -168,25 +168,3 @@ export default function Certificate({
     </div>
   );
 }
-
-          {/* Verification Info */}
-          {certificateId && (
-            <div className="absolute bottom-6 w-full px-40 flex justify-between items-end text-[10px] font-bold uppercase tracking-[2px] text-slate-400">
-               <p>Credential ID: <span className="text-[#003366]">{certificateId}</span></p>
-               <p>Verify at: <span className="text-blue-600 lowercase tracking-normal">zayacodehub.com/verify</span></p>
-            </div>
-          )}
-        </div>
-
-        {/* Global CSS */}
-        <style jsx global>{`
-          @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Great+Vibes&display=swap');
-          @media print {
-            .no-print { display: none; }
-            body { margin: 0; padding: 0; background: white; }
-          }
-        `}</style>
-      </div>
-    </div>
-  );
-}
