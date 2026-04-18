@@ -7,6 +7,7 @@ import { Users, Search, Mail, Loader2, UserX, Plus, Send, X, Trash2, Download } 
 
 export default function ManageInternsPage() {
   const [interns, setInterns] = useState<any[]>([]);
+  const [acceptedCandidates, setAcceptedCandidates] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   
   // Modals state
@@ -14,6 +15,9 @@ export default function ManageInternsPage() {
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [selectedInternId, setSelectedInternId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  const [selectedCandidate, setSelectedCandidate] = useState<any>(null);
+  const [manualFullName, setManualFullName] = useState('');
 
   const fetchInterns = async () => {
     setIsLoading(true);
@@ -29,8 +33,20 @@ export default function ManageInternsPage() {
     setIsLoading(false);
   };
 
+  const fetchAcceptedCandidates = async () => {
+    const { data, error } = await supabase
+      .from('applications')
+      .select('id, full_name, email')
+      .eq('status', 'accepted');
+    
+    if (!error && data) {
+      setAcceptedCandidates(data);
+    }
+  };
+
   useEffect(() => {
     fetchInterns();
+    fetchAcceptedCandidates();
   }, []);
 
   const downloadCSV = () => {
@@ -226,30 +242,77 @@ export default function ManageInternsPage() {
 
       {/* Create Intern Modal */}
       {showCreateModal && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-xl w-full max-w-md overflow-hidden border border-slate-200 dark:border-slate-800">
-            <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
-              <h2 className="text-xl font-bold text-foreground">Create Custom Intern</h2>
-              <button onClick={() => setShowCreateModal(false)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full">
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-2xl w-full max-w-md overflow-hidden border border-slate-200 dark:border-slate-800 my-auto">
+            <div className="p-8 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-950/50">
+              <h2 className="text-xl font-black text-slate-900 dark:text-white uppercase italic tracking-tight">Create Intern Account</h2>
+              <button 
+                onClick={() => {
+                  setShowCreateModal(false);
+                  setSelectedCandidate(null);
+                  setManualFullName('');
+                }} 
+                className="p-2 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-full transition-colors"
+              >
                 <X className="h-5 w-5 text-slate-500" />
               </button>
             </div>
-            <form onSubmit={handleCreateIntern} className="p-6 space-y-4">
+            <form onSubmit={handleCreateIntern} className="p-8 space-y-6">
+              {/* Candidate Selector */}
               <div className="space-y-2">
-                <label className="text-sm font-bold text-foreground">Full Name</label>
-                <input required name="fullName" type="text" className="w-full px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-foreground" />
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Choose Accepted Candidate</label>
+                <select 
+                  onChange={(e) => {
+                    const id = e.target.value;
+                    if (id === 'manual') {
+                      setSelectedCandidate(null);
+                      setManualFullName('');
+                    } else {
+                      const cand = acceptedCandidates.find(c => c.id.toString() === id);
+                      setSelectedCandidate(cand);
+                    }
+                  }}
+                  className="w-full px-5 py-3 rounded-2xl border-2 border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-foreground font-bold focus:border-blue-600 outline-none transition-all"
+                >
+                  <option value="manual">-- Manual Entry --</option>
+                  {acceptedCandidates.map(cand => (
+                    <option key={cand.id} value={cand.id}>{cand.full_name}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="h-px bg-slate-100 dark:bg-slate-800 w-full" />
+
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Full Name</label>
+                <input 
+                  required 
+                  name="fullName" 
+                  type="text" 
+                  value={selectedCandidate ? selectedCandidate.full_name : manualFullName}
+                  onChange={(e) => !selectedCandidate && setManualFullName(e.target.value)}
+                  readOnly={!!selectedCandidate}
+                  className={`w-full px-5 py-3 rounded-2xl border-2 border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-foreground font-bold focus:border-blue-600 outline-none transition-all ${selectedCandidate ? 'opacity-70 cursor-not-allowed' : ''}`} 
+                />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-bold text-foreground">Email</label>
-                <input required name="email" type="email" className="w-full px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-foreground" />
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Email Address</label>
+                <input required name="email" type="email" placeholder="intern@gmail.com" className="w-full px-5 py-3 rounded-2xl border-2 border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-foreground font-bold focus:border-blue-600 outline-none transition-all" />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-bold text-foreground">Password</label>
-                <input required name="password" type="text" placeholder="Minimum 6 characters" minLength={6} className="w-full px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-foreground" />
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Assigned Password</label>
+                <input required name="password" type="text" placeholder="Minimum 6 characters" minLength={6} className="w-full px-5 py-3 rounded-2xl border-2 border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-foreground font-bold focus:border-blue-600 outline-none transition-all" />
               </div>
-              <button disabled={isSubmitting} type="submit" className="w-full py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-colors mt-4">
-                {isSubmitting ? 'Creating...' : 'Create Account'}
-              </button>
+              
+              <div className="pt-2">
+                <button 
+                  disabled={isSubmitting} 
+                  type="submit" 
+                  className="w-full py-4 bg-blue-600 text-white rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-blue-700 transition-all shadow-xl shadow-blue-600/20 active:scale-95 disabled:bg-blue-400"
+                >
+                  {isSubmitting ? 'Creating Account...' : 'Create Intern Account'}
+                </button>
+              </div>
             </form>
           </div>
         </div>
