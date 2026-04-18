@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Upload, Send, CheckCircle2, Loader2, ArrowRight, Award, X } from 'lucide-react';
+import { Upload, Send, CheckCircle2, Loader2, ArrowRight, Award, X, ShieldCheck } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
 import { useRouter } from 'next/navigation';
 import Certificate from '@/components/intern/Certificate';
