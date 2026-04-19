@@ -33,52 +33,46 @@ export default function InternIDCardPage() {
     setIsDownloading(true);
     
     try {
-      // Ensure we are at the top for clean capture
+      // Force scroll to top to prevent capture offsets
       window.scrollTo(0, 0);
       
-      // Small delay for layout stabilization
+      // Delay for layout stabilization
       await new Promise(resolve => setTimeout(resolve, 800));
       
       const element = idCardRef.current;
       const canvas = await html2canvas(element, {
-        scale: 1.5, // 1.5x for stability on ID cards
+        scale: 2, // High resolution
         useCORS: true,
         allowTaint: false,
-        logging: true,
+        logging: false,
         backgroundColor: null, 
-        windowWidth: 600, // Fixed width for mobile vs desktop consistency
-        imageTimeout: 15000,
-        onclone: (clonedDoc) => {
-          const clonedElement = clonedDoc.getElementById('id-card-capture');
-          if (clonedElement) {
-             clonedElement.style.opacity = '1';
-             clonedElement.style.transform = 'none';
-          }
-        }
+        windowWidth: 800,
+        scrollY: -window.scrollY,
+        scrollX: 0
       });
       
-      const imgData = canvas.toDataURL('image/png', 0.9);
+      const imgData = canvas.toDataURL('image/png', 1.0);
       const pdf = new jsPDF({
-        orientation: 'portrait',
+        orientation: 'p',
         unit: 'mm',
         format: 'a4'
       });
       
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = pdf.internal.pageSize.getHeight();
-      const imgWidth = 100; 
+      const imgWidth = 100; // Standard ID width on A4
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
       
       const x = (pdfWidth - imgWidth) / 2;
       const y = (pdfHeight - imgHeight) / 2;
       
-      pdf.addImage(imgData, 'PNG', x, y, imgWidth, imgHeight, undefined, 'MEDIUM');
+      pdf.addImage(imgData, 'PNG', x, y, imgWidth, imgHeight, undefined, 'FAST');
       pdf.save(`ZAYA_ID_${profile.full_name.replace(/\s+/g, '_')}.pdf`);
       
       alert('Success! Your ID Card has been downloaded.');
     } catch (error: any) {
       console.error('Download System Error:', error);
-      alert(`Download Failed: ${error.message || 'Unknown Error'}. Please ensure you are using a modern browser.`);
+      alert(`Download Failed: ${error.message || 'Unknown Error'}. Please try refreshing the page.`);
     } finally {
       setIsDownloading(false);
     }

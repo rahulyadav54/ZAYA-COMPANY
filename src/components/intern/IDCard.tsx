@@ -39,10 +39,10 @@ export default function IDCard({ profile }: IDCardProps) {
       </div>
 
       {/* Header Section */}
-      <div className="relative h-[240px] bg-[#0A192F] flex flex-col items-center pt-8 overflow-hidden shrink-0">
+      <div className="relative h-[240px] flex flex-col items-center pt-8 overflow-hidden shrink-0" style={{ backgroundColor: '#0A192F' }}>
         {/* Background Patterns */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-[#2563eb]/5 rounded-full -mr-32 -mt-32 blur-3xl" />
-        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_20%_20%,rgba(59,130,246,0.05)_0%,transparent_50%)]" />
+        <div className="absolute top-0 right-0 w-64 h-64 rounded-full -mr-32 -mt-32 blur-3xl" style={{ backgroundColor: '#1e3a8a', opacity: 0.1 }} />
+        <div className="absolute top-0 left-0 w-full h-full" style={{ background: 'radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.05) 0%, transparent 50%)' }} />
         
         {/* Header Layout */}
         <div className="z-10 w-full px-10 flex items-center justify-between mt-4">
@@ -51,11 +51,11 @@ export default function IDCard({ profile }: IDCardProps) {
            </div>
            <div className="flex flex-col items-end text-right">
               <h2 className="text-white text-xl font-black tracking-tighter uppercase leading-none">ZAYA CODE HUB</h2>
-              <p className="text-[#3b82f6] text-[8px] font-bold uppercase tracking-[0.3em] mt-1">Innovate • Build • Excel</p>
+              <p className="text-[8px] font-bold uppercase tracking-[0.3em] mt-1" style={{ color: '#3b82f6' }}>Innovate • Build • Excel</p>
            </div>
         </div>
 
-        <div className="z-10 mt-6 h-px w-4/5 bg-gradient-to-r from-transparent via-[#2563eb]/30 to-transparent" />
+        <div className="z-10 mt-6 h-px w-4/5" style={{ background: 'linear-gradient(to right, transparent, rgba(37, 99, 235, 0.3), transparent)' }} />
 
         {/* Curved Bottom Clip */}
         <div className="absolute bottom-0 left-0 right-0 h-16 bg-white" style={{ clipPath: 'ellipse(60% 100% at 50% 100%)' }} />
