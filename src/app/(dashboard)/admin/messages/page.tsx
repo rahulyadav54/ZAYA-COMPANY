@@ -224,10 +224,10 @@ export default function AdminMessagesPage() {
   };
 
   return (
-    <div className="h-[calc(100vh-10rem)] flex gap-6">
+    <div className="h-[calc(100vh-8rem)] flex gap-4 md:gap-6">
       {/* Sidebar: Intern List */}
-      <div className="w-80 bg-white dark:bg-slate-900 rounded-[3rem] border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden flex flex-col">
-        <div className="p-8 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/50">
+      <div className="w-72 bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden flex flex-col">
+        <div className="p-6 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/50">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-[0.2em]">Support Inbox</h2>
             <button 
@@ -261,14 +261,14 @@ export default function AdminMessagesPage() {
               <button
                 key={conv.intern_id}
                 onClick={() => setSelectedIntern(conv)}
-                className={`w-full p-5 flex items-center gap-4 border-b border-slate-50 dark:border-slate-800/50 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all text-left ${selectedIntern?.intern_id === conv.intern_id ? 'bg-blue-50/50 dark:bg-blue-900/10 border-l-4 border-l-blue-600' : ''}`}
+                className={`w-full p-4 flex items-center gap-3 border-b border-slate-50 dark:border-slate-800/50 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all text-left ${selectedIntern?.intern_id === conv.intern_id ? 'bg-blue-50/50 dark:bg-blue-900/10 border-l-4 border-l-blue-600' : ''}`}
               >
                 <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-blue-100 to-blue-50 dark:from-blue-900/40 dark:to-blue-900/20 flex items-center justify-center text-blue-600 font-black text-sm shrink-0 shadow-sm">
                   {conv.intern_name?.charAt(0) || 'I'}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-black text-slate-900 dark:text-white text-sm truncate uppercase tracking-tight">{conv.intern_name}</p>
-                  <p className="text-[10px] font-bold text-slate-500 truncate uppercase opacity-60 mt-0.5">Updated {new Date(conv.created_at).toLocaleDateString()}</p>
+                  <p className="font-bold text-slate-900 dark:text-white text-xs truncate uppercase tracking-tight">{conv.intern_name}</p>
+                  <p className="text-[9px] font-medium text-slate-500 truncate uppercase opacity-60 mt-0.5">Updated {new Date(conv.created_at).toLocaleDateString()}</p>
                 </div>
                 <ChevronRight className={`h-4 w-4 transition-transform ${selectedIntern?.intern_id === conv.intern_id ? 'text-blue-600 translate-x-1' : 'text-slate-300'}`} />
               </button>
@@ -278,11 +278,11 @@ export default function AdminMessagesPage() {
       </div>
 
       {/* Main: Chat Area */}
-      <div className="flex-1 bg-white dark:bg-slate-900 rounded-[3rem] border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden flex flex-col">
+      <div className="flex-1 bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden flex flex-col">
         {selectedIntern ? (
           <>
             {/* Header */}
-            <div className="p-6 px-8 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-white/50 dark:bg-slate-900/50 backdrop-blur-md">
+            <div className="p-5 px-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-white/50 dark:bg-slate-900/50 backdrop-blur-md">
                <div className="flex items-center gap-4">
                   <div className="relative">
                     <div className="h-12 w-12 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center border border-slate-200 dark:border-slate-700">
@@ -291,7 +291,7 @@ export default function AdminMessagesPage() {
                     <div className="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-green-500 border-2 border-white dark:border-slate-900 rounded-full" />
                   </div>
                   <div>
-                     <h3 className="font-black text-slate-900 dark:text-white uppercase tracking-tight text-lg">{selectedIntern.intern_name}</h3>
+                     <h3 className="font-bold text-slate-900 dark:text-white uppercase tracking-tight text-base">{selectedIntern.intern_name}</h3>
                      <div className="flex items-center gap-2">
                         <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Active Session</span>
                      </div>
@@ -302,7 +302,7 @@ export default function AdminMessagesPage() {
             {/* Messages */}
             <div 
               ref={scrollRef}
-              className="flex-1 p-8 overflow-y-auto space-y-8 scroll-smooth"
+              className="flex-1 p-6 overflow-y-auto space-y-6 scroll-smooth"
               style={{ 
                 backgroundImage: 'radial-gradient(circle at 2px 2px, rgba(0,0,0,0.02) 1px, transparent 0)',
                 backgroundSize: '32px 32px'
@@ -315,8 +315,8 @@ export default function AdminMessagesPage() {
                   const isAdmin = msg.sender_type === 'admin';
                   return (
                     <div key={msg.id || idx} className={`flex ${isAdmin ? 'justify-end' : 'justify-start'}`}>
-                      <div className={`max-w-[75%] space-y-1.5`}>
-                        <div className={`px-6 py-4 rounded-[2rem] text-sm font-semibold shadow-sm transition-all leading-relaxed ${
+                      <div className={`max-w-[85%] space-y-1.5`}>
+                        <div className={`px-5 py-3 rounded-2xl text-[13px] font-medium shadow-sm transition-all leading-relaxed ${
                           isAdmin 
                             ? 'bg-blue-600 text-white rounded-tr-none shadow-blue-500/10' 
                             : 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-tl-none shadow-md border border-slate-200/50 dark:border-slate-700/50'
@@ -349,7 +349,7 @@ export default function AdminMessagesPage() {
             </div>
 
             {/* Input */}
-            <div className="p-8 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950">
+            <div className="p-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950">
               <AnimatePresence>
                 {selectedFile && (
                   <motion.div 
@@ -400,7 +400,7 @@ export default function AdminMessagesPage() {
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
                     placeholder="Type your official reply..."
-                    className="w-full pl-8 pr-24 py-5 bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-800 rounded-[2.5rem] text-sm font-bold focus:border-blue-600 outline-none transition-all shadow-sm text-foreground placeholder:text-slate-400"
+                    className="w-full pl-6 pr-24 py-4 bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-800 rounded-2xl text-[13px] font-medium focus:border-blue-600 outline-none transition-all shadow-sm text-foreground placeholder:text-slate-400"
                   />
                   <button
                     type="submit"
