@@ -70,35 +70,47 @@ export default function ApplicationsPage() {
 
   const updateStatus = async (id: string, newStatus: string, appData?: any) => {
     try {
-      const { error } = await supabase
-        .from('applications')
-        .update({ status: newStatus })
-        .eq('id', id);
-      
-      if (error) throw error;
+      if (newStatus === 'rejected') {
+        // If rejected, delete from database as requested to reduce violation
+        const { error } = await supabase
+          .from('applications')
+          .delete()
+          .eq('id', id);
+        
+        if (error) throw error;
+        alert('Application successfully rejected and deleted.');
+      } else {
+        // Normal update for 'accepted'
+        const { error } = await supabase
+          .from('applications')
+          .update({ status: newStatus })
+          .eq('id', id);
+        
+        if (error) throw error;
 
-      if ((newStatus === 'accepted' || newStatus === 'rejected') && appData) {
-        try {
-          await fetch('/api/send-acceptance', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              email: appData.email,
-              fullName: appData.full_name,
-              position: appData.position,
-              status: newStatus
-            }),
-          });
-        } catch (err) {
-          console.error('Failed to send email:', err);
+        if (newStatus === 'accepted' && appData) {
+          try {
+            await fetch('/api/send-acceptance', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                email: appData.email,
+                fullName: appData.full_name,
+                position: appData.position,
+                status: newStatus
+              }),
+            });
+          } catch (err) {
+            console.error('Failed to send email:', err);
+          }
         }
+        alert(`Successfully updated status to ${newStatus.toUpperCase()}`);
       }
       
       await fetchApplications();
-      alert(`Successfully updated status to ${newStatus.toUpperCase()}`);
     } catch (error: any) {
-      console.error('Error updating status:', error);
-      alert('Failed to update status: ' + (error.message || 'Unknown error'));
+      console.error('Error handling application decision:', error);
+      alert('Action failed: ' + (error.message || 'Unknown error'));
     }
   };
 

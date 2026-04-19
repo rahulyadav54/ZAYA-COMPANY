@@ -95,7 +95,11 @@ Code Confidence: ${confidence}/10`,
 
     if (insertError) {
       console.error('Insert error:', insertError);
-      alert(`Failed to submit application: ${insertError.message}`);
+      if (insertError.code === '23505') {
+        alert('Already registered with this Gmail. Please wait for the admin to review your previous application.');
+      } else {
+        alert(`Failed to submit application: ${insertError.message}`);
+      }
     } else {
       setIsSuccess(true);
       setTimeout(() => {
