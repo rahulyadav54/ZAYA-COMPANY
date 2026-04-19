@@ -71,7 +71,7 @@ export default function InternIDCardPage() {
       const x = (pdfWidth - imgWidth) / 2;
       const y = (pdfHeight - imgHeight) / 2;
       
-      pdf.addImage(imgData, 'PNG', x, y, imgWidth, imgHeight);
+      pdf.addImage(imgData, 'PNG', x, y, imgWidth, imgHeight, undefined, 'FAST');
       pdf.save(`ZAYA_ID_${profile.full_name.replace(/\s+/g, '_')}.pdf`);
       
       alert('Success! Your ID Card has been downloaded.');

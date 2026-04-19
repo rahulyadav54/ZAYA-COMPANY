@@ -24,6 +24,7 @@ export default function Certificate({
   hideButtons = false,
   internPosition
 }: CertificateProps) {
+  const [isDownloading, setIsDownloading] = React.useState(false);
   const certificateRef = useRef<HTMLDivElement>(null);
 
   // Calculate dates based on duration
@@ -34,28 +35,40 @@ export default function Certificate({
   const dateRange = `${start.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })} to ${end.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}`;
 
   const downloadPDF = async () => {
-    if (!certificateRef.current) return;
+    if (!certificateRef.current || isDownloading) return;
+    setIsDownloading(true);
 
-    // High quality scaling for PDF
-    const canvas = await html2canvas(certificateRef.current, {
-      scale: 4, 
-      useCORS: true,
-      backgroundColor: '#ffffff',
-      logging: false
-    });
-    
-    const imgData = canvas.toDataURL('image/png', 1.0);
-    const pdf = new jsPDF({
-      orientation: 'landscape',
-      unit: 'mm',
-      format: 'a4'
-    });
+    try {
+      // Wait for any rendering to settle
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      const canvas = await html2canvas(certificateRef.current, {
+        scale: 3, // 3x is a good balance for quality vs performance
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#ffffff',
+        logging: false
+      });
+      
+      const imgData = canvas.toDataURL('image/png', 1.0);
+      const pdf = new jsPDF({
+        orientation: 'landscape',
+        unit: 'mm',
+        format: 'a4'
+      });
 
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = pdf.internal.pageSize.getHeight();
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
 
-    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
-    pdf.save(`ZAYA_Certificate_${internName.replace(/\s+/g, '_')}.pdf`);
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
+      pdf.save(`ZAYA_Certificate_${internName.replace(/\s+/g, '_')}.pdf`);
+      alert('Success! Your certificate has been downloaded.');
+    } catch (error) {
+      console.error('Certificate Generation Error:', error);
+      alert('Failed to generate certificate. Please try again or take a screenshot.');
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   const formatName = (name: string) => {
@@ -70,10 +83,11 @@ export default function Certificate({
         <div className="flex gap-4 no-print">
           <button 
             onClick={downloadPDF}
-            className="flex items-center gap-2 px-10 py-5 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-black transition-all shadow-2xl active:scale-95 text-sm uppercase tracking-widest"
+            disabled={isDownloading}
+            className="flex items-center gap-2 px-10 py-5 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-black transition-all shadow-2xl active:scale-95 text-sm uppercase tracking-widest disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <Download className="h-5 w-5" />
-            Download Certificate (PDF)
+            {isDownloading ? <Download className="h-5 w-5 animate-bounce" /> : <Download className="h-5 w-5" />}
+            {isDownloading ? 'Generating PDF...' : 'Download Certificate (PDF)'}
           </button>
           <button 
             onClick={() => window.print()}
