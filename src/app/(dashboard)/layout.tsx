@@ -31,15 +31,72 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const pathname = usePathname();
   const router = useRouter();
-  const isAdmin = pathname.startsWith('/admin');
+  const isAdminPath = pathname.startsWith('/admin');
+  const isInternPath = pathname.startsWith('/intern');
+
+  React.useEffect(() => {
+    async function checkRole() {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        if (!user) {
+          router.push('/login');
+          return;
+        }
+
+        const { data: profile, error } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', user.id)
+          .single();
+
+        if (error || !profile) {
+          console.error("Error fetching profile:", error);
+          router.push('/login');
+          return;
+        }
+
+        // Enforce role-based access
+        if (profile.role === 'admin' && isInternPath) {
+          router.push('/admin');
+        } else if (profile.role === 'intern' && isAdminPath) {
+          router.push('/intern');
+        } else if (profile.role !== 'admin' && profile.role !== 'intern') {
+          // If role is neither, something is wrong
+          router.push('/login');
+        }
+      } catch (err) {
+        console.error("Auth check failed:", err);
+        router.push('/login');
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    checkRole();
+  }, [pathname, router, isAdminPath, isInternPath]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
     router.push('/login');
-    router.refresh(); // Clear any cached state
+    router.refresh(); 
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
+        <div className="flex flex-col items-center gap-4">
+          <div className="h-10 w-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+          <p className="text-slate-500 font-bold uppercase tracking-widest text-xs">Verifying Credentials...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const isAdmin = isAdminPath;
 
   const links = isAdmin 
     ? [

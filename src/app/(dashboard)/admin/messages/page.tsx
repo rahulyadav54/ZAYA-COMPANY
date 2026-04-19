@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/lib/supabaseClient';
-import { Send, Loader2, User, MessageCircle, Clock, Search, ChevronRight, Plus, X, Paperclip, FileText, Image as ImageIcon } from 'lucide-react';
+import { Send, Loader2, User, MessageCircle, Clock, Search, ChevronRight, Plus, X, Paperclip, FileText, Image as ImageIcon, Check, CheckSquare, Square } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function AdminMessagesPage() {
@@ -21,6 +21,12 @@ export default function AdminMessagesPage() {
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  const [selectedInternIds, setSelectedInternIds] = useState<string[]>([]);
+  const [isBulkView, setIsBulkView] = useState(false);
+  const [bulkMessage, setBulkMessage] = useState('');
+  const [isBulkSending, setIsBulkSending] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const fetchConversations = async () => {
     setIsLoading(true);
@@ -61,7 +67,61 @@ export default function AdminMessagesPage() {
       intern_name: intern.full_name
     });
     setShowNewMessageModal(false);
+    setSelectedInternIds([]);
+    setIsBulkView(false);
   };
+
+  const toggleInternSelection = (id: string) => {
+    setSelectedInternIds(prev => 
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    );
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedInternIds.length === filteredInterns.length) {
+      setSelectedInternIds([]);
+    } else {
+      setSelectedInternIds(filteredInterns.map(i => i.id));
+    }
+  };
+
+  const handleSendBulkMessage = async () => {
+    if (!bulkMessage.trim() || isBulkSending) return;
+    setIsBulkSending(true);
+
+    try {
+      const messagesToInsert = selectedInternIds.map(id => {
+        const intern = allInterns.find(i => i.id === id);
+        return {
+          intern_id: id,
+          intern_name: intern?.full_name || 'Intern',
+          content: bulkMessage.trim(),
+          sender_type: 'admin'
+        };
+      });
+
+      const { error } = await supabase.from('intern_messages').insert(messagesToInsert);
+
+      if (error) throw error;
+
+      alert(`Successfully sent message to ${selectedInternIds.length} interns`);
+      setShowNewMessageModal(false);
+      setIsBulkView(false);
+      setBulkMessage('');
+      setSelectedInternIds([]);
+      fetchConversations();
+    } catch (err: any) {
+      console.error(err);
+      alert('Failed to send bulk message: ' + err.message);
+    } finally {
+      setIsBulkSending(false);
+    }
+  };
+
+  const filteredInterns = allInterns.filter(intern => 
+    intern.full_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    intern.email?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   useEffect(() => {
     if (selectedIntern) {
@@ -391,39 +451,123 @@ export default function AdminMessagesPage() {
                 </button>
               </div>
               <div className="p-8">
-                <div className="relative mb-6">
-                   <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
-                   <input type="text" placeholder="Search by name or email..." className="w-full pl-12 pr-6 py-4 bg-slate-50 dark:bg-slate-950 border-2 border-slate-100 dark:border-slate-800 rounded-2xl text-sm font-black outline-none focus:border-blue-600 transition-all placeholder:text-slate-400" />
-                </div>
-                <div className="max-h-[350px] overflow-y-auto space-y-3 pr-2 custom-scrollbar">
-                  {isLoadingInterns ? (
-                    <div className="py-20 flex flex-col items-center gap-4 uppercase tracking-widest font-black text-[10px] text-slate-400">
-                      <Loader2 className="h-10 w-10 animate-spin text-blue-600" />
-                      Loading Database...
-                    </div>
-                  ) : allInterns.length === 0 ? (
-                    <div className="py-20 text-center text-slate-400 uppercase font-black text-xs">Accessing intern directory...</div>
-                  ) : (
-                    allInterns.map(intern => (
-                      <button
-                        key={intern.id}
-                        onClick={() => handleStartNewMessage(intern)}
-                        className="w-full p-5 flex items-center gap-4 rounded-3xl border-2 border-transparent hover:border-blue-100 hover:bg-blue-50/50 dark:hover:bg-blue-900/20 transition-all text-left group"
+                {!isBulkView ? (
+                  <>
+                    <div className="flex items-center justify-between mb-4">
+                      <button 
+                        onClick={toggleSelectAll}
+                        className="text-[10px] font-black text-blue-600 uppercase tracking-widest flex items-center gap-2 hover:bg-blue-50 dark:hover:bg-blue-900/20 px-3 py-1.5 rounded-lg transition-all"
                       >
-                        <div className="h-12 w-12 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 font-black group-hover:bg-blue-600 group-hover:text-white transition-all shadow-sm">
-                          {intern.full_name?.charAt(0) || 'I'}
-                        </div>
-                        <div className="flex-1">
-                          <p className="font-black text-slate-900 dark:text-white text-base tracking-tight uppercase">{intern.full_name}</p>
-                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{intern.email}</p>
-                        </div>
-                        <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                           <ChevronRight className="h-5 w-5 text-blue-600" />
-                        </div>
+                        {selectedInternIds.length === filteredInterns.length && filteredInterns.length > 0 ? (
+                          <><CheckSquare className="h-4 w-4" /> Deselect All</>
+                        ) : (
+                          <><Square className="h-4 w-4" /> Select All</>
+                        )}
                       </button>
-                    ))
-                  )}
-                </div>
+                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                        {selectedInternIds.length} Selected
+                      </span>
+                    </div>
+
+                    <div className="relative mb-6">
+                       <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+                       <input 
+                         type="text" 
+                         value={searchQuery}
+                         onChange={(e) => setSearchQuery(e.target.value)}
+                         placeholder="Search by name or email..." 
+                         className="w-full pl-12 pr-6 py-4 bg-slate-50 dark:bg-slate-950 border-2 border-slate-100 dark:border-slate-800 rounded-2xl text-sm font-black outline-none focus:border-blue-600 transition-all placeholder:text-slate-400" 
+                       />
+                    </div>
+
+                    <div className="max-h-[350px] overflow-y-auto space-y-3 pr-2 custom-scrollbar">
+                      {isLoadingInterns ? (
+                        <div className="py-20 flex flex-col items-center gap-4 uppercase tracking-widest font-black text-[10px] text-slate-400">
+                          <Loader2 className="h-10 w-10 animate-spin text-blue-600" />
+                          Loading Database...
+                        </div>
+                      ) : filteredInterns.length === 0 ? (
+                        <div className="py-20 text-center text-slate-400 uppercase font-black text-xs">No interns found...</div>
+                      ) : (
+                        filteredInterns.map(intern => (
+                          <div key={intern.id} className="relative group">
+                            <button
+                              onClick={() => handleStartNewMessage(intern)}
+                              className="w-full p-5 flex items-center gap-4 rounded-3xl border-2 border-transparent hover:border-blue-100 hover:bg-blue-50/50 dark:hover:bg-blue-900/20 transition-all text-left"
+                            >
+                              <div className="h-12 w-12 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 font-black group-hover:bg-blue-600 group-hover:text-white transition-all shadow-sm">
+                                {intern.full_name?.charAt(0) || 'I'}
+                              </div>
+                              <div className="flex-1">
+                                <p className="font-black text-slate-900 dark:text-white text-base tracking-tight uppercase">{intern.full_name}</p>
+                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{intern.email}</p>
+                              </div>
+                              <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                                 <ChevronRight className="h-5 w-5 text-blue-600" />
+                              </div>
+                            </button>
+                            <button 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleInternSelection(intern.id);
+                              }}
+                              className={`absolute right-12 top-1/2 -translate-y-1/2 p-2 rounded-xl transition-all ${selectedInternIds.includes(intern.id) ? 'bg-blue-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'}`}
+                            >
+                              <Check className="h-4 w-4" />
+                            </button>
+                          </div>
+                        ))
+                      )}
+                    </div>
+
+                    {selectedInternIds.length > 0 && (
+                      <motion.div 
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="mt-6 pt-6 border-t border-slate-100 dark:border-slate-800"
+                      >
+                        <button 
+                          onClick={() => setIsBulkView(true)}
+                          className="w-full py-4 bg-blue-600 text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/30 active:scale-95"
+                        >
+                          Compose Bulk Message ({selectedInternIds.length})
+                        </button>
+                      </motion.div>
+                    )}
+                  </>
+                ) : (
+                  <motion.div 
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    className="space-y-6"
+                  >
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Message Content</label>
+                      <textarea 
+                        value={bulkMessage}
+                        onChange={(e) => setBulkMessage(e.target.value)}
+                        placeholder="Type the message to be sent to all selected interns..."
+                        className="w-full min-h-[150px] p-6 bg-slate-50 dark:bg-slate-950 border-2 border-slate-100 dark:border-slate-800 rounded-3xl text-sm font-bold outline-none focus:border-blue-600 transition-all resize-none"
+                      />
+                    </div>
+                    
+                    <div className="flex gap-4">
+                      <button 
+                        onClick={() => setIsBulkView(false)}
+                        className="flex-1 py-4 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-slate-200 dark:hover:bg-slate-700 transition-all"
+                      >
+                        Back
+                      </button>
+                      <button 
+                        onClick={handleSendBulkMessage}
+                        disabled={!bulkMessage.trim() || isBulkSending}
+                        className="flex-[2] py-4 bg-blue-600 text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/30 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
+                      >
+                        {isBulkSending ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Send className="h-4 w-4" /> Send To {selectedInternIds.length}</>}
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
               </div>
             </motion.div>
           </div>
