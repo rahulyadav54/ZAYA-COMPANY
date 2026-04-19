@@ -12,8 +12,10 @@ export default function ManageInternsPage() {
   
   // Modals state
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [selectedInternId, setSelectedInternId] = useState<string | null>(null);
+  const [editingIntern, setEditingIntern] = useState<any>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   const [selectedCandidate, setSelectedCandidate] = useState<any>(null);
@@ -135,6 +137,34 @@ export default function ManageInternsPage() {
     }
   };
 
+  const handleUpdateIntern = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    
+    const formData = new FormData(e.currentTarget);
+    const fullName = formData.get('fullName') as string;
+    const position = formData.get('position') as string;
+    const email = formData.get('email') as string;
+
+    const { error } = await supabase
+      .from('profiles')
+      .update({ 
+        full_name: fullName, 
+        position: position,
+        email: email
+      })
+      .eq('id', editingIntern.id);
+
+    if (error) {
+      alert(`Error updating intern: ${error.message}`);
+    } else {
+      alert('Intern updated successfully!');
+      setShowEditModal(false);
+      fetchInterns();
+    }
+    setIsSubmitting(false);
+  };
+
   const handleSendTask = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -235,12 +265,15 @@ export default function ManageInternsPage() {
                 <Mail className="h-4 w-4" /> {intern.email}
               </p>
               <div className="w-full flex gap-2 mt-auto">
-                <a 
-                  href={`/admin/interns/${intern.id}`}
+                <button 
+                  onClick={() => {
+                    setEditingIntern(intern);
+                    setShowEditModal(true);
+                  }}
                   className="flex-1 py-2 flex items-center justify-center bg-slate-50 dark:bg-slate-800 text-foreground rounded-xl text-sm font-bold hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
                 >
-                  View Profile
-                </a>
+                  Edit Position
+                </button>
                 <button 
                   onClick={() => {
                     setSelectedInternId(intern.id);
@@ -349,7 +382,38 @@ export default function ManageInternsPage() {
         </div>
       )}
 
-      {/* Send Task Modal */}
+      {/* Edit Intern Modal */}
+      {showEditModal && editingIntern && (
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-2xl w-full max-w-md overflow-hidden border border-slate-200 dark:border-slate-800">
+            <div className="p-8 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-950/50">
+              <h2 className="text-xl font-black text-slate-900 dark:text-white uppercase italic tracking-tight">Edit Intern Profile</h2>
+              <button onClick={() => setShowEditModal(false)} className="p-2 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-full">
+                <X className="h-5 w-5 text-slate-500" />
+              </button>
+            </div>
+            <form onSubmit={handleUpdateIntern} className="p-8 space-y-6">
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Full Name</label>
+                <input required name="fullName" type="text" defaultValue={editingIntern.full_name} className="w-full px-5 py-3 rounded-2xl border-2 border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-foreground font-bold focus:border-blue-600 outline-none transition-all" />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Internship Position</label>
+                <input required name="position" type="text" defaultValue={editingIntern.position || ''} placeholder="e.g. Android Developer Intern" className="w-full px-5 py-3 rounded-2xl border-2 border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-foreground font-bold focus:border-blue-600 outline-none transition-all" />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Email Address</label>
+                <input required name="email" type="email" defaultValue={editingIntern.email} className="w-full px-5 py-3 rounded-2xl border-2 border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-foreground font-bold focus:border-blue-600 outline-none transition-all" />
+              </div>
+              <div className="pt-2">
+                <button disabled={isSubmitting} type="submit" className="w-full py-4 bg-blue-600 text-white rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-blue-700 transition-all shadow-xl shadow-blue-600/20 active:scale-95">
+                  {isSubmitting ? 'Saving Changes...' : 'Update Intern Profile'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
       {showTaskModal && (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-xl w-full max-w-md overflow-hidden border border-slate-200 dark:border-slate-800">
