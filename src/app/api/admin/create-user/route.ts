@@ -37,7 +37,8 @@ export async function POST(request: Request) {
         id: authData.user.id,
         email,
         full_name: fullName,
-        role: role || 'intern'
+        role: role || 'intern',
+        position: position || 'Intern'
       });
 
     if (profileError) throw profileError;

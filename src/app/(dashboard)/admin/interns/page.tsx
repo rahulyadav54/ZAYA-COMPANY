@@ -60,6 +60,7 @@ export default function ManageInternsPage() {
     const rows = interns.map(intern => [
       intern.id,
       intern.full_name || "N/A",
+      intern.position || "Intern",
       intern.email,
       new Date(intern.created_at).toLocaleDateString()
     ]);
@@ -109,12 +110,13 @@ export default function ManageInternsPage() {
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
     const fullName = formData.get('fullName') as string;
+    const position = formData.get('position') as string;
 
     try {
       const res = await fetch('/api/admin/create-user', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, fullName, role: 'intern' })
+        body: JSON.stringify({ email, password, fullName, role: 'intern', position })
       });
 
       const data = await res.json();
@@ -215,7 +217,10 @@ export default function ManageInternsPage() {
               <div className="h-20 w-20 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 font-bold text-2xl mb-4">
                 {intern.full_name?.charAt(0) || 'U'}
               </div>
-              <h3 className="text-lg font-bold text-foreground">{intern.full_name || 'Unknown User'}</h3>
+              <h3 className="text-lg font-black text-slate-900 dark:text-white uppercase tracking-tight">{intern.full_name || 'Unknown User'}</h3>
+              <p className="text-[10px] font-black text-blue-600 uppercase tracking-[0.2em] mb-3">
+                {intern.position || 'Active Intern'}
+              </p>
               <p className="text-sm text-slate-500 mb-4 flex items-center gap-2">
                 <Mail className="h-4 w-4" /> {intern.email}
               </p>
