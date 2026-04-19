@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/lib/supabaseClient';
-import { Send, Loader2, User, MessageCircle, AlertCircle, Clock, Paperclip, Image, FileText, X } from 'lucide-react';
+import { Send, Loader2, User, MessageCircle, AlertCircle, Clock, Paperclip, Image, FileText, X, ShieldCheck } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function InternMessagesPage() {
