@@ -3,7 +3,8 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { createClient } from '@supabase/supabase-js';
-import { Users, Search, Mail, Loader2, UserX, Plus, Send, X, Trash2, Download } from 'lucide-react';
+import { Users, Search, Mail, Loader2, UserX, Plus, Send, X, Trash2, Download, Settings, Edit2 } from 'lucide-react';
+import Link from 'next/link';
 
 export default function ManageInternsPage() {
   const [interns, setInterns] = useState<any[]>([]);
@@ -238,13 +239,25 @@ export default function ManageInternsPage() {
           interns.map((intern) => (
             <div key={intern.id} className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 flex flex-col items-center text-center hover:shadow-lg transition-all relative group">
               {/* Delete Button */}
-              <button 
-                onClick={() => handleDeleteIntern(intern.id, intern.full_name)}
-                className="absolute top-4 right-4 p-2 text-slate-300 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition-all opacity-0 group-hover:opacity-100"
-                title="Delete Intern Permanently"
-              >
-                <Trash2 className="h-5 w-5" />
-              </button>
+              <div className="absolute top-4 right-4 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
+                <button 
+                  onClick={() => {
+                    setEditingIntern(intern);
+                    setShowEditModal(true);
+                  }}
+                  className="p-2 text-slate-300 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-full transition-all"
+                  title="Edit Profile"
+                >
+                  <Edit2 className="h-4 w-4" />
+                </button>
+                <button 
+                  onClick={() => handleDeleteIntern(intern.id, intern.full_name)}
+                  className="p-2 text-slate-300 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition-all"
+                  title="Delete Intern Permanently"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
 
               <h3 className="text-lg font-black text-slate-900 dark:text-white uppercase tracking-tight">{intern.full_name || 'Unknown User'}</h3>
               <div className="mt-1 mb-4 flex flex-col items-center gap-1.5">
@@ -265,15 +278,12 @@ export default function ManageInternsPage() {
                 <Mail className="h-4 w-4" /> {intern.email}
               </p>
               <div className="w-full flex gap-2 mt-auto">
-                <button 
-                  onClick={() => {
-                    setEditingIntern(intern);
-                    setShowEditModal(true);
-                  }}
+                <Link 
+                  href={`/admin/interns/${intern.id}`}
                   className="flex-1 py-2 flex items-center justify-center bg-slate-50 dark:bg-slate-800 text-foreground rounded-xl text-sm font-bold hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
                 >
-                  Edit Position
-                </button>
+                  View Profile
+                </Link>
                 <button 
                   onClick={() => {
                     setSelectedInternId(intern.id);
