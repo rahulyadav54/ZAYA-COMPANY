@@ -19,6 +19,13 @@ function LoginForm() {
 
   // Auto-redirect if already logged in
   useEffect(() => {
+    const errorType = searchParams.get('error');
+    if (errorType === 'session_switched') {
+      setError('Your session was switched in another tab. Please sign in again.');
+    } else if (errorType === 'unauthorized_role') {
+      setError('You do not have permission to access that portal.');
+    }
+
     const checkUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user) {

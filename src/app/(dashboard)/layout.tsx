@@ -48,6 +48,14 @@ export default function DashboardLayout({
           router.push('/login');
           return;
         }
+        // Detect Session Switch (Multiple Tabs)
+        if (userId && user.id !== userId) {
+          console.warn("Session switch detected. Logging out to prevent unauthorized portal access.");
+          await supabase.auth.signOut();
+          window.location.href = '/login?error=session_switched';
+          return;
+        }
+
         setUserId(user.id);
 
         const { data: profile, error } = await supabase
@@ -62,14 +70,22 @@ export default function DashboardLayout({
           return;
         }
 
-        // Enforce role-based access
+        // Enforce strict role-based portal access
         if (profile.role === 'admin' && isInternPath) {
+          console.log("Admin attempted to access intern portal. Redirecting to admin dashboard.");
           router.push('/admin');
-        } else if (profile.role === 'intern' && isAdminPath) {
+          return;
+        } 
+        
+        if (profile.role === 'intern' && isAdminPath) {
+          console.log("Intern attempted to access admin portal. Access denied.");
           router.push('/intern');
-        } else if (profile.role !== 'admin' && profile.role !== 'intern') {
-          // If role is neither, something is wrong
-          router.push('/login');
+          return;
+        }
+
+        if (profile.role !== 'admin' && profile.role !== 'intern') {
+          await supabase.auth.signOut();
+          router.push('/login?error=unauthorized_role');
         }
       } catch (err) {
         console.error("Auth check failed:", err);
