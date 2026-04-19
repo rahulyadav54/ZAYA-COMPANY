@@ -126,8 +126,8 @@ export default function OfferLetterPage() {
                 <img src="/logo.png" alt="Zaya Code Hub Logo" className="h-16 object-contain" />
                 <div className="h-12 w-[2px] bg-slate-200 mx-2"></div>
                 <div>
-                  <h1 className="text-3xl font-black tracking-tighter text-slate-900 leading-none">ZAYA CODE HUB</h1>
-                  <p className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-600 mt-1">Innovate . Develop . Empower</p>
+                  <h1 className="text-3xl font-black tracking-tighter text-[#0f172a] leading-none">ZAYA CODE HUB</h1>
+                  <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#2563eb] mt-1">Innovate . Develop . Empower</p>
                 </div>
               </div>
               <div className="space-y-1 text-slate-500 text-sm font-medium">
@@ -137,40 +137,40 @@ export default function OfferLetterPage() {
               </div>
             </div>
             <div className="text-right">
-              <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px] mb-1">Date Issued</p>
-              <p className="font-bold text-slate-900">{currentDate}</p>
+              <p className="text-[#94a3b8] font-bold uppercase tracking-widest text-[10px] mb-1">Date Issued</p>
+              <p className="font-bold text-[#0f172a]">{currentDate}</p>
             </div>
           </div>
 
           {/* Title */}
           <div className="text-center mb-12">
-            <h2 className="text-2xl font-black uppercase tracking-widest border-b-4 border-blue-600 inline-block pb-2">Internship Offer Letter</h2>
+            <h2 className="text-2xl font-black uppercase tracking-widest border-b-4 border-[#2563eb] inline-block pb-2">Internship Offer Letter</h2>
           </div>
 
           {/* Content */}
           <div className="space-y-6 text-slate-700 leading-relaxed text-base">
             <div className="mb-8">
-              <p className="font-bold text-slate-900">To,</p>
-              <p className="font-black text-xl text-blue-600 mt-1">{profile?.full_name}</p>
+              <p className="font-bold text-[#0f172a]">To,</p>
+              <p className="font-black text-xl text-[#2563eb] mt-1">{profile?.full_name}</p>
               <div className="flex flex-col mt-1">
-                <p className="font-medium text-slate-500 uppercase text-xs tracking-widest">
+                <p className="font-medium text-[#64748b] uppercase text-xs tracking-widest">
                   {profile?.position || application?.position || 'Intern'}
                 </p>
                 {(profile?.intern_id || application?.intern_id) && (
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">
+                  <p className="text-[10px] font-black text-[#94a3b8] uppercase tracking-widest mt-1">
                     ID: {profile?.intern_id || application?.intern_id}
                   </p>
                 )}
               </div>
             </div>
 
-            <p>Dear <span className="font-bold text-slate-900">{profile?.full_name?.split(' ')[0]}</span>,</p>
+            <p>Dear <span className="font-bold text-[#0f172a]">{profile?.full_name?.split(' ')[0]}</span>,</p>
             
             <p>
-              We are delighted to offer you an opportunity to join our team as an <span className="font-bold text-slate-900">
+              We are delighted to offer you an opportunity to join our team as an <span className="font-bold text-[#0f172a]">
                 {profile?.position || application?.position || 'Intern'}
-              </span> at <span className="font-bold text-blue-600">ZAYA CODE HUB</span>. 
-              The term of your placement will be for a duration of <span className="font-bold text-slate-900">{application?.duration || '1 month'}</span>, starting from <span className="font-bold text-slate-900">{profile?.joining_date ? new Date(profile.joining_date).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) : currentDate}</span>.
+              </span> at <span className="font-bold text-[#2563eb]">ZAYA CODE HUB</span>. 
+              The term of your placement will be for a duration of <span className="font-bold text-[#0f172a]">{application?.duration || '1 month'}</span>, starting from <span className="font-bold text-[#0f172a]">{profile?.joining_date ? new Date(profile.joining_date).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) : currentDate}</span>.
             </p>
 
             <p>
@@ -202,9 +202,9 @@ export default function OfferLetterPage() {
           </div>
 
           {/* Footer Decoration */}
-          <div className="absolute bottom-0 left-0 right-0 h-2 bg-gradient-to-r from-blue-600 to-indigo-600"></div>
+          <div className="absolute bottom-0 left-0 right-0 h-2 bg-gradient-to-r from-[#2563eb] to-[#4f46e5]"></div>
           <div className="absolute bottom-8 left-0 right-0 text-center">
-            <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.5em]">www.zayacodehub.in</p>
+            <p className="text-[10px] font-black text-[#cbd5e1] uppercase tracking-[0.5em]">www.zayacodehub.in</p>
           </div>
         </div>
       </div>

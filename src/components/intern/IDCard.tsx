@@ -21,92 +21,57 @@ export default function IDCard({ profile }: IDCardProps) {
   const validTo = new Date(new Date(profile.created_at).setMonth(new Date(profile.created_at).getMonth() + 6)).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      className="relative w-[420px] h-[720px] mx-auto group shadow-[0_50px_100px_-20px_rgba(0,0,0,0.3)] rounded-[3rem] overflow-hidden bg-white flex flex-col"
-    >
-      {/* Lanyard Hole */}
-      <div className="absolute top-4 left-1/2 -translate-x-1/2 w-16 h-4 bg-slate-200 dark:bg-slate-800 rounded-full z-30 flex items-center justify-center">
-         <div className="w-10 h-1.5 bg-slate-400/30 rounded-full" />
+    <div id="id-card-capture" className="w-[350px] h-[550px] bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border border-[#e2e8f0] flex flex-col relative" style={{ fontFamily: "'Outfit', sans-serif" }}>
+      {/* Top Header Design */}
+      <div className="h-40 bg-[#2563eb] relative overflow-hidden flex flex-col items-center justify-center pt-8">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl"></div>
+        <div className="absolute bottom-0 left-0 w-24 h-24 bg-black/10 rounded-full -ml-12 -mb-12 blur-xl"></div>
+        
+        <img src="/logo.png" alt="Logo" className="h-12 object-contain brightness-0 invert mb-2 relative z-10" />
+        <h2 className="text-white font-black tracking-tighter text-lg relative z-10">ZAYA CODE HUB</h2>
       </div>
 
       {/* Decorative Corner Accents (Top Left) */}
       <div className="absolute top-0 left-0 w-32 h-32 z-20 overflow-hidden pointer-events-none">
-         <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-blue-900 to-transparent rotate-45 -translate-x-1/2 -translate-y-1/2" />
-         <div className="absolute top-2 left-2 w-full h-full border-t-4 border-l-4 border-yellow-500/30 rounded-tl-[3rem]" />
-      </div>
-
-      {/* Header Section */}
-      <div className="relative h-[240px] bg-[#0A192F] flex flex-col items-center pt-8 overflow-hidden shrink-0">
-        {/* Background Patterns */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/5 rounded-full -mr-32 -mt-32 blur-3xl" />
-        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_20%_20%,rgba(59,130,246,0.05)_0%,transparent_50%)]" />
-        
-        {/* Header Layout */}
-        <div className="z-10 w-full px-10 flex items-center justify-between">
-           <div className="flex flex-col items-start">
-              <img src="/logo.png" alt="ZAYA Logo" className="h-16 w-auto object-contain drop-shadow-2xl" />
-           </div>
-           <div className="flex flex-col items-end text-right">
-              <h2 className="text-white text-xl font-black tracking-tighter uppercase leading-none">ZAYA CODE HUB</h2>
-              <p className="text-blue-400 text-[8px] font-bold uppercase tracking-[0.3em] mt-1">Innovate • Build • Excel</p>
-           </div>
-        </div>
-
-        <div className="z-10 mt-6 h-px w-4/5 bg-gradient-to-r from-transparent via-blue-500/30 to-transparent" />
-
-        {/* Curved Bottom Clip */}
-        <div className="absolute bottom-0 left-0 right-0 h-16 bg-white" style={{ clipPath: 'ellipse(60% 100% at 50% 100%)' }} />
+         <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-[#1e3a8a] to-transparent rotate-45 -translate-x-1/2 -translate-y-1/2" />
+         <div className="absolute top-2 left-2 w-full h-full border-t-4 border-l-4 border-[#eab308]/30 rounded-tl-[3rem]" />
       </div>
 
       {/* Profile Image Section */}
       <div className="relative -mt-16 z-20 flex flex-col items-center shrink-0">
-        <div className="w-40 h-40 rounded-[2.5rem] bg-white p-2 shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-slate-100">
-           <div className="w-full h-full rounded-[2rem] bg-slate-50 flex items-center justify-center text-slate-400 overflow-hidden relative border-2 border-slate-100">
+        <div className="relative group">
+          <div className="h-28 w-28 rounded-3xl bg-gradient-to-br from-[#2563eb] to-[#4f46e5] p-1 shadow-xl">
+            <div className="h-full w-full rounded-[1.3rem] bg-white overflow-hidden flex items-center justify-center">
               {profile.avatar_url ? (
-                <img src={profile.avatar_url} alt={profile.full_name} className="w-full h-full object-cover" />
+                <img src={profile.avatar_url} alt={profile.full_name} className="h-full w-full object-cover" />
               ) : (
-                <span className="text-7xl font-black text-[#0A192F] opacity-20">{profile.full_name?.charAt(0) || 'U'}</span>
+                <div className="h-full w-full flex items-center justify-center bg-[#f8fafc]">
+                  <Users className="h-10 w-10 text-[#cbd5e1]" />
+                </div>
               )}
-           </div>
+            </div>
+          </div>
+          <div className="absolute -bottom-2 -right-2 h-8 w-8 bg-[#22c55e] border-4 border-white rounded-full"></div>
         </div>
         
         <div className="mt-4 text-center space-y-1">
-          <h3 className="text-2xl font-black text-slate-900 leading-tight uppercase tracking-tight">{profile.full_name || 'Loading...'}</h3>
-          <div className="inline-flex items-center gap-2 bg-blue-50 border border-blue-100 px-4 py-1.5 rounded-xl">
-             <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
-             <p className="text-blue-600 font-bold text-[10px] uppercase tracking-widest">
-               {profile.position || 'Software Development Intern'}
-             </p>
-          </div>
+          <h1 className="text-2xl font-black text-[#0f172a] uppercase tracking-tight">{profile.full_name}</h1>
+          <p className="text-[10px] font-black text-[#2563eb] uppercase tracking-[0.3em] mt-1">{profile.position || 'Intern'}</p>
         </div>
       </div>
 
-      {/* Separator with Dot */}
-      <div className="mt-6 flex items-center justify-center gap-4 px-20 shrink-0">
-         <div className="h-px flex-1 bg-gradient-to-r from-transparent to-blue-200" />
-         <div className="w-1.5 h-1.5 rounded-full bg-blue-600" />
-         <div className="h-px flex-1 bg-gradient-to-l from-transparent to-blue-200" />
+      <div className="mt-8 grid grid-cols-2 gap-4 w-full px-4">
+        <div className="p-4 bg-[#f8fafc] rounded-2xl border border-[#f1f5f9]">
+          <p className="text-[8px] font-black text-[#94a3b8] uppercase tracking-widest mb-1">Intern ID</p>
+          <p className="text-xs font-black text-[#0f172a] tracking-tight">{internId}</p>
+        </div>
+        <div className="p-4 bg-[#f8fafc] rounded-2xl border border-[#f1f5f9]">
+          <p className="text-[8px] font-black text-[#94a3b8] uppercase tracking-widest mb-1">Issue Date</p>
+          <p className="text-xs font-black text-[#0f172a] tracking-tight">{validFrom}</p>
+        </div>
       </div>
 
       {/* Details Section */}
-      <div className="mt-6 px-12 space-y-6 flex-grow">
-        <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 text-center">
-          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Intern ID Number</p>
-          <p className="text-sm font-black text-slate-800 font-mono tracking-tighter">{internId}</p>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-1 text-center">
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Valid From</p>
-            <div className="flex items-center justify-center gap-2 text-xs font-black text-slate-800">
-              <Calendar className="h-3 w-3 text-blue-500" />
-              {validFrom}
-            </div>
-          </div>
-          <div className="space-y-1 text-center border-l border-slate-100">
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Expires On</p>
             <div className="flex items-center justify-center gap-2 text-xs font-black text-slate-800">
               <Calendar className="h-3 w-3 text-orange-500" />
               {validTo}
