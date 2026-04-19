@@ -45,6 +45,13 @@ export default function AdminSubmissionsPage() {
     if (error) {
       alert(`Failed to update status: ${error.message}`);
     } else {
+      // Sync tasks table status
+      if (status === 'approved') {
+        const sub = submissions.find(s => s.id === id);
+        if (sub?.task_id) {
+          await supabase.from('tasks').update({ status: 'completed' }).eq('id', sub.task_id);
+        }
+      }
       setSubmissions(submissions.map(s => s.id === id ? { ...s, ...updateData } : s));
     }
   };
@@ -81,6 +88,13 @@ export default function AdminSubmissionsPage() {
     if (error) {
       alert(`Error saving feedback: ${error.message}`);
     } else {
+      // If score is high, we can optionally auto-complete the task
+      if (score >= 40) {
+        const sub = submissions.find(s => s.id === id);
+        if (sub?.task_id) {
+          await supabase.from('tasks').update({ status: 'completed' }).eq('id', sub.task_id);
+        }
+      }
       alert('Feedback saved successfully!');
       setSubmissions(submissions.map(s => s.id === id ? { ...s, score, feedback, review_status: 'reviewed' } : s));
     }
