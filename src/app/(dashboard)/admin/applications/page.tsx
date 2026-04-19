@@ -68,13 +68,15 @@ export default function ApplicationsPage() {
     fetchApplications();
   }, []);
 
-  const updateStatus = async (id: number, newStatus: string, appData?: any) => {
-    const { error } = await supabase
-      .from('applications')
-      .update({ status: newStatus })
-      .eq('id', id);
-    
-    if (!error) {
+  const updateStatus = async (id: string, newStatus: string, appData?: any) => {
+    try {
+      const { error } = await supabase
+        .from('applications')
+        .update({ status: newStatus })
+        .eq('id', id);
+      
+      if (error) throw error;
+
       if ((newStatus === 'accepted' || newStatus === 'rejected') && appData) {
         try {
           await fetch('/api/send-acceptance', {
@@ -87,13 +89,16 @@ export default function ApplicationsPage() {
               status: newStatus
             }),
           });
-          alert(`Success! Application ${newStatus} and email sent to ${appData.email}`);
         } catch (err) {
           console.error('Failed to send email:', err);
-          alert(`Application ${newStatus}, but there was an error sending the confirmation email.`);
         }
       }
-      fetchApplications();
+      
+      await fetchApplications();
+      alert(`Successfully updated status to ${newStatus.toUpperCase()}`);
+    } catch (error: any) {
+      console.error('Error updating status:', error);
+      alert('Failed to update status: ' + (error.message || 'Unknown error'));
     }
   };
 
