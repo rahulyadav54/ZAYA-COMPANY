@@ -233,16 +233,38 @@ export default function AdminMessagesPage() {
   const renderMessageContent = (content: string) => {
     if (!content) return null;
     return content.split('\n').map((line, i) => {
-      const parts = line.split(/(\*\*.*?\*\*)/g);
+      // Bullet points
+      if (line.trim().startsWith('•') || line.trim().startsWith('-')) {
+        return (
+          <div key={i} className="flex gap-2 items-start mb-1.5 pl-2">
+            <span className="text-blue-400 font-bold">•</span>
+            <span className="flex-1">{line.trim().substring(1).trim()}</span>
+          </div>
+        );
+      }
+
+      // Headings (lines that end with :)
+      if (line.trim().endsWith(':')) {
+        return (
+          <h4 key={i} className="font-black text-xs uppercase tracking-[0.15em] mb-2 mt-4 text-blue-500/90 dark:text-blue-400">
+            {line}
+          </h4>
+        );
+      }
+
+      const parts = line.split(/(\*\*.*?\*\*|https?:\/\/[^\s]+)/g);
       return (
-        <span key={i} className="block min-h-[1.4em] mb-1">
+        <p key={i} className="min-h-[1.5em] mb-1.5 leading-relaxed">
           {parts.map((part, j) => {
             if (part.startsWith('**') && part.endsWith('**')) {
-              return <strong key={j} className="font-bold text-slate-900 dark:text-white">{part.slice(2, -2)}</strong>;
+              return <strong key={j} className="font-bold text-slate-900 dark:text-white bg-blue-500/10 px-1 rounded">{part.slice(2, -2)}</strong>;
+            }
+            if (part.match(/^https?:\/\//)) {
+              return <a key={j} href={part} target="_blank" rel="noreferrer" className="text-blue-500 hover:underline font-bold">{part.replace(/^https?:\/\//, '')}</a>;
             }
             return part;
           })}
-        </span>
+        </p>
       );
     });
   };
@@ -250,51 +272,65 @@ export default function AdminMessagesPage() {
   return (
     <div className="h-[calc(100vh-8rem)] flex gap-4 md:gap-6">
       {/* Sidebar: Intern List */}
-      <div className="w-72 bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden flex flex-col">
-        <div className="p-6 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/50">
+      <div className="w-[30%] min-w-[320px] bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden flex flex-col transition-all">
+        <div className="p-7 border-b border-slate-100 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-[0.2em]">Support Inbox</h2>
+            <div>
+              <h2 className="text-lg font-black text-slate-900 dark:text-white uppercase tracking-tight">Messages</h2>
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Support Inbox</p>
+            </div>
             <button 
               onClick={() => {
                 fetchAllInterns();
                 setShowNewMessageModal(true);
               }}
-              className="p-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20 active:scale-95"
-              title="Start New Conversation"
+              className="p-3 bg-blue-600 text-white rounded-2xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/30 hover:scale-105 active:scale-95"
             >
               <Plus className="h-5 w-5" />
             </button>
           </div>
-          <div className="relative">
-             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-             <input type="text" placeholder="Filter conversations..." className="w-full pl-11 pr-4 py-3 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl text-xs font-bold outline-none focus:border-blue-600 transition-all" />
+          <div className="relative group">
+             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-blue-600 transition-colors" />
+             <input type="text" placeholder="Search conversations..." className="w-full pl-11 pr-4 py-3.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/50 rounded-2xl text-xs font-bold outline-none focus:border-blue-600 focus:bg-white dark:focus:bg-slate-800 transition-all" />
           </div>
         </div>
-        <div className="flex-1 overflow-y-auto custom-scrollbar">
+        <div className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-2">
           {isLoading ? (
-            <div className="p-10 flex justify-center"><Loader2 className="h-6 w-6 animate-spin text-blue-600" /></div>
+            <div className="p-10 flex flex-col items-center gap-4">
+              <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Loading Threads...</p>
+            </div>
           ) : conversations.length === 0 ? (
-            <div className="p-12 text-center space-y-3">
-               <div className="w-12 h-12 bg-slate-50 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto opacity-50">
-                  <MessageCircle className="h-6 w-6 text-slate-400" />
+            <div className="p-12 text-center space-y-4">
+               <div className="w-16 h-16 bg-slate-50 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto opacity-50 border border-dashed border-slate-300">
+                  <MessageCircle className="h-8 w-8 text-slate-400" />
                </div>
-               <p className="text-sm font-bold text-slate-500 uppercase tracking-tighter">No active threads</p>
+               <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">No active discussions</p>
             </div>
           ) : (
             conversations.map((conv) => (
               <button
                 key={conv.intern_id}
                 onClick={() => setSelectedIntern(conv)}
-                className={`w-full p-4 flex items-center gap-3 border-b border-slate-50 dark:border-slate-800/50 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all text-left ${selectedIntern?.intern_id === conv.intern_id ? 'bg-blue-50/50 dark:bg-blue-900/10 border-l-4 border-l-blue-600' : ''}`}
+                className={`w-full p-4 flex items-center gap-4 rounded-3xl transition-all text-left relative group ${selectedIntern?.intern_id === conv.intern_id ? 'bg-blue-600 text-white shadow-xl shadow-blue-600/20' : 'hover:bg-slate-50 dark:hover:bg-slate-800/50'}`}
               >
-                <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-blue-100 to-blue-50 dark:from-blue-900/40 dark:to-blue-900/20 flex items-center justify-center text-blue-600 font-black text-sm shrink-0 shadow-sm">
-                  {conv.intern_name?.charAt(0) || 'I'}
+                <div className="relative shrink-0">
+                  <div className={`h-12 w-12 rounded-2xl flex items-center justify-center font-black text-sm shadow-sm transition-all ${selectedIntern?.intern_id === conv.intern_id ? 'bg-white/20 text-white' : 'bg-gradient-to-br from-blue-500 to-indigo-600 text-white'}`}>
+                    {conv.intern_name?.charAt(0) || 'I'}
+                  </div>
+                  <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-4 ${selectedIntern?.intern_id === conv.intern_id ? 'border-blue-600 bg-green-400' : 'border-white dark:border-slate-900 bg-green-500'}`} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-bold text-slate-900 dark:text-white text-xs truncate uppercase tracking-tight">{conv.intern_name}</p>
-                  <p className="text-[9px] font-medium text-slate-500 truncate uppercase opacity-60 mt-0.5">Updated {new Date(conv.created_at).toLocaleDateString()}</p>
+                  <div className="flex items-center justify-between mb-0.5">
+                    <p className={`font-black text-xs uppercase tracking-tight truncate ${selectedIntern?.intern_id === conv.intern_id ? 'text-white' : 'text-slate-900 dark:text-white'}`}>{conv.intern_name}</p>
+                    <span className={`text-[8px] font-bold uppercase ${selectedIntern?.intern_id === conv.intern_id ? 'text-white/60' : 'text-slate-400'}`}>
+                      {new Date(conv.created_at).toLocaleDateString([], { month: 'short', day: 'numeric' })}
+                    </span>
+                  </div>
+                  <p className={`text-[10px] font-medium truncate opacity-70 ${selectedIntern?.intern_id === conv.intern_id ? 'text-white' : 'text-slate-500'}`}>
+                    {conv.last_message || "Active support thread..."}
+                  </p>
                 </div>
-                <ChevronRight className={`h-4 w-4 transition-transform ${selectedIntern?.intern_id === conv.intern_id ? 'text-blue-600 translate-x-1' : 'text-slate-300'}`} />
               </button>
             ))
           )}
@@ -306,20 +342,26 @@ export default function AdminMessagesPage() {
         {selectedIntern ? (
           <>
             {/* Header */}
-            <div className="p-5 px-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-white/50 dark:bg-slate-900/50 backdrop-blur-md">
+            <div className="p-6 px-8 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl sticky top-0 z-10">
                <div className="flex items-center gap-4">
                   <div className="relative">
-                    <div className="h-12 w-12 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center border border-slate-200 dark:border-slate-700">
-                       <User className="h-6 w-6 text-slate-500" />
+                    <div className="h-14 w-14 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center border border-slate-200 dark:border-slate-700 shadow-inner">
+                       <User className="h-7 w-7 text-slate-500" />
                     </div>
-                    <div className="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-green-500 border-2 border-white dark:border-slate-900 rounded-full" />
+                    <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-4 border-white dark:border-slate-900 rounded-full shadow-sm" />
                   </div>
                   <div>
-                     <h3 className="font-bold text-slate-900 dark:text-white uppercase tracking-tight text-base">{selectedIntern.intern_name}</h3>
+                     <h3 className="font-black text-slate-900 dark:text-white uppercase tracking-tight text-xl leading-none mb-1.5">{selectedIntern.intern_name}</h3>
                      <div className="flex items-center gap-2">
-                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Active Session</span>
+                        <span className="flex h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Active now</span>
                      </div>
                   </div>
+               </div>
+               <div className="flex items-center gap-3">
+                  <button className="p-3 bg-slate-50 dark:bg-slate-800 rounded-2xl text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all active:scale-95">
+                    <Clock className="h-5 w-5" />
+                  </button>
                </div>
             </div>
 
@@ -338,23 +380,30 @@ export default function AdminMessagesPage() {
                 messages.map((msg, idx) => {
                   const isAdmin = msg.sender_type === 'admin';
                   return (
-                    <div key={msg.id || idx} className={`flex ${isAdmin ? 'justify-end' : 'justify-start'}`}>
-                      <div className={`max-w-[85%] space-y-1`}>
-                        <div className={`px-4 py-2.5 rounded-2xl text-[12px] font-normal shadow-sm transition-all leading-relaxed ${
+                    <motion.div 
+                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      key={msg.id || idx} 
+                      className={`flex ${isAdmin ? 'justify-end' : 'justify-start'}`}
+                    >
+                      <div className={`max-w-[70%] space-y-1.5`}>
+                        <div className={`px-6 py-4 rounded-[2rem] text-[13px] font-medium shadow-xl transition-all leading-relaxed ${
                           isAdmin 
-                            ? 'bg-blue-600 text-white rounded-tr-none shadow-blue-500/10' 
-                            : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-tl-none shadow-md border border-slate-200/50 dark:border-slate-700/50'
+                            ? 'bg-gradient-to-br from-blue-600 to-indigo-700 text-white rounded-tr-none shadow-blue-500/10' 
+                            : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-tl-none border border-slate-100 dark:border-slate-700 shadow-lg'
                         }`}>
                           {msg.file_url && (
-                            <div className="mb-3">
+                            <div className="mb-4">
                               {msg.file_type === 'image' ? (
-                                <img src={msg.file_url} alt="Uploaded" className="max-w-full rounded-2xl cursor-pointer hover:scale-[1.02] transition-transform shadow-md" onClick={() => window.open(msg.file_url, '_blank')} />
+                                <img src={msg.file_url} alt="Uploaded" className="max-w-full rounded-2xl cursor-pointer hover:scale-[1.02] transition-transform shadow-2xl border-4 border-white/10" onClick={() => window.open(msg.file_url, '_blank')} />
                               ) : (
-                                <a href={msg.file_url} target="_blank" rel="noreferrer" className={`flex items-center gap-3 p-4 rounded-2xl transition-all border ${isAdmin ? 'bg-white/10 hover:bg-white/20 border-white/10' : 'bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 border-slate-100 dark:border-slate-800 shadow-sm'}`}>
-                                  <FileText className="h-6 w-6 text-blue-500" />
-                                  <div className="text-left">
-                                    <p className={`text-[10px] font-black uppercase ${isAdmin ? 'opacity-60' : 'text-slate-400'}`}>Document attachment</p>
-                                    <p className={`underline truncate text-xs ${isAdmin ? 'text-white' : 'text-blue-600'}`}>Preview File</p>
+                                <a href={msg.file_url} target="_blank" rel="noreferrer" className={`flex items-center gap-4 p-5 rounded-2xl transition-all border ${isAdmin ? 'bg-white/10 hover:bg-white/20 border-white/10' : 'bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-inner'}`}>
+                                  <div className={`h-12 w-12 rounded-xl flex items-center justify-center shrink-0 ${isAdmin ? 'bg-white/20' : 'bg-blue-600'}`}>
+                                    <FileText className={`h-6 w-6 ${isAdmin ? 'text-white' : 'text-white'}`} />
+                                  </div>
+                                  <div className="text-left min-w-0">
+                                    <p className={`text-[10px] font-black uppercase tracking-widest ${isAdmin ? 'text-white/60' : 'text-slate-400'}`}>Document attachment</p>
+                                    <p className={`underline truncate font-bold text-sm ${isAdmin ? 'text-white' : 'text-blue-600'}`}>Preview Resource</p>
                                   </div>
                                 </a>
                               )}
@@ -364,46 +413,56 @@ export default function AdminMessagesPage() {
                             {renderMessageContent(msg.content)}
                           </div>
                         </div>
-                        <div className={`flex items-center gap-2 mt-1 px-1 ${isAdmin ? 'justify-end' : 'justify-start'}`}>
-                          <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">
+                        <div className={`flex items-center gap-2 mt-1 px-2 ${isAdmin ? 'justify-end' : 'justify-start'}`}>
+                          <p className="text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em] opacity-80">
                             {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </p>
-                          {isAdmin && msg.is_read && (
-                            <span className="text-[9px] font-black text-blue-500 uppercase tracking-tighter">Seen</span>
+                          {isAdmin && (
+                             <div className="flex items-center gap-1">
+                                {msg.is_read ? (
+                                   <div className="flex items-center gap-1.5">
+                                      <span className="text-[9px] font-black text-blue-500 uppercase tracking-widest">Seen</span>
+                                      <div className="w-1 h-1 rounded-full bg-blue-500" />
+                                      <span className="text-[8px] font-bold text-slate-400">{new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                   </div>
+                                ) : (
+                                   <span className="text-[9px] font-black text-slate-300 uppercase tracking-widest">Sent</span>
+                                )}
+                             </div>
                           )}
                         </div>
                       </div>
-                    </div>
+                    </motion.div>
                   );
                 })
               )}
             </div>
 
             {/* Input */}
-            <div className="p-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950">
+            <div className="p-7 px-10 border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-[0_-20px_50px_rgba(0,0,0,0.02)]">
               <AnimatePresence>
                 {selectedFile && (
                   <motion.div 
                     initial={{ opacity: 0, scale: 0.9, y: 10 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.9, y: 10 }}
-                    className="mb-6 p-4 bg-white dark:bg-slate-900 border-2 border-blue-100 dark:border-blue-900/30 rounded-3xl flex items-center justify-between shadow-xl"
+                    className="mb-6 p-5 bg-slate-50 dark:bg-slate-800/50 border-2 border-blue-100/50 dark:border-blue-900/30 rounded-3xl flex items-center justify-between shadow-sm"
                   >
                     <div className="flex items-center gap-4">
                        {filePreview ? (
-                         <img src={filePreview} className="h-14 w-14 rounded-xl object-cover shadow-sm" />
+                         <img src={filePreview} className="h-16 w-16 rounded-2xl object-cover shadow-md border-2 border-white dark:border-slate-700" />
                        ) : (
-                         <div className="h-14 w-14 rounded-xl bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center">
-                            <FileText className="h-8 w-8 text-blue-600" />
+                         <div className="h-16 w-16 rounded-2xl bg-blue-600 flex items-center justify-center shadow-lg">
+                            <FileText className="h-8 w-8 text-white" />
                          </div>
                        )}
                        <div>
-                          <p className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-tight truncate max-w-[200px]">{selectedFile.name}</p>
-                          <p className="text-[10px] font-bold text-slate-500">Attachment ready • {(selectedFile.size / 1024 / 1024).toFixed(2)} MB</p>
+                          <p className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-tight truncate max-w-[250px]">{selectedFile.name}</p>
+                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{(selectedFile.size / 1024 / 1024).toFixed(2)} MB • Ready for secure transmission</p>
                        </div>
                     </div>
-                    <button onClick={() => {setSelectedFile(null); setFilePreview(null);}} className="p-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors">
-                       <X className="h-5 w-5 text-slate-400" />
+                    <button onClick={() => {setSelectedFile(null); setFilePreview(null);}} className="p-3 bg-white dark:bg-slate-800 hover:bg-red-50 dark:hover:bg-red-900/20 group rounded-2xl transition-all shadow-sm">
+                       <X className="h-5 w-5 text-slate-400 group-hover:text-red-600 transition-colors" />
                     </button>
                   </motion.div>
                 )}
@@ -421,7 +480,7 @@ export default function AdminMessagesPage() {
                   type="button"
                   disabled={isSending}
                   onClick={() => fileInputRef.current?.click()}
-                  className="p-4 bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-800 rounded-2xl text-slate-400 hover:text-blue-600 hover:border-blue-600 transition-all shadow-sm active:scale-95 disabled:opacity-50"
+                  className="p-5 bg-slate-50 dark:bg-slate-800 rounded-3xl text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all shadow-sm active:scale-95 disabled:opacity-50 border border-transparent hover:border-blue-100 dark:hover:border-blue-800"
                 >
                   <Paperclip className="h-6 w-6" />
                 </button>
@@ -430,13 +489,13 @@ export default function AdminMessagesPage() {
                     type="text"
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
-                    placeholder="Type your official reply..."
-                    className="w-full pl-6 pr-24 py-4 bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-800 rounded-2xl text-[13px] font-medium focus:border-blue-600 outline-none transition-all shadow-sm text-foreground placeholder:text-slate-400"
+                    placeholder="Compose an official message..."
+                    className="w-full pl-8 pr-28 py-5.5 bg-slate-50 dark:bg-slate-800/80 border-2 border-transparent rounded-[2rem] text-sm font-bold focus:border-blue-600/50 focus:bg-white dark:focus:bg-slate-900 outline-none transition-all shadow-inner text-foreground placeholder:text-slate-400"
                   />
                   <button
                     type="submit"
                     disabled={(!newMessage.trim() && !selectedFile) || isSending}
-                    className="absolute right-3 top-3 bottom-3 px-8 bg-blue-600 text-white rounded-full font-black text-xs uppercase tracking-[0.2em] hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/30 active:scale-95 disabled:opacity-50 flex items-center gap-2"
+                    className="absolute right-3 top-3 bottom-3 px-10 bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-[1.5rem] font-black text-xs uppercase tracking-[0.2em] hover:shadow-xl hover:shadow-blue-600/30 transition-all active:scale-95 disabled:opacity-50 flex items-center gap-2"
                   >
                     {isSending || isUploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <><span>Reply</span><Send className="h-4 w-4" /></>}
                   </button>
