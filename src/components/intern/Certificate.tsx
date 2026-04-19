@@ -39,18 +39,23 @@ export default function Certificate({
     setIsDownloading(true);
 
     try {
+      // Ensure we are at the top for clean capture
+      window.scrollTo(0, 0);
+      
       // Wait for any rendering to settle
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise(resolve => setTimeout(resolve, 800));
       
       const canvas = await html2canvas(certificateRef.current, {
-        scale: 3, // 3x is a good balance for quality vs performance
+        scale: 2.5, // Balanced scale for quality vs stability
         useCORS: true,
-        allowTaint: true,
+        allowTaint: false,
         backgroundColor: '#ffffff',
-        logging: false
+        logging: true,
+        windowWidth: 1200,
+        imageTimeout: 15000
       });
       
-      const imgData = canvas.toDataURL('image/png', 1.0);
+      const imgData = canvas.toDataURL('image/png', 0.9);
       const pdf = new jsPDF({
         orientation: 'landscape',
         unit: 'mm',
@@ -60,12 +65,12 @@ export default function Certificate({
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = pdf.internal.pageSize.getHeight();
 
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight, undefined, 'MEDIUM');
       pdf.save(`ZAYA_Certificate_${internName.replace(/\s+/g, '_')}.pdf`);
       alert('Success! Your certificate has been downloaded.');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Certificate Generation Error:', error);
-      alert('Failed to generate certificate. Please try again or take a screenshot.');
+      alert(`Download Failed: ${error.message || 'Unknown Error'}. Please ensure you are using a modern browser.`);
     } finally {
       setIsDownloading(false);
     }

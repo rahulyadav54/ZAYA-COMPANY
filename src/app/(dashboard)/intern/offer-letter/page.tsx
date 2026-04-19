@@ -48,29 +48,34 @@ export default function OfferLetterPage() {
     setIsDownloading(true);
 
     try {
-      // Wait for any images to load
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Ensure we are at the top of the page for clean capture
+      window.scrollTo(0, 0);
+      
+      // Small delay for layout stabilization
+      await new Promise(resolve => setTimeout(resolve, 800));
       
       const element = letterRef.current;
       const canvas = await html2canvas(element, {
-        scale: 2,
+        scale: 1.5, // Slightly lower scale for better compatibility/memory
         useCORS: true,
-        allowTaint: true,
-        logging: false,
-        backgroundColor: '#ffffff'
+        allowTaint: false, // Security best practice
+        logging: true,
+        backgroundColor: '#ffffff',
+        windowWidth: 1000, // Fixed width for consistent rendering
+        imageTimeout: 15000
       });
 
-      const imgData = canvas.toDataURL('image/png', 1.0);
+      const imgData = canvas.toDataURL('image/png', 0.9);
       const pdf = new jsPDF('p', 'mm', 'a4');
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
 
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight, undefined, 'MEDIUM');
       pdf.save(`Offer_Letter_${profile?.full_name?.replace(/\s+/g, '_') || 'Intern'}.pdf`);
       alert('Success! Your Offer Letter has been downloaded.');
-    } catch (error) {
+    } catch (error: any) {
       console.error('PDF Generation Error:', error);
-      alert('Failed to generate PDF. Please try again or take a screenshot.');
+      alert(`Download Failed: ${error.message || 'Unknown Error'}. Please ensure you are using a modern browser.`);
     } finally {
       setIsDownloading(false);
     }
@@ -149,10 +154,12 @@ export default function OfferLetterPage() {
               <p className="font-black text-xl text-blue-600 mt-1">{profile?.full_name}</p>
               <div className="flex flex-col mt-1">
                 <p className="font-medium text-slate-500 uppercase text-xs tracking-widest">
-                  {profile?.position || 'Intern'}
+                  {profile?.position || application?.position || 'Intern'}
                 </p>
-                {profile?.intern_id && (
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">ID: {profile.intern_id}</p>
+                {(profile?.intern_id || application?.intern_id) && (
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">
+                    ID: {profile?.intern_id || application?.intern_id}
+                  </p>
                 )}
               </div>
             </div>
@@ -161,7 +168,7 @@ export default function OfferLetterPage() {
             
             <p>
               We are delighted to offer you an opportunity to join our team as an <span className="font-bold text-slate-900">
-                {profile?.position || 'Intern'}
+                {profile?.position || application?.position || 'Intern'}
               </span> at <span className="font-bold text-blue-600">ZAYA CODE HUB</span>. 
               The term of your placement will be for a duration of <span className="font-bold text-slate-900">{application?.duration || '1 month'}</span>, starting from <span className="font-bold text-slate-900">{profile?.joining_date ? new Date(profile.joining_date).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) : currentDate}</span>.
             </p>
