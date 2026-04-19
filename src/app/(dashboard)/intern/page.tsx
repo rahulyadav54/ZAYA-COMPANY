@@ -2,8 +2,10 @@
 
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
-import { Clock, CheckCircle2, AlertCircle, FileUp, Trophy, Calendar, Loader2, ArrowRight, X, Award, FileText } from 'lucide-react';
+import { Clock, CheckCircle2, AlertCircle, FileUp, Trophy, Calendar, Loader2, ArrowRight, X, Award, FileText, Maximize2 } from 'lucide-react';
 import Link from 'next/link';
+import { motion, AnimatePresence } from 'framer-motion';
+import ReactMarkdown from 'react-markdown';
 
 export default function InternDashboard() {
   const [profile, setProfile] = useState<any>(null);
@@ -12,6 +14,7 @@ export default function InternDashboard() {
   const [certificates, setCertificates] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedTask, setSelectedTask] = useState<any>(null);
 
   useEffect(() => {
     async function loadDashboardData() {
@@ -242,13 +245,22 @@ export default function InternDashboard() {
                          <Clock className="h-6 w-6" />
                        </div>
                     ) : (
-                       <button 
-                         onClick={() => window.location.href='/intern/submit'}
-                         className="p-4 bg-slate-100 dark:bg-slate-800 rounded-2xl group-hover:bg-blue-600 group-hover:text-white transition-all shadow-lg"
-                         title="Submit Task"
-                       >
-                         <FileUp className="h-6 w-6" />
-                       </button>
+                       <div className="flex items-center gap-2">
+                         <button 
+                           onClick={() => setSelectedTask(task)}
+                           className="p-4 bg-slate-100 dark:bg-slate-800 rounded-2xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-all shadow-sm"
+                           title="Read Full Assessment"
+                         >
+                           <Maximize2 className="h-6 w-6 text-blue-600" />
+                         </button>
+                         <button 
+                           onClick={() => window.location.href='/intern/submit'}
+                           className="p-4 bg-slate-100 dark:bg-slate-800 rounded-2xl group-hover:bg-blue-600 group-hover:text-white transition-all shadow-lg"
+                           title="Submit Task"
+                         >
+                           <FileUp className="h-6 w-6" />
+                         </button>
+                       </div>
                     )}
                   </div>
                 </div>
@@ -299,6 +311,58 @@ export default function InternDashboard() {
           </div>
         </div>
       </div>
+
+      {/* Task Full View Modal */}
+      <AnimatePresence>
+        {selectedTask && (
+          <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[100] flex items-center justify-center p-4 md:p-8">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9, y: 40 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 40 }}
+              className="bg-white dark:bg-slate-900 w-full max-w-4xl max-h-[90vh] rounded-[3rem] shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-800 flex flex-col"
+            >
+              <div className="p-8 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-950/50">
+                <div className="flex items-center gap-4">
+                  <div className="h-12 w-12 bg-blue-600 rounded-2xl flex items-center justify-center">
+                    <FileText className="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tight">{selectedTask.title}</h2>
+                    <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest">Full Project Assessment</p>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => setSelectedTask(null)}
+                  className="p-3 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-2xl transition-colors text-slate-500"
+                >
+                  <X className="h-6 w-6" />
+                </button>
+              </div>
+
+              <div className="flex-1 overflow-y-auto p-10 custom-scrollbar">
+                <div className="prose dark:prose-invert max-w-none prose-headings:font-black prose-headings:uppercase prose-headings:italic prose-headings:tracking-tight prose-p:font-medium prose-p:text-slate-600 dark:prose-p:text-slate-400 prose-li:font-medium">
+                  <ReactMarkdown>{selectedTask.description}</ReactMarkdown>
+                </div>
+              </div>
+
+              <div className="p-8 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/50 flex justify-between items-center">
+                <div className="flex items-center text-xs font-black text-slate-500 uppercase tracking-widest">
+                  <Calendar className="h-4 w-4 mr-2 text-blue-600" />
+                  Submission Deadline: {selectedTask.deadline ? new Date(selectedTask.deadline).toLocaleDateString(undefined, { dateStyle: 'long' }) : 'N/A'}
+                </div>
+                <button 
+                  onClick={() => window.location.href='/intern/submit'}
+                  className="px-8 py-4 bg-blue-600 text-white rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-blue-700 transition-all shadow-xl shadow-blue-600/20 flex items-center gap-2"
+                >
+                  <FileUp className="h-5 w-5" />
+                  Submit Now
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
