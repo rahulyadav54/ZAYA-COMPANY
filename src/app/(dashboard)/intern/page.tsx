@@ -7,6 +7,7 @@ import Link from 'next/link';
 
 export default function InternDashboard() {
   const [profile, setProfile] = useState<any>(null);
+  const [application, setApplication] = useState<any>(null);
   const [tasks, setTasks] = useState<any[]>([]);
   const [certificates, setCertificates] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -26,7 +27,20 @@ export default function InternDashboard() {
         // Fetch Profile
         try {
            const { data: p } = await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle();
-           if (p) setProfile(p);
+           if (p) {
+             setProfile(p);
+             
+             // If profile position is generic or missing, fetch from applications
+             if (!p.position || p.position === 'Intern') {
+               const { data: appData } = await supabase
+                 .from('applications')
+                 .select('position')
+                 .eq('email', p.email)
+                 .eq('status', 'accepted')
+                 .maybeSingle();
+               if (appData) setApplication(appData);
+             }
+           }
         } catch (e) { console.error("Profile load failed"); }
 
         // Fetch Submissions
@@ -109,7 +123,7 @@ export default function InternDashboard() {
           <h1 className="text-4xl font-black mb-2 tracking-tight">Welcome back, {profile?.full_name?.split(' ')[0] || 'Intern'}! 👋</h1>
           <div className="flex items-center gap-3">
             <span className="px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-[10px] font-black uppercase tracking-[0.2em] border border-white/10">
-              {profile?.position || 'Intern'}
+              {profile?.position && profile.position !== 'Intern' ? profile.position : (application?.position || 'Intern')}
             </span>
             <p className="text-blue-100 text-lg opacity-90 font-medium italic">You have {pendingCount} tasks waiting for your magic touch.</p>
           </div>

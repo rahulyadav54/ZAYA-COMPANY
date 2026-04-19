@@ -154,7 +154,7 @@ export default function OfferLetterPage() {
               <p className="font-black text-xl text-[#2563eb] mt-1">{profile?.full_name}</p>
               <div className="flex flex-col mt-1">
                 <p className="font-medium text-[#64748b] uppercase text-xs tracking-widest">
-                  {profile?.position || application?.position || 'Intern'}
+                  {profile?.position && profile.position !== 'Intern' ? profile.position : (application?.position || 'Zaya Intern')}
                 </p>
                 {(profile?.intern_id || application?.intern_id) && (
                   <p className="text-[10px] font-black text-[#94a3b8] uppercase tracking-widest mt-1">
@@ -168,14 +168,14 @@ export default function OfferLetterPage() {
             
             <p>
               We are delighted to offer you an opportunity to join our team as an <span className="font-bold text-[#0f172a]">
-                {profile?.position || application?.position || 'Intern'}
+                {profile?.position && profile.position !== 'Intern' ? profile.position : (application?.position || 'Zaya Intern')}
               </span> at <span className="font-bold text-[#2563eb]">ZAYA CODE HUB</span>. 
               The term of your placement will be for a duration of <span className="font-bold text-[#0f172a]">{application?.duration || '1 month'}</span>, starting from <span className="font-bold text-[#0f172a]">{profile?.joining_date ? new Date(profile.joining_date).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) : currentDate}</span>.
             </p>
 
             {/* Dynamic Content based on Position */}
             {(() => {
-              const pos = (profile?.position || application?.position || 'Intern').toLowerCase();
+              const pos = (profile?.position && profile.position !== 'Intern' ? profile.position : (application?.position || 'Intern')).toLowerCase();
               let responsibilities = "working on various development projects, participating in code reviews, and collaborating with our team to build innovative solutions.";
               let team = "Development Team";
 
