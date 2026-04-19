@@ -46,6 +46,16 @@ export async function POST(request: Request) {
       });
 
     if (profileError) throw profileError;
+    
+    // 4. Update Application status (if exists)
+    try {
+      await supabaseAdmin
+        .from('applications')
+        .update({ status: 'hired' })
+        .eq('email', email);
+    } catch (err) {
+      console.warn('Application status update skipped (table might not exist yet)');
+    }
 
     return NextResponse.json({ success: true, user: authData.user });
   } catch (error: any) {
