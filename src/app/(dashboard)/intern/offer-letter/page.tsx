@@ -32,7 +32,30 @@ export default function OfferLetterPage() {
               .order('created_at', { ascending: false })
               .limit(1)
               .maybeSingle();
-            setApplication(appData);
+            
+            if (appData) {
+              setApplication(appData);
+            } else if (profileData.full_name) {
+              // Fallback to name search if email search yields no results
+              const { data: nameData } = await supabase
+                .from('applications')
+                .select('*')
+                .ilike('full_name', `%${profileData.full_name}%`)
+                .order('created_at', { ascending: false })
+                .limit(1)
+                .maybeSingle();
+              if (nameData) setApplication(nameData);
+            }
+          } else if (profileData?.full_name) {
+             // Search by name if email is missing
+             const { data: nameData } = await supabase
+                .from('applications')
+                .select('*')
+                .ilike('full_name', `%${profileData.full_name}%`)
+                .order('created_at', { ascending: false })
+                .limit(1)
+                .maybeSingle();
+              if (nameData) setApplication(nameData);
           }
         }
       } catch (error) {
