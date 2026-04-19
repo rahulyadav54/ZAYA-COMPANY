@@ -78,7 +78,7 @@ export default function IDCard({ profile }: IDCardProps) {
           <div className="inline-flex items-center gap-2 bg-[#eff6ff] border border-[#dbeafe] px-4 py-1.5 rounded-xl">
              <span className="w-1.5 h-1.5 rounded-full bg-[#2563eb] animate-pulse" />
              <p className="text-[#2563eb] font-bold text-[10px] uppercase tracking-widest">
-               {profile.position || 'Software Development Intern'}
+               {profile.position && profile.position !== 'Intern' ? profile.position : 'Software Development Intern'}
              </p>
           </div>
         </div>

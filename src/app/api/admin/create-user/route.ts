@@ -18,6 +18,17 @@ export async function POST(request: Request) {
     // 1. Initialize Supabase with Service Role Key (Server-side ONLY)
     const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
 
+    // 1.5 Fetch position from applications if missing
+    let finalPosition = position;
+    if (!finalPosition || finalPosition === 'Intern') {
+       const { data: appData } = await supabaseAdmin
+         .from('applications')
+         .select('position')
+         .ilike('email', email)
+         .maybeSingle();
+       if (appData?.position) finalPosition = appData.position;
+    }
+
     // 2. Create the user in Auth
     const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
       email,
@@ -25,7 +36,7 @@ export async function POST(request: Request) {
       email_confirm: true,
       user_metadata: { 
         full_name: fullName,
-        position: position || 'Intern'
+        position: finalPosition || 'Internship'
       }
     });
 
@@ -39,7 +50,7 @@ export async function POST(request: Request) {
         email,
         full_name: fullName,
         role: role || 'intern',
-        position: position || 'Intern',
+        position: finalPosition || 'Internship',
         phone: requestData.phone || '',
         joining_date: requestData.joiningDate || new Date().toISOString().split('T')[0],
         intern_id: requestData.internId || `ZCH-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`

@@ -152,7 +152,7 @@ export default function Certificate({
              </div>
              
              <p className="text-[16px] text-[#334155] leading-relaxed max-w-[800px] mx-auto italic">
-               For their exceptional performance and dedication during the internship program at <span className="font-bold text-[#002855] not-italic">Zaya Code Hub</span>. They have successfully completed the internship as a <span className="font-bold text-[#C5A021] not-italic">{internPosition || 'Intern'}</span> showcased through the project <span className="font-bold text-[#0f172a] not-italic">"{taskTitle}"</span> from <span className="font-bold text-[#0f172a] not-italic">{dateRange}</span>.
+               For their exceptional performance and dedication during the internship program at <span className="font-bold text-[#002855] not-italic">Zaya Code Hub</span>. They have successfully completed the internship as a <span className="font-bold text-[#C5A021] not-italic">{internPosition && internPosition !== 'Intern' ? internPosition : 'Professional Intern'}</span> showcased through the project <span className="font-bold text-[#0f172a] not-italic">"{taskTitle}"</span> from <span className="font-bold text-[#0f172a] not-italic">{dateRange}</span>.
              </p>
           </div>
 
