@@ -72,34 +72,61 @@ export default function OfferLetterPage() {
     setIsDownloading(true);
 
     try {
-      // Ensure we are at the top of the page for clean capture
+      // Force scroll to top to prevent capture offsets
       window.scrollTo(0, 0);
       
-      // Small delay for layout stabilization
+      // Delay to ensure browser has finished rendering
       await new Promise(resolve => setTimeout(resolve, 800));
       
       const element = letterRef.current;
       const canvas = await html2canvas(element, {
-        scale: 1.5, // Slightly lower scale for better compatibility/memory
+        scale: 2, // High resolution for sharp text
         useCORS: true,
-        allowTaint: false, // Security best practice
-        logging: true,
+        allowTaint: false,
+        logging: false,
         backgroundColor: '#ffffff',
-        windowWidth: 1000, // Fixed width for consistent rendering
-        imageTimeout: 15000
+        windowWidth: element.scrollWidth,
+        windowHeight: element.scrollHeight,
+        scrollY: -window.scrollY, // Critical fix for scrolled offsets
+        scrollX: 0
       });
 
-      const imgData = canvas.toDataURL('image/png', 0.9);
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      const imgData = canvas.toDataURL('image/png', 1.0);
+      
+      // Create PDF in A4 format
+      const pdf = new jsPDF({
+        orientation: 'p',
+        unit: 'mm',
+        format: 'a4'
+      });
 
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight, undefined, 'MEDIUM');
-      pdf.save(`Offer_Letter_${profile?.full_name?.replace(/\s+/g, '_') || 'Intern'}.pdf`);
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      
+      // Calculate dimensions to fit the page exactly
+      const imgWidth = pageWidth;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      
+      // If content is taller than the page, scale it down to fit perfectly
+      let finalHeight = imgHeight;
+      let finalWidth = imgWidth;
+      let xOffset = 0;
+      let yOffset = 0;
+
+      if (imgHeight > pageHeight) {
+        const ratio = pageHeight / imgHeight;
+        finalHeight = pageHeight;
+        finalWidth = imgWidth * ratio;
+        xOffset = (pageWidth - finalWidth) / 2;
+      }
+
+      pdf.addImage(imgData, 'PNG', xOffset, yOffset, finalWidth, finalHeight, undefined, 'FAST');
+      pdf.save(`ZAYA_Offer_Letter_${profile?.full_name?.replace(/\s+/g, '_') || 'Intern'}.pdf`);
+      
       alert('Success! Your Offer Letter has been downloaded.');
     } catch (error: any) {
       console.error('PDF Generation Error:', error);
-      alert(`Download Failed: ${error.message || 'Unknown Error'}. Please ensure you are using a modern browser.`);
+      alert(`Download Failed: ${error.message || 'Unknown Error'}. Please try refreshing the page.`);
     } finally {
       setIsDownloading(false);
     }
