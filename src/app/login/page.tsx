@@ -105,6 +105,11 @@ function LoginForm() {
           profile = newProfile;
         }
 
+        // Track Login Activity
+        try {
+          await supabase.rpc('track_login', { user_id: data.user.id });
+        } catch (e) { console.error('Login tracking failed', e); }
+
         const nextPath = searchParams.get('next');
         const targetPath = nextPath || (profile?.role === 'admin' ? '/admin' : '/intern');
         console.log('Redirecting to:', targetPath);

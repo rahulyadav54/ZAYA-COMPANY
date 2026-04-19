@@ -273,6 +273,16 @@ export default function ManageInternsPage() {
                   {intern.position || 'Intern'}
                 </span>
                 <span className="text-[9px] font-black text-slate-400 uppercase tracking-[0.3em]">Active Intern</span>
+                {intern.last_login && (
+                  <div className="mt-2 space-y-0.5">
+                    <p className="text-[8px] font-black text-blue-500 uppercase tracking-widest">
+                      Last Seen: {new Date(intern.last_login).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}
+                    </p>
+                    <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">
+                      Total Visits: {intern.login_count || 0}
+                    </p>
+                  </div>
+                )}
               </div>
               <p className="text-sm text-slate-500 mb-4 flex items-center gap-2">
                 <Mail className="h-4 w-4" /> {intern.email}
