@@ -12,6 +12,7 @@ interface CertificateProps {
   durationMonths?: number;
   certificateId?: string;
   hideButtons?: boolean;
+  internPosition?: string;
 }
 
 export default function Certificate({ 
@@ -20,7 +21,8 @@ export default function Certificate({
   completionDate, 
   durationMonths = 1,
   certificateId, 
-  hideButtons = false 
+  hideButtons = false,
+  internPosition
 }: CertificateProps) {
   const certificateRef = useRef<HTMLDivElement>(null);
 
@@ -131,7 +133,7 @@ export default function Certificate({
              </div>
              
              <p className="text-[16px] text-slate-700 leading-relaxed max-w-[800px] mx-auto italic">
-               For their exceptional performance and dedication during the internship program at <span className="font-bold text-[#002855] not-italic">Zaya Code Hub</span>. They have successfully completed the project <span className="font-bold text-[#C5A021] not-italic">"{taskTitle}"</span> showcasing professional excellence from <span className="font-bold text-slate-900 not-italic">{dateRange}</span>.
+               For their exceptional performance and dedication during the internship program at <span className="font-bold text-[#002855] not-italic">Zaya Code Hub</span>. They have successfully completed the internship as a <span className="font-bold text-[#C5A021] not-italic">{internPosition || 'Intern'}</span> showcased through the project <span className="font-bold text-slate-900 not-italic">"{taskTitle}"</span> from <span className="font-bold text-slate-900 not-italic">{dateRange}</span>.
              </p>
           </div>
 

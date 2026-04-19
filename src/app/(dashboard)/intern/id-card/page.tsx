@@ -20,15 +20,7 @@ export default function InternIDCardPage() {
       if (user) {
         const { data: profileData } = await supabase.from('profiles').select('*').eq('id', user.id).single();
         if (profileData) {
-          // Fetch application for position
-          const { data: appData } = await supabase
-            .from('applications')
-            .select('position')
-            .eq('email', profileData.email)
-            .eq('status', 'accepted')
-            .maybeSingle();
-
-          setProfile({ ...profileData, ...user.user_metadata, position: appData?.position });
+          setProfile(profileData);
         }
       }
       setLoading(false);

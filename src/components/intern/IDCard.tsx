@@ -11,11 +11,12 @@ interface IDCardProps {
     created_at: string;
     avatar_url?: string;
     position?: string;
+    intern_id?: string;
   };
 }
 
 export default function IDCard({ profile }: IDCardProps) {
-  const internId = `ZAYA-ID-${profile.id.slice(0, 8).toUpperCase()}`;
+  const internId = profile.intern_id || `ZAYA-ID-${profile.id.slice(0, 8).toUpperCase()}`;
   const validFrom = new Date(profile.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
   const validTo = new Date(new Date(profile.created_at).setMonth(new Date(profile.created_at).getMonth() + 6)).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
 

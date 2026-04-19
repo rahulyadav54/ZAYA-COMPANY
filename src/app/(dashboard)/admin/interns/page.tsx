@@ -145,6 +145,8 @@ export default function ManageInternsPage() {
     const priority = formData.get('priority') as string;
     const deadline = formData.get('deadline') as string;
 
+    const selectedIntern = interns.find(i => i.id === selectedInternId);
+
     const { error } = await supabase.from('tasks').insert({
       intern_id: selectedInternId,
       title,
@@ -214,13 +216,21 @@ export default function ManageInternsPage() {
                 <Trash2 className="h-5 w-5" />
               </button>
 
-              <div className="h-20 w-20 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 font-bold text-2xl mb-4">
-                {intern.full_name?.charAt(0) || 'U'}
-              </div>
               <h3 className="text-lg font-black text-slate-900 dark:text-white uppercase tracking-tight">{intern.full_name || 'Unknown User'}</h3>
-              <p className="text-[10px] font-black text-blue-600 uppercase tracking-[0.2em] mb-3">
-                {intern.position || 'Active Intern'}
-              </p>
+              <div className="mt-1 mb-4 flex flex-col items-center gap-1.5">
+                <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] shadow-sm border ${
+                  intern.position?.toLowerCase().includes('android') ? 'bg-green-100 text-green-600 border-green-200 dark:bg-green-900/30 dark:border-green-800' :
+                  intern.position?.toLowerCase().includes('full stack') || intern.position?.toLowerCase().includes('web') ? 'bg-blue-100 text-blue-600 border-blue-200 dark:bg-blue-900/30 dark:border-blue-800' :
+                  intern.position?.toLowerCase().includes('ui') || intern.position?.toLowerCase().includes('ux') || intern.position?.toLowerCase().includes('design') ? 'bg-purple-100 text-purple-600 border-purple-200 dark:bg-purple-900/30 dark:border-purple-800' :
+                  intern.position?.toLowerCase().includes('python') ? 'bg-yellow-100 text-yellow-700 border-yellow-200 dark:bg-yellow-900/30 dark:border-yellow-800' :
+                  intern.position?.toLowerCase().includes('graphic') ? 'bg-pink-100 text-pink-600 border-pink-200 dark:bg-pink-900/30 dark:border-pink-800' :
+                  intern.position?.toLowerCase().includes('marketing') ? 'bg-orange-100 text-orange-600 border-orange-200 dark:bg-orange-900/30 dark:border-orange-800' :
+                  'bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-800 dark:border-slate-700'
+                }`}>
+                  {intern.position || 'Intern'}
+                </span>
+                <span className="text-[9px] font-black text-slate-400 uppercase tracking-[0.3em]">Active Intern</span>
+              </div>
               <p className="text-sm text-slate-500 mb-4 flex items-center gap-2">
                 <Mail className="h-4 w-4" /> {intern.email}
               </p>
@@ -344,7 +354,14 @@ export default function ManageInternsPage() {
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-xl w-full max-w-md overflow-hidden border border-slate-200 dark:border-slate-800">
             <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
-              <h2 className="text-xl font-bold text-foreground">Assign Task/Notification</h2>
+              <div>
+                <h2 className="text-xl font-bold text-foreground">Assign Task/Notification</h2>
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">
+                  Target: <span className="text-blue-600">{interns.find(i => i.id === selectedInternId)?.full_name}</span> 
+                  {' • '} 
+                  Role: <span className="text-slate-900 dark:text-white">{interns.find(i => i.id === selectedInternId)?.position || 'General Intern'}</span>
+                </p>
+              </div>
               <button onClick={() => setShowTaskModal(false)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full">
                 <X className="h-5 w-5 text-slate-500" />
               </button>

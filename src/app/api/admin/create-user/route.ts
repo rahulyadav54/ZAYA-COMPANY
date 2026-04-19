@@ -3,7 +3,8 @@ import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
   try {
-    const { email, password, fullName, role, position } = await request.json();
+    const requestData = await request.json();
+    const { email, password, fullName, role, position } = requestData;
 
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -38,7 +39,10 @@ export async function POST(request: Request) {
         email,
         full_name: fullName,
         role: role || 'intern',
-        position: position || 'Intern'
+        position: position || 'Intern',
+        phone: requestData.phone || '',
+        joining_date: requestData.joiningDate || new Date().toISOString().split('T')[0],
+        intern_id: requestData.internId || `ZCH-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`
       });
 
     if (profileError) throw profileError;

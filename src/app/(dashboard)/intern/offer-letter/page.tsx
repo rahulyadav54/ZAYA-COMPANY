@@ -132,22 +132,23 @@ export default function OfferLetterPage() {
             <div className="mb-8">
               <p className="font-bold text-slate-900">To,</p>
               <p className="font-black text-xl text-blue-600 mt-1">{profile?.full_name}</p>
-              <p className="font-medium text-slate-500">
-                {application?.position 
-                  ? (application.position.toLowerCase().includes('intern') ? application.position : `${application.position} Intern`) 
-                  : 'Software Engineering Intern'}
-              </p>
+              <div className="flex flex-col mt-1">
+                <p className="font-medium text-slate-500 uppercase text-xs tracking-widest">
+                  {profile?.position || 'Intern'}
+                </p>
+                {profile?.intern_id && (
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">ID: {profile.intern_id}</p>
+                )}
+              </div>
             </div>
 
             <p>Dear <span className="font-bold text-slate-900">{profile?.full_name?.split(' ')[0]}</span>,</p>
             
             <p>
               We are delighted to offer you an opportunity to join our team as an <span className="font-bold text-slate-900">
-                {application?.position 
-                  ? (application.position.toLowerCase().includes('intern') ? application.position : `${application.position} Intern`) 
-                  : 'Intern'}
+                {profile?.position || 'Intern'}
               </span> at <span className="font-bold text-blue-600">ZAYA CODE HUB</span>. 
-              The term of your placement will be for a duration of <span className="font-bold text-slate-900">{application?.duration || '1 month'}</span>, starting from <span className="font-bold text-slate-900">{currentDate}</span>.
+              The term of your placement will be for a duration of <span className="font-bold text-slate-900">{application?.duration || '1 month'}</span>, starting from <span className="font-bold text-slate-900">{profile?.joining_date ? new Date(profile.joining_date).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) : currentDate}</span>.
             </p>
 
             <p>

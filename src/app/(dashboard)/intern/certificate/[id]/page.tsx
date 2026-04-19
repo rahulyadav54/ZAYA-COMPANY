@@ -20,7 +20,7 @@ export default function CertificatePage() {
         .select(`
           *,
           tasks:task_id(title),
-          profiles:intern_id(full_name)
+          profiles:intern_id(full_name, position)
         `)
         .eq('id', id)
         .single();
@@ -85,6 +85,7 @@ export default function CertificatePage() {
       <div className="flex justify-center bg-slate-950/50 p-10 rounded-[4rem] border border-white/5 overflow-x-auto shadow-inner no-print">
          <Certificate 
             internName={data.cert_full_name || data.profiles?.full_name} 
+            internPosition={data.profiles?.position}
             taskTitle={data.tasks?.title} 
             completionDate={data.created_at} 
          />

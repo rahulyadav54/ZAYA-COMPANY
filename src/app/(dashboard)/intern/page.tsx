@@ -107,7 +107,12 @@ export default function InternDashboard() {
       <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-[2.5rem] p-10 text-white shadow-2xl shadow-blue-600/20 relative overflow-hidden">
         <div className="relative z-10">
           <h1 className="text-4xl font-black mb-2 tracking-tight">Welcome back, {profile?.full_name?.split(' ')[0] || 'Intern'}! 👋</h1>
-          <p className="text-blue-100 text-lg opacity-90 font-medium">You have {pendingCount} tasks waiting for your magic touch.</p>
+          <div className="flex items-center gap-3">
+            <span className="px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-[10px] font-black uppercase tracking-[0.2em] border border-white/10">
+              {profile?.position || 'Intern'}
+            </span>
+            <p className="text-blue-100 text-lg opacity-90 font-medium italic">You have {pendingCount} tasks waiting for your magic touch.</p>
+          </div>
         </div>
         <div className="absolute -right-10 -bottom-10 opacity-10">
            <Trophy className="h-64 w-64 rotate-12" />
