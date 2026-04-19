@@ -21,21 +21,34 @@ export default function IDVerificationPage() {
     setResult(null);
 
     try {
-      // Extract the original UUID part from ZAYA-ID-XXXXXXXX
-      const searchPart = inputId.replace('ZAYA-ID-', '').toLowerCase();
+      const cleanId = inputId.trim().toUpperCase();
       
-      // We need to find a profile where the first 8 chars of the ID match
-      // Since we can't easily query by slice in simple Supabase client without RPC, 
-      // we'll fetch all and filter if it's a small number, OR just use the full UUID if provided.
-      // But for a professional feel, let's search by the custom ID format.
+      // 1. First, try searching for an exact match in the custom 'intern_id' column
+      const { data: byCustomId, error: customIdError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('intern_id', cleanId)
+        .maybeSingle();
+
+      if (byCustomId) {
+        setResult(byCustomId);
+        return;
+      }
+
+      // 2. If not found, try the legacy ZAYA-ID logic or direct UUID match
+      const uuidPart = cleanId.replace('ZAYA-ID-', '').toLowerCase();
       
-      const { data, error: fetchError } = await supabase
+      const { data: allProfiles, error: fetchError } = await supabase
         .from('profiles')
         .select('*');
 
       if (fetchError) throw fetchError;
 
-      const foundProfile = data.find(p => p.id.slice(0, 8).toLowerCase() === searchPart || p.id === inputId);
+      const foundProfile = allProfiles.find(p => 
+        p.id.slice(0, 8).toLowerCase() === uuidPart || 
+        p.id.toLowerCase() === cleanId.toLowerCase() ||
+        (p.intern_id && p.intern_id.toUpperCase() === cleanId)
+      );
 
       if (foundProfile) {
         setResult(foundProfile);
@@ -43,6 +56,7 @@ export default function IDVerificationPage() {
         setError('No active intern found with this ID. Please check the ID and try again.');
       }
     } catch (err: any) {
+      console.error('Verification error:', err);
       setError('An error occurred while verifying the identity.');
     } finally {
       setLoading(false);
