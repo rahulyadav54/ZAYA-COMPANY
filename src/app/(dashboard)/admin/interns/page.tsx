@@ -273,16 +273,20 @@ export default function ManageInternsPage() {
                   {intern.position || 'Intern'}
                 </span>
                 <span className="text-[9px] font-black text-slate-400 uppercase tracking-[0.3em]">Active Intern</span>
-                {intern.last_login && (
-                  <div className="mt-2 space-y-0.5">
-                    <p className="text-[8px] font-black text-blue-500 uppercase tracking-widest">
-                      Last Seen: {new Date(intern.last_login).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}
-                    </p>
-                    <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">
-                      Total Visits: {intern.login_count || 0}
-                    </p>
+                <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 w-full space-y-1">
+                  <div className="flex justify-between items-center px-2">
+                    <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Last Seen</span>
+                    <span className="text-[9px] font-bold text-slate-900 dark:text-white">
+                      {intern.last_login ? new Date(intern.last_login).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' }) : 'Never'}
+                    </span>
                   </div>
-                )}
+                  <div className="flex justify-between items-center px-2">
+                    <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Total Visits</span>
+                    <span className="text-[9px] font-black text-blue-600 bg-blue-50 dark:bg-blue-900/20 px-2 py-0.5 rounded-full">
+                      {intern.login_count || 0}
+                    </span>
+                  </div>
+                </div>
               </div>
               <p className="text-sm text-slate-500 mb-4 flex items-center gap-2">
                 <Mail className="h-4 w-4" /> {intern.email}
