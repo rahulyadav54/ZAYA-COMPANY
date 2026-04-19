@@ -177,7 +177,7 @@ export default function InternMessagesPage() {
         {/* Chat Area */}
         <div 
           ref={scrollRef}
-          className="flex-1 p-8 overflow-y-auto space-y-8 scroll-smooth"
+          className="flex-1 p-6 overflow-y-auto space-y-4 scroll-smooth custom-scrollbar"
           style={{ 
             backgroundImage: 'radial-gradient(circle at 2px 2px, rgba(0,0,0,0.03) 1px, transparent 0)',
             backgroundSize: '32px 32px'
@@ -210,12 +210,12 @@ export default function InternMessagesPage() {
                   key={msg.id || idx}
                   className={`flex ${isIntern ? 'justify-end' : 'justify-start'}`}
                 >
-                  <div className={`flex items-end gap-3 max-w-[75%] ${isIntern ? 'flex-row-reverse' : 'flex-row'}`}>
+                  <div className={`flex items-end gap-3 max-w-[85%] ${isIntern ? 'flex-row-reverse' : 'flex-row'}`}>
                     <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-xs font-black shadow-lg shrink-0 ${isIntern ? 'bg-blue-600 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300'}`}>
                       {isIntern ? 'ME' : 'AD'}
                     </div>
                     <div className="space-y-1">
-                      <div className={`px-5 py-3 rounded-2xl text-[12px] font-normal shadow-sm transition-all leading-relaxed ${
+                      <div className={`px-4 py-2.5 rounded-2xl text-[12px] font-normal shadow-sm transition-all leading-relaxed ${
                         isIntern 
                           ? 'bg-blue-600 text-white rounded-br-none shadow-blue-500/10' 
                           : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-tl-none'

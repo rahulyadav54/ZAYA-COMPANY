@@ -270,7 +270,7 @@ export default function AdminMessagesPage() {
              <input type="text" placeholder="Filter conversations..." className="w-full pl-11 pr-4 py-3 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl text-xs font-bold outline-none focus:border-blue-600 transition-all" />
           </div>
         </div>
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto custom-scrollbar">
           {isLoading ? (
             <div className="p-10 flex justify-center"><Loader2 className="h-6 w-6 animate-spin text-blue-600" /></div>
           ) : conversations.length === 0 ? (
@@ -326,7 +326,7 @@ export default function AdminMessagesPage() {
             {/* Messages */}
             <div 
               ref={scrollRef}
-              className="flex-1 p-6 overflow-y-auto space-y-6 scroll-smooth"
+              className="flex-1 p-6 overflow-y-auto space-y-4 scroll-smooth custom-scrollbar"
               style={{ 
                 backgroundImage: 'radial-gradient(circle at 2px 2px, rgba(0,0,0,0.02) 1px, transparent 0)',
                 backgroundSize: '32px 32px'
@@ -339,8 +339,8 @@ export default function AdminMessagesPage() {
                   const isAdmin = msg.sender_type === 'admin';
                   return (
                     <div key={msg.id || idx} className={`flex ${isAdmin ? 'justify-end' : 'justify-start'}`}>
-                      <div className={`max-w-[80%] space-y-1`}>
-                        <div className={`px-5 py-3 rounded-2xl text-[12px] font-normal shadow-sm transition-all leading-relaxed ${
+                      <div className={`max-w-[85%] space-y-1`}>
+                        <div className={`px-4 py-2.5 rounded-2xl text-[12px] font-normal shadow-sm transition-all leading-relaxed ${
                           isAdmin 
                             ? 'bg-blue-600 text-white rounded-tr-none shadow-blue-500/10' 
                             : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-tl-none shadow-md border border-slate-200/50 dark:border-slate-700/50'
