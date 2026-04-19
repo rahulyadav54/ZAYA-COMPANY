@@ -173,14 +173,44 @@ export default function OfferLetterPage() {
               The term of your placement will be for a duration of <span className="font-bold text-[#0f172a]">{application?.duration || '1 month'}</span>, starting from <span className="font-bold text-[#0f172a]">{profile?.joining_date ? new Date(profile.joining_date).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) : currentDate}</span>.
             </p>
 
-            <p>
-              During this internship, you will be part of our <span className="font-bold text-slate-900">Development Team</span> and report to your assigned supervisor. 
-              Your main responsibilities will include working on various web development projects, participating in code reviews, and collaborating with our team to build innovative solutions.
-            </p>
+            {/* Dynamic Content based on Position */}
+            {(() => {
+              const pos = (profile?.position || application?.position || 'Intern').toLowerCase();
+              let responsibilities = "working on various development projects, participating in code reviews, and collaborating with our team to build innovative solutions.";
+              let team = "Development Team";
 
-            <p>
-              In addition to your work, we have many exciting opportunities for you to participate in, such as weekly tech workshops, mentorship sessions, and real-world project experience that will help you develop your technical skills and industry knowledge.
-            </p>
+              if (pos.includes('android')) {
+                responsibilities = "developing mobile applications using modern frameworks, designing intuitive mobile interfaces, and implementing features for our Android user base.";
+                team = "Mobile App Team";
+              } else if (pos.includes('ui') || pos.includes('ux') || pos.includes('design')) {
+                responsibilities = "creating high-fidelity wireframes, designing user-centric interfaces, conducting design research, and ensuring visual excellence across our digital products.";
+                team = "Design & Creative Team";
+              } else if (pos.includes('python')) {
+                responsibilities = "building robust backend systems, developing automation scripts, working with data analysis tools, and participating in system architecture discussions.";
+                team = "Backend Engineering Team";
+              } else if (pos.includes('graphic')) {
+                responsibilities = "creating stunning visual assets, designing brand identity materials, and collaborating on creative marketing collateral for our digital platforms.";
+                team = "Creative Graphics Team";
+              } else if (pos.includes('marketing')) {
+                responsibilities = "managing digital campaigns, optimizing social media presence, conducting market analysis, and developing content strategies to grow our community.";
+                team = "Growth & Marketing Team";
+              } else if (pos.includes('full stack') || pos.includes('web')) {
+                responsibilities = "building responsive web applications, integrating frontend interfaces with backend APIs, and participating in the full software development lifecycle.";
+                team = "Web Engineering Team";
+              }
+
+              return (
+                <>
+                  <p>
+                    During this internship, you will be part of our <span className="font-bold text-[#0f172a]">{team}</span> and report to your assigned supervisor. 
+                    Your main responsibilities will include {responsibilities}
+                  </p>
+                  <p>
+                    In addition to your work, we have many exciting opportunities for you to participate in, such as weekly workshops, mentorship sessions, and real-world project experience that will help you develop your specialized {pos.replace('intern', '').trim() || 'technical'} skills.
+                  </p>
+                </>
+              );
+            })()}
 
             <p>
               Please accept this offer by confirming your acceptance through your intern portal. We look forward to having you on board and embarking on this unforgettable professional journey with you!
