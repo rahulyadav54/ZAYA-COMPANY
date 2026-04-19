@@ -1,7 +1,7 @@
-import { supabase } from './src/lib/supabaseClient';
+import { supabase } from './src/lib/supabaseClient.ts';
 
 async function checkColumns() {
-  const { data, error } = await supabase.from('profiles').select('*').limit(1);
+  const { data, error } = await supabase.from('intern_messages').select('*').limit(1);
   if (error) {
     console.error('Error fetching profiles:', error);
   } else if (data && data.length > 0) {

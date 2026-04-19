@@ -139,6 +139,13 @@ export default function AdminMessagesPage() {
 
     if (!error && data) {
       setMessages(data);
+      // Mark messages from intern as read
+      await supabase
+        .from('intern_messages')
+        .update({ is_read: true })
+        .eq('intern_id', internId)
+        .eq('sender_type', 'intern')
+        .eq('is_read', false);
     }
     setIsLoadingMessages(false);
   }
@@ -221,6 +228,23 @@ export default function AdminMessagesPage() {
       setIsSending(false);
       setIsUploading(false);
     }
+  };
+
+  const renderMessageContent = (content: string) => {
+    if (!content) return null;
+    return content.split('\n').map((line, i) => {
+      const parts = line.split(/(\*\*.*?\*\*)/g);
+      return (
+        <span key={i} className="block min-h-[1.4em] mb-1">
+          {parts.map((part, j) => {
+            if (part.startsWith('**') && part.endsWith('**')) {
+              return <strong key={j} className="font-bold text-slate-900 dark:text-white">{part.slice(2, -2)}</strong>;
+            }
+            return part;
+          })}
+        </span>
+      );
+    });
   };
 
   return (
@@ -315,11 +339,11 @@ export default function AdminMessagesPage() {
                   const isAdmin = msg.sender_type === 'admin';
                   return (
                     <div key={msg.id || idx} className={`flex ${isAdmin ? 'justify-end' : 'justify-start'}`}>
-                      <div className={`max-w-[85%] space-y-1.5`}>
-                        <div className={`px-5 py-3 rounded-2xl text-[13px] font-medium shadow-sm transition-all leading-relaxed ${
+                      <div className={`max-w-[80%] space-y-1`}>
+                        <div className={`px-5 py-3 rounded-2xl text-[12px] font-normal shadow-sm transition-all leading-relaxed ${
                           isAdmin 
                             ? 'bg-blue-600 text-white rounded-tr-none shadow-blue-500/10' 
-                            : 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-tl-none shadow-md border border-slate-200/50 dark:border-slate-700/50'
+                            : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-tl-none shadow-md border border-slate-200/50 dark:border-slate-700/50'
                         }`}>
                           {msg.file_url && (
                             <div className="mb-3">
@@ -336,11 +360,18 @@ export default function AdminMessagesPage() {
                               )}
                             </div>
                           )}
-                          <p className="break-words">{msg.content}</p>
+                          <div className="space-y-1">
+                            {renderMessageContent(msg.content)}
+                          </div>
                         </div>
-                        <p className={`text-[9px] font-black text-slate-400 uppercase tracking-widest mt-1 px-2 ${isAdmin ? 'text-right' : 'text-left'}`}>
-                          {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                        </p>
+                        <div className={`flex items-center gap-2 mt-1 px-1 ${isAdmin ? 'justify-end' : 'justify-start'}`}>
+                          <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">
+                            {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </p>
+                          {isAdmin && msg.is_read && (
+                            <span className="text-[9px] font-black text-blue-500 uppercase tracking-tighter">Seen</span>
+                          )}
+                        </div>
                       </div>
                     </div>
                   );

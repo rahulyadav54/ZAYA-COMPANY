@@ -32,6 +32,8 @@ export default function DashboardLayout({
 }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasNewMessage, setHasNewMessage] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
   const pathname = usePathname();
   const router = useRouter();
   const isAdminPath = pathname.startsWith('/admin');
@@ -46,6 +48,7 @@ export default function DashboardLayout({
           router.push('/login');
           return;
         }
+        setUserId(user.id);
 
         const { data: profile, error } = await supabase
           .from('profiles')
@@ -78,6 +81,35 @@ export default function DashboardLayout({
 
     checkRole();
   }, [pathname, router, isAdminPath, isInternPath]);
+
+  React.useEffect(() => {
+    if (!userId || isAdminPath) return;
+
+    // Reset notification if user is on the messages page
+    if (pathname === '/intern/messages') {
+      setHasNewMessage(false);
+    }
+
+    const channel = supabase
+      .channel('message_notifications')
+      .on('postgres_changes', { 
+        event: 'INSERT', 
+        schema: 'public', 
+        table: 'intern_messages' 
+      }, (payload) => {
+        if (payload.new.intern_id === userId && payload.new.sender_type === 'admin') {
+          if (pathname !== '/intern/messages') {
+            setHasNewMessage(true);
+            // Optional: Play a subtle sound or show browser notification if allowed
+          }
+        }
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [userId, pathname, isAdminPath]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -146,13 +178,16 @@ export default function DashboardLayout({
                 key={link.name}
                 href={link.href}
                 className={cn(
-                  "flex items-center space-x-3 px-4 py-3 rounded-xl transition-all font-medium",
+                  "flex items-center space-x-3 px-4 py-3 rounded-xl transition-all font-medium relative",
                   pathname === link.href 
                     ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20" 
                     : "text-foreground hover:bg-slate-100 dark:hover:bg-slate-800"
                 )}
               >
                 <link.icon className="h-5 w-5" />
+                {link.name === 'Messages' && hasNewMessage && !pathname.includes(link.href) && (
+                  <span className="absolute right-4 w-2 h-2 bg-red-500 rounded-full" />
+                )}
                 <span>{link.name}</span>
               </Link>
             ))}
@@ -187,7 +222,9 @@ export default function DashboardLayout({
           <div className="flex items-center space-x-4">
             <button className="p-2 text-slate-400 hover:text-blue-600 transition-colors relative">
               <Bell className="h-6 w-6" />
-              <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-slate-900"></span>
+              {hasNewMessage && (
+                <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-slate-900"></span>
+              )}
             </button>
             <div className="h-8 w-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 font-bold border border-blue-200 dark:border-blue-800">
               {isAdmin ? 'A' : 'I'}

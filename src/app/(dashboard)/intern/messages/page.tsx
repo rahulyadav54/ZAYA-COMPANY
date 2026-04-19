@@ -30,6 +30,13 @@ export default function InternMessagesPage() {
 
         if (!error && data) {
           setMessages(data);
+          // Mark messages from admin as read
+          await supabase
+            .from('intern_messages')
+            .update({ is_read: true })
+            .eq('intern_id', user.id)
+            .eq('sender_type', 'admin')
+            .eq('is_read', false);
         }
       }
       setIsLoading(false);
@@ -128,6 +135,23 @@ export default function InternMessagesPage() {
     }
   };
 
+  const renderMessageContent = (content: string) => {
+    if (!content) return null;
+    return content.split('\n').map((line, i) => {
+      const parts = line.split(/(\*\*.*?\*\*)/g);
+      return (
+        <span key={i} className="block min-h-[1.4em] mb-1">
+          {parts.map((part, j) => {
+            if (part.startsWith('**') && part.endsWith('**')) {
+              return <strong key={j} className="font-bold text-slate-900 dark:text-white">{part.slice(2, -2)}</strong>;
+            }
+            return part;
+          })}
+        </span>
+      );
+    });
+  };
+
   return (
     <div className="max-w-5xl mx-auto h-[calc(100vh-10rem)] flex flex-col">
       {/* Header Section */}
@@ -191,10 +215,10 @@ export default function InternMessagesPage() {
                       {isIntern ? 'ME' : 'AD'}
                     </div>
                     <div className="space-y-1">
-                      <div className={`px-6 py-4 rounded-[2rem] text-sm font-semibold shadow-sm transition-all leading-relaxed ${
+                      <div className={`px-5 py-3 rounded-2xl text-[12px] font-normal shadow-sm transition-all leading-relaxed ${
                         isIntern 
                           ? 'bg-blue-600 text-white rounded-br-none shadow-blue-500/10' 
-                          : 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-bl-none'
+                          : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-tl-none'
                       }`}>
                         {msg.file_url && (
                           <div className="mb-3">
@@ -211,13 +235,18 @@ export default function InternMessagesPage() {
                             )}
                           </div>
                         )}
-                        <p className="break-words">{msg.content}</p>
+                        <div className="space-y-1">
+                          {renderMessageContent(msg.content)}
+                        </div>
                       </div>
-                      <div className={`flex items-center gap-1.5 px-2 ${isIntern ? 'justify-end' : 'justify-start'}`}>
-                         <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                      <div className={`flex items-center gap-2 mt-1 px-1 ${isIntern ? 'justify-end' : 'justify-start'}`}>
+                         <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">
                             {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                          </span>
-                         {isIntern && <div className="w-1.5 h-1.5 rounded-full bg-blue-400" />}
+                         {isIntern && msg.is_read && (
+                            <span className="text-[9px] font-black text-blue-500 uppercase tracking-tighter">Seen</span>
+                         )}
+                         {isIntern && !msg.is_read && <div className="w-1.5 h-1.5 rounded-full bg-blue-400" />}
                       </div>
                     </div>
                   </div>
