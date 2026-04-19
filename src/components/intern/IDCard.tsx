@@ -29,13 +29,13 @@ export default function IDCard({ profile }: IDCardProps) {
     >
       {/* Lanyard Hole */}
       <div className="absolute top-4 left-1/2 -translate-x-1/2 w-16 h-4 bg-[#e2e8f0] rounded-full z-30 flex items-center justify-center">
-         <div className="w-10 h-1.5 bg-[#94a3b8]/30 rounded-full" />
+         <div className="w-10 h-1.5 rounded-full" style={{ backgroundColor: '#94a3b8', opacity: 0.3 }} />
       </div>
 
       {/* Decorative Corner Accents (Top Left) */}
       <div className="absolute top-0 left-0 w-32 h-32 z-20 overflow-hidden pointer-events-none">
-         <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-[#1e3a8a] to-transparent rotate-45 -translate-x-1/2 -translate-y-1/2" />
-         <div className="absolute top-2 left-2 w-full h-full border-t-4 border-l-4 border-[#eab308]/30 rounded-tl-[3rem]" />
+         <div className="absolute top-0 left-0 w-full h-full rotate-45 -translate-x-1/2 -translate-y-1/2" style={{ background: 'linear-gradient(to bottom right, #1e3a8a, transparent)' }} />
+         <div className="absolute top-2 left-2 w-full h-full border-t-4 border-l-4 rounded-tl-[3rem]" style={{ borderColor: '#eab308' }} />
       </div>
 
       {/* Header Section */}
@@ -55,7 +55,7 @@ export default function IDCard({ profile }: IDCardProps) {
            </div>
         </div>
 
-        <div className="z-10 mt-6 h-px w-4/5" style={{ background: 'linear-gradient(to right, transparent, rgba(37, 99, 235, 0.3), transparent)' }} />
+        <div className="z-10 mt-6 h-px w-4/5" style={{ background: 'linear-gradient(to right, transparent, #2563eb, transparent)' }} />
 
         {/* Curved Bottom Clip */}
         <div className="absolute bottom-0 left-0 right-0 h-16 bg-white" style={{ clipPath: 'ellipse(60% 100% at 50% 100%)' }} />
@@ -93,16 +93,16 @@ export default function IDCard({ profile }: IDCardProps) {
 
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1 text-center">
-            <p className="text-[10px] font-black text-[#94a3b8] uppercase tracking-widest">Valid From</p>
-            <div className="flex items-center justify-center gap-2 text-xs font-black text-[#1e293b]">
-              <Calendar className="h-3 w-3 text-[#2563eb]" />
+            <p className="text-[10px] font-black uppercase tracking-widest" style={{ color: '#94a3b8' }}>Valid From</p>
+            <div className="flex items-center justify-center gap-2 text-xs font-black" style={{ color: '#1e293b' }}>
+              <Calendar className="h-3 w-3" style={{ color: '#2563eb' }} />
               {validFrom}
             </div>
           </div>
-          <div className="space-y-1 text-center border-l border-[#f1f5f9]">
-            <p className="text-[10px] font-black text-[#94a3b8] uppercase tracking-widest">Expires On</p>
-            <div className="flex items-center justify-center gap-2 text-xs font-black text-[#1e293b]">
-              <Calendar className="h-3 w-3 text-[#f97316]" />
+          <div className="space-y-1 text-center border-l" style={{ borderColor: '#f1f5f9' }}>
+            <p className="text-[10px] font-black uppercase tracking-widest" style={{ color: '#94a3b8' }}>Expires On</p>
+            <div className="flex items-center justify-center gap-2 text-xs font-black" style={{ color: '#1e293b' }}>
+              <Calendar className="h-3 w-3" style={{ color: '#f97316' }} />
               {validTo}
             </div>
           </div>
