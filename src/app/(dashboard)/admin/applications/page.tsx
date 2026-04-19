@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
-import { FileText, Search, MoreVertical, Loader2, Download, CheckCircle, XCircle, Plus, X } from 'lucide-react';
+import { FileText, Search, MoreVertical, Loader2, Download, CheckCircle, XCircle, Plus, X, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function ApplicationsPage() {
@@ -67,6 +67,25 @@ export default function ApplicationsPage() {
   useEffect(() => {
     fetchApplications();
   }, []);
+
+  const deleteApplication = async (id: string) => {
+    if (!confirm('Are you sure you want to permanently delete this application? This action cannot be undone.')) return;
+    
+    try {
+      const { error } = await supabase
+        .from('applications')
+        .delete()
+        .eq('id', id);
+      
+      if (error) throw error;
+      
+      await fetchApplications();
+      alert('Application permanently deleted.');
+    } catch (error: any) {
+      console.error('Error deleting application:', error);
+      alert('Delete failed: ' + (error.message || 'Unknown error'));
+    }
+  };
 
   const updateStatus = async (id: string, newStatus: string, appData?: any) => {
     try {
@@ -210,6 +229,13 @@ export default function ApplicationsPage() {
                             title="Reject Intern"
                           >
                             <XCircle className="h-4 w-4" />
+                          </button>
+                          <button 
+                            onClick={() => deleteApplication(app.id)}
+                            className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors border-l border-slate-100 dark:border-slate-800 ml-2 pl-4"
+                            title="Delete Permanently"
+                          >
+                            <Trash2 className="h-4 w-4" />
                           </button>
                         </div>
                       </td>
