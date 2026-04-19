@@ -139,9 +139,6 @@ export default function ApplicationsPage() {
     setIsSubmitting(false);
   };
 
-    setIsSubmitting(false);
-  };
-
   const exportToCSV = () => {
     if (applications.length === 0) return;
     
