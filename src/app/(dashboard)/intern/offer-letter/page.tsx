@@ -140,61 +140,61 @@ export default function OfferLetterPage() {
         {/* Document Preview */}
         <div 
           ref={letterRef}
-          className="bg-white text-slate-900 p-8 md:p-16 min-h-[1123px] w-[800px] mx-auto shadow-inner relative"
-          style={{ fontFamily: "'Inter', sans-serif" }}
+          className="bg-white p-8 md:p-16 min-h-[1123px] w-[800px] mx-auto relative"
+          style={{ fontFamily: "'Inter', sans-serif", backgroundColor: '#ffffff', color: '#0f172a' }}
         >
           {/* Header */}
           <div className="flex justify-between items-start mb-12">
             <div>
               <div className="flex items-center gap-4 mb-6">
                 <img src="/logo.png" alt="Zaya Code Hub Logo" className="h-16 object-contain" />
-                <div className="h-12 w-[2px] bg-slate-200 mx-2"></div>
+                <div className="h-12 w-[2px] mx-2" style={{ backgroundColor: '#e2e8f0' }}></div>
                 <div>
-                  <h1 className="text-3xl font-black tracking-tighter text-[#0f172a] leading-none">ZAYA CODE HUB</h1>
-                  <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#2563eb] mt-1">Innovate . Develop . Empower</p>
+                  <h1 className="text-3xl font-black tracking-tighter leading-none" style={{ color: '#0f172a' }}>ZAYA CODE HUB</h1>
+                  <p className="text-[10px] font-black uppercase tracking-[0.3em] mt-1" style={{ color: '#2563eb' }}>Innovate . Develop . Empower</p>
                 </div>
               </div>
-              <div className="space-y-1 text-slate-500 text-sm font-medium">
-                <div className="flex items-center gap-2"><MapPin className="h-3 w-3" /> Salem, Tamil Nadu, India</div>
-                <div className="flex items-center gap-2"><Mail className="h-3 w-3" /> hr@zayacodehub.in</div>
-                <div className="flex items-center gap-2"><Phone className="h-3 w-3" /> +91 70333 99183</div>
+              <div className="space-y-1 text-sm font-medium" style={{ color: '#64748b' }}>
+                <div className="flex items-center gap-2"><MapPin className="h-3 w-3" style={{ color: '#2563eb' }} /> Salem, Tamil Nadu, India</div>
+                <div className="flex items-center gap-2"><Mail className="h-3 w-3" style={{ color: '#2563eb' }} /> hr@zayacodehub.in</div>
+                <div className="flex items-center gap-2"><Phone className="h-3 w-3" style={{ color: '#2563eb' }} /> +91 70333 99183</div>
               </div>
             </div>
             <div className="text-right">
-              <p className="text-[#94a3b8] font-bold uppercase tracking-widest text-[10px] mb-1">Date Issued</p>
-              <p className="font-bold text-[#0f172a]">{currentDate}</p>
+              <p className="font-bold uppercase tracking-widest text-[10px] mb-1" style={{ color: '#94a3b8' }}>Date Issued</p>
+              <p className="font-bold" style={{ color: '#0f172a' }}>{currentDate}</p>
             </div>
           </div>
 
           {/* Title */}
           <div className="text-center mb-12">
-            <h2 className="text-2xl font-black uppercase tracking-widest border-b-4 border-[#2563eb] inline-block pb-2">Internship Offer Letter</h2>
+            <h2 className="text-2xl font-black uppercase tracking-widest inline-block pb-2" style={{ borderBottom: '4px solid #2563eb', color: '#0f172a' }}>Internship Offer Letter</h2>
           </div>
 
           {/* Content */}
-          <div className="space-y-6 text-slate-700 leading-relaxed text-base">
+          <div className="space-y-6 leading-relaxed text-base" style={{ color: '#334155' }}>
             <div className="mb-8">
-              <p className="font-bold text-[#0f172a]">To,</p>
-              <p className="font-black text-xl text-[#2563eb] mt-1">{profile?.full_name}</p>
+              <p className="font-bold" style={{ color: '#0f172a' }}>To,</p>
+              <p className="font-black text-xl mt-1" style={{ color: '#2563eb' }}>{profile?.full_name}</p>
               <div className="flex flex-col mt-1">
-                <p className="font-medium text-[#64748b] uppercase text-xs tracking-widest">
+                <p className="font-medium uppercase text-xs tracking-widest" style={{ color: '#64748b' }}>
                   {profile?.position && profile.position !== 'Intern' ? profile.position : (application?.position || 'Processing Role...')}
                 </p>
                 {(profile?.intern_id || application?.intern_id) && (
-                  <p className="text-[10px] font-black text-[#94a3b8] uppercase tracking-widest mt-1">
+                  <p className="text-[10px] font-black uppercase tracking-widest mt-1" style={{ color: '#94a3b8' }}>
                     ID: {profile?.intern_id || application?.intern_id}
                   </p>
                 )}
               </div>
             </div>
 
-            <p>Dear <span className="font-bold text-[#0f172a]">{profile?.full_name?.split(' ')[0]}</span>,</p>
+            <p>Dear <span className="font-bold" style={{ color: '#0f172a' }}>{profile?.full_name?.split(' ')[0]}</span>,</p>
             
             <p>
-              We are delighted to offer you an opportunity to join our team as an <span className="font-bold text-[#0f172a]">
+              We are delighted to offer you an opportunity to join our team as an <span className="font-bold" style={{ color: '#0f172a' }}>
                 {profile?.position && profile.position !== 'Intern' ? profile.position : (application?.position || 'Professional Intern')}
-              </span> at <span className="font-bold text-[#2563eb]">ZAYA CODE HUB</span>. 
-              The term of your placement will be for a duration of <span className="font-bold text-[#0f172a]">{application?.duration || '1 month'}</span>, starting from <span className="font-bold text-[#0f172a]">{profile?.joining_date ? new Date(profile.joining_date).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) : currentDate}</span>.
+              </span> at <span className="font-bold" style={{ color: '#2563eb' }}>ZAYA CODE HUB</span>. 
+              The term of your placement will be for a duration of <span className="font-bold" style={{ color: '#0f172a' }}>{application?.duration || '1 month'}</span>, starting from <span className="font-bold" style={{ color: '#0f172a' }}>{profile?.joining_date ? new Date(profile.joining_date).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) : currentDate}</span>.
             </p>
 
             {/* Dynamic Content based on Position */}
@@ -226,7 +226,7 @@ export default function OfferLetterPage() {
               return (
                 <>
                   <p>
-                    During this internship, you will be part of our <span className="font-bold text-[#0f172a]">{team}</span> and report to your assigned supervisor. 
+                    During this internship, you will be part of our <span className="font-bold" style={{ color: '#0f172a' }}>{team}</span> and report to your assigned supervisor. 
                     Your main responsibilities will include {responsibilities}
                   </p>
                   <p>
@@ -243,22 +243,21 @@ export default function OfferLetterPage() {
             <p>If you have any questions at all, please don't hesitate to contact our HR department.</p>
 
             <div className="mt-16 pt-12">
-              <p className="font-bold text-slate-900">Sincerely,</p>
+              <p className="font-bold" style={{ color: '#0f172a' }}>Sincerely,</p>
               <div className="mt-8">
-                <div className="h-16 w-48 border-b border-slate-300 mb-2 relative">
-                   {/* Placeholder for Signature */}
-                   <p className="absolute bottom-2 left-0 font-serif text-2xl italic text-slate-400 opacity-50">Zaya Code Hub</p>
+                <div className="h-16 w-48 mb-2 relative" style={{ borderBottom: '1px solid #cbd5e1' }}>
+                   <p className="absolute bottom-2 left-0 font-serif text-2xl italic opacity-50" style={{ color: '#94a3b8' }}>Zaya Code Hub</p>
                 </div>
-                <p className="font-black text-slate-900 uppercase tracking-widest text-xs">Human Resources Manager</p>
-                <p className="text-slate-500 text-xs font-bold uppercase tracking-tighter">Zaya Code Hub</p>
+                <p className="font-black uppercase tracking-widest text-xs" style={{ color: '#0f172a' }}>Human Resources Manager</p>
+                <p className="text-xs font-bold uppercase tracking-tighter" style={{ color: '#64748b' }}>Zaya Code Hub</p>
               </div>
             </div>
           </div>
 
           {/* Footer Decoration */}
-          <div className="absolute bottom-0 left-0 right-0 h-2 bg-gradient-to-r from-[#2563eb] to-[#4f46e5]"></div>
+          <div className="absolute bottom-0 left-0 right-0 h-2" style={{ background: 'linear-gradient(to right, #2563eb, #4f46e5)' }}></div>
           <div className="absolute bottom-8 left-0 right-0 text-center">
-            <p className="text-[10px] font-black text-[#cbd5e1] uppercase tracking-[0.5em]">www.zayacodehub.in</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.5em]" style={{ color: '#cbd5e1' }}>www.zayacodehub.in</p>
           </div>
         </div>
       </div>
