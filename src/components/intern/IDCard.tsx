@@ -46,7 +46,7 @@ export default function IDCard({ profile }: IDCardProps) {
                 <img src={profile.avatar_url} alt={profile.full_name} className="h-full w-full object-cover" />
               ) : (
                 <div className="h-full w-full flex items-center justify-center bg-[#f8fafc]">
-                  <Users className="h-10 w-10 text-[#cbd5e1]" />
+                   <p className="text-5xl font-black text-[#2563eb] opacity-20">{profile.full_name?.charAt(0)}</p>
                 </div>
               )}
             </div>
@@ -54,62 +54,40 @@ export default function IDCard({ profile }: IDCardProps) {
           <div className="absolute -bottom-2 -right-2 h-8 w-8 bg-[#22c55e] border-4 border-white rounded-full"></div>
         </div>
         
-        <div className="mt-4 text-center space-y-1">
-          <h1 className="text-2xl font-black text-[#0f172a] uppercase tracking-tight">{profile.full_name}</h1>
+        <div className="mt-4 text-center space-y-1 px-6">
+          <h1 className="text-2xl font-black text-[#0f172a] uppercase tracking-tight leading-tight">{profile.full_name}</h1>
           <p className="text-[10px] font-black text-[#2563eb] uppercase tracking-[0.3em] mt-1">{profile.position || 'Intern'}</p>
         </div>
       </div>
 
-      <div className="mt-8 grid grid-cols-2 gap-4 w-full px-4">
-        <div className="p-4 bg-[#f8fafc] rounded-2xl border border-[#f1f5f9]">
+      <div className="mt-6 grid grid-cols-2 gap-4 w-full px-6">
+        <div className="p-4 bg-[#f8fafc] rounded-2xl border border-[#f1f5f9] text-center">
           <p className="text-[8px] font-black text-[#94a3b8] uppercase tracking-widest mb-1">Intern ID</p>
           <p className="text-xs font-black text-[#0f172a] tracking-tight">{internId}</p>
         </div>
-        <div className="p-4 bg-[#f8fafc] rounded-2xl border border-[#f1f5f9]">
-          <p className="text-[8px] font-black text-[#94a3b8] uppercase tracking-widest mb-1">Issue Date</p>
-          <p className="text-xs font-black text-[#0f172a] tracking-tight">{validFrom}</p>
+        <div className="p-4 bg-[#f8fafc] rounded-2xl border border-[#f1f5f9] text-center">
+          <p className="text-[8px] font-black text-[#94a3b8] uppercase tracking-widest mb-1">Valid Until</p>
+          <p className="text-xs font-black text-[#0f172a] tracking-tight">{validTo}</p>
         </div>
       </div>
 
-      {/* Details Section */}
-            <div className="flex items-center justify-center gap-2 text-xs font-black text-slate-800">
-              <Calendar className="h-3 w-3 text-orange-500" />
-              {validTo}
-            </div>
+      <div className="mt-auto px-6 py-8 flex flex-col items-center">
+        <div className="flex items-center gap-2 text-xs font-bold text-[#64748b] mb-4">
+          <Mail className="h-3 w-3 text-[#2563eb]" />
+          {profile.email}
+        </div>
+        <div className="flex items-center gap-4">
+          <div className="h-10 w-10 rounded-xl bg-[#f8fafc] border border-[#f1f5f9] flex items-center justify-center">
+            <ShieldCheck className="h-5 w-5 text-[#22c55e]" />
+          </div>
+          <div className="h-10 w-10 rounded-xl bg-[#f8fafc] border border-[#f1f5f9] flex items-center justify-center">
+            <Globe className="h-5 w-5 text-[#2563eb]" />
           </div>
         </div>
-
-        <div className="pt-2 flex flex-col items-center">
-           <div className="flex items-center gap-2 text-xs font-bold text-slate-400">
-              <Mail className="h-3 w-3 text-slate-300" />
-              {profile.email}
-           </div>
-        </div>
       </div>
 
-      {/* Decorative Bottom Accents */}
-      <div className="relative mt-auto h-20 pointer-events-none overflow-hidden shrink-0">
-         {/* Gold/Blue corner patterns */}
-         <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#0A192F] to-transparent rotate-12 -translate-x-12 translate-y-12" />
-         <div className="absolute bottom-0 right-0 w-32 h-32 bg-gradient-to-tl from-[#0A192F] to-transparent -rotate-12 translate-x-12 translate-y-12" />
-         
-         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-full text-center">
-            <p className="text-[8px] font-black text-slate-400 uppercase tracking-[0.5em] italic">Building the Future Together</p>
-         </div>
-      </div>
-
-      {/* Top Accent Strip */}
-      <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-400 via-blue-600 to-blue-900 z-40" />
-
-      {/* Verification Link Overlay (Invisible but functional) */}
-      <a 
-        href="/verify-id" 
-        target="_blank" 
-        className="absolute bottom-10 right-10 w-12 h-12 bg-white/10 opacity-0 hover:opacity-100 flex items-center justify-center rounded-xl transition-all"
-        title="Verify ID"
-      >
-         <ShieldCheck className="h-6 w-6 text-green-500" />
-      </a>
-    </motion.div>
+      {/* Decorative Bottom Strip */}
+      <div className="h-2 bg-gradient-to-r from-[#2563eb] to-[#4f46e5] w-full shrink-0" />
+    </div>
   );
 }
