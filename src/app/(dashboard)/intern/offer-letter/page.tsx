@@ -23,13 +23,14 @@ export default function OfferLetterPage() {
           const { data: profileData } = await supabase.from('profiles').select('*').eq('id', user.id).single();
           setProfile(profileData);
 
-          // Try to fetch application details using email
+          // Try to fetch application details using email (case-insensitive)
           if (profileData?.email) {
             const { data: appData } = await supabase
               .from('applications')
               .select('*')
-              .eq('email', profileData.email)
-              .eq('status', 'accepted')
+              .ilike('email', profileData.email)
+              .order('created_at', { ascending: false })
+              .limit(1)
               .maybeSingle();
             setApplication(appData);
           }
