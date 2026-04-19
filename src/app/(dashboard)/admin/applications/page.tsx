@@ -2,14 +2,19 @@
 
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
-import { FileText, Search, MoreVertical, Loader2, Download, CheckCircle, XCircle, Plus, X, Trash2 } from 'lucide-react';
+import { FileText, Search, MoreVertical, Loader2, Download, CheckCircle, XCircle, Plus, X, Trash2, Upload, FileUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Papa from 'papaparse';
+import * as XLSX from 'xlsx';
 
 export default function ApplicationsPage() {
   const [applications, setApplications] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showBulkModal, setShowBulkModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [bulkData, setBulkData] = useState<any[]>([]);
+  const [importStats, setImportStats] = useState({ total: 0, new: 0, skipped: 0 });
   const [formData, setFormData] = useState({
     full_name: '',
     email: '',
@@ -59,6 +64,76 @@ export default function ApplicationsPage() {
         resume_url: '',
         cover_letter: ''
       });
+      fetchApplications();
+    }
+    setIsSubmitting(false);
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    const fileExt = file.name.split('.').pop()?.toLowerCase();
+
+    reader.onload = async (event) => {
+      let data: any[] = [];
+      
+      if (fileExt === 'csv') {
+        const text = event.target?.result as string;
+        const result = Papa.parse(text, { header: true, skipEmptyLines: true });
+        data = result.data;
+      } else if (fileExt === 'xlsx' || fileExt === 'xls') {
+        const bstr = event.target?.result;
+        const workbook = XLSX.read(bstr, { type: 'binary' });
+        const wsname = workbook.SheetNames[0];
+        const ws = workbook.Sheets[wsname];
+        data = XLSX.utils.sheet_to_json(ws);
+      }
+
+      // Map common Google Form headers to our DB fields
+      const mappedData = data.map(row => ({
+        full_name: row['Full Name'] || row['Name'] || row['full_name'] || '',
+        email: row['Email'] || row['Email Address'] || row['email'] || '',
+        phone: row['Phone'] || row['Phone Number'] || row['phone'] || '',
+        position: row['Position'] || row['Role'] || row['Which role are you applying for?'] || row['position'] || 'Intern',
+        status: 'pending',
+        applied_at: new Date().toISOString()
+      })).filter(item => item.email && item.full_name);
+
+      // Check for duplicates in existing applications
+      const existingEmails = new Set(applications.map(a => a.email.toLowerCase()));
+      const filtered = mappedData.filter(item => !existingEmails.has(item.email.toLowerCase()));
+      
+      setBulkData(filtered);
+      setImportStats({
+        total: mappedData.length,
+        new: filtered.length,
+        skipped: mappedData.length - filtered.length
+      });
+    };
+
+    if (fileExt === 'csv') {
+      reader.readAsText(file);
+    } else {
+      reader.readAsBinaryString(file);
+    }
+  };
+
+  const handleBulkImport = async () => {
+    if (bulkData.length === 0) return;
+    setIsSubmitting(true);
+
+    const { error } = await supabase
+      .from('applications')
+      .insert(bulkData);
+
+    if (error) {
+      alert('Error during bulk import: ' + error.message);
+    } else {
+      alert(`Success! Imported ${bulkData.length} new applications.`);
+      setShowBulkModal(false);
+      setBulkData([]);
       fetchApplications();
     }
     setIsSubmitting(false);
@@ -134,6 +209,13 @@ export default function ApplicationsPage() {
               className="pl-10 pr-4 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600/50 w-full sm:w-64 text-foreground"
             />
           </div>
+          <button 
+            onClick={() => setShowBulkModal(true)}
+            className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 px-4 py-2 rounded-xl text-sm font-bold transition-colors"
+          >
+            <FileUp className="h-4 w-4" />
+            Bulk Import
+          </button>
           <button 
             onClick={() => setShowAddModal(true)}
             className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-sm font-bold transition-colors"
@@ -381,6 +463,79 @@ export default function ApplicationsPage() {
                   </button>
                 </div>
               </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Bulk Import Modal */}
+      <AnimatePresence>
+        {showBulkModal && (
+          <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden border border-slate-200 dark:border-slate-800"
+            >
+              <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-950/50">
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 bg-blue-600 rounded-xl">
+                    <FileUp className="h-5 w-5 text-white" />
+                  </div>
+                  <h2 className="text-xl font-bold text-slate-900 dark:text-white uppercase tracking-tight">Bulk Import Interns</h2>
+                </div>
+                <button onClick={() => setShowBulkModal(false)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors">
+                  <X className="h-5 w-5 text-slate-500" />
+                </button>
+              </div>
+
+              <div className="p-8 space-y-6">
+                <div className="border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-3xl p-10 text-center hover:border-blue-500 transition-colors cursor-pointer relative">
+                  <input 
+                    type="file" 
+                    accept=".csv,.xlsx,.xls"
+                    onChange={handleFileUpload}
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                  />
+                  <Upload className="h-10 w-10 text-blue-600 mx-auto mb-4" />
+                  <p className="text-sm font-bold text-foreground">Click to upload CSV or Excel</p>
+                  <p className="text-xs text-slate-500 mt-2">Exported from Google Forms</p>
+                </div>
+
+                {importStats.total > 0 && (
+                  <div className="bg-slate-50 dark:bg-slate-950 rounded-2xl p-6 space-y-4">
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-slate-500">Total Found:</span>
+                      <span className="font-bold text-foreground">{importStats.total}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-slate-500">Already in System (Skipped):</span>
+                      <span className="font-bold text-orange-600">{importStats.skipped}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-sm pt-2 border-t border-slate-200 dark:border-slate-700">
+                      <span className="text-slate-500 font-bold">New to Import:</span>
+                      <span className="font-bold text-green-600">{importStats.new}</span>
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex gap-4">
+                  <button 
+                    onClick={() => setShowBulkModal(false)}
+                    className="flex-1 py-4 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-slate-200 dark:hover:bg-slate-700 transition-all"
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    disabled={bulkData.length === 0 || isSubmitting}
+                    onClick={handleBulkImport}
+                    className="flex-1 py-4 bg-blue-600 text-white disabled:opacity-50 disabled:cursor-not-allowed rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-blue-700 transition-all shadow-xl shadow-blue-600/20 flex items-center justify-center gap-2"
+                  >
+                    {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : `Import ${bulkData.length} Users`}
+                  </button>
+                </div>
+              </div>
             </motion.div>
           </div>
         )}

@@ -59,7 +59,10 @@ export default function ApplicationForm({ position, onSuccess }: ApplicationForm
          return;
       }
       const fileExt = resumeFile.name.split('.').pop();
-      const fileName = `${Date.now()}_${fullName.replace(/\s+/g, '_')}.${fileExt}`;
+      // Aggressive sanitization: Remove everything except letters, numbers, and underscores
+      const safeName = fullName.replace(/[^a-zA-Z0-9]/g, '_');
+      const fileName = `${Date.now()}_${safeName}.${fileExt}`;
+      
       const { data, error } = await supabase.storage.from('resumes').upload(fileName, resumeFile, {
         cacheControl: '3600',
         upsert: false,
