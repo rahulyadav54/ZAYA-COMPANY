@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -20,13 +21,22 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: {
     default: "ZAYA CODE HUB | Internships, Software Development & Training",
-    template: "%s | ZAYA CODE HUB"
+    template: "%s | ZAYA CODE HUB",
   },
-  description: "Join the best internship at Zaya Code Hub. We provide top-tier software development, mobile app development, and hands-on internship programs with verifiable certificates.",
-  keywords: ["internship at zaya code hub", "zaya code hub internship", "zaya code hub certificate verify", "software development internship", "IT training", "Zaya Code Hub"],
+  description:
+    "Join the best internship at Zaya Code Hub. We provide top-tier software development, mobile app development, and hands-on internship programs with verifiable certificates.",
+  keywords: [
+    "internship at zaya code hub",
+    "zaya code hub internship",
+    "zaya code hub certificate verify",
+    "software development internship",
+    "IT training",
+    "Zaya Code Hub",
+  ],
   openGraph: {
     title: "ZAYA CODE HUB | Internships & IT Solutions",
-    description: "Launch your career with an internship at Zaya Code Hub. Verifiable certificates, real-world projects, and expert mentorship.",
+    description:
+      "Launch your career with an internship at Zaya Code Hub. Verifiable certificates, real-world projects, and expert mentorship.",
     url: "https://zayacodehub.in",
     siteName: "ZAYA CODE HUB",
     type: "website",
@@ -50,11 +60,22 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
+        
+        {/* ✅ Google AdSense Script */}
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1411920894777921"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
+
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
           <Navbar />
+
           <main className="flex-grow pt-20">
             {children}
           </main>
+
           <Footer />
           <Analytics />
           <SpeedInsights />
