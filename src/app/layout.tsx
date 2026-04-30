@@ -33,8 +33,66 @@ export const metadata: Metadata = {
     "IT training",
     "Zaya Code Hub",
   ],
+
+  // ✅ AdSense Verification (MOST IMPORTANT)
+  verification: {
+    other: {
+      "google-adsense-account": "ca-pub-1411920894777921",
+    },
+  },
+
   openGraph: {
     title: "ZAYA CODE HUB | Internships & IT Solutions",
+    description:
+      "Launch your career with an internship at Zaya Code Hub. Verifiable certificates, real-world projects, and expert mentorship.",
+    url: "https://zayacodehub.in",
+    siteName: "ZAYA CODE HUB",
+    type: "website",
+  },
+
+  icons: {
+    icon: "/favicon.png",
+    shortcut: "/favicon.png",
+    apple: "/favicon.png",
+  },
+};
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+    >
+      <body className="min-h-full flex flex-col bg-background text-foreground">
+
+        {/* ✅ AdSense Script (for ads later) */}
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1411920894777921"
+          crossOrigin="anonymous"
+          strategy="beforeInteractive"
+        />
+
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+          <Navbar />
+
+          <main className="flex-grow pt-20">
+            {children}
+          </main>
+
+          <Footer />
+          <Analytics />
+          <SpeedInsights />
+        </ThemeProvider>
+      </body>
+    </html>
+  );
+}    title: "ZAYA CODE HUB | Internships & IT Solutions",
     description:
       "Launch your career with an internship at Zaya Code Hub. Verifiable certificates, real-world projects, and expert mentorship.",
     url: "https://zayacodehub.in",
