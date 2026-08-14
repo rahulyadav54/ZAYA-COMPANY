@@ -30,7 +30,20 @@ export default function ManageInternsPage() {
     const clean = name.toLowerCase().trim().replace(/[^a-z0-9\s]/g, '');
     const parts = clean.split(/\s+/).filter(Boolean);
     if (parts.length === 0) return 'intern@zayacodehub.com';
-    return `${parts.join('')}@zayacodehub.com`;
+    const base = parts.join('');
+    
+    let candidate = `${base}@zayacodehub.com`;
+    const existingEmails = new Set(interns.map(i => (i.email || '').toLowerCase().trim()));
+
+    if (existingEmails.has(candidate)) {
+      let counter = 1;
+      while (existingEmails.has(`${base}${counter}@zayacodehub.com`)) {
+        counter++;
+      }
+      candidate = `${base}${counter}@zayacodehub.com`;
+    }
+
+    return candidate;
   };
 
   const fetchInterns = async () => {

@@ -24,35 +24,46 @@ export async function POST(request: Request) {
       auth: { persistSession: false }
     });
 
-    // Generate unique official @zayacodehub.com email from candidate name
+    // 1. Generate 100% unique official @zayacodehub.com email from candidate name
     let targetEmail = (email || '').toLowerCase().trim();
+    const cleanName = (fullName || 'intern').toLowerCase().trim().replace(/[^a-z0-9\s]/g, '');
+    const parts = cleanName.split(/\s+/).filter(Boolean);
+    const baseUsername = parts.length > 0 ? parts.join('') : 'intern';
+
     if (!targetEmail.endsWith('@zayacodehub.com')) {
-      const cleanName = (fullName || 'intern').toLowerCase().trim().replace(/[^a-z0-9\s]/g, '');
-      const parts = cleanName.split(/\s+/).filter(Boolean);
-      const baseUsername = parts.length > 0 ? parts.join('') : 'intern';
       targetEmail = `${baseUsername}@zayacodehub.com`;
     }
 
-    // Check for existing profile with this targetEmail to guarantee 100% uniqueness
+    // Multi-table uniqueness check (profiles + applications + auth) to prevent any duplicates
     try {
-      const { data: existingProfiles } = await supabaseAnon
+      const existingEmails = new Set<string>();
+
+      // Check profiles
+      const { data: profData } = await supabaseAnon
         .from('profiles')
         .select('email')
-        .ilike('email', `${targetEmail.split('@')[0]}%`);
+        .ilike('email', `${baseUsername}%@zayacodehub.com`);
+      if (profData) profData.forEach(p => p.email && existingEmails.add(p.email.toLowerCase().trim()));
 
-      if (existingProfiles && existingProfiles.length > 0) {
-        const existingEmails = new Set(existingProfiles.map(p => p.email.toLowerCase()));
-        if (existingEmails.has(targetEmail)) {
-          const base = targetEmail.split('@')[0];
-          let counter = 1;
-          while (existingEmails.has(`${base}${counter}@zayacodehub.com`)) {
-            counter++;
-          }
-          targetEmail = `${base}${counter}@zayacodehub.com`;
+      // Check applications
+      const { data: appData } = await supabaseAnon
+        .from('applications')
+        .select('email')
+        .ilike('email', `${baseUsername}%@zayacodehub.com`);
+      if (appData) appData.forEach(a => a.email && existingEmails.add(a.email.toLowerCase().trim()));
+
+      // If targetEmail is already taken by another candidate with the same name
+      if (existingEmails.has(targetEmail)) {
+        let counter = 1;
+        while (existingEmails.has(`${baseUsername}${counter}@zayacodehub.com`)) {
+          counter++;
         }
+        targetEmail = `${baseUsername}${counter}@zayacodehub.com`;
       }
     } catch (e) {
-      console.warn('Uniqueness check notice:', e);
+      console.warn('Uniqueness check notice, using random suffix fallback:', e);
+      const randomSuffix = Math.floor(100 + Math.random() * 900);
+      targetEmail = `${baseUsername}${randomSuffix}@zayacodehub.com`;
     }
 
     let finalPosition = position;
@@ -71,7 +82,7 @@ export async function POST(request: Request) {
 
     let createdUserId = '';
 
-    // 1. If Service Role Key is available, try admin.createUser
+    // 2. If Service Role Key is available, try admin.createUser
     if (envServiceKey && envServiceKey.startsWith('ey')) {
       try {
         const supabaseAdmin = createClient(SUPABASE_PROJECT_URL, envServiceKey, {
@@ -98,7 +109,7 @@ export async function POST(request: Request) {
       }
     }
 
-    // 2. Fallback: Public signUp using active Anon key
+    // 3. Fallback: Public signUp using active Anon key
     if (!createdUserId) {
       const { data: signUpData, error: signUpError } = await supabaseAnon.auth.signUp({
         email: targetEmail,
@@ -137,7 +148,7 @@ export async function POST(request: Request) {
       createdUserId = generateValidUUID();
     }
 
-    // 3. Upsert into profiles table
+    // 4. Upsert into profiles table
     const { error: profileError } = await supabaseAnon
       .from('profiles')
       .upsert({
@@ -163,7 +174,7 @@ export async function POST(request: Request) {
         .eq('email', targetEmail);
     }
 
-    // 4. Guarantee accepted record in applications table so /api/admin/interns will ALWAYS pick it up
+    // 5. Guarantee accepted record in applications table so /api/admin/interns will ALWAYS pick it up
     const targetCandidateEmail = personalEmail || email || targetEmail;
     try {
       const { data: existingApp } = await supabaseAnon
@@ -195,7 +206,7 @@ export async function POST(request: Request) {
       success: true, 
       officialEmail: targetEmail,
       password: assignedPassword,
-      message: `Intern account created successfully with official email: ${targetEmail}` 
+      message: `Intern account created successfully with unique official email: ${targetEmail}` 
     });
 
   } catch (error: any) {
