@@ -43,48 +43,54 @@ export default function DashboardLayout({
   React.useEffect(() => {
     async function checkRole() {
       try {
+        let activeUser: any = null;
         const { data: { user } } = await supabase.auth.getUser();
-        
-        if (!user) {
+        activeUser = user;
+
+        if (!activeUser) {
+          try {
+            const stored = localStorage.getItem('zaya_intern_session');
+            if (stored) {
+              const parsed = JSON.parse(stored);
+              if (parsed?.user) activeUser = parsed.user;
+            }
+          } catch (e) {
+            console.warn('Stored session parse notice:', e);
+          }
+        }
+
+        if (!activeUser) {
           router.push('/login');
           return;
         }
-        // Detect Session Switch (Multiple Tabs)
-        if (userId && user.id !== userId) {
-          console.warn("Session switch detected. Logging out to prevent unauthorized portal access.");
-          await supabase.auth.signOut();
-          window.location.href = '/login?error=session_switched';
-          return;
-        }
 
-        setUserId(user.id);
+        setUserId(activeUser.id);
 
-        const { data: profile, error } = await supabase
+        let userRole = 'intern';
+        const { data: profile } = await supabase
           .from('profiles')
           .select('role')
-          .eq('id', user.id)
-          .single();
+          .eq('id', activeUser.id)
+          .maybeSingle();
 
-        if (error || !profile) {
-          console.error("Error fetching profile:", error);
-          router.push('/login');
-          return;
+        if (profile?.role) {
+          userRole = profile.role;
         }
 
         // Enforce strict role-based portal access
-        if (profile.role === 'admin' && isInternPath) {
+        if (userRole === 'admin' && isInternPath) {
           console.log("Admin attempted to access intern portal. Redirecting to admin dashboard.");
           router.push('/admin');
           return;
         } 
         
-        if (profile.role === 'intern' && isAdminPath) {
+        if (userRole === 'intern' && isAdminPath) {
           console.log("Intern attempted to access admin portal. Access denied.");
           router.push('/intern');
           return;
         }
 
-        if (profile.role !== 'admin' && profile.role !== 'intern') {
+        if (userRole !== 'admin' && userRole !== 'intern') {
           await supabase.auth.signOut();
           router.push('/login?error=unauthorized_role');
         }

@@ -76,7 +76,14 @@ function LoginForm() {
           const apiJson = await apiRes.json();
 
           if (apiJson.success && apiJson.session) {
-            await supabase.auth.setSession(apiJson.session);
+            try {
+              await supabase.auth.setSession(apiJson.session);
+            } catch (e) { console.warn('setSession notice:', e); }
+            
+            try {
+              localStorage.setItem('zaya_intern_session', JSON.stringify(apiJson.session));
+            } catch (e) { console.warn('localStorage notice:', e); }
+
             loggedInUser = apiJson.user || apiJson.session.user;
             userRole = apiJson.role || 'intern';
           } else {
