@@ -3,7 +3,11 @@ import { Resend } from 'resend';
 
 export async function POST(request: Request) {
   try {
-    const resend = new Resend(process.env.RESEND_API_KEY || '');
+    if (!process.env.RESEND_API_KEY) {
+      console.warn('RESEND_API_KEY is not configured. Skipping email send.');
+      return NextResponse.json({ message: 'Email skipped (RESEND_API_KEY not configured)' });
+    }
+    const resend = new Resend(process.env.RESEND_API_KEY);
     const { email, fullName, position, status } = await request.json();
 
     if (!email || !fullName || !status) {

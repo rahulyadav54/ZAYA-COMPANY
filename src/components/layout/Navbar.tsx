@@ -11,6 +11,7 @@ import { supabase } from '@/lib/supabaseClient';
 
 const navLinks = [
   { name: 'Home', href: '/' },
+  { name: 'AI ZAYA', href: '/ai-zaya', badge: 'NEW' },
   { name: 'About', href: '/about' },
   { name: 'Services', href: '/services' },
   { name: 'Portfolio', href: '/portfolio' },
@@ -94,13 +95,18 @@ export default function Navbar() {
               key={link.name}
               href={link.href}
               className={cn(
-                'text-sm font-bold transition-colors hover:text-blue-600',
+                'text-sm font-bold transition-colors hover:text-blue-600 flex items-center gap-1.5',
                 pathname === link.href
                   ? 'text-blue-600'
                   : 'text-foreground'
               )}
             >
-              {link.name}
+              <span>{link.name}</span>
+              {link.badge && (
+                <span className="px-1.5 py-0.5 text-[10px] uppercase tracking-wider font-extrabold rounded-md bg-gradient-to-r from-amber-500 to-red-500 text-white shadow-sm">
+                  {link.badge}
+                </span>
+              )}
             </Link>
           ))}
         </div>
@@ -151,13 +157,18 @@ export default function Navbar() {
                   href={link.href}
                   onClick={() => setIsOpen(false)}
                   className={cn(
-                    'text-xl font-bold py-4 px-6 rounded-2xl transition-all active:scale-95',
+                    'text-xl font-bold py-4 px-6 rounded-2xl transition-all active:scale-95 flex items-center justify-between',
                     pathname === link.href
                       ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20'
                       : 'text-foreground hover:bg-slate-100 dark:hover:bg-slate-800'
                   )}
                 >
-                  {link.name}
+                  <span>{link.name}</span>
+                  {link.badge && (
+                    <span className="px-2 py-0.5 text-xs font-bold rounded-full bg-amber-500 text-white shadow-sm">
+                      {link.badge}
+                    </span>
+                  )}
                 </Link>
               ))}
               <div className="pt-4">

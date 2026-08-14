@@ -56,6 +56,8 @@ export const metadata: Metadata = {
   },
 };
 
+import TopPromoBanner from "@/components/layout/TopPromoBanner";
+
 export default function RootLayout({
   children,
 }: {
@@ -69,6 +71,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+          <TopPromoBanner />
           <Navbar />
 
           <main className="flex-grow pt-20">

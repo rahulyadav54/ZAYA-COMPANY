@@ -1,10 +1,13 @@
 import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY || '');
-
 export async function POST(request: Request) {
   try {
+    if (!process.env.RESEND_API_KEY) {
+      console.warn('RESEND_API_KEY is not configured. Skipping email send.');
+      return NextResponse.json({ message: 'Email skipped (RESEND_API_KEY not configured)' });
+    }
+    const resend = new Resend(process.env.RESEND_API_KEY);
     const { email, fullName, taskTitle, paymentId, amount } = await request.json();
 
     if (!email || !fullName || !taskTitle) {

@@ -7,6 +7,7 @@ import { Code2, Globe, ExternalLink, GitFork, Mail, Phone, MapPin } from 'lucide
 
 const footerLinks = {
   company: [
+    { name: 'AI ZAYA App 🚀', href: '/ai-zaya' },
     { name: 'About Us', href: '/about' },
     { name: 'Careers', href: '/careers' },
     { name: 'Portfolio', href: '/portfolio' },

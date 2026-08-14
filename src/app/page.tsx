@@ -1,4 +1,5 @@
 import Hero from "@/components/home/Hero";
+import AiZayaFeatureSection from "@/components/home/AiZayaFeatureSection";
 import ServicesGrid from "@/components/home/ServicesGrid";
 import TeamSection from "@/components/home/TeamSection";
 import Testimonials from "@/components/home/Testimonials";
