@@ -56,7 +56,8 @@ export const metadata: Metadata = {
   },
 };
 
-import TopPromoBanner from "@/components/layout/TopPromoBanner";
+import Header from "@/components/layout/Header";
+import AiZayaLaunchModal from "@/components/layout/AiZayaLaunchModal";
 
 export default function RootLayout({
   children,
@@ -71,10 +72,10 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-          <TopPromoBanner />
-          <Navbar />
+          <Header />
+          <AiZayaLaunchModal />
 
-          <main className="flex-grow pt-20">
+          <main className="flex-grow pt-24 sm:pt-28">
             {children}
           </main>
 
