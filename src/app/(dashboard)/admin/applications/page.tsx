@@ -409,14 +409,14 @@ export default function ApplicationsPage() {
                       <td colSpan={5} className="px-6 py-6">
                         <div className="max-w-3xl">
                           <h4 className="text-sm font-bold text-foreground mb-4 border-b border-slate-200 dark:border-slate-700 pb-2">Full Questionnaire Responses</h4>
-                          {app.portfolio_url && (
+                          {(app.portfolio_url || app.github_url) && (
                             <p className="text-sm mb-4">
                               <span className="font-semibold text-slate-500">Portfolio/GitHub:</span>{' '}
-                              <a href={app.portfolio_url} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">{app.portfolio_url}</a>
+                              <a href={app.portfolio_url || app.github_url} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">{app.portfolio_url || app.github_url}</a>
                             </p>
                           )}
                           <div className="text-sm text-foreground whitespace-pre-wrap leading-relaxed font-mono bg-white dark:bg-slate-950 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
-                            {app.cover_letter || 'No details provided.'}
+                            {app.cover_letter || app.experience || 'No questionnaire details provided.'}
                           </div>
                         </div>
                       </td>
