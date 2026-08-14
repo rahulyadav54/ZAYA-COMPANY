@@ -15,94 +15,154 @@ async function sendApplicationConfirmationEmail(email: string, fullName: string,
     const resend = new Resend(process.env.RESEND_API_KEY);
     const subject = `📬 Application Received - ${position} at ZAYA CODE HUB`;
     const htmlContent = `
-      <!DOCTYPE html>
-      <html>
+      <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+      <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>ZAYA CODE HUB</title>
+        <style type="text/css">
+          body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+          table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+          img { -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
+          table { border-collapse: collapse !important; }
+          body { height: 100% !important; margin: 0 !important; padding: 0 !important; width: 100% !important; background-color: #f1f5f9; }
+          
+          @media screen and (max-width: 600px) {
+            .email-container { width: 100% !important; padding: 5px !important; }
+            .mobile-padding { padding: 20px 14px !important; }
+            .mobile-title { font-size: 20px !important; }
+            .mobile-text { font-size: 13px !important; }
+          }
+        </style>
       </head>
-      <body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
-        <div style="max-width: 600px; margin: 0 auto; padding: 12px; box-sizing: border-box;">
-          <div style="background-color: #ffffff; border-radius: 20px; overflow: hidden; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
-            
-            <!-- Mobile-Friendly Header Banner -->
-            <div style="background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); padding: 32px 20px; text-align: center; color: #ffffff;">
-              <div style="font-size: 11px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; background: rgba(255,255,255,0.15); display: inline-block; padding: 5px 14px; border-radius: 20px; margin-bottom: 12px;">
-                ZAYA CODE HUB • APPLICATION CONFIRMATION
-              </div>
-              <h1 style="margin: 0; font-size: 24px; font-weight: 900; line-height: 1.2;">Application Received! 📬</h1>
-              <p style="margin: 8px 0 0 0; font-size: 14px; opacity: 0.9; font-weight: 500;">We have received your application for ${position}</p>
-            </div>
-
-            <!-- Body Content -->
-            <div style="padding: 24px 20px;">
-              <p style="font-size: 15px; color: #1e293b; font-weight: 700; margin-top: 0;">Dear ${fullName},</p>
-              
-              <p style="font-size: 14px; color: #475569; line-height: 1.7; margin-bottom: 20px;">
-                Thank you for your interest in joining <strong>ZAYA CODE HUB</strong>! We have officially received your application and details for the <strong>${position}</strong> position.
-              </p>
-
-              <!-- Mobile-Responsive Stacked Details Card -->
-              <div style="background: #f0f9ff; border: 1.5px solid #bae6fd; border-radius: 16px; padding: 18px; margin: 24px 0;">
-                <h3 style="margin: 0 0 14px 0; color: #0284c7; font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; text-align: center;">
-                  📋 Submitted Application Summary
-                </h3>
+      <body style="margin: 0; padding: 0; background-color: #f1f5f9; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+        <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f1f5f9;">
+          <tr>
+            <td align="center" style="padding: 10px 4px;">
+              <!-- Container Table -->
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" class="email-container" style="max-width: 580px; background-color: #ffffff; border-radius: 16px; overflow: hidden; border: 1px solid #cbd5e1; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
                 
-                <div style="display: flex; flex-direction: column; gap: 10px;">
-                  <div style="background: #ffffff; padding: 10px 12px; border-radius: 8px; border: 1px solid #e0f2fe;">
-                    <div style="font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase;">Applicant Name</div>
-                    <div style="font-size: 14px; font-weight: 600; color: #0f172a;">${fullName}</div>
-                  </div>
+                <!-- Banner Header -->
+                <tr>
+                  <td align="center" style="background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); padding: 30px 16px; color: #ffffff;">
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                      <tr>
+                        <td align="center">
+                          <span style="font-size: 10px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; background: rgba(255,255,255,0.2); color: #ffffff; padding: 4px 12px; border-radius: 12px; display: inline-block; margin-bottom: 10px;">
+                            ZAYA CODE HUB • APPLICATION CONFIRMATION
+                          </span>
+                          <h1 class="mobile-title" style="margin: 0; font-size: 22px; font-weight: 900; color: #ffffff; line-height: 1.3;">
+                            Application Received! 📬
+                          </h1>
+                          <p class="mobile-text" style="margin: 6px 0 0 0; font-size: 13px; color: #e0f2fe; font-weight: 500;">
+                            We have received your application for ${position}
+                          </p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
 
-                  <div style="background: #ffffff; padding: 10px 12px; border-radius: 8px; border: 1px solid #e0f2fe;">
-                    <div style="font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase;">Email Address</div>
-                    <div style="font-size: 14px; font-weight: 600; color: #2563eb; word-break: break-all; overflow-wrap: anywhere;">${email}</div>
-                  </div>
+                <!-- Main Body Content -->
+                <tr>
+                  <td class="mobile-padding" style="padding: 24px 18px;">
+                    <p class="mobile-text" style="font-size: 14px; color: #0f172a; font-weight: 700; margin-top: 0;">Dear ${fullName},</p>
+                    
+                    <p class="mobile-text" style="font-size: 13px; color: #334155; line-height: 1.6; margin-bottom: 16px;">
+                      Thank you for your interest in joining <strong>ZAYA CODE HUB</strong>! We have officially received your application for the <strong>${position}</strong> position.
+                    </p>
 
-                  <div style="background: #ffffff; padding: 10px 12px; border-radius: 8px; border: 1px solid #e0f2fe;">
-                    <div style="font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase;">Position Applied</div>
-                    <div style="font-size: 14px; font-weight: 600; color: #0f172a;">${position}</div>
-                  </div>
+                    <!-- Summary Box -->
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f0f9ff; border: 1.5px solid #bae6fd; border-radius: 14px; margin: 20px 0;">
+                      <tr>
+                        <td style="padding: 16px 12px;">
+                          
+                          <div style="font-size: 12px; font-weight: 800; color: #0284c7; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; text-align: center;">
+                            📋 Submitted Application Summary
+                          </div>
 
-                  <div style="background: #ffffff; padding: 10px 12px; border-radius: 8px; border: 1px solid #e0f2fe;">
-                    <div style="font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase;">Submission Date</div>
-                    <div style="font-size: 14px; font-weight: 600; color: #0f172a;">${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</div>
-                  </div>
-                </div>
-              </div>
+                          <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #ffffff; border-radius: 8px; border: 1px solid #e0f2fe; margin-bottom: 8px;">
+                            <tr>
+                              <td style="padding: 10px 12px;">
+                                <div style="font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 2px;">Applicant Name</div>
+                                <div style="font-size: 13px; font-weight: 600; color: #0f172a;">${fullName}</div>
+                              </td>
+                            </tr>
+                          </table>
 
-              <!-- What to Expect Next -->
-              <div style="background-color: #f8fafc; padding: 18px; border-radius: 14px; margin-bottom: 24px; border: 1px solid #e2e8f0;">
-                <h4 style="margin: 0 0 10px 0; color: #1e293b; font-size: 13px; font-weight: 800; text-transform: uppercase;">
-                  ⏳ What Happens Next?
-                </h4>
-                <ol style="margin: 0; padding-left: 20px; color: #475569; font-size: 13px; line-height: 1.7;">
-                  <li>Our recruitment team and technical leads are reviewing your qualifications.</li>
-                  <li>If selected, you will receive an official acceptance letter along with your intern portal credentials.</li>
-                  <li>Application evaluations are typically completed within 24 to 48 hours.</li>
-                </ol>
-              </div>
+                          <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #ffffff; border-radius: 8px; border: 1px solid #e0f2fe; margin-bottom: 8px;">
+                            <tr>
+                              <td style="padding: 10px 12px;">
+                                <div style="font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 2px;">Email Address</div>
+                                <div style="font-size: 13px; font-weight: 600; color: #2563eb; word-break: break-all; -webkit-hyphens: auto; word-wrap: break-word;">${email}</div>
+                              </td>
+                            </tr>
+                          </table>
 
-              <p style="font-size: 14px; color: #475569; line-height: 1.6;">
-                If you have any questions regarding your application status, please contact us at <a href="mailto:support@zayacodehub.in" style="color: #2563eb; font-weight: 700;">support@zayacodehub.in</a>.
-              </p>
+                          <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #ffffff; border-radius: 8px; border: 1px solid #e0f2fe; margin-bottom: 8px;">
+                            <tr>
+                              <td style="padding: 10px 12px;">
+                                <div style="font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 2px;">Position Applied</div>
+                                <div style="font-size: 13px; font-weight: 600; color: #0f172a;">${position}</div>
+                              </td>
+                            </tr>
+                          </table>
 
-              <p style="font-size: 14px; color: #1e293b; font-weight: 700; margin-top: 24px; margin-bottom: 2px;">
-                Best regards,
-              </p>
-              <p style="font-size: 14px; color: #2563eb; font-weight: 800; margin: 0;">
-                ZAYA CODE HUB Talent Acquisition Team
-              </p>
-            </div>
+                          <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #ffffff; border-radius: 8px; border: 1px solid #e0f2fe;">
+                            <tr>
+                              <td style="padding: 10px 12px;">
+                                <div style="font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 2px;">Submission Date</div>
+                                <div style="font-size: 13px; font-weight: 600; color: #0f172a;">${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</div>
+                              </td>
+                            </tr>
+                          </table>
 
-            <!-- Footer -->
-            <div style="background-color: #0f172a; padding: 20px 16px; text-align: center; color: #94a3b8; font-size: 11px; line-height: 1.6;">
-              <p style="margin: 0 0 4px 0; font-weight: 700; color: #cbd5e1;">ZAYA CODE HUB • Subhashish Learning & Tech Pvt Ltd</p>
-              <p style="margin: 0; word-break: break-all;">Subramania Nagar, Salem, Tamil Nadu – 636005 | <a href="https://www.zayacodehub.in" style="color: #38bdf8; text-decoration: none;">www.zayacodehub.in</a></p>
-            </div>
+                        </td>
+                      </tr>
+                    </table>
 
-          </div>
-        </div>
+                    <!-- What Happens Next -->
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 20px;">
+                      <tr>
+                        <td style="padding: 14px 12px;">
+                          <div style="font-size: 12px; font-weight: 800; color: #0f172a; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">
+                            ⏳ What Happens Next?
+                          </div>
+                          <div style="font-size: 12px; color: #334155; line-height: 1.7;">
+                            1. Our recruitment team is reviewing your profile and qualifications.<br/>
+                            2. If selected, you will receive an official acceptance letter with portal credentials.<br/>
+                            3. Application reviews are completed within 24 to 48 hours.
+                          </div>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <p class="mobile-text" style="font-size: 13px; color: #475569; line-height: 1.6; margin-bottom: 16px;">
+                      If you have any questions, contact us at <a href="mailto:support@zayacodehub.in" style="color: #2563eb; font-weight: 700;">support@zayacodehub.in</a>.
+                    </p>
+
+                    <p class="mobile-text" style="font-size: 13px; color: #0f172a; font-weight: 700; margin: 0 0 2px 0;">
+                      Best regards,
+                    </p>
+                    <p class="mobile-text" style="font-size: 13px; color: #2563eb; font-weight: 800; margin: 0;">
+                      ZAYA CODE HUB Talent Acquisition Team
+                    </p>
+                  </td>
+                </tr>
+
+                <!-- Footer -->
+                <tr>
+                  <td align="center" style="background-color: #0f172a; padding: 18px 12px; color: #94a3b8; font-size: 10px; line-height: 1.5;">
+                    <p style="margin: 0 0 3px 0; font-weight: 700; color: #cbd5e1;">ZAYA CODE HUB • Subhashish Learning & Tech Pvt Ltd</p>
+                    <p style="margin: 0; word-break: break-all;">Subramania Nagar, Salem, Tamil Nadu – 636005 | <a href="https://www.zayacodehub.in" style="color: #38bdf8; text-decoration: none;">www.zayacodehub.in</a></p>
+                  </td>
+                </tr>
+
+              </table>
+            </td>
+          </tr>
+        </table>
       </body>
       </html>
     `;
