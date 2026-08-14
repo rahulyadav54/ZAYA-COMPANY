@@ -40,7 +40,7 @@ export async function POST(request: Request) {
     `;
 
     const { data, error } = await resend.emails.send({
-      from: 'ZAYA CODE HUB <onboarding@resend.dev>',
+      from: 'ZAYA CODE HUB <onboarding@zayacodehub.in>',
       to: [email],
       subject: subject,
       html: htmlContent,
