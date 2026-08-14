@@ -169,53 +169,73 @@ export default function DashboardLayout({
       ];
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex transition-colors duration-300">
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 transition-transform lg:translate-x-0 lg:static lg:inset-0",
+          "fixed inset-y-0 left-0 z-50 w-72 bg-white dark:bg-slate-900/90 backdrop-blur-xl border-r border-slate-200/80 dark:border-slate-800 transition-all duration-300 lg:translate-x-0 lg:static lg:inset-0 shadow-sm",
           !isSidebarOpen && "-translate-x-full"
         )}
       >
-        <div className="h-full flex flex-col">
-          <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
-            <Link href="/" className="flex items-center space-x-2">
-              <Code2 className="h-8 w-8 text-blue-600" />
-              <span className="text-xl font-bold tracking-tight">ZAYA CODE HUB</span>
-            </Link>
-            <button onClick={() => setIsSidebarOpen(false)} className="lg:hidden">
-              <X className="h-6 w-6" />
-            </button>
+        <div className="h-full flex flex-col justify-between">
+          <div>
+            <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+              <Link href="/" className="flex items-center space-x-3 group">
+                <div className="p-2 rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-600/30 group-hover:scale-105 transition-transform">
+                  <Code2 className="h-6 w-6" />
+                </div>
+                <div>
+                  <span className="text-lg font-black tracking-tight text-slate-900 dark:text-white block leading-tight">
+                    ZAYA<span className="text-blue-600">CODE</span>HUB
+                  </span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded-full inline-block mt-0.5">
+                    {isAdmin ? 'Admin Console' : 'Intern Portal'}
+                  </span>
+                </div>
+              </Link>
+              <button onClick={() => setIsSidebarOpen(false)} className="lg:hidden p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <nav className="p-4 space-y-1.5 overflow-y-auto max-h-[calc(100vh-180px)] custom-scrollbar">
+              {links.map((link) => {
+                const isActive = pathname === link.href;
+                return (
+                  <Link
+                    key={link.name}
+                    href={link.href}
+                    onClick={() => setIsSidebarOpen(false)}
+                    className={cn(
+                      "flex items-center justify-between px-4 py-3 rounded-2xl transition-all text-sm font-bold relative group",
+                      isActive 
+                        ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-600/25" 
+                        : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white"
+                    )}
+                  >
+                    <div className="flex items-center space-x-3">
+                      <link.icon className={cn("h-5 w-5 transition-transform group-hover:scale-110", isActive ? "text-white" : "text-slate-400 dark:text-slate-500 group-hover:text-blue-600")} />
+                      <span>{link.name}</span>
+                    </div>
+
+                    {link.name === 'Messages' && hasNewMessage && !pathname.includes(link.href) && (
+                      <span className="w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse shadow-md shadow-red-500/50" />
+                    )}
+                  </Link>
+                );
+              })}
+            </nav>
           </div>
 
-          <nav className="flex-1 p-4 space-y-1">
-            {links.map((link) => (
-              <Link
-                key={link.name}
-                href={link.href}
-                className={cn(
-                  "flex items-center space-x-3 px-4 py-3 rounded-xl transition-all font-medium relative",
-                  pathname === link.href 
-                    ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20" 
-                    : "text-foreground hover:bg-slate-100 dark:hover:bg-slate-800"
-                )}
-              >
-                <link.icon className="h-5 w-5" />
-                {link.name === 'Messages' && hasNewMessage && !pathname.includes(link.href) && (
-                  <span className="absolute right-4 w-2 h-2 bg-red-500 rounded-full" />
-                )}
-                <span>{link.name}</span>
-              </Link>
-            ))}
-          </nav>
-
-          <div className="p-4 border-t border-slate-100 dark:border-slate-800">
+          <div className="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40">
             <button 
               onClick={handleLogout}
-              className="flex items-center space-x-3 px-4 py-3 w-full rounded-xl text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all font-medium"
+              className="flex items-center justify-between px-4 py-3 w-full rounded-2xl text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 border border-transparent hover:border-red-200 dark:hover:border-red-900/30 transition-all text-sm font-bold group"
             >
-              <LogOut className="h-5 w-5" />
-              <span>Logout</span>
+              <div className="flex items-center space-x-3">
+                <LogOut className="h-5 w-5 group-hover:-translate-x-0.5 transition-transform" />
+                <span>Sign Out</span>
+              </div>
             </button>
           </div>
         </div>
@@ -224,26 +244,36 @@ export default function DashboardLayout({
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Header */}
-        <header className="h-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-6 shrink-0">
-          <button onClick={() => setIsSidebarOpen(true)} className="lg:hidden p-2">
-            <Menu className="h-6 w-6" />
-          </button>
-          
-          <div className="flex-1 px-4 lg:px-0">
-            <h2 className="text-lg font-bold text-slate-800 dark:text-white capitalize">
-              ZAYA CODE HUB Portal
-            </h2>
+        <header className="h-20 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 flex items-center justify-between px-6 lg:px-10 shrink-0 sticky top-0 z-40">
+          <div className="flex items-center space-x-4">
+            <button onClick={() => setIsSidebarOpen(true)} className="lg:hidden p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+              <Menu className="h-5 w-5" />
+            </button>
+            
+            <div>
+              <h2 className="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                {isAdmin ? 'Management Console' : 'Intern Portal'}
+              </h2>
+              <div className="flex items-center gap-2 mt-0.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                  System 100% Operational • Supabase Live
+                </span>
+              </div>
+            </div>
           </div>
 
-          <div className="flex items-center space-x-4">
-            <button className="p-2 text-slate-400 hover:text-blue-600 transition-colors relative">
-              <Bell className="h-6 w-6" />
+          <div className="flex items-center space-x-3">
+            <button className="p-2.5 rounded-xl text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-slate-800 transition-colors relative">
+              <Bell className="h-5 w-5" />
               {hasNewMessage && (
-                <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-slate-900"></span>
+                <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white dark:border-slate-900 animate-pulse" />
               )}
             </button>
-            <div className="h-8 w-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 font-bold border border-blue-200 dark:border-blue-800">
-              {isAdmin ? 'A' : 'I'}
+            
+            <div className="h-10 px-4 rounded-xl bg-blue-50 dark:bg-blue-900/30 flex items-center gap-2 text-blue-600 dark:text-blue-400 font-bold border border-blue-200/60 dark:border-blue-800 text-xs">
+              <span className="w-2 h-2 rounded-full bg-blue-600 dark:bg-blue-400" />
+              <span>{isAdmin ? 'ADMINISTRATOR' : 'INTERN'}</span>
             </div>
           </div>
         </header>

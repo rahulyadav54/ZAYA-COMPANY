@@ -26,6 +26,8 @@ CREATE TABLE IF NOT EXISTS public.applications (
   position TEXT NOT NULL,
   experience TEXT,
   resume_url TEXT,
+  portfolio_url TEXT,
+  cover_letter TEXT,
   github_url TEXT,
   linkedin_url TEXT,
   status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'accepted', 'rejected', 'hired')),
@@ -35,6 +37,21 @@ CREATE TABLE IF NOT EXISTS public.applications (
   applied_at TIMESTAMPTZ DEFAULT NOW(),
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Ensure columns exist if table was created previously
+ALTER TABLE public.applications ADD COLUMN IF NOT EXISTS portfolio_url TEXT;
+ALTER TABLE public.applications ADD COLUMN IF NOT EXISTS cover_letter TEXT;
+
+-- RLS Policies for applications
+ALTER TABLE public.applications ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Allow public insert to applications" ON public.applications;
+DROP POLICY IF EXISTS "Allow public select to applications" ON public.applications;
+DROP POLICY IF EXISTS "Allow public update to applications" ON public.applications;
+
+CREATE POLICY "Allow public insert to applications" ON public.applications FOR INSERT TO public WITH CHECK (true);
+CREATE POLICY "Allow public select to applications" ON public.applications FOR SELECT TO public USING (true);
+CREATE POLICY "Allow public update to applications" ON public.applications FOR UPDATE TO public USING (true);
+
 
 -- 3. JOBS TABLE (Careers / Job Listings)
 CREATE TABLE IF NOT EXISTS public.jobs (

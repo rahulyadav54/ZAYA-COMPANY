@@ -82,6 +82,7 @@ Proficient Tools: ${tools}
 Code Confidence: ${confidence}/10`;
 
     // Insert into applications table
+    // Insert into applications table
     const { error: insertError } = await supabase.from('applications').insert({
       full_name: fullName,
       email,
@@ -89,8 +90,11 @@ Code Confidence: ${confidence}/10`;
       position,
       resume_url: resumeUrl,
       portfolio_url: portfolio,
+      github_url: portfolio,
       cover_letter: coverLetterContent,
-      status: 'pending'
+      experience: coverLetterContent,
+      status: 'pending',
+      applied_at: new Date().toISOString()
     });
 
     if (insertError) {
