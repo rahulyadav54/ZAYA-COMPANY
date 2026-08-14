@@ -104,8 +104,52 @@ export default function CareersPage() {
     fetchPositions();
   }, []);
 
+  // Generate Google Jobs JobPosting Schema for top Google Search ranking
+  const jobPostingSchemas = positions.map((pos) => ({
+    "@context": "https://schema.org/",
+    "@type": "JobPosting",
+    "title": pos.title,
+    "description": pos.description || `${pos.title} Internship Opportunity at ZAYA CODE HUB. Work on real-world projects, earn verifiable certificates.`,
+    "identifier": {
+      "@type": "PropertyValue",
+      "name": "ZAYA CODE HUB",
+      "value": pos.id
+    },
+    "datePosted": pos.created_at || "2026-01-01T00:00:00Z",
+    "validThrough": "2027-12-31T23:59:59Z",
+    "employmentType": "INTERN",
+    "hiringOrganization": {
+      "@type": "Organization",
+      "name": "ZAYA CODE HUB",
+      "sameAs": "https://zayacodehub.in",
+      "logo": "https://zayacodehub.in/favicon.png"
+    },
+    "jobLocationType": "TELECOMMUTE",
+    "applicantLocationRequirements": {
+      "@type": "Country",
+      "name": "IN"
+    },
+    "jobLocation": {
+      "@type": "Place",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Salem",
+        "addressRegion": "Tamil Nadu",
+        "addressCountry": "IN"
+      }
+    }
+  }));
+
   return (
     <div className="bg-white dark:bg-slate-950 min-h-screen text-slate-900 dark:text-slate-100 transition-colors">
+      {/* Google Jobs Schema Injection */}
+      {jobPostingSchemas.map((schema, i) => (
+        <script
+          key={i}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+        />
+      ))}
       {/* Header */}
       <section className="py-16 sm:py-20 bg-slate-50 dark:bg-slate-900/50 border-b border-slate-200/80 dark:border-slate-800">
         <div className="container mx-auto px-6 text-center max-w-4xl">

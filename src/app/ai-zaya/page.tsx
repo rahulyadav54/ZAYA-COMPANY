@@ -37,6 +37,31 @@ export const metadata: Metadata = {
 export default function AiZayaPage() {
   const playStoreLink = "https://play.google.com/store/apps/details?id=com.zayaai.app&pcampaignid=web_share";
 
+  const softwareAppSchema = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "AI ZAYA",
+    "operatingSystem": "ANDROID",
+    "applicationCategory": "ProductivityApplication",
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.9",
+      "ratingCount": "125"
+    },
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "INR"
+    },
+    "author": {
+      "@type": "Organization",
+      "name": "ZAYA CODE HUB",
+      "url": "https://zayacodehub.in"
+    },
+    "downloadUrl": playStoreLink,
+    "featureList": "AI Assistant, Brain Game Assistant, 50+ Languages, Voice Experience, Programming Assistant, Learning Companion"
+  };
+
   const keyFeatures = [
     {
       icon: <Bot className="h-7 w-7 text-blue-600 dark:text-blue-400" />,
@@ -146,6 +171,11 @@ export default function AiZayaPage() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 pt-8 pb-20 selection:bg-blue-600 selection:text-white transition-colors duration-300">
+      {/* SoftwareApplication Schema Injection */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareAppSchema) }}
+      />
       {/* Background glow graphics */}
       <div className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[30rem] bg-gradient-to-b from-blue-600/10 dark:from-blue-600/20 via-purple-600/5 dark:via-purple-600/10 to-transparent blur-3xl pointer-events-none -z-10" />
 
