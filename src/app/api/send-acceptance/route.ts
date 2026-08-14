@@ -166,19 +166,33 @@ export async function POST(request: Request) {
       `;
     }
 
-    const { data, error } = await resend.emails.send({
+    // 1. Try sending from custom domain
+    let sendResult = await resend.emails.send({
       from: 'ZAYA CODE HUB <onboarding@zayacodehub.in>',
       to: [email],
       subject: subject,
       html: htmlContent,
     });
 
-    if (error) {
-      return NextResponse.json({ error }, { status: 500 });
+    // 2. Fallback to onboarding@resend.dev if custom domain is not yet verified on Resend
+    if (sendResult.error) {
+      console.warn('Custom domain email notice, using resend.dev fallback:', sendResult.error.message);
+      sendResult = await resend.emails.send({
+        from: 'ZAYA CODE HUB <onboarding@resend.dev>',
+        to: [email],
+        subject: subject,
+        html: htmlContent,
+      });
     }
 
-    return NextResponse.json({ message: 'Email sent successfully', data });
+    if (sendResult.error) {
+      console.error('Final Resend email error:', sendResult.error);
+      return NextResponse.json({ error: sendResult.error.message || 'Failed to send email' }, { status: 500 });
+    }
+
+    return NextResponse.json({ message: 'Email sent successfully', data: sendResult.data });
   } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    console.error('Send acceptance error handler:', err);
+    return NextResponse.json({ error: err?.message || 'Server error sending email' }, { status: 500 });
   }
 }
