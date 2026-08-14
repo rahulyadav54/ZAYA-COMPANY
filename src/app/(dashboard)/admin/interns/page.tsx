@@ -22,6 +22,16 @@ export default function ManageInternsPage() {
   const [selectedCandidate, setSelectedCandidate] = useState<any>(null);
   const [manualFullName, setManualFullName] = useState('');
   const [manualPosition, setManualPosition] = useState('');
+  const [manualEmail, setManualEmail] = useState('');
+  const [manualPassword, setManualPassword] = useState('ZayaIntern@2026');
+
+  const generateOfficialEmail = (name: string) => {
+    if (!name) return '';
+    const clean = name.toLowerCase().trim().replace(/[^a-z0-9\s]/g, '');
+    const parts = clean.split(/\s+/).filter(Boolean);
+    if (parts.length === 0) return 'intern@zayacodehub.com';
+    return `${parts.join('')}@zayacodehub.com`;
+  };
 
   const fetchInterns = async () => {
     setIsLoading(true);
@@ -340,9 +350,18 @@ export default function ManageInternsPage() {
                     if (id === 'manual') {
                       setSelectedCandidate(null);
                       setManualFullName('');
+                      setManualPosition('');
+                      setManualEmail('');
+                      setManualPassword('ZayaIntern@2026');
                     } else {
                       const cand = acceptedCandidates.find(c => c.id.toString() === id);
                       setSelectedCandidate(cand);
+                      if (cand) {
+                        setManualFullName(cand.full_name);
+                        setManualPosition(cand.position || '');
+                        setManualEmail(generateOfficialEmail(cand.full_name));
+                        setManualPassword('ZayaIntern@2026');
+                      }
                     }
                   }}
                   className="w-full px-5 py-3 rounded-2xl border-2 border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-foreground font-bold focus:border-blue-600 outline-none transition-all"
@@ -363,7 +382,12 @@ export default function ManageInternsPage() {
                   name="fullName" 
                   type="text" 
                   value={selectedCandidate ? selectedCandidate.full_name : manualFullName}
-                  onChange={(e) => !selectedCandidate && setManualFullName(e.target.value)}
+                  onChange={(e) => {
+                    setManualFullName(e.target.value);
+                    if (!selectedCandidate) {
+                      setManualEmail(generateOfficialEmail(e.target.value));
+                    }
+                  }}
                   readOnly={!!selectedCandidate}
                   className={`w-full px-5 py-3 rounded-2xl border-2 border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-foreground font-bold focus:border-blue-600 outline-none transition-all ${selectedCandidate ? 'opacity-70 cursor-not-allowed' : ''}`} 
                 />
@@ -384,12 +408,33 @@ export default function ManageInternsPage() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Email Address</label>
-                <input required name="email" type="email" placeholder="intern@gmail.com" className="w-full px-5 py-3 rounded-2xl border-2 border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-foreground font-bold focus:border-blue-600 outline-none transition-all" />
+                <div className="flex justify-between items-center">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Official Company Email</label>
+                  <span className="text-[10px] font-bold text-blue-600">@zayacodehub.com Domain</span>
+                </div>
+                <input 
+                  required 
+                  name="email" 
+                  type="email" 
+                  value={manualEmail}
+                  onChange={(e) => setManualEmail(e.target.value)}
+                  placeholder="internname@zayacodehub.com" 
+                  className="w-full px-5 py-3 rounded-2xl border-2 border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-foreground font-bold focus:border-blue-600 outline-none transition-all" 
+                />
               </div>
+
               <div className="space-y-2">
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Assigned Password</label>
-                <input required name="password" type="text" placeholder="Minimum 6 characters" minLength={6} className="w-full px-5 py-3 rounded-2xl border-2 border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-foreground font-bold focus:border-blue-600 outline-none transition-all" />
+                <input 
+                  required 
+                  name="password" 
+                  type="text" 
+                  value={manualPassword}
+                  onChange={(e) => setManualPassword(e.target.value)}
+                  placeholder="Minimum 6 characters" 
+                  minLength={6} 
+                  className="w-full px-5 py-3 rounded-2xl border-2 border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-foreground font-bold focus:border-blue-600 outline-none transition-all" 
+                />
               </div>
               
               <div className="pt-2">

@@ -214,7 +214,32 @@ export default function ApplicationsPage() {
       if (error) throw error;
 
       if (newStatus === 'accepted' && appData) {
+        let createdEmail = '';
+        const createdPassword = 'ZayaIntern@2026';
+        
         try {
+          // Automatically create intern account with unique @zayacodehub.com email
+          const createUserRes = await fetch('/api/admin/create-user', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              personalEmail: appData.email,
+              fullName: appData.full_name,
+              position: appData.position,
+              role: 'intern',
+              password: createdPassword
+            })
+          });
+          const createUserData = await createUserRes.json();
+          if (createUserData.success && createUserData.officialEmail) {
+            createdEmail = createUserData.officialEmail;
+          }
+        } catch (err) {
+          console.warn('Auto intern creation notice:', err);
+        }
+
+        try {
+          // Send acceptance email with official credentials
           await fetch('/api/send-acceptance', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -222,11 +247,19 @@ export default function ApplicationsPage() {
               email: appData.email,
               fullName: appData.full_name,
               position: appData.position,
-              status: newStatus
+              status: newStatus,
+              officialEmail: createdEmail,
+              password: createdPassword
             }),
           });
         } catch (err) {
           console.error('Failed to send email:', err);
+        }
+
+        await fetchApplications();
+        if (createdEmail) {
+          alert(`🎉 Application ACCEPTED!\n\nAutomatic Intern Account Created:\n• Official Email: ${createdEmail}\n• Assigned Password: ${createdPassword}\n\nLogin credentials have been sent to candidate (${appData.email}).`);
+          return;
         }
       }
       

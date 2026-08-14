@@ -7,18 +7,13 @@ const SUPABASE_PUBLIC_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiO
 export async function POST(request: Request) {
   try {
     const requestData = await request.json();
-    const { email, password, fullName, role, position } = requestData;
+    const { email, password, fullName, role, position, personalEmail } = requestData;
 
-    if (!email || !password) {
-      return NextResponse.json({ error: 'Email and password are required.' }, { status: 400 });
-    }
+    const assignedPassword = password || 'ZayaIntern@2026';
 
     const envUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const envServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
     const supabaseUrl = (envUrl && envUrl.includes('jhfmkjkldxovscvobvoh')) ? envUrl : SUPABASE_PROJECT_URL;
-    
-    // Check if Service Role Key is available & valid JWT
     const isServiceRoleValid = envServiceKey && envServiceKey.startsWith('ey');
     const activeKey = isServiceRoleValid ? envServiceKey : SUPABASE_PUBLIC_ANON_KEY;
 
@@ -26,13 +21,40 @@ export async function POST(request: Request) {
       auth: { persistSession: false }
     });
 
+    // Generate unique official @zayacodehub.com email from candidate name
+    let targetEmail = (email || '').toLowerCase().trim();
+    if (!targetEmail.endsWith('@zayacodehub.com')) {
+      const cleanName = (fullName || 'intern').toLowerCase().trim().replace(/[^a-z0-9\s]/g, '');
+      const parts = cleanName.split(/\s+/).filter(Boolean);
+      const baseUsername = parts.length > 0 ? parts.join('') : 'intern';
+      targetEmail = `${baseUsername}@zayacodehub.com`;
+    }
+
+    // Check for existing profile with this targetEmail to guarantee 100% uniqueness
+    const { data: existingProfiles } = await supabaseAdmin
+      .from('profiles')
+      .select('email')
+      .ilike('email', `${targetEmail.split('@')[0]}%`);
+
+    if (existingProfiles && existingProfiles.length > 0) {
+      const existingEmails = new Set(existingProfiles.map(p => p.email.toLowerCase()));
+      if (existingEmails.has(targetEmail)) {
+        const base = targetEmail.split('@')[0];
+        let counter = 1;
+        while (existingEmails.has(`${base}${counter}@zayacodehub.com`)) {
+          counter++;
+        }
+        targetEmail = `${base}${counter}@zayacodehub.com`;
+      }
+    }
+
     let finalPosition = position;
     if (!finalPosition || finalPosition === 'Intern') {
        try {
          const { data: appData } = await supabaseAdmin
            .from('applications')
            .select('position')
-           .ilike('email', email)
+           .or(`email.eq.${personalEmail || email},email.eq.${targetEmail}`)
            .maybeSingle();
          if (appData?.position) finalPosition = appData.position;
        } catch (e) {
@@ -45,50 +67,51 @@ export async function POST(request: Request) {
     // 1. If Service Role key is valid, use admin.createUser
     if (isServiceRoleValid) {
       const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
-        email,
-        password,
+        email: targetEmail,
+        password: assignedPassword,
         email_confirm: true,
         user_metadata: { 
           full_name: fullName,
-          position: finalPosition || 'Internship'
+          position: finalPosition || 'Internship',
+          personal_email: personalEmail || email
         }
       });
 
       if (authError) {
-        console.warn('Admin createUser failed, attempting signUp fallback:', authError.message);
+        console.warn('Admin createUser notice, using signUp fallback:', authError.message);
       } else if (authData?.user) {
         createdUserId = authData.user.id;
       }
     }
 
-    // 2. Fallback: Standard signUp if Service Role Key not present/valid
+    // 2. Fallback: Standard signUp
     if (!createdUserId) {
       const { data: signUpData, error: signUpError } = await supabaseAdmin.auth.signUp({
-        email,
-        password,
+        email: targetEmail,
+        password: assignedPassword,
         options: {
           data: {
             full_name: fullName,
-            position: finalPosition || 'Internship'
+            position: finalPosition || 'Internship',
+            personal_email: personalEmail || email
           }
         }
       });
 
       if (signUpError) {
-        // If user already exists in auth, fetch existing profile ID
         if (signUpError.message?.toLowerCase().includes('already registered')) {
           const { data: existingProf } = await supabaseAdmin
             .from('profiles')
             .select('id')
-            .eq('email', email)
+            .eq('email', targetEmail)
             .maybeSingle();
           if (existingProf?.id) {
             createdUserId = existingProf.id;
           } else {
-            return NextResponse.json({ error: 'User already exists. Please log in or use a different email.' }, { status: 400 });
+            return NextResponse.json({ error: 'User already exists with email ' + targetEmail }, { status: 400 });
           }
         } else {
-          return NextResponse.json({ error: 'Failed to create user auth: ' + signUpError.message }, { status: 500 });
+          return NextResponse.json({ error: 'Failed to create intern auth account: ' + signUpError.message }, { status: 500 });
         }
       } else if (signUpData?.user) {
         createdUserId = signUpData.user.id;
@@ -101,7 +124,7 @@ export async function POST(request: Request) {
         .from('profiles')
         .upsert({
           id: createdUserId,
-          email,
+          email: targetEmail,
           full_name: fullName,
           role: role || 'intern',
           position: finalPosition || 'Internship',
@@ -115,17 +138,25 @@ export async function POST(request: Request) {
       }
     }
 
-    // 4. Update Application status to hired/accepted
-    try {
-      await supabaseAdmin
-        .from('applications')
-        .update({ status: 'accepted' })
-        .eq('email', email);
-    } catch (err) {
-      console.warn('Application status update notice:', err);
+    // 4. Update Application status to accepted
+    if (personalEmail || email) {
+      try {
+        await supabaseAdmin
+          .from('applications')
+          .update({ status: 'accepted' })
+          .or(`email.eq.${personalEmail || email},email.eq.${targetEmail}`);
+      } catch (err) {
+        console.warn('Application status update notice:', err);
+      }
     }
 
-    return NextResponse.json({ success: true, message: 'Intern account created successfully.' });
+    return NextResponse.json({ 
+      success: true, 
+      officialEmail: targetEmail,
+      password: assignedPassword,
+      message: `Intern account created successfully with official email: ${targetEmail}` 
+    });
+
   } catch (error: any) {
     console.error('Admin User Creation Error:', error);
     return NextResponse.json({ error: error?.message || 'Failed to create intern account.' }, { status: 500 });
