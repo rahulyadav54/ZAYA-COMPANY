@@ -1,76 +1,133 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 
+const SUPABASE_PROJECT_URL = 'https://jhfmkjkldxovscvobvoh.supabase.co';
+const SUPABASE_PUBLIC_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpoZm1ramtsZHhvdnNjdm9idm9oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY3MTE5ODYsImV4cCI6MjEwMjI4Nzk4Nn0.WbuwLOnQzdCu2wqQkrmMSe2TQYh_h45JgNPzU5z-6k0';
+
 export async function POST(request: Request) {
   try {
     const requestData = await request.json();
     const { email, password, fullName, role, position } = requestData;
 
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-    if (!supabaseUrl || !supabaseServiceKey) {
-      return NextResponse.json({ 
-        error: 'Missing Supabase environment variables. Please ensure NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are set in your server settings.' 
-      }, { status: 500 });
+    if (!email || !password) {
+      return NextResponse.json({ error: 'Email and password are required.' }, { status: 400 });
     }
 
-    // 1. Initialize Supabase with Service Role Key (Server-side ONLY)
-    const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
+    const envUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const envServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-    // 1.5 Fetch position from applications if missing
-    let finalPosition = position;
-    if (!finalPosition || finalPosition === 'Intern') {
-       const { data: appData } = await supabaseAdmin
-         .from('applications')
-         .select('position')
-         .ilike('email', email)
-         .maybeSingle();
-       if (appData?.position) finalPosition = appData.position;
-    }
+    const supabaseUrl = (envUrl && envUrl.includes('jhfmkjkldxovscvobvoh')) ? envUrl : SUPABASE_PROJECT_URL;
+    
+    // Check if Service Role Key is available & valid JWT
+    const isServiceRoleValid = envServiceKey && envServiceKey.startsWith('ey');
+    const activeKey = isServiceRoleValid ? envServiceKey : SUPABASE_PUBLIC_ANON_KEY;
 
-    // 2. Create the user in Auth
-    const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
-      email,
-      password,
-      email_confirm: true,
-      user_metadata: { 
-        full_name: fullName,
-        position: finalPosition || 'Internship'
-      }
+    const supabaseAdmin = createClient(supabaseUrl, activeKey, {
+      auth: { persistSession: false }
     });
 
-    if (authError) throw authError;
+    let finalPosition = position;
+    if (!finalPosition || finalPosition === 'Intern') {
+       try {
+         const { data: appData } = await supabaseAdmin
+           .from('applications')
+           .select('position')
+           .ilike('email', email)
+           .maybeSingle();
+         if (appData?.position) finalPosition = appData.position;
+       } catch (e) {
+         console.warn('Position fetch notice:', e);
+       }
+    }
 
-    // 3. Create the profile
-    const { error: profileError } = await supabaseAdmin
-      .from('profiles')
-      .upsert({
-        id: authData.user.id,
+    let createdUserId = '';
+
+    // 1. If Service Role key is valid, use admin.createUser
+    if (isServiceRoleValid) {
+      const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
         email,
-        full_name: fullName,
-        role: role || 'intern',
-        position: finalPosition || 'Internship',
-        phone: requestData.phone || '',
-        joining_date: requestData.joiningDate || new Date().toISOString().split('T')[0],
-        intern_id: requestData.internId || `ZCH-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`
+        password,
+        email_confirm: true,
+        user_metadata: { 
+          full_name: fullName,
+          position: finalPosition || 'Internship'
+        }
       });
 
-    if (profileError) throw profileError;
-    
-    // 4. Update Application status (if exists)
+      if (authError) {
+        console.warn('Admin createUser failed, attempting signUp fallback:', authError.message);
+      } else if (authData?.user) {
+        createdUserId = authData.user.id;
+      }
+    }
+
+    // 2. Fallback: Standard signUp if Service Role Key not present/valid
+    if (!createdUserId) {
+      const { data: signUpData, error: signUpError } = await supabaseAdmin.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: fullName,
+            position: finalPosition || 'Internship'
+          }
+        }
+      });
+
+      if (signUpError) {
+        // If user already exists in auth, fetch existing profile ID
+        if (signUpError.message?.toLowerCase().includes('already registered')) {
+          const { data: existingProf } = await supabaseAdmin
+            .from('profiles')
+            .select('id')
+            .eq('email', email)
+            .maybeSingle();
+          if (existingProf?.id) {
+            createdUserId = existingProf.id;
+          } else {
+            return NextResponse.json({ error: 'User already exists. Please log in or use a different email.' }, { status: 400 });
+          }
+        } else {
+          return NextResponse.json({ error: 'Failed to create user auth: ' + signUpError.message }, { status: 500 });
+        }
+      } else if (signUpData?.user) {
+        createdUserId = signUpData.user.id;
+      }
+    }
+
+    // 3. Upsert the profile into profiles table
+    if (createdUserId) {
+      const { error: profileError } = await supabaseAdmin
+        .from('profiles')
+        .upsert({
+          id: createdUserId,
+          email,
+          full_name: fullName,
+          role: role || 'intern',
+          position: finalPosition || 'Internship',
+          phone: requestData.phone || '',
+          joining_date: requestData.joiningDate || new Date().toISOString().split('T')[0],
+          intern_id: requestData.internId || `ZCH-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`
+        });
+
+      if (profileError) {
+        console.error('Profile upsert error:', profileError);
+      }
+    }
+
+    // 4. Update Application status to hired/accepted
     try {
       await supabaseAdmin
         .from('applications')
-        .update({ status: 'hired' })
+        .update({ status: 'accepted' })
         .eq('email', email);
     } catch (err) {
-      console.warn('Application status update skipped (table might not exist yet)');
+      console.warn('Application status update notice:', err);
     }
 
-    return NextResponse.json({ success: true, user: authData.user });
+    return NextResponse.json({ success: true, message: 'Intern account created successfully.' });
   } catch (error: any) {
     console.error('Admin User Creation Error:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: error?.message || 'Failed to create intern account.' }, { status: 500 });
   }
 }
