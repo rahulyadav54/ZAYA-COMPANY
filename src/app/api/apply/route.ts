@@ -15,81 +15,96 @@ async function sendApplicationConfirmationEmail(email: string, fullName: string,
     const resend = new Resend(process.env.RESEND_API_KEY);
     const subject = `📬 Application Received - ${position} at ZAYA CODE HUB`;
     const htmlContent = `
-      <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 650px; margin: 0 auto; padding: 0; background-color: #f8fafc; border-radius: 20px; overflow: hidden; border: 1px solid #e2e8f0;">
-        
-        <!-- Header Banner -->
-        <div style="background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); padding: 36px 32px; text-align: center; color: #ffffff;">
-          <div style="font-size: 12px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; background: rgba(255,255,255,0.15); display: inline-block; padding: 6px 16px; border-radius: 20px; margin-bottom: 12px;">
-            ZAYA CODE HUB • APPLICATION CONFIRMATION
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      </head>
+      <body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+        <div style="max-width: 600px; margin: 0 auto; padding: 12px; box-sizing: border-box;">
+          <div style="background-color: #ffffff; border-radius: 20px; overflow: hidden; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+            
+            <!-- Mobile-Friendly Header Banner -->
+            <div style="background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); padding: 32px 20px; text-align: center; color: #ffffff;">
+              <div style="font-size: 11px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; background: rgba(255,255,255,0.15); display: inline-block; padding: 5px 14px; border-radius: 20px; margin-bottom: 12px;">
+                ZAYA CODE HUB • APPLICATION CONFIRMATION
+              </div>
+              <h1 style="margin: 0; font-size: 24px; font-weight: 900; line-height: 1.2;">Application Received! 📬</h1>
+              <p style="margin: 8px 0 0 0; font-size: 14px; opacity: 0.9; font-weight: 500;">We have received your application for ${position}</p>
+            </div>
+
+            <!-- Body Content -->
+            <div style="padding: 24px 20px;">
+              <p style="font-size: 15px; color: #1e293b; font-weight: 700; margin-top: 0;">Dear ${fullName},</p>
+              
+              <p style="font-size: 14px; color: #475569; line-height: 1.7; margin-bottom: 20px;">
+                Thank you for your interest in joining <strong>ZAYA CODE HUB</strong>! We have officially received your application and details for the <strong>${position}</strong> position.
+              </p>
+
+              <!-- Mobile-Responsive Stacked Details Card -->
+              <div style="background: #f0f9ff; border: 1.5px solid #bae6fd; border-radius: 16px; padding: 18px; margin: 24px 0;">
+                <h3 style="margin: 0 0 14px 0; color: #0284c7; font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; text-align: center;">
+                  📋 Submitted Application Summary
+                </h3>
+                
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                  <div style="background: #ffffff; padding: 10px 12px; border-radius: 8px; border: 1px solid #e0f2fe;">
+                    <div style="font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase;">Applicant Name</div>
+                    <div style="font-size: 14px; font-weight: 600; color: #0f172a;">${fullName}</div>
+                  </div>
+
+                  <div style="background: #ffffff; padding: 10px 12px; border-radius: 8px; border: 1px solid #e0f2fe;">
+                    <div style="font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase;">Email Address</div>
+                    <div style="font-size: 14px; font-weight: 600; color: #2563eb; word-break: break-all; overflow-wrap: anywhere;">${email}</div>
+                  </div>
+
+                  <div style="background: #ffffff; padding: 10px 12px; border-radius: 8px; border: 1px solid #e0f2fe;">
+                    <div style="font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase;">Position Applied</div>
+                    <div style="font-size: 14px; font-weight: 600; color: #0f172a;">${position}</div>
+                  </div>
+
+                  <div style="background: #ffffff; padding: 10px 12px; border-radius: 8px; border: 1px solid #e0f2fe;">
+                    <div style="font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase;">Submission Date</div>
+                    <div style="font-size: 14px; font-weight: 600; color: #0f172a;">${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- What to Expect Next -->
+              <div style="background-color: #f8fafc; padding: 18px; border-radius: 14px; margin-bottom: 24px; border: 1px solid #e2e8f0;">
+                <h4 style="margin: 0 0 10px 0; color: #1e293b; font-size: 13px; font-weight: 800; text-transform: uppercase;">
+                  ⏳ What Happens Next?
+                </h4>
+                <ol style="margin: 0; padding-left: 20px; color: #475569; font-size: 13px; line-height: 1.7;">
+                  <li>Our recruitment team and technical leads are reviewing your qualifications.</li>
+                  <li>If selected, you will receive an official acceptance letter along with your intern portal credentials.</li>
+                  <li>Application evaluations are typically completed within 24 to 48 hours.</li>
+                </ol>
+              </div>
+
+              <p style="font-size: 14px; color: #475569; line-height: 1.6;">
+                If you have any questions regarding your application status, please contact us at <a href="mailto:support@zayacodehub.in" style="color: #2563eb; font-weight: 700;">support@zayacodehub.in</a>.
+              </p>
+
+              <p style="font-size: 14px; color: #1e293b; font-weight: 700; margin-top: 24px; margin-bottom: 2px;">
+                Best regards,
+              </p>
+              <p style="font-size: 14px; color: #2563eb; font-weight: 800; margin: 0;">
+                ZAYA CODE HUB Talent Acquisition Team
+              </p>
+            </div>
+
+            <!-- Footer -->
+            <div style="background-color: #0f172a; padding: 20px 16px; text-align: center; color: #94a3b8; font-size: 11px; line-height: 1.6;">
+              <p style="margin: 0 0 4px 0; font-weight: 700; color: #cbd5e1;">ZAYA CODE HUB • Subhashish Learning & Tech Pvt Ltd</p>
+              <p style="margin: 0; word-break: break-all;">Subramania Nagar, Salem, Tamil Nadu – 636005 | <a href="https://www.zayacodehub.in" style="color: #38bdf8; text-decoration: none;">www.zayacodehub.in</a></p>
+            </div>
+
           </div>
-          <h1 style="margin: 0; font-size: 26px; font-weight: 900;">Application Received! 📬</h1>
-          <p style="margin: 8px 0 0 0; font-size: 15px; opacity: 0.9;">We have received your application for ${position}</p>
         </div>
-
-        <!-- Body Content -->
-        <div style="padding: 32px; background-color: #ffffff;">
-          <p style="font-size: 16px; color: #1e293b; font-weight: 600; margin-top: 0;">Dear ${fullName},</p>
-          
-          <p style="font-size: 15px; color: #475569; line-height: 1.7; margin-bottom: 20px;">
-            Thank you for your interest in joining <strong>ZAYA CODE HUB</strong>! We have officially received your application and details for the <strong>${position}</strong> position.
-          </p>
-
-          <!-- Details Summary Box -->
-          <div style="background: #f0f9ff; border: 1.5px solid #bae6fd; border-radius: 14px; padding: 20px; margin: 24px 0;">
-            <h3 style="margin: 0 0 12px 0; color: #0284c7; font-size: 14px; font-weight: 800; text-transform: uppercase;">
-              📋 Submitted Application Summary
-            </h3>
-            <table style="width: 100%; border-collapse: collapse; font-size: 14px; color: #0f172a;">
-              <tr style="border-bottom: 1px solid #e0f2fe;">
-                <td style="padding: 8px 0; font-weight: 700; color: #475569; width: 150px;">Applicant Name:</td>
-                <td style="padding: 8px 0; font-weight: 600;">${fullName}</td>
-              </tr>
-              <tr style="border-bottom: 1px solid #e0f2fe;">
-                <td style="padding: 8px 0; font-weight: 700; color: #475569;">Email Address:</td>
-                <td style="padding: 8px 0; font-weight: 600; color: #2563eb;">${email}</td>
-              </tr>
-              <tr style="border-bottom: 1px solid #e0f2fe;">
-                <td style="padding: 8px 0; font-weight: 700; color: #475569;">Position Applied:</td>
-                <td style="padding: 8px 0; font-weight: 600;">${position}</td>
-              </tr>
-              <tr>
-                <td style="padding: 8px 0; font-weight: 700; color: #475569;">Submission Date:</td>
-                <td style="padding: 8px 0; font-weight: 600;">${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</td>
-              </tr>
-            </table>
-          </div>
-
-          <!-- What to Expect Next -->
-          <div style="background-color: #f8fafc; padding: 20px; border-radius: 14px; margin-bottom: 24px; border: 1px solid #e2e8f0;">
-            <h4 style="margin: 0 0 10px 0; color: #1e293b; font-size: 14px; font-weight: 800; text-transform: uppercase;">
-              ⏳ What Happens Next?
-            </h4>
-            <ol style="margin: 0; padding-left: 20px; color: #475569; font-size: 14px; line-height: 1.8;">
-              <li>Our recruitment team and technical leads are reviewing your qualifications.</li>
-              <li>If selected, you will receive an official acceptance letter along with your intern portal credentials.</li>
-              <li>Application evaluations are typically completed within 24 to 48 hours.</li>
-            </ol>
-          </div>
-
-          <p style="font-size: 15px; color: #475569; line-height: 1.7;">
-            If you have any questions regarding your application status, please contact us at <a href="mailto:support@zayacodehub.in" style="color: #2563eb; font-weight: 700;">support@zayacodehub.in</a>.
-          </p>
-
-          <p style="font-size: 15px; color: #1e293b; font-weight: 700; margin-top: 28px; margin-bottom: 4px;">
-            Best regards,
-          </p>
-          <p style="font-size: 15px; color: #2563eb; font-weight: 800; margin: 0;">
-            ZAYA CODE HUB Talent Acquisition Team
-          </p>
-        </div>
-
-        <!-- Footer -->
-        <div style="background-color: #0f172a; padding: 20px; text-align: center; color: #94a3b8; font-size: 12px; line-height: 1.6;">
-          <p style="margin: 0 0 4px 0; font-weight: 700; color: #cbd5e1;">ZAYA CODE HUB • Subhashish Learning & Tech Pvt Ltd</p>
-          <p style="margin: 0;">Subramania Nagar, Salem, Tamil Nadu – 636005 | <a href="https://www.zayacodehub.in" style="color: #38bdf8; text-decoration: none;">www.zayacodehub.in</a></p>
-        </div>
-
-      </div>
+      </body>
+      </html>
     `;
 
     // 1. Try sending from custom domain
