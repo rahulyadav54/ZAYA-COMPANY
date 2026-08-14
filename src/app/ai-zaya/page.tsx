@@ -423,9 +423,18 @@ export default function AiZayaPage() {
             </div>
 
             {/* QR Code Container */}
-            <div className="flex flex-col items-center p-6 rounded-2xl bg-white text-slate-900 shadow-2xl shrink-0">
-              <QrCode className="h-28 w-28 text-slate-900 mb-2" />
-              <span className="text-xs font-bold text-slate-800">Scan to Install on Android</span>
+            <div className="flex flex-col items-center p-5 rounded-2xl bg-white text-slate-900 shadow-2xl shrink-0 border-2 border-white/80 group">
+              <div className="relative p-1 bg-white rounded-xl">
+                <Image
+                  src="/images/ai-zaya-qr.png"
+                  alt="Scan QR Code to Download AI ZAYA App on Play Store"
+                  width={160}
+                  height={160}
+                  className="rounded-lg object-contain"
+                />
+              </div>
+              <span className="text-xs font-extrabold text-slate-900 mt-2 tracking-tight">Scan to Install on Android</span>
+              <span className="text-[10px] text-slate-500 font-semibold">Google Play Store</span>
             </div>
           </div>
         </div>
