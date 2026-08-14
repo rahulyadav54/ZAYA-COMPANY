@@ -230,16 +230,16 @@ export default function PortfolioPage() {
             >
               <div>
                 {/* Visual Preview */}
-                <div className="relative h-56 w-full bg-slate-100 dark:bg-slate-950 overflow-hidden">
+                <div className="relative h-64 w-full bg-slate-900/90 dark:bg-slate-950 overflow-hidden flex items-center justify-center p-3">
                   <Image
                     src={prod.image}
                     alt={`${prod.name} Developed by ZAYA CODE HUB`}
                     fill
                     unoptimized
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="object-contain group-hover:scale-105 transition-transform duration-500 p-2"
                   />
-                  <div className="absolute top-4 left-4">
-                    <span className={`px-3 py-1 rounded-full text-xs font-extrabold border shadow-sm ${prod.statusColor}`}>
+                  <div className="absolute top-3 right-3 z-10">
+                    <span className="px-3 py-1 rounded-full text-xs font-extrabold border shadow-md bg-slate-950/80 backdrop-blur-md text-white border-white/20">
                       {prod.status}
                     </span>
                   </div>
@@ -347,13 +347,13 @@ export default function PortfolioPage() {
               {/* Modal Scrollable Body */}
               <div className="p-6 sm:p-8 overflow-y-auto space-y-6 flex-1">
                 {/* Visual Image */}
-                <div className="relative h-64 w-full rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-950">
+                <div className="relative h-80 w-full rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-900 dark:bg-slate-950 p-3 flex items-center justify-center">
                   <Image
                     src={selectedProduct.image}
                     alt={selectedProduct.name}
                     fill
                     unoptimized
-                    className="object-cover"
+                    className="object-contain p-2"
                   />
                 </div>
 
