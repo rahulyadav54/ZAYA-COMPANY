@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import ClientLayout from "@/components/layout/ClientLayout";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -94,9 +93,6 @@ const jsonLdOrg = {
   }
 };
 
-import Header from "@/components/layout/Header";
-import AiZayaLaunchModal from "@/components/layout/AiZayaLaunchModal";
-
 export default function RootLayout({
   children,
 }: {
@@ -114,16 +110,11 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdOrg) }}
         />
       </head>
-      <body className="min-h-full flex flex-col bg-background text-foreground">
+      <body className="min-h-full bg-background text-foreground">
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-          <Header />
-          <AiZayaLaunchModal />
-
-          <main className="flex-grow pt-32 sm:pt-36">
+          <ClientLayout>
             {children}
-          </main>
-
-          <Footer />
+          </ClientLayout>
           <Analytics />
           <SpeedInsights />
         </ThemeProvider>
