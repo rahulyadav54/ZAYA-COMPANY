@@ -101,8 +101,7 @@ export default function ApplicationForm({ position, onSuccess }: ApplicationForm
             required
             name="fullName"
             type="text"
-            placeholder="John Doe"
-            className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 focus:outline-none focus:ring-2 focus:ring-blue-600/50 transition-all"
+            className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 focus:outline-none focus:ring-2 focus:ring-blue-600/50 transition-all text-foreground"
           />
         </div>
         <div className="space-y-2">
@@ -111,8 +110,7 @@ export default function ApplicationForm({ position, onSuccess }: ApplicationForm
             required
             name="email"
             type="email"
-            placeholder="zayacodehub@gmail.com"
-            className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 focus:outline-none focus:ring-2 focus:ring-blue-600/50 transition-all"
+            className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 focus:outline-none focus:ring-2 focus:ring-blue-600/50 transition-all text-foreground"
           />
         </div>
       </div>
@@ -124,8 +122,7 @@ export default function ApplicationForm({ position, onSuccess }: ApplicationForm
             required
             name="phone"
             type="tel"
-            placeholder="+91 7033399183"
-            className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 focus:outline-none focus:ring-2 focus:ring-blue-600/50 transition-all"
+            className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 focus:outline-none focus:ring-2 focus:ring-blue-600/50 transition-all text-foreground"
           />
         </div>
         <div className="space-y-2">
@@ -134,8 +131,7 @@ export default function ApplicationForm({ position, onSuccess }: ApplicationForm
             required
             name="location"
             type="text"
-            placeholder="Salem, Tamil Nadu"
-            className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 focus:outline-none focus:ring-2 focus:ring-blue-600/50 transition-all"
+            className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 focus:outline-none focus:ring-2 focus:ring-blue-600/50 transition-all text-foreground"
           />
         </div>
       </div>
@@ -147,7 +143,7 @@ export default function ApplicationForm({ position, onSuccess }: ApplicationForm
             required
             name="startDate"
             type="date"
-            className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 focus:outline-none focus:ring-2 focus:ring-blue-600/50 transition-all"
+            className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 focus:outline-none focus:ring-2 focus:ring-blue-600/50 transition-all text-foreground"
           />
         </div>
         <div className="space-y-2">
@@ -155,7 +151,7 @@ export default function ApplicationForm({ position, onSuccess }: ApplicationForm
           <select
             required
             name="isEnrolled"
-            className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 focus:outline-none focus:ring-2 focus:ring-blue-600/50 transition-all"
+            className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 focus:outline-none focus:ring-2 focus:ring-blue-600/50 transition-all text-foreground"
           >
             <option value="">Select...</option>
             <option value="Yes">Yes</option>
@@ -170,8 +166,7 @@ export default function ApplicationForm({ position, onSuccess }: ApplicationForm
           required
           name="major"
           type="text"
-          placeholder="e.g. Computer Science"
-          className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 focus:outline-none focus:ring-2 focus:ring-blue-600/50 transition-all"
+          className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 focus:outline-none focus:ring-2 focus:ring-blue-600/50 transition-all text-foreground"
         />
       </div>
 
@@ -180,7 +175,7 @@ export default function ApplicationForm({ position, onSuccess }: ApplicationForm
         <select
           required
           name="experience"
-          className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 focus:outline-none focus:ring-2 focus:ring-blue-600/50 transition-all"
+          className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 focus:outline-none focus:ring-2 focus:ring-blue-600/50 transition-all text-foreground"
         >
           <option value="">Select experience level...</option>
           <option value="Less than 1 year">Less than 1 year</option>
@@ -195,8 +190,7 @@ export default function ApplicationForm({ position, onSuccess }: ApplicationForm
           required
           name="tools"
           type="text"
-          placeholder="e.g. Kotlin, Java, React Native, Git"
-          className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 focus:outline-none focus:ring-2 focus:ring-blue-600/50 transition-all"
+          className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 focus:outline-none focus:ring-2 focus:ring-blue-600/50 transition-all text-foreground"
         />
       </div>
 
@@ -208,8 +202,7 @@ export default function ApplicationForm({ position, onSuccess }: ApplicationForm
           type="number"
           min="1"
           max="10"
-          placeholder="10"
-          className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 focus:outline-none focus:ring-2 focus:ring-blue-600/50 transition-all"
+          className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 focus:outline-none focus:ring-2 focus:ring-blue-600/50 transition-all text-foreground"
         />
       </div>
 
@@ -218,8 +211,7 @@ export default function ApplicationForm({ position, onSuccess }: ApplicationForm
         <input
           name="portfolio"
           type="url"
-          placeholder="https://github.com/yourusername"
-          className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 focus:outline-none focus:ring-2 focus:ring-blue-600/50 transition-all"
+          className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 focus:outline-none focus:ring-2 focus:ring-blue-600/50 transition-all text-foreground"
         />
       </div>
 
