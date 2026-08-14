@@ -29,7 +29,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // Always use active Supabase project credentials for jhfmkjkldxovscvobvoh
     const supabase = createClient(SUPABASE_PROJECT_URL, SUPABASE_PUBLIC_ANON_KEY, {
       auth: { persistSession: false }
     });
@@ -72,46 +71,59 @@ Experience: ${experience}
 Proficient Tools: ${tools}
 Code Confidence: ${confidence}/10`;
 
-    // Upsert into applications table (insert new or update existing candidate application by email)
-    const { error: insertError } = await supabase.from('applications').upsert(
-      {
-        full_name: fullName,
-        email: email.toLowerCase().trim(),
-        phone,
-        position,
-        resume_url: resumeUrl,
-        portfolio_url: portfolio,
-        github_url: portfolio,
-        cover_letter: coverLetterContent,
-        experience: coverLetterContent,
-        status: 'pending',
-        applied_at: new Date().toISOString()
-      },
-      { onConflict: 'email' }
-    );
+    const cleanEmail = email.toLowerCase().trim();
 
-    if (insertError) {
-      console.warn('API apply database notice:', insertError);
-      
-      // Fallback: If upsert fails, attempt standard insert
-      const { error: fallbackError } = await supabase.from('applications').insert({
+    // 1. Tier 1: Try inserting with full schema fields
+    const { error: primaryError } = await supabase.from('applications').insert({
+      full_name: fullName,
+      email: cleanEmail,
+      phone: phone,
+      position: position,
+      resume_url: resumeUrl,
+      portfolio_url: portfolio,
+      cover_letter: coverLetterContent,
+      status: 'pending'
+    });
+
+    if (primaryError) {
+      console.warn('Primary application insert notice:', primaryError.message);
+
+      // 2. Tier 2: Try inserting with legacy schema fields (experience / github_url)
+      const { error: secondaryError } = await supabase.from('applications').insert({
         full_name: fullName,
-        email: email.toLowerCase().trim(),
-        phone,
-        position,
+        email: cleanEmail,
+        phone: phone,
+        position: position,
         resume_url: resumeUrl,
-        portfolio_url: portfolio,
-        cover_letter: coverLetterContent,
-        status: 'pending',
-        applied_at: new Date().toISOString()
+        github_url: portfolio,
+        experience: coverLetterContent,
+        status: 'pending'
       });
 
-      if (fallbackError) {
-        console.error('API apply database insert fallback error:', fallbackError);
-        return NextResponse.json(
-          { error: 'Failed to record application in database: ' + fallbackError.message },
-          { status: 500 }
-        );
+      if (secondaryError) {
+        console.warn('Secondary application insert notice:', secondaryError.message);
+
+        // 3. Tier 3: If candidate email already exists (duplicate constraint), update existing record
+        const { error: updateError } = await supabase
+          .from('applications')
+          .update({
+            full_name: fullName,
+            phone: phone,
+            position: position,
+            resume_url: resumeUrl,
+            portfolio_url: portfolio,
+            cover_letter: coverLetterContent,
+            status: 'pending'
+          })
+          .eq('email', cleanEmail);
+
+        if (updateError) {
+          console.error('Tier 3 update notice:', updateError.message);
+          return NextResponse.json(
+            { error: 'Failed to record application in database: ' + updateError.message },
+            { status: 500 }
+          );
+        }
       }
     }
 
@@ -121,7 +133,7 @@ Code Confidence: ${confidence}/10`;
     });
 
   } catch (error: any) {
-    console.error('API apply general handler notice:', error);
+    console.error('API apply catch error:', error);
     return NextResponse.json(
       { error: 'Server error processing application submission: ' + error?.message },
       { status: 500 }

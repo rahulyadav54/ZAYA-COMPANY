@@ -10,19 +10,22 @@ export async function GET() {
       auth: { persistSession: false }
     });
 
-    const { data, error } = await supabase
+    // 1. Try selecting with created_at ordering
+    let { data, error } = await supabase
       .from('applications')
       .select('*')
-      .order('applied_at', { ascending: false });
+      .order('created_at', { ascending: false });
 
-    if (error) {
-      console.warn('API get applications warning:', error);
-      return NextResponse.json({ success: false, error: error.message, applications: [] }, { status: 500 });
+    // 2. Fallback: Select all without ordering if column missing
+    if (error || !data) {
+      console.warn('Primary applications select notice:', error?.message);
+      const res = await supabase.from('applications').select('*');
+      data = res.data;
     }
 
     return NextResponse.json({ success: true, applications: data || [] });
   } catch (err: any) {
-    console.error('API get applications catch:', err);
+    console.error('API get applications catch error:', err);
     return NextResponse.json({ success: false, error: err?.message, applications: [] }, { status: 500 });
   }
 }
