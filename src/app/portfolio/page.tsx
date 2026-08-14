@@ -14,16 +14,13 @@ import {
   Sparkles, 
   ExternalLink, 
   CheckCircle2, 
-  Users, 
   ChevronRight, 
   X, 
-  Layers, 
-  Cpu, 
   ArrowRight,
-  Download,
-  Info
+  Info,
+  Clock,
+  Zap
 } from 'lucide-react';
-import { Metadata } from 'next';
 
 export default function PortfolioPage() {
   const [activeCategory, setActiveCategory] = useState<string>('All');
@@ -94,7 +91,7 @@ export default function PortfolioPage() {
       category: 'Education',
       status: 'Active Product',
       statusColor: 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20',
-      image: '/images/zaya-school.svg',
+      image: '/images/zaya-school.png',
       icon: GraduationCap,
       iconBg: 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400',
       shortDesc: 'Digital school management platform designed to simplify and modernize school administration, teaching, student performance tracking, and parent communication.',
@@ -117,7 +114,7 @@ export default function PortfolioPage() {
       category: 'Education',
       status: 'Active Product',
       statusColor: 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20',
-      image: '/images/zaya-learn.svg',
+      image: '/images/zaya-learn.png',
       icon: BookOpen,
       iconBg: 'bg-purple-500/10 text-purple-600 dark:text-purple-400',
       shortDesc: 'Digital learning and eBook platform providing students with instant access to programming courses, technical eBooks, and educational resources.',
@@ -139,7 +136,7 @@ export default function PortfolioPage() {
       category: 'Public Safety',
       status: 'Innovative Product',
       statusColor: 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20',
-      image: '/images/surakshanep-app.svg',
+      image: '/images/surakshanep-app.png',
       icon: ShieldAlert,
       iconBg: 'bg-rose-500/10 text-rose-600 dark:text-rose-400',
       shortDesc: 'Innovative emergency-response and public-safety platform designed to help users request immediate assistance and share critical info during emergency situations.',
@@ -159,22 +156,22 @@ export default function PortfolioPage() {
     {
       id: 'zayamart',
       name: 'ZAYAMART',
-      tagline: 'Digital Farmers & Local Marketplace',
+      tagline: 'Direct Farmer-to-Customer Rapid Food & Grocery Delivery Marketplace',
       category: 'E-commerce',
-      status: 'Marketplace Concept',
+      status: 'Fast Delivery Marketplace',
       statusColor: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20',
-      image: '/images/zayamart-app.svg',
+      image: '/images/zayamart-app.png',
       icon: ShoppingBag,
       iconBg: 'bg-amber-500/10 text-amber-600 dark:text-amber-400',
-      shortDesc: 'Digital e-commerce marketplace connecting local farmers directly with consumers for fresh produce and local product discovery.',
-      description: 'ZAYAMART is a marketplace concept designed to connect local farmers and customers through a convenient digital shopping experience. The platform aims to help farmers reach customers directly while providing customers with easier access to local products.',
+      shortDesc: 'Digital marketplace connecting local farmers directly with consumers, enabling rapid delivery of fresh groceries, organic produce, and food within minutes or hours.',
+      description: 'ZAYAMART is an ultra-fast digital marketplace platform designed by ZAYA CODE HUB to connect local farmers and food vendors directly with consumers. It enables instant local ordering and rapid delivery of fresh farm produce, groceries, and essential food items within minutes or hours while ensuring fair pricing for farmers.',
       features: [
-        'Farmer Registration & Profile Management',
-        'Direct Product Listings & Inventory',
-        'Customer Browsing & Product Search',
-        'Local Farmer Product Discovery',
-        'Digital Order & Delivery Management',
-        'Direct Farmer-to-Customer Connectivity'
+        'Direct Farmer-to-Customer Connectivity',
+        'Ultra-Fast Delivery (Within Minutes or Hours)',
+        'Farmer Product & Inventory Registration',
+        'Real-Time Order Tracking & Express Dispatch',
+        'Local Organic Fresh Food Discovery',
+        'Fair Pricing & Direct Farmer Earnings'
       ],
       targetUsers: ['Local Farmers', 'Consumers', 'Agricultural Vendors', 'Local Business Owners']
     }
@@ -238,6 +235,7 @@ export default function PortfolioPage() {
                     src={prod.image}
                     alt={`${prod.name} Developed by ZAYA CODE HUB`}
                     fill
+                    unoptimized
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   <div className="absolute top-4 left-4">
@@ -349,11 +347,12 @@ export default function PortfolioPage() {
               {/* Modal Scrollable Body */}
               <div className="p-6 sm:p-8 overflow-y-auto space-y-6 flex-1">
                 {/* Visual Image */}
-                <div className="relative h-60 w-full rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-950">
+                <div className="relative h-64 w-full rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-950">
                   <Image
                     src={selectedProduct.image}
                     alt={selectedProduct.name}
                     fill
+                    unoptimized
                     className="object-cover"
                   />
                 </div>
