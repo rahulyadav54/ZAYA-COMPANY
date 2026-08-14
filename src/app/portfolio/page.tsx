@@ -230,13 +230,13 @@ export default function PortfolioPage() {
             >
               <div>
                 {/* Visual Preview */}
-                <div className="relative h-64 w-full bg-slate-900/90 dark:bg-slate-950 overflow-hidden flex items-center justify-center p-3">
+                <div className="relative h-60 w-full bg-slate-100 dark:bg-slate-950 overflow-hidden">
                   <Image
                     src={prod.image}
                     alt={`${prod.name} Developed by ZAYA CODE HUB`}
                     fill
                     unoptimized
-                    className="object-contain group-hover:scale-105 transition-transform duration-500 p-2"
+                    className="object-cover object-top group-hover:scale-105 transition-transform duration-500"
                   />
                   <div className="absolute top-3 right-3 z-10">
                     <span className="px-3 py-1 rounded-full text-xs font-extrabold border shadow-md bg-slate-950/80 backdrop-blur-md text-white border-white/20">
