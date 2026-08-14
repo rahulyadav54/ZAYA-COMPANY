@@ -82,9 +82,9 @@ export default function Navbar() {
       )}
     >
       <div className="container mx-auto px-6 flex justify-between items-center">
-        <Link href="/" className="flex items-center space-x-2">
-          <Code2 className="h-8 w-8 text-blue-600" />
-          <span className="text-2xl font-bold tracking-tight text-foreground">
+        <Link href="/" className="flex items-center space-x-2 shrink-0 min-w-fit">
+          <Code2 className="h-8 w-8 text-blue-600 shrink-0" />
+          <span className="text-xl sm:text-2xl font-bold tracking-tight text-foreground whitespace-nowrap">
             ZAYA<span className="text-blue-600">CODE</span>HUB
           </span>
         </Link>

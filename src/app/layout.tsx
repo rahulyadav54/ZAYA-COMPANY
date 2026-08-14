@@ -75,7 +75,7 @@ export default function RootLayout({
           <Header />
           <AiZayaLaunchModal />
 
-          <main className="flex-grow pt-24 sm:pt-28">
+          <main className="flex-grow pt-32 sm:pt-36">
             {children}
           </main>
 
