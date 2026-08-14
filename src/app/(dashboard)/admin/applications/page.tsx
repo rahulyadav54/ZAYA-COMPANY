@@ -27,14 +27,32 @@ export default function ApplicationsPage() {
 
   const fetchApplications = async () => {
     setIsLoading(true);
-    const { data, error } = await supabase
-      .from('applications')
-      .select('*')
-      .order('applied_at', { ascending: false });
-
-    if (!error && data) {
-      setApplications(data);
+    let applicationList: any[] = [];
+    
+    // 1. Try API Route
+    try {
+      const res = await fetch('/api/admin/applications');
+      const json = await res.json();
+      if (json.success && Array.isArray(json.applications) && json.applications.length > 0) {
+        applicationList = json.applications;
+      }
+    } catch (e) {
+      console.warn("API applications error:", e);
     }
+
+    // 2. Client fallback
+    if (applicationList.length === 0) {
+      const { data, error } = await supabase
+        .from('applications')
+        .select('*')
+        .order('applied_at', { ascending: false });
+
+      if (!error && data) {
+        applicationList = data;
+      }
+    }
+
+    setApplications(applicationList);
     setIsLoading(false);
   };
 

@@ -30,14 +30,29 @@ export default function AdminDashboard() {
   const fetchData = async () => {
     setIsRefreshing(true);
     
-    // Fetch Applications
-    const { data: apps, error: appsError } = await supabase
-      .from('applications')
-      .select('*')
-      .order('applied_at', { ascending: false });
+    let applicationList: any[] = [];
+    
+    // 1. Try fetching applications via API route first (bypasses browser RLS)
+    try {
+      const res = await fetch('/api/admin/applications');
+      const json = await res.json();
+      if (json.success && Array.isArray(json.applications) && json.applications.length > 0) {
+        applicationList = json.applications;
+      }
+    } catch (e) {
+      console.warn("API applications fetch error:", e);
+    }
 
-    if (appsError) {
-      console.warn("Notice fetching applications:", appsError);
+    // 2. Fallback to client-side Supabase query if API response was empty
+    if (applicationList.length === 0) {
+      const { data: apps } = await supabase
+        .from('applications')
+        .select('*')
+        .order('applied_at', { ascending: false });
+
+      if (apps && apps.length > 0) {
+        applicationList = apps;
+      }
     }
 
     // Fetch Interns Count
@@ -52,7 +67,6 @@ export default function AdminDashboard() {
       .select('id')
       .eq('payment_status', 'paid');
 
-    const applicationList = apps || [];
     const total = applicationList.length;
     const pending = applicationList.filter(a => a.status === 'pending').length;
     const revenue = (paidSubmissions?.length || 0) * 125;

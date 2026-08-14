@@ -29,7 +29,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // Always prioritize exact active Supabase credentials
     const envUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const envKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
     const envServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -82,7 +81,6 @@ Proficient Tools: ${tools}
 Code Confidence: ${confidence}/10`;
 
     // Insert into applications table
-    // Insert into applications table
     const { error: insertError } = await supabase.from('applications').insert({
       full_name: fullName,
       email,
@@ -105,6 +103,10 @@ Code Confidence: ${confidence}/10`;
           { status: 409 }
         );
       }
+      return NextResponse.json(
+        { error: 'Failed to save application into database: ' + insertError.message },
+        { status: 500 }
+      );
     }
 
     return NextResponse.json({
@@ -114,9 +116,9 @@ Code Confidence: ${confidence}/10`;
 
   } catch (error: any) {
     console.error('API apply general handler notice:', error);
-    return NextResponse.json({
-      success: true,
-      message: 'Application submitted successfully.'
-    });
+    return NextResponse.json(
+      { error: 'Server error processing application submission: ' + error?.message },
+      { status: 500 }
+    );
   }
 }
