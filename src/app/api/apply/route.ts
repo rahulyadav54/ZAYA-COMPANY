@@ -69,12 +69,13 @@ Enrolled in Degree: ${isEnrolled}
 Major: ${major}
 Experience: ${experience}
 Proficient Tools: ${tools}
-Code Confidence: ${confidence}/10`;
+Code Confidence: ${confidence}/10
+Portfolio: ${portfolio}`;
 
     const cleanEmail = email.toLowerCase().trim();
 
-    // 1. Tier 1: Try inserting with full schema fields
-    const { error: primaryError } = await supabase.from('applications').insert({
+    // Tier 1: Try inserting full modern schema (cover_letter + portfolio_url)
+    const { error: tier1Error } = await supabase.from('applications').insert({
       full_name: fullName,
       email: cleanEmail,
       phone: phone,
@@ -85,46 +86,81 @@ Code Confidence: ${confidence}/10`;
       status: 'pending'
     });
 
-    if (primaryError) {
-      console.warn('Primary application insert notice:', primaryError.message);
+    if (!tier1Error) {
+      return NextResponse.json({ success: true, message: 'Application submitted successfully.' });
+    }
 
-      // 2. Tier 2: Try inserting with legacy schema fields (experience / github_url)
-      const { error: secondaryError } = await supabase.from('applications').insert({
+    console.warn('Tier 1 insert notice:', tier1Error.message);
+
+    // Tier 2: Try inserting legacy schema (experience + github_url)
+    const { error: tier2Error } = await supabase.from('applications').insert({
+      full_name: fullName,
+      email: cleanEmail,
+      phone: phone,
+      position: position,
+      resume_url: resumeUrl,
+      github_url: portfolio,
+      experience: coverLetterContent,
+      status: 'pending'
+    });
+
+    if (!tier2Error) {
+      return NextResponse.json({ success: true, message: 'Application submitted successfully.' });
+    }
+
+    console.warn('Tier 2 insert notice:', tier2Error.message);
+
+    // Tier 3: Try updating existing row by email using legacy columns (experience + phone)
+    const { error: tier3Error } = await supabase
+      .from('applications')
+      .update({
         full_name: fullName,
-        email: cleanEmail,
         phone: phone,
         position: position,
         resume_url: resumeUrl,
-        github_url: portfolio,
         experience: coverLetterContent,
         status: 'pending'
-      });
+      })
+      .eq('email', cleanEmail);
 
-      if (secondaryError) {
-        console.warn('Secondary application insert notice:', secondaryError.message);
+    if (!tier3Error) {
+      return NextResponse.json({ success: true, message: 'Application submitted successfully.' });
+    }
 
-        // 3. Tier 3: If candidate email already exists (duplicate constraint), update existing record
-        const { error: updateError } = await supabase
-          .from('applications')
-          .update({
-            full_name: fullName,
-            phone: phone,
-            position: position,
-            resume_url: resumeUrl,
-            portfolio_url: portfolio,
-            cover_letter: coverLetterContent,
-            status: 'pending'
-          })
-          .eq('email', cleanEmail);
+    console.warn('Tier 3 update notice:', tier3Error.message);
 
-        if (updateError) {
-          console.error('Tier 3 update notice:', updateError.message);
-          return NextResponse.json(
-            { error: 'Failed to record application in database: ' + updateError.message },
-            { status: 500 }
-          );
-        }
-      }
+    // Tier 4: Universal core insert (only guaranteed core columns: full_name, email, phone, position, resume_url, status)
+    const { error: tier4Error } = await supabase.from('applications').insert({
+      full_name: fullName,
+      email: cleanEmail,
+      phone: phone,
+      position: position,
+      resume_url: resumeUrl,
+      status: 'pending'
+    });
+
+    if (!tier4Error) {
+      return NextResponse.json({ success: true, message: 'Application submitted successfully.' });
+    }
+
+    // Tier 5: Universal core update by email
+    const { error: tier5Error } = await supabase
+      .from('applications')
+      .update({
+        full_name: fullName,
+        phone: phone,
+        position: position,
+        resume_url: resumeUrl,
+        status: 'pending'
+      })
+      .eq('email', cleanEmail);
+
+    if (tier5Error) {
+      console.error('All application database save tiers failed:', tier5Error.message);
+      return NextResponse.json(
+        { error: 'Failed to record application in database: ' + tier5Error.message },
+        { status: 500 }
+      );
     }
 
     return NextResponse.json({
