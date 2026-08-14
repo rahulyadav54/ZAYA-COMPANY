@@ -80,33 +80,47 @@ Experience: ${experience}
 Proficient Tools: ${tools}
 Code Confidence: ${confidence}/10`;
 
-    // Insert into applications table
-    const { error: insertError } = await supabase.from('applications').insert({
-      full_name: fullName,
-      email,
-      phone,
-      position,
-      resume_url: resumeUrl,
-      portfolio_url: portfolio,
-      github_url: portfolio,
-      cover_letter: coverLetterContent,
-      experience: coverLetterContent,
-      status: 'pending',
-      applied_at: new Date().toISOString()
-    });
+    // Upsert into applications table (insert new or update existing candidate application by email)
+    const { error: insertError } = await supabase.from('applications').upsert(
+      {
+        full_name: fullName,
+        email: email.toLowerCase().trim(),
+        phone,
+        position,
+        resume_url: resumeUrl,
+        portfolio_url: portfolio,
+        github_url: portfolio,
+        cover_letter: coverLetterContent,
+        experience: coverLetterContent,
+        status: 'pending',
+        applied_at: new Date().toISOString()
+      },
+      { onConflict: 'email' }
+    );
 
     if (insertError) {
       console.warn('API apply database notice:', insertError);
-      if (insertError.code === '23505') {
+      
+      // Fallback: If upsert fails, attempt standard insert
+      const { error: fallbackError } = await supabase.from('applications').insert({
+        full_name: fullName,
+        email: email.toLowerCase().trim(),
+        phone,
+        position,
+        resume_url: resumeUrl,
+        portfolio_url: portfolio,
+        cover_letter: coverLetterContent,
+        status: 'pending',
+        applied_at: new Date().toISOString()
+      });
+
+      if (fallbackError) {
+        console.error('API apply database insert fallback error:', fallbackError);
         return NextResponse.json(
-          { error: 'An application with this email address has already been submitted for review.' },
-          { status: 409 }
+          { error: 'Failed to record application in database: ' + fallbackError.message },
+          { status: 500 }
         );
       }
-      return NextResponse.json(
-        { error: 'Failed to save application into database: ' + insertError.message },
-        { status: 500 }
-      );
     }
 
     return NextResponse.json({
