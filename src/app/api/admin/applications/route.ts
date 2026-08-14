@@ -6,16 +6,7 @@ const SUPABASE_PUBLIC_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiO
 
 export async function GET() {
   try {
-    const envUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const envKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-    const supabaseUrl = (envUrl && envUrl.includes('jhfmkjkldxovscvobvoh')) ? envUrl : SUPABASE_PROJECT_URL;
-    const supabaseKey = (serviceKey && serviceKey.startsWith('ey')) 
-      ? serviceKey 
-      : ((envKey && envKey.startsWith('ey')) ? envKey : SUPABASE_PUBLIC_ANON_KEY);
-
-    const supabase = createClient(supabaseUrl, supabaseKey, {
+    const supabase = createClient(SUPABASE_PROJECT_URL, SUPABASE_PUBLIC_ANON_KEY, {
       auth: { persistSession: false }
     });
 

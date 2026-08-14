@@ -29,16 +29,8 @@ export async function POST(request: Request) {
       );
     }
 
-    const envUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const envKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-    const envServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-    const supabaseUrl = (envUrl && envUrl.includes('jhfmkjkldxovscvobvoh')) ? envUrl : SUPABASE_PROJECT_URL;
-    const supabaseKey = (envServiceKey && envServiceKey.startsWith('ey')) 
-      ? envServiceKey 
-      : ((envKey && envKey.startsWith('ey')) ? envKey : SUPABASE_PUBLIC_ANON_KEY);
-
-    const supabase = createClient(supabaseUrl, supabaseKey, {
+    // Always use active Supabase project credentials for jhfmkjkldxovscvobvoh
+    const supabase = createClient(SUPABASE_PROJECT_URL, SUPABASE_PUBLIC_ANON_KEY, {
       auth: { persistSession: false }
     });
 
@@ -61,7 +53,7 @@ export async function POST(request: Request) {
           });
 
         if (!uploadError && data?.path) {
-          resumeUrl = `${supabaseUrl}/storage/v1/object/public/resumes/${data.path}`;
+          resumeUrl = `${SUPABASE_PROJECT_URL}/storage/v1/object/public/resumes/${data.path}`;
         } else {
           console.warn('Resume storage notice:', uploadError?.message);
           resumeUrl = `(File Uploaded: ${resumeFile.name} - ${Math.round(resumeFile.size / 1024)}KB)`;
