@@ -23,6 +23,7 @@ import {
   IdCard
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import Logo from '@/components/common/Logo';
 import { supabase } from '@/lib/supabaseClient';
 
 export default function DashboardLayout({
@@ -180,19 +181,7 @@ export default function DashboardLayout({
         <div className="h-full flex flex-col justify-between">
           <div>
             <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
-              <Link href="/" className="flex items-center space-x-3 group">
-                <div className="p-2 rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-600/30 group-hover:scale-105 transition-transform">
-                  <Code2 className="h-6 w-6" />
-                </div>
-                <div>
-                  <span className="text-lg font-black tracking-tight text-slate-900 dark:text-white block leading-tight">
-                    ZAYA<span className="text-blue-600">CODE</span>HUB
-                  </span>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded-full inline-block mt-0.5">
-                    {isAdmin ? 'Admin Console' : 'Intern Portal'}
-                  </span>
-                </div>
-              </Link>
+              <Logo subtitle={isAdmin ? 'Admin Console' : 'Intern Portal'} size="sm" />
               <button onClick={() => setIsSidebarOpen(false)} className="lg:hidden p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
                 <X className="h-5 w-5" />
               </button>

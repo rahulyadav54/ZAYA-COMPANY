@@ -8,6 +8,7 @@ import { Menu, X, Code2, Moon, Sun, User as UserIcon } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/lib/supabaseClient';
+import Logo from '@/components/common/Logo';
 
 const navLinks = [
   { name: 'Home', href: '/' },
@@ -82,12 +83,7 @@ export default function Navbar() {
       )}
     >
       <div className="container mx-auto px-4 sm:px-6 flex justify-between items-center">
-        <Link href="/" className="flex items-center space-x-2 shrink-0 min-w-fit">
-          <Code2 className="h-8 w-8 text-blue-600 shrink-0" />
-          <span className="text-xl sm:text-2xl font-bold tracking-tight text-foreground whitespace-nowrap">
-            ZAYA<span className="text-blue-600">CODE</span>HUB
-          </span>
-        </Link>
+        <Logo size="md" />
 
         <div className="hidden md:flex items-center space-x-8">
           {navLinks.map((link) => (

@@ -3,7 +3,8 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Code2, Globe, ExternalLink, GitFork, Mail, Phone, MapPin } from 'lucide-react';
+import Logo from '@/components/common/Logo';
+import { Globe, ExternalLink, GitFork, Mail, Phone, MapPin } from 'lucide-react';
 
 const footerLinks = {
   company: [
@@ -44,12 +45,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
           {/* Brand */}
           <div className="space-y-6">
-            <Link href="/" className="flex items-center space-x-2">
-              <Code2 className="h-8 w-8 text-blue-500" />
-              <span className="text-2xl font-bold tracking-tight text-white">
-                ZAYA<span className="text-blue-500">CODE</span>HUB
-              </span>
-            </Link>
+            <Logo size="md" />
             <p className="text-slate-100 leading-relaxed font-bold">
               Empowering businesses through cutting-edge software solutions and nurturing the next generation of IT professionals.
             </p>
