@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500">
+    <defs>
+      <linearGradient id="grad-ZAYALearn" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#1e1b4b" />
+        <stop offset="100%" stop-color="#4f46e5" />
+      </linearGradient>
+    </defs>
+    <rect width="800" height="500" fill="url(#grad-ZAYALearn)" rx="24"/>
+    <circle cx="400" cy="200" r="100" fill="white" fill-opacity="0.1"/>
+    <text x="400" y="220" font-family="Segoe UI, sans-serif" font-size="72" text-anchor="middle">📚</text>
+    <text x="400" y="330" font-family="Segoe UI, sans-serif" font-size="38" font-weight="bold" fill="white" text-anchor="middle">ZAYA Learn</text>
+    <text x="400" y="370" font-family="Segoe UI, sans-serif" font-size="20" fill="white" fill-opacity="0.9" text-anchor="middle">Digital Learning & eBooks Platform</text>
+    <text x="400" y="430" font-family="Segoe UI, sans-serif" font-size="14" font-weight="bold" fill="white" fill-opacity="0.6" text-anchor="middle">DEVELOPED BY ZAYA CODE HUB</text>
+  </svg>
