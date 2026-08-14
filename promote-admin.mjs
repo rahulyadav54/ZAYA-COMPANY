@@ -1,9 +1,14 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabase = createClient(
-  'https://vzdzpoohwkgmggbjnekr.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ6ZHpwb29od2tnbWdnYmpuZWtyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0MjM4OTgsImV4cCI6MjA5MTk5OTg5OH0.uWcp-DLC7YLJaQtn_0SeEu9umgePUcV-zHWj7Nny754'
-);
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.error('❌ Missing NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY environment variables.');
+  process.exit(1);
+}
+
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 async function promoteAdmin() {
   const email = 'shiva@zayacodehub.in';
