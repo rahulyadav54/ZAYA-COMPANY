@@ -162,7 +162,7 @@ async function sendApplicationConfirmationEmail(email: string, fullName: string,
       </html>
     `;
 
-    // 1. Try sending from custom domain
+    // 1. Try sending from custom domain onboarding@zayacodehub.in
     let sendResult = await resend.emails.send({
       from: 'ZAYA CODE HUB <onboarding@zayacodehub.in>',
       to: [email],
@@ -170,15 +170,43 @@ async function sendApplicationConfirmationEmail(email: string, fullName: string,
       html: htmlContent,
     });
 
-    // 2. Fallback to onboarding@resend.dev if custom domain is unverified
     if (sendResult.error) {
-      console.warn('Custom domain email notice, using resend.dev fallback:', sendResult.error.message);
-      await resend.emails.send({
+      console.warn('Custom domain email notice, trying support@zayacodehub.in:', sendResult.error.message);
+      sendResult = await resend.emails.send({
+        from: 'ZAYA CODE HUB <support@zayacodehub.in>',
+        to: [email],
+        subject: subject,
+        html: htmlContent,
+      });
+    }
+
+    if (sendResult.error) {
+      console.warn('Domain email notice, trying resend.dev fallback:', sendResult.error.message);
+      sendResult = await resend.emails.send({
         from: 'ZAYA CODE HUB <onboarding@resend.dev>',
         to: [email],
         subject: subject,
         html: htmlContent,
       });
+    }
+
+    // 2. Nodemailer SMTP Fallback if Resend returns testing restriction error
+    if (sendResult.error) {
+      const smtpUser = process.env.SMTP_USER || 'zayacodehub@gmail.com';
+      const smtpPass = process.env.SMTP_PASS || process.env.GMAIL_APP_PASSWORD || '';
+      if (smtpPass) {
+        const nodemailer = (await import('nodemailer')).default;
+        const transporter = nodemailer.createTransport({
+          service: 'gmail',
+          auth: { user: smtpUser, pass: smtpPass }
+        });
+        await transporter.sendMail({
+          from: `ZAYA CODE HUB <${smtpUser}>`,
+          to: email,
+          subject: subject,
+          html: htmlContent
+        });
+      }
     }
   } catch (err: any) {
     console.warn('Application confirmation email error:', err?.message);
