@@ -22,17 +22,8 @@ export default function ApplicationForm({ position, onSuccess }: ApplicationForm
 
     // Gather form data
     const formData = new FormData(e.currentTarget);
-    const fullName = formData.get('fullName') as string;
-    const email = formData.get('email') as string;
-    const phone = formData.get('phone') as string;
-    const portfolio = formData.get('portfolio') as string;
-    const location = formData.get('location') as string;
-    const startDate = formData.get('startDate') as string;
-    const isEnrolled = formData.get('isEnrolled') as string;
-    const major = formData.get('major') as string;
-    const experience = formData.get('experience') as string;
-    const tools = formData.get('tools') as string;
-    const confidence = formData.get('confidence') as string;
+    const fullName = (formData.get('fullName') as string) || '';
+    const phone = (formData.get('phone') as string) || '';
     const resumeFile = (formData.get('resume') as File) || null;
 
     // Form Validation
@@ -50,66 +41,40 @@ export default function ApplicationForm({ position, onSuccess }: ApplicationForm
       return;
     }
 
-    // Upload resume if present
-    let resumeUrl = '';
-    if (resumeFile && resumeFile.size > 0) {
-      if (resumeFile.size > 5 * 1024 * 1024) {
-         alert('Resume file is too large. Maximum size is 5MB.');
-         setIsSubmitting(false);
-         return;
-      }
-      const fileExt = resumeFile.name.split('.').pop();
-      // Aggressive sanitization: Remove everything except letters, numbers, and underscores
-      const safeName = fullName.replace(/[^a-zA-Z0-9]/g, '_');
-      const fileName = `${Date.now()}_${safeName}.${fileExt}`;
-      
-      const { data, error } = await supabase.storage.from('resumes').upload(fileName, resumeFile, {
-        cacheControl: '3600',
-        upsert: false,
-      });
-      if (error) {
-        console.warn('Resume storage upload warning:', error);
-        // Fallback: If storage bucket upload fails due to RLS, allow application submission to succeed with file details
-        resumeUrl = `(File Uploaded: ${resumeFile.name} - ${Math.round(resumeFile.size / 1024)}KB)`;
-      } else {
-        resumeUrl = `${supabaseUrl}/storage/v1/object/public/resumes/${data?.path}`;
-      }
+    if (resumeFile && resumeFile.size > 5 * 1024 * 1024) {
+      alert('Resume file is too large. Maximum size is 5MB.');
+      setIsSubmitting(false);
+      return;
     }
 
-    // Insert application record
-    const { error: insertError } = await supabase.from('applications').insert({
-      full_name: fullName,
-      email,
-      phone,
-      position: position,
-      resume_url: resumeUrl,
-      portfolio_url: portfolio,
-      // Store all the extra questionnaire data in a JSONB column or format it into the cover_letter for now
-      // since we don't know if the user added these columns to the DB yet. 
-      // To prevent crashing, we will combine the answers into the cover_letter field as a structured string.
-      cover_letter: `Location: ${location}
-Start Date: ${startDate}
-Enrolled in Degree: ${isEnrolled}
-Major: ${major}
-Experience: ${experience}
-Proficient Tools: ${tools}
-Code Confidence: ${confidence}/10`,
-    });
+    // Append position
+    formData.append('position', position);
 
-    if (insertError) {
-      console.error('Insert error:', insertError);
-      if (insertError.code === '23505') {
-        alert('Already registered with this Gmail. Please wait for the admin to review your previous application.');
-      } else {
-        alert(`Failed to submit application: ${insertError.message}`);
+    try {
+      const response = await fetch('/api/apply', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        alert(result.error || 'Failed to submit application. Please try again.');
+        setIsSubmitting(false);
+        return;
       }
-    } else {
+
       setIsSuccess(true);
       setTimeout(() => {
         onSuccess();
       }, 3000);
+
+    } catch (err: any) {
+      console.error('Submission error:', err);
+      alert('Network error submitting application. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
-    setIsSubmitting(false);
   };
 
   if (isSuccess) {
