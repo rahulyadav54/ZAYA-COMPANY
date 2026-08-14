@@ -7,7 +7,7 @@ import { Code2, Globe, ExternalLink, GitFork, Mail, Phone, MapPin } from 'lucide
 
 const footerLinks = {
   company: [
-    { name: 'AI ZAYA App 🚀', href: '/ai-zaya' },
+    { name: 'AI ZAYA App', href: '/ai-zaya', badge: 'NEW' },
     { name: 'About Us', href: '/about' },
     { name: 'Careers', href: '/careers' },
     { name: 'Portfolio', href: '/portfolio' },
@@ -73,8 +73,13 @@ export default function Footer() {
             <ul className="space-y-4">
               {footerLinks.company.map((link) => (
                 <li key={link.name}>
-                  <Link href={link.href} className="text-slate-100 hover:text-white transition-colors font-bold">
-                    {link.name}
+                  <Link href={link.href} className="text-slate-100 hover:text-white transition-colors font-bold inline-flex items-center">
+                    <span>{link.name}</span>
+                    {link.badge && (
+                      <span className="px-2 py-0.5 text-[10px] font-extrabold rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/30 ml-2">
+                        {link.badge}
+                      </span>
+                    )}
                   </Link>
                 </li>
               ))}
