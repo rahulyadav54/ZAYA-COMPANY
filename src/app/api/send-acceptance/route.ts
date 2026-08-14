@@ -24,6 +24,7 @@ export async function POST(request: Request) {
 
     const companyLoginEmail = officialEmail || email;
     const loginPassword = password || 'ZayaIntern@2026';
+    const loginUrl = 'https://www.zayacodehub.in/login';
 
     if (status === 'accepted') {
       subject = `🎉 Official Internship Selection Letter & Portal Access - ${fullName} (${position})`;
@@ -32,8 +33,8 @@ export async function POST(request: Request) {
           
           <!-- Header Banner -->
           <div style="background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); padding: 36px 32px; text-align: center; color: #ffffff;">
-            <div style="font-size: 12px; font-weight: 800; tracking-widest; letter-spacing: 2px; text-transform: uppercase; background: rgba(255,255,255,0.15); display: inline-block; padding: 6px 16px; border-radius: 20px; margin-bottom: 12px;">
-              ZAYA CODE HUB • OFFICIAL SELECTION
+            <div style="font-size: 12px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; background: rgba(255,255,255,0.15); display: inline-block; padding: 6px 16px; border-radius: 20px; margin-bottom: 12px;">
+              ZAYA CODE HUB • OFFICIAL SELECTION LETTER
             </div>
             <h1 style="margin: 0; font-size: 28px; font-weight: 900; letter-spacing: -0.5px;">Congratulations, ${fullName}!</h1>
             <p style="margin: 8px 0 0 0; font-size: 15px; opacity: 0.9; font-weight: 500;">You have been selected for the ${position} Internship</p>
@@ -48,12 +49,12 @@ export async function POST(request: Request) {
             </p>
 
             <p style="font-size: 15px; color: #475569; line-height: 1.7; margin-bottom: 24px;">
-              Your background, technical skills, and commitment to learning stood out during our application review process. We are excited to welcome you to our team as you embark on this impactful journey.
+              Your background, technical skills, and dedication stood out during our review process. We are excited to welcome you to our team as you embark on this professional journey with us.
             </p>
 
             <!-- Login Credentials Box -->
             <div style="background: #f0f9ff; border: 2px solid #38bdf8; border-radius: 16px; padding: 24px; margin: 28px 0;">
-              <div style="display: flex; align-items: center; margin-bottom: 16px;">
+              <div style="margin-bottom: 16px;">
                 <h3 style="margin: 0; color: #0284c7; font-size: 16px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">
                   🔑 Your Official Intern Portal Credentials
                 </h3>
@@ -73,52 +74,72 @@ export async function POST(request: Request) {
                   <td style="padding: 10px 0; font-family: monospace; font-size: 15px; font-weight: 800; color: #1e293b;">${loginPassword}</td>
                 </tr>
                 <tr>
-                  <td style="padding: 10px 0; font-weight: 700; color: #475569;">Login Portal URL:</td>
+                  <td style="padding: 10px 0; font-weight: 700; color: #475569;">Direct Login Portal:</td>
                   <td style="padding: 10px 0;">
-                    <a href="https://zayacodehub.in/login" style="color: #2563eb; font-weight: 800; text-decoration: underline;">https://zayacodehub.in/login</a>
+                    <a href="${loginUrl}" style="color: #2563eb; font-weight: 800; text-decoration: underline;">${loginUrl}</a>
                   </td>
                 </tr>
               </table>
 
               <div style="margin-top: 16px; padding-top: 14px; border-top: 1px dashed #bae6fd; font-size: 12px; color: #0369a1;">
-                💡 <em>Note: You can log into the ZAYA CODE HUB portal using either your official email (<strong>${companyLoginEmail}</strong>) or your personal email with the password above.</em>
+                💡 <em>Note: You can log into the ZAYA CODE HUB portal using your official company email (<strong>${companyLoginEmail}</strong>) or your personal email with the assigned password above.</em>
               </div>
             </div>
 
-            <!-- Action Button -->
+            <!-- Action Button CTA -->
             <div style="text-align: center; margin: 32px 0;">
-              <a href="https://zayacodehub.in/login" style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: #ffffff; text-decoration: none; padding: 14px 36px; border-radius: 12px; font-weight: 800; font-size: 15px; display: inline-block; box-shadow: 0 10px 20px -5px rgba(37,99,235,0.4);">
-                Login to Intern Portal →
+              <a href="${loginUrl}" style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 14px; font-weight: 800; font-size: 16px; display: inline-block; box-shadow: 0 10px 25px -5px rgba(37,99,235,0.4);">
+                🚀 Click Here to Login to Intern Portal →
               </a>
+              <p style="font-size: 12px; color: #64748b; margin-top: 8px;">Direct Link: <a href="${loginUrl}" style="color: #2563eb;">${loginUrl}</a></p>
             </div>
 
-            <!-- Next Steps -->
-            <div style="background-color: #f8fafc; padding: 20px; border-radius: 12px; margin-bottom: 28px; border: 1px solid #e2e8f0;">
-              <h4 style="margin: 0 0 12px 0; color: #1e293b; font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">📋 Next Steps to Complete:</h4>
-              <ol style="margin: 0; padding-left: 20px; color: #475569; font-size: 14px; line-height: 1.8;">
-                <li>Click the login link above and sign in with your credentials.</li>
-                <li>Download your official <strong>Offer Letter</strong> & <strong>ID Card</strong> from your portal dashboard.</li>
-                <li>Review your assigned daily/weekly project tasks and milestones.</li>
-                <li>Connect with your project manager and team members.</li>
-              </ol>
+            <!-- What You Can Do in Your Portal Section -->
+            <div style="background-color: #f8fafc; padding: 24px; border-radius: 16px; margin-bottom: 28px; border: 1px solid #e2e8f0;">
+              <h3 style="margin: 0 0 16px 0; color: #0f172a; font-size: 16px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">
+                🌟 What You Can Do in Your Intern Portal:
+              </h3>
+              
+              <ul style="margin: 0; padding: 0; list-style: none; font-size: 14px; color: #334155; line-height: 1.8;">
+                <li style="margin-bottom: 12px; padding-left: 28px; position: relative;">
+                  <span style="position: absolute; left: 0; top: 2px; font-size: 16px;">🪪</span>
+                  <strong>Download Official Intern ID Card:</strong> Access your digital ID card complete with official ZAYA CODE HUB verification badge.
+                </li>
+                <li style="margin-bottom: 12px; padding-left: 28px; position: relative;">
+                  <span style="position: absolute; left: 0; top: 2px; font-size: 16px;">📄</span>
+                  <strong>Download Official Offer Letter:</strong> Access and download your signed internship acceptance offer letter anytime.
+                </li>
+                <li style="margin-bottom: 12px; padding-left: 28px; position: relative;">
+                  <span style="position: absolute; left: 0; top: 2px; font-size: 16px;">🎓</span>
+                  <strong>Download Completion Certificate:</strong> Generate and download your verified Internship Certificate & LOR upon task completion.
+                </li>
+                <li style="margin-bottom: 12px; padding-left: 28px; position: relative;">
+                  <span style="position: absolute; left: 0; top: 2px; font-size: 16px;">💻</span>
+                  <strong>Submit Tasks & Projects:</strong> Receive assigned coding tasks, view project repos, and submit your completed work for review.
+                </li>
+                <li style="margin-bottom: 12px; padding-left: 28px; position: relative;">
+                  <span style="position: absolute; left: 0; top: 2px; font-size: 16px;">💬</span>
+                  <strong>Direct Team & Admin Messaging:</strong> Communicate with project mentors and receive real-time evaluations and feedback.
+                </li>
+              </ul>
             </div>
 
             <p style="font-size: 15px; color: #475569; line-height: 1.7;">
-              If you have any questions before getting started, please reach out to us at <a href="mailto:support@zayacodehub.in" style="color: #2563eb;">support@zayacodehub.in</a>.
+              If you experience any issues logging in, feel free to reach out to our team directly at <a href="mailto:support@zayacodehub.in" style="color: #2563eb; font-weight: 700;">support@zayacodehub.in</a>.
             </p>
 
             <p style="font-size: 15px; color: #1e293b; font-weight: 700; margin-top: 28px; margin-bottom: 4px;">
-              Warm regards,
+              Welcome to ZAYA CODE HUB!
             </p>
             <p style="font-size: 15px; color: #2563eb; font-weight: 800; margin: 0;">
-              ZAYA CODE HUB HR & Recruitment Team
+              ZAYA CODE HUB HR & Internship Team
             </p>
           </div>
 
           <!-- Footer -->
           <div style="background-color: #0f172a; padding: 24px; text-align: center; color: #94a3b8; font-size: 12px; line-height: 1.6;">
             <p style="margin: 0 0 4px 0; font-weight: 700; color: #cbd5e1;">ZAYA CODE HUB • Subhashish Learning & Tech Pvt Ltd</p>
-            <p style="margin: 0;">Subramania Nagar, Salem, Tamil Nadu – 636005 | <a href="https://zayacodehub.in" style="color: #38bdf8; text-decoration: none;">zayacodehub.in</a></p>
+            <p style="margin: 0;">Subramania Nagar, Salem, Tamil Nadu – 636005 | <a href="https://www.zayacodehub.in" style="color: #38bdf8; text-decoration: none;">www.zayacodehub.in</a></p>
           </div>
 
         </div>
