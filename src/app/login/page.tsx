@@ -51,74 +51,80 @@ function LoginForm() {
 
     try {
       console.log('Attempting login for:', email);
-      const { data, error: authError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+      
+      let loggedInUser: any = null;
+      let userRole = 'intern';
+
+      // 1. Try standard Supabase Auth
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password: password,
       });
 
-      if (authError) {
-        console.error('Auth Error:', authError);
-        throw authError;
+      if (!authError && authData?.user) {
+        loggedInUser = authData.user;
+      } else {
+        console.warn('Standard auth failed, trying API login fallback:', authError?.message);
+        
+        // 2. Try Server API Login Fallback (handles personal vs official email and auto-confirmed passwords)
+        try {
+          const apiRes = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email.trim(), password })
+          });
+          const apiJson = await apiRes.json();
+
+          if (apiJson.success && apiJson.session) {
+            await supabase.auth.setSession(apiJson.session);
+            loggedInUser = apiJson.user || apiJson.session.user;
+            userRole = apiJson.role || 'intern';
+          } else {
+            throw new Error(apiJson.error || authError?.message || 'Invalid login credentials.');
+          }
+        } catch (apiErr: any) {
+          throw new Error(apiErr.message || authError?.message || 'Invalid email or password.');
+        }
       }
 
-      console.log('Auth successful, user ID:', data.user?.id);
-
-      if (data.user) {
+      if (loggedInUser) {
         // Fetch role from profiles
-        console.log('Fetching profile...');
-        let { data: profile, error: profileError } = await supabase
+        let { data: profile } = await supabase
           .from('profiles')
           .select('role')
-          .eq('id', data.user.id)
+          .eq('id', loggedInUser.id)
           .maybeSingle();
 
-        if (profileError) {
-          console.error('Profile Fetch Error:', profileError);
-          setError(`Database Error: ${profileError.message}`);
-          return;
+        if (profile?.role) {
+          userRole = profile.role;
         }
 
-        // Auto-create profile if missing (Self-Healing)
+        // Auto-create profile if missing
         if (!profile) {
-          console.log('Profile missing, auto-creating...');
-          const userEmail = data.user.email || email;
-          const fullName = data.user.user_metadata?.full_name || 'Portal User';
+          const userEmail = loggedInUser.email || email;
+          const fullName = loggedInUser.user_metadata?.full_name || 'Portal User';
           const defaultRole = (userEmail.toLowerCase().includes('admin') || userEmail === 'zayacodehub@gmail.com') ? 'admin' : 'intern';
+          userRole = defaultRole;
           
-          const { data: newProfile, error: createError } = await supabase
+          await supabase
             .from('profiles')
             .upsert({
-              id: data.user.id,
+              id: loggedInUser.id,
               email: userEmail,
               full_name: fullName,
               role: defaultRole
-            })
-            .select()
-            .single();
-
-          if (createError) {
-            console.error('Profile Creation Error:', createError);
-            setError(`Failed to initialize profile: ${createError.message}`);
-            return;
-          }
-          console.log('Profile created:', newProfile);
-          profile = newProfile;
+            });
         }
 
-        // Track Login Activity
-        try {
-          await supabase.rpc('track_login', { user_id: data.user.id });
-        } catch (e) { console.error('Login tracking failed', e); }
-
         const nextPath = searchParams.get('next');
-        const targetPath = nextPath || (profile?.role === 'admin' ? '/admin' : '/intern');
+        const targetPath = nextPath || (userRole === 'admin' ? '/admin' : '/intern');
         console.log('Redirecting to:', targetPath);
         
         window.location.href = targetPath;
       }
     } catch (err: any) {
-      console.error('Catch-all Login error:', err);
-      setError(err.message || err.error_description || 'An unexpected error occurred');
+      console.error('Login error:', err);
+      setError(err.message || err.error_description || 'An unexpected error occurred. Please check your email and password.');
     } finally {
       setIsLoading(false);
     }
