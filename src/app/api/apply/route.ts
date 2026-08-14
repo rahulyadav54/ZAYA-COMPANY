@@ -70,16 +70,20 @@ async function sendApplicationConfirmationEmail(email: string, fullName: string,
                     <p class="mobile-text" style="font-size: 14px; color: #0f172a; font-weight: 700; margin-top: 0;">Dear ${fullName},</p>
                     
                     <p class="mobile-text" style="font-size: 13px; color: #334155; line-height: 1.6; margin-bottom: 16px;">
-                      Thank you for your interest in joining <strong>ZAYA CODE HUB</strong>! We have officially received your application for the <strong>${position}</strong> position.
+                      Thank you for applying to <strong>ZAYA CODE HUB</strong>! We have successfully received your application and resume for the <strong>${position}</strong> position.
                     </p>
 
-                    <!-- Summary Box -->
+                    <p class="mobile-text" style="font-size: 13px; color: #334155; line-height: 1.6; margin-bottom: 16px;">
+                      Our talent acquisition team and engineering leads are currently reviewing your profile, background, and submitted technical qualifications.
+                    </p>
+
+                    <!-- Status Banner Box -->
                     <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f0f9ff; border: 1.5px solid #bae6fd; border-radius: 14px; margin: 20px 0;">
                       <tr>
                         <td style="padding: 16px 12px;">
                           
                           <div style="font-size: 12px; font-weight: 800; color: #0284c7; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; text-align: center;">
-                            📋 Submitted Application Summary
+                            📋 Application & Review Status
                           </div>
 
                           <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #ffffff; border-radius: 8px; border: 1px solid #e0f2fe; margin-bottom: 8px;">
@@ -94,26 +98,17 @@ async function sendApplicationConfirmationEmail(email: string, fullName: string,
                           <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #ffffff; border-radius: 8px; border: 1px solid #e0f2fe; margin-bottom: 8px;">
                             <tr>
                               <td style="padding: 10px 12px;">
-                                <div style="font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 2px;">Email Address</div>
-                                <div style="font-size: 13px; font-weight: 600; color: #2563eb; word-break: break-all; -webkit-hyphens: auto; word-wrap: break-word;">${email}</div>
-                              </td>
-                            </tr>
-                          </table>
-
-                          <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #ffffff; border-radius: 8px; border: 1px solid #e0f2fe; margin-bottom: 8px;">
-                            <tr>
-                              <td style="padding: 10px 12px;">
                                 <div style="font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 2px;">Position Applied</div>
                                 <div style="font-size: 13px; font-weight: 600; color: #0f172a;">${position}</div>
                               </td>
                             </tr>
                           </table>
 
-                          <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #ffffff; border-radius: 8px; border: 1px solid #e0f2fe;">
+                          <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #ffffff; border-radius: 8px; border: 1.5px solid #0284c7; border-left: 4px solid #0284c7;">
                             <tr>
                               <td style="padding: 10px 12px;">
-                                <div style="font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 2px;">Submission Date</div>
-                                <div style="font-size: 13px; font-weight: 600; color: #0f172a;">${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</div>
+                                <div style="font-size: 10px; font-weight: 800; color: #0284c7; text-transform: uppercase; margin-bottom: 2px;">Application Review Status</div>
+                                <div style="font-size: 13px; font-weight: 800; color: #0284c7;">Received & Under Review (24–48 Hours)</div>
                               </td>
                             </tr>
                           </table>
@@ -122,7 +117,7 @@ async function sendApplicationConfirmationEmail(email: string, fullName: string,
                       </tr>
                     </table>
 
-                    <!-- What Happens Next -->
+                    <!-- What Happens Next Box -->
                     <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 20px;">
                       <tr>
                         <td style="padding: 14px 12px;">
@@ -130,16 +125,16 @@ async function sendApplicationConfirmationEmail(email: string, fullName: string,
                             ⏳ What Happens Next?
                           </div>
                           <div style="font-size: 12px; color: #334155; line-height: 1.7;">
-                            1. Our recruitment team is reviewing your profile and qualifications.<br/>
-                            2. If selected, you will receive an official acceptance letter with portal credentials.<br/>
-                            3. Application reviews are completed within 24 to 48 hours.
+                            • <strong>1. Profile Evaluation:</strong> Our recruitment team evaluates your background and skills.<br/>
+                            • <strong>2. Selection Letter:</strong> After reviewing, we will send an official selection email.<br/>
+                            • <strong>3. Portal Onboarding:</strong> Upon acceptance, your email will include your official portal login credentials, offer letter, and ID card link.
                           </div>
                         </td>
                       </tr>
                     </table>
 
                     <p class="mobile-text" style="font-size: 13px; color: #475569; line-height: 1.6; margin-bottom: 16px;">
-                      If you have any questions, contact us at <a href="mailto:support@zayacodehub.in" style="color: #2563eb; font-weight: 700;">support@zayacodehub.in</a>.
+                      If you have any questions during the review period, reach out to our team at <a href="mailto:support@zayacodehub.in" style="color: #2563eb; font-weight: 700;">support@zayacodehub.in</a>.
                     </p>
 
                     <p class="mobile-text" style="font-size: 13px; color: #0f172a; font-weight: 700; margin: 0 0 2px 0;">
