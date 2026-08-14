@@ -95,43 +95,43 @@ export default function Hero() {
               </div>
 
               {/* Floating Product Pills */}
-              <div className="absolute top-4 left-4 p-3 rounded-2xl bg-white dark:bg-slate-900 shadow-xl border border-slate-200 dark:border-slate-800 flex items-center space-x-3">
-                <div className="p-2 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400">
-                  <Bot className="h-5 w-5" />
+              <div className="absolute top-2 left-0 sm:top-4 sm:left-4 p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-white dark:bg-slate-900 shadow-xl border border-slate-200 dark:border-slate-800 flex items-center space-x-2 sm:space-x-3">
+                <div className="p-1.5 sm:p-2 rounded-lg sm:rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400">
+                  <Bot className="h-4 w-4 sm:h-5 sm:w-5" />
                 </div>
                 <div>
-                  <h4 className="text-xs font-bold text-slate-900 dark:text-white">AI ZAYA</h4>
-                  <p className="text-[10px] text-slate-500">AI Assistant</p>
+                  <h4 className="text-[11px] sm:text-xs font-bold text-slate-900 dark:text-white">AI ZAYA</h4>
+                  <p className="text-[9px] sm:text-[10px] text-slate-500 hidden sm:block">AI Assistant</p>
                 </div>
               </div>
 
-              <div className="absolute top-8 right-2 p-3 rounded-2xl bg-white dark:bg-slate-900 shadow-xl border border-slate-200 dark:border-slate-800 flex items-center space-x-3">
-                <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
-                  <Stethoscope className="h-5 w-5" />
+              <div className="absolute top-4 right-0 sm:top-8 sm:right-2 p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-white dark:bg-slate-900 shadow-xl border border-slate-200 dark:border-slate-800 flex items-center space-x-2 sm:space-x-3">
+                <div className="p-1.5 sm:p-2 rounded-lg sm:rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                  <Stethoscope className="h-4 w-4 sm:h-5 sm:w-5" />
                 </div>
                 <div>
-                  <h4 className="text-xs font-bold text-slate-900 dark:text-white">NepCare</h4>
-                  <p className="text-[10px] text-slate-500">Telemedicine</p>
+                  <h4 className="text-[11px] sm:text-xs font-bold text-slate-900 dark:text-white">NepCare</h4>
+                  <p className="text-[9px] sm:text-[10px] text-slate-500 hidden sm:block">Telemedicine</p>
                 </div>
               </div>
 
-              <div className="absolute bottom-12 left-2 p-3 rounded-2xl bg-white dark:bg-slate-900 shadow-xl border border-slate-200 dark:border-slate-800 flex items-center space-x-3">
-                <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
-                  <GraduationCap className="h-5 w-5" />
+              <div className="absolute bottom-8 left-0 sm:bottom-12 sm:left-2 p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-white dark:bg-slate-900 shadow-xl border border-slate-200 dark:border-slate-800 flex items-center space-x-2 sm:space-x-3">
+                <div className="p-1.5 sm:p-2 rounded-lg sm:rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
+                  <GraduationCap className="h-4 w-4 sm:h-5 sm:w-5" />
                 </div>
                 <div>
-                  <h4 className="text-xs font-bold text-slate-900 dark:text-white">ZAYA School</h4>
-                  <p className="text-[10px] text-slate-500">Management Platform</p>
+                  <h4 className="text-[11px] sm:text-xs font-bold text-slate-900 dark:text-white">ZAYA School</h4>
+                  <p className="text-[9px] sm:text-[10px] text-slate-500 hidden sm:block">Management Platform</p>
                 </div>
               </div>
 
-              <div className="absolute bottom-6 right-6 p-3 rounded-2xl bg-white dark:bg-slate-900 shadow-xl border border-slate-200 dark:border-slate-800 flex items-center space-x-3">
-                <div className="p-2 rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-400">
-                  <ShieldAlert className="h-5 w-5" />
+              <div className="absolute bottom-2 right-0 sm:bottom-6 sm:right-6 p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-white dark:bg-slate-900 shadow-xl border border-slate-200 dark:border-slate-800 flex items-center space-x-2 sm:space-x-3">
+                <div className="p-1.5 sm:p-2 rounded-lg sm:rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-400">
+                  <ShieldAlert className="h-4 w-4 sm:h-5 sm:w-5" />
                 </div>
                 <div>
-                  <h4 className="text-xs font-bold text-slate-900 dark:text-white">SurakshaNep</h4>
-                  <p className="text-[10px] text-slate-500">Public Safety</p>
+                  <h4 className="text-[11px] sm:text-xs font-bold text-slate-900 dark:text-white">SurakshaNep</h4>
+                  <p className="text-[9px] sm:text-[10px] text-slate-500 hidden sm:block">Public Safety</p>
                 </div>
               </div>
             </div>

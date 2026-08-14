@@ -81,7 +81,7 @@ export default function Navbar() {
           : 'bg-white/70 dark:bg-slate-950/70 backdrop-blur-sm py-4'
       )}
     >
-      <div className="container mx-auto px-6 flex justify-between items-center">
+      <div className="container mx-auto px-4 sm:px-6 flex justify-between items-center">
         <Link href="/" className="flex items-center space-x-2 shrink-0 min-w-fit">
           <Code2 className="h-8 w-8 text-blue-600 shrink-0" />
           <span className="text-xl sm:text-2xl font-bold tracking-tight text-foreground whitespace-nowrap">

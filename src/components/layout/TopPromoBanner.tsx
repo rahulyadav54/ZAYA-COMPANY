@@ -20,9 +20,9 @@ export default function TopPromoBanner() {
           NEW LAUNCH
         </span>
 
-        <span className="font-medium text-slate-100 flex items-center gap-1.5">
+        <span className="font-medium text-slate-100 flex items-center gap-1.5 truncate">
           <Smartphone className="h-4 w-4 hidden sm:inline text-blue-200" />
-          <span>Presenting <strong className="text-white font-bold">AI ZAYA</strong> — Our Flagship AI Mobile App!</span>
+          <span>AI ZAYA App <span className="hidden sm:inline">— AI Assistant</span></span>
         </span>
 
         <Link
