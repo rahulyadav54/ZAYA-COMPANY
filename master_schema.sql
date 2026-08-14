@@ -165,3 +165,21 @@ DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE PROCEDURE public.handle_new_user();
+
+-- ==========================================
+-- 9. SUPABASE STORAGE BUCKET setup FOR RESUMES
+-- ==========================================
+INSERT INTO storage.buckets (id, name, public) 
+VALUES ('resumes', 'resumes', true) 
+ON CONFLICT (id) DO UPDATE SET public = true;
+
+-- Drop existing policies if any
+DROP POLICY IF EXISTS "Public Anon Upload Resumes" ON storage.objects;
+DROP POLICY IF EXISTS "Public Anon Read Resumes" ON storage.objects;
+
+-- Create policy allowing anonymous candidate uploads
+CREATE POLICY "Public Anon Upload Resumes" ON storage.objects 
+FOR INSERT TO anon WITH CHECK (bucket_id = 'resumes');
+
+CREATE POLICY "Public Anon Read Resumes" ON storage.objects 
+FOR SELECT TO public USING (bucket_id = 'resumes');
