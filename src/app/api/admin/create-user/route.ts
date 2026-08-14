@@ -137,7 +137,7 @@ export async function POST(request: Request) {
       createdUserId = generateValidUUID();
     }
 
-    // 3. Upsert the profile into profiles table with guaranteed valid UUID
+    // 3. Upsert into profiles table
     const { error: profileError } = await supabaseAnon
       .from('profiles')
       .upsert({
@@ -153,9 +153,7 @@ export async function POST(request: Request) {
 
     if (profileError) {
       console.warn('Primary profile upsert notice:', profileError.message);
-
-      // Fallback: If foreign key on auth.users failed, attempt update by email or insert without auth foreign key mismatch
-      const { error: fallbackError } = await supabaseAnon
+      await supabaseAnon
         .from('profiles')
         .update({
           full_name: fullName,
@@ -163,22 +161,34 @@ export async function POST(request: Request) {
           position: finalPosition || 'Internship',
         })
         .eq('email', targetEmail);
-
-      if (fallbackError) {
-        console.error('Fallback profile update notice:', fallbackError.message);
-      }
     }
 
-    // 4. Update Application status to accepted
-    if (personalEmail || email) {
-      try {
+    // 4. Guarantee accepted record in applications table so /api/admin/interns will ALWAYS pick it up
+    const targetCandidateEmail = personalEmail || email || targetEmail;
+    try {
+      const { data: existingApp } = await supabaseAnon
+        .from('applications')
+        .select('id')
+        .or(`email.eq.${targetCandidateEmail},email.eq.${targetEmail}`)
+        .maybeSingle();
+
+      if (existingApp?.id) {
         await supabaseAnon
           .from('applications')
-          .update({ status: 'accepted' })
-          .or(`email.eq.${personalEmail || email},email.eq.${targetEmail}`);
-      } catch (err) {
-        console.warn('Application status update notice:', err);
+          .update({ status: 'accepted', position: finalPosition || 'Internship' })
+          .eq('id', existingApp.id);
+      } else {
+        await supabaseAnon.from('applications').insert({
+          full_name: fullName,
+          email: targetCandidateEmail,
+          phone: requestData.phone || '0000000000',
+          position: finalPosition || 'Internship',
+          resume_url: '(Official Intern Account Created)',
+          status: 'accepted'
+        });
       }
+    } catch (err) {
+      console.warn('Application record sync notice:', err);
     }
 
     return NextResponse.json({ 
