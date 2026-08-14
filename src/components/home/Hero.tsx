@@ -3,90 +3,136 @@
 import React from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { ArrowRight, Smartphone, Layout } from 'lucide-react';
+import { ArrowRight, Bot, Stethoscope, GraduationCap, ShieldAlert, ShoppingBag, Sparkles, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 
 export default function Hero() {
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden bg-white dark:bg-slate-950">
-      {/* Background Elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-blue-600/5 rounded-full blur-3xl animate-float"></div>
-        <div className="absolute bottom-1/3 left-1/3 w-64 h-64 bg-indigo-600/5 rounded-full blur-3xl animate-float" style={{ animationDelay: '1s' }}></div>
-        <div className="absolute top-1/2 left-1/4 w-48 h-48 bg-blue-400/5 rounded-full blur-2xl animate-float" style={{ animationDelay: '2s' }}></div>
+    <section className="relative min-h-[90vh] flex items-center overflow-hidden bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-300">
+      {/* Background Radial Lights */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[32rem] bg-gradient-to-b from-blue-600/10 via-indigo-600/5 to-transparent blur-3xl -z-10" />
       </div>
 
-      <div className="container mx-auto px-6 py-24 relative z-10">
-        <div className="flex flex-col lg:flex-row items-center gap-16">
+      <div className="container mx-auto px-4 sm:px-6 py-16 sm:py-24 relative z-10">
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-16">
+          
+          {/* Left Text Column */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 25 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="flex-1 text-center lg:text-left"
+            transition={{ duration: 0.7 }}
+            className="flex-1 text-center lg:text-left space-y-6 max-w-2xl"
           >
-            <div className="inline-flex items-center px-4 py-2 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-sm font-bold mb-8 border border-blue-100 dark:border-blue-800">
-              🚀 Building the Future of Technology
+            {/* Top Pill Badge */}
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400 text-xs sm:text-sm font-bold uppercase tracking-wider">
+              <Sparkles className="h-4 w-4 text-amber-500 shrink-0" />
+              <span>TECHNOLOGY & PRODUCT DEVELOPMENT</span>
             </div>
-            <h1 className="text-4xl md:text-5xl lg:text-7xl font-black text-foreground mb-8 leading-tight tracking-tight">
-              We Build
-              <br />
-              <span className="text-blue-600">Digital Excellence</span>
+
+            <h1 className="text-4xl sm:text-5xl lg:text-7xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-[1.1]">
+              Engineered for <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 dark:from-blue-400 dark:via-indigo-400 dark:to-purple-400">
+                Real-World Impact
+              </span>
             </h1>
-            <p className="text-xl text-foreground mb-10 leading-relaxed max-w-xl font-bold">
-              ZAYA CODE HUB crafts premium software solutions, mobile apps, and stunning digital experiences that drive real business results.
+
+            <p className="text-base sm:text-lg lg:text-xl text-slate-600 dark:text-slate-300 leading-relaxed font-normal">
+              <strong>ZAYA CODE HUB</strong> develops AI-powered software, healthcare systems, school platforms, emergency response networks, and custom digital solutions for organizations nationwide.
             </p>
-            <div className="flex flex-wrap justify-center lg:justify-start gap-4">
+
+            {/* CTAs */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center lg:justify-start gap-4 pt-2">
+              <Link
+                href="/portfolio"
+                className="px-8 py-4 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-base shadow-lg shadow-blue-600/25 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+              >
+                <span>Explore Products</span>
+                <ArrowRight className="h-5 w-5" />
+              </Link>
+              
               <Link
                 href="/careers"
-                className="px-8 py-4 rounded-xl bg-blue-600 text-white font-bold text-lg hover:bg-blue-700 transition-all shadow-xl shadow-blue-600/30 flex items-center"
+                className="px-8 py-4 rounded-2xl bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-900 dark:text-white font-bold text-base border border-slate-200 dark:border-slate-800 transition-all flex items-center justify-center gap-2"
               >
-                Apply Now <ArrowRight className="ml-2 h-5 w-5" />
+                <span>Career Opportunities</span>
+                <ChevronRight className="h-4 w-4 text-slate-400" />
               </Link>
-              <Link
-                href="/contact"
-                className="px-8 py-4 rounded-xl border-2 border-slate-300 dark:border-slate-600 text-slate-800 dark:text-white font-bold text-lg hover:border-blue-600 hover:text-blue-600 transition-all"
-              >
-                Contact Us
-              </Link>
+            </div>
+
+            {/* Micro Specs Bar */}
+            <div className="pt-6 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-center lg:justify-start gap-6 text-xs font-semibold text-slate-500 dark:text-slate-400">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span>6+ Active Flagship Products</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-blue-500" />
+                <span>Verifiable Internships</span>
+              </div>
             </div>
           </motion.div>
 
-          {/* Hero Visual */}
+          {/* Right Brand & Product Badges Graphic */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
+            initial={{ opacity: 0, scale: 0.92 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            className="flex-1 relative w-full"
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="flex-1 relative w-full max-w-md sm:max-w-lg lg:max-w-xl mx-auto"
           >
-            <div className="relative w-full aspect-square max-w-[300px] sm:max-w-lg mx-auto">
-              {/* Main Circle - White as per screenshot */}
-              <div className="absolute inset-0 rounded-full bg-white shadow-2xl shadow-blue-600/20 flex items-center justify-center overflow-hidden border-8 border-blue-600/10">
-                <div className="relative w-[80%] h-[80%]">
+            <div className="relative aspect-square w-full">
+              {/* Central Glowing Shield */}
+              <div className="absolute inset-4 rounded-full bg-gradient-to-tr from-blue-600/10 via-indigo-600/10 to-purple-600/10 backdrop-blur-3xl border border-blue-500/20 flex items-center justify-center shadow-2xl overflow-hidden">
+                <div className="relative w-[65%] h-[65%]">
                   <Image 
                     src="/logo.png" 
-                    alt="Zaya Code Hub Logo" 
+                    alt="ZAYA CODE HUB Official Logo" 
                     fill
                     unoptimized
-                    className="object-contain" 
+                    className="object-contain drop-shadow-xl" 
                   />
                 </div>
               </div>
 
-              {/* Floating Cards - Now Visible on Mobile */}
-              <div className="absolute -top-4 -right-4 sm:top-0 sm:right-8 p-3 sm:p-4 rounded-2xl bg-white dark:bg-slate-800 shadow-2xl border border-slate-100 dark:border-slate-700 animate-float z-20">
-                <Smartphone className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600" />
-                <p className="text-[10px] sm:text-xs font-black mt-2 text-slate-800 dark:text-white uppercase tracking-wider">Mobile Apps</p>
+              {/* Floating Product Pills */}
+              <div className="absolute top-4 left-4 p-3 rounded-2xl bg-white dark:bg-slate-900 shadow-xl border border-slate-200 dark:border-slate-800 flex items-center space-x-3">
+                <div className="p-2 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400">
+                  <Bot className="h-5 w-5" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-slate-900 dark:text-white">AI ZAYA</h4>
+                  <p className="text-[10px] text-slate-500">AI Assistant</p>
+                </div>
               </div>
 
-              <div className="absolute bottom-10 -left-4 sm:bottom-8 sm:left-0 p-3 sm:p-4 rounded-2xl bg-white dark:bg-slate-800 shadow-2xl border border-slate-100 dark:border-slate-700 animate-float z-20" style={{ animationDelay: '1.5s' }}>
-                <Layout className="h-6 w-6 sm:h-8 sm:w-8 text-indigo-600" />
-                <p className="text-[10px] sm:text-xs font-black mt-2 text-slate-800 dark:text-white uppercase tracking-wider">Web Design</p>
+              <div className="absolute top-8 right-2 p-3 rounded-2xl bg-white dark:bg-slate-900 shadow-xl border border-slate-200 dark:border-slate-800 flex items-center space-x-3">
+                <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                  <Stethoscope className="h-5 w-5" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-slate-900 dark:text-white">NepCare</h4>
+                  <p className="text-[10px] text-slate-500">Telemedicine</p>
+                </div>
               </div>
 
-              {/* Stats Badge - Now Visible on Mobile */}
-              <div className="absolute -bottom-4 -right-4 sm:bottom-0 sm:right-0 px-4 py-3 sm:px-6 sm:py-4 rounded-2xl bg-white dark:bg-slate-800 shadow-2xl border border-slate-100 dark:border-slate-700 z-20">
-                <div className="text-xl sm:text-2xl font-black text-blue-600">150+</div>
-                <div className="text-[10px] sm:text-xs font-black text-slate-900 dark:text-slate-100 uppercase tracking-widest">Projects Done</div>
+              <div className="absolute bottom-12 left-2 p-3 rounded-2xl bg-white dark:bg-slate-900 shadow-xl border border-slate-200 dark:border-slate-800 flex items-center space-x-3">
+                <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
+                  <GraduationCap className="h-5 w-5" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-slate-900 dark:text-white">ZAYA School</h4>
+                  <p className="text-[10px] text-slate-500">Management Platform</p>
+                </div>
+              </div>
+
+              <div className="absolute bottom-6 right-6 p-3 rounded-2xl bg-white dark:bg-slate-900 shadow-xl border border-slate-200 dark:border-slate-800 flex items-center space-x-3">
+                <div className="p-2 rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-400">
+                  <ShieldAlert className="h-5 w-5" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-slate-900 dark:text-white">SurakshaNep</h4>
+                  <p className="text-[10px] text-slate-500">Public Safety</p>
+                </div>
               </div>
             </div>
           </motion.div>
