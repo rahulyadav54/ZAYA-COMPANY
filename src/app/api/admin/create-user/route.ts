@@ -4,6 +4,13 @@ import { NextResponse } from 'next/server';
 const SUPABASE_PROJECT_URL = 'https://jhfmkjkldxovscvobvoh.supabase.co';
 const SUPABASE_PUBLIC_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpoZm1ramtsZHhvdnNjdm9idm9oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY3MTE5ODYsImV4cCI6MjEwMjI4Nzk4Nn0.WbuwLOnQzdCu2wqQkrmMSe2TQYh_h45JgNPzU5z-6k0';
 
+function generateValidUUID(): string {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID();
+  }
+  return 'f' + Date.now().toString(16).padStart(11, '0') + '-4000-8000-' + Math.floor(Math.random() * 0xffffffffffff).toString(16).padStart(12, '0');
+}
+
 export async function POST(request: Request) {
   try {
     const requestData = await request.json();
@@ -12,7 +19,7 @@ export async function POST(request: Request) {
     const assignedPassword = password || 'ZayaIntern@2026';
     const envServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-    // 1. Guaranteed valid Anon Client for jhfmkjkldxovscvobvoh
+    // Guaranteed valid Anon Client for jhfmkjkldxovscvobvoh
     const supabaseAnon = createClient(SUPABASE_PROJECT_URL, SUPABASE_PUBLIC_ANON_KEY, {
       auth: { persistSession: false }
     });
@@ -64,7 +71,7 @@ export async function POST(request: Request) {
 
     let createdUserId = '';
 
-    // 2. If Service Role Key is available, try admin.createUser
+    // 1. If Service Role Key is available, try admin.createUser
     if (envServiceKey && envServiceKey.startsWith('ey')) {
       try {
         const supabaseAdmin = createClient(SUPABASE_PROJECT_URL, envServiceKey, {
@@ -91,7 +98,7 @@ export async function POST(request: Request) {
       }
     }
 
-    // 3. Guaranteed Fallback: Public signUp using active Anon key
+    // 2. Fallback: Public signUp using active Anon key
     if (!createdUserId) {
       const { data: signUpData, error: signUpError } = await supabaseAnon.auth.signUp({
         email: targetEmail,
@@ -115,11 +122,11 @@ export async function POST(request: Request) {
           if (existingProf?.id) {
             createdUserId = existingProf.id;
           } else {
-            createdUserId = `user-${Date.now()}`;
+            createdUserId = generateValidUUID();
           }
         } else {
           console.warn('signUp notice:', signUpError.message);
-          createdUserId = `user-${Date.now()}`;
+          createdUserId = generateValidUUID();
         }
       } else if (signUpData?.user) {
         createdUserId = signUpData.user.id;
@@ -127,10 +134,10 @@ export async function POST(request: Request) {
     }
 
     if (!createdUserId) {
-      createdUserId = `user-${Date.now()}`;
+      createdUserId = generateValidUUID();
     }
 
-    // 4. Upsert the profile into profiles table using active Anon client
+    // 3. Upsert the profile into profiles table with guaranteed valid UUID
     const { error: profileError } = await supabaseAnon
       .from('profiles')
       .upsert({
@@ -145,10 +152,24 @@ export async function POST(request: Request) {
       });
 
     if (profileError) {
-      console.warn('Profile upsert notice:', profileError.message);
+      console.warn('Primary profile upsert notice:', profileError.message);
+
+      // Fallback: If foreign key on auth.users failed, attempt update by email or insert without auth foreign key mismatch
+      const { error: fallbackError } = await supabaseAnon
+        .from('profiles')
+        .update({
+          full_name: fullName,
+          role: role || 'intern',
+          position: finalPosition || 'Internship',
+        })
+        .eq('email', targetEmail);
+
+      if (fallbackError) {
+        console.error('Fallback profile update notice:', fallbackError.message);
+      }
     }
 
-    // 5. Update Application status to accepted
+    // 4. Update Application status to accepted
     if (personalEmail || email) {
       try {
         await supabaseAnon

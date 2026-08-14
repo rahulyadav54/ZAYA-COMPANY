@@ -35,15 +35,32 @@ export default function ManageInternsPage() {
 
   const fetchInterns = async () => {
     setIsLoading(true);
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('role', 'intern')
-      .order('created_at', { ascending: false });
-
-    if (!error && data) {
-      setInterns(data);
+    let list: any[] = [];
+    
+    // 1. Try API Endpoint first (bypasses browser RLS)
+    try {
+      const res = await fetch('/api/admin/interns');
+      const json = await res.json();
+      if (json.success && Array.isArray(json.interns) && json.interns.length > 0) {
+        list = json.interns;
+      }
+    } catch (e) {
+      console.warn('API interns error:', e);
     }
+
+    // 2. Client fallback
+    if (list.length === 0) {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('role', 'intern');
+
+      if (!error && data) {
+        list = data;
+      }
+    }
+
+    setInterns(list);
     setIsLoading(false);
   };
 

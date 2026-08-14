@@ -55,11 +55,25 @@ export default function AdminDashboard() {
       }
     }
 
-    // Fetch Interns Count
-    const { count: internCount } = await supabase
-      .from('profiles')
-      .select('*', { count: 'exact', head: true })
-      .eq('role', 'intern');
+    // Fetch Interns Count via API Endpoint
+    let activeInternCount = 0;
+    try {
+      const resInt = await fetch('/api/admin/interns');
+      const jsonInt = await resInt.json();
+      if (jsonInt.success && Array.isArray(jsonInt.interns)) {
+        activeInternCount = jsonInt.interns.length;
+      }
+    } catch (e) {
+      console.warn('API interns count error:', e);
+    }
+
+    if (activeInternCount === 0) {
+      const { count } = await supabase
+        .from('profiles')
+        .select('*', { count: 'exact', head: true })
+        .eq('role', 'intern');
+      activeInternCount = count || 0;
+    }
 
     // Fetch Revenue (from paid submissions)
     const { data: paidSubmissions } = await supabase
@@ -73,7 +87,7 @@ export default function AdminDashboard() {
 
     setStats({
       totalApps: total,
-      activeInterns: internCount || 0,
+      activeInterns: activeInternCount || 0,
       pendingReviews: pending,
       totalRevenue: revenue
     });
