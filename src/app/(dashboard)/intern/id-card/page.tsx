@@ -3,9 +3,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import IDCard from '@/components/intern/IDCard';
-import { Download, Share2, Printer, ShieldCheck, CreditCard, Loader2, Link as LinkIcon, Check, Upload, Image as ImageIcon } from 'lucide-react';
-import html2canvas from 'html2canvas';
-import { jsPDF } from 'jspdf';
+import { Download, Share2, ShieldCheck, CreditCard, Loader2, Link as LinkIcon, Check, Upload, FileImage } from 'lucide-react';
 
 export default function InternIDCardPage() {
   const [profile, setProfile] = useState<any>(null);
@@ -45,7 +43,6 @@ export default function InternIDCardPage() {
 
           const { resolveInternName, resolveInternPosition } = await import('@/lib/resolveInternDetails');
 
-          // Fallback search by name if email search didn't match candidate personal email
           const currentName = resolveInternName(p, appData, user);
           if (!appData && currentName) {
             const firstName = currentName.split(' ')[0];
@@ -59,7 +56,6 @@ export default function InternIDCardPage() {
             if (nameRes) appData = nameRes;
           }
 
-          // Check cached avatar from localStorage
           const cachedAvatar = typeof window !== 'undefined' ? localStorage.getItem(`avatar_${user.id}`) : null;
 
           const resolvedProfile = {
@@ -115,7 +111,36 @@ export default function InternIDCardPage() {
     reader.readAsDataURL(file);
   };
 
-  const handleDownloadID = async () => {
+  const handleDownloadPNG = async () => {
+    if (!idCardRef.current || !profile) return;
+    setIsDownloading(true);
+    
+    try {
+      const { downloadAsPNG } = await import('@/lib/downloadHelper');
+      const name = (profile.full_name || 'Intern').replace(/\s+/g, '_');
+      const filename = `ZAYA_ID_${name}.png`;
+
+      const target = document.getElementById('id-card-capture') || idCardRef.current;
+      const success = await downloadAsPNG({
+        element: target as HTMLElement,
+        filename: filename,
+        scale: 3
+      });
+
+      if (success) {
+        alert('Success! Your Virtual ID Card image has been downloaded.');
+      } else {
+        alert('Could not generate ID card image. Please try again.');
+      }
+    } catch (error: any) {
+      console.error('Download Error:', error);
+      alert('Download Error: ' + (error.message || 'Unknown error'));
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
+  const handleDownloadPDF = async () => {
     if (!idCardRef.current || !profile) return;
     setIsDownloading(true);
     
@@ -124,27 +149,30 @@ export default function InternIDCardPage() {
       const name = (profile.full_name || 'Intern').replace(/\s+/g, '_');
       const filename = `ZAYA_ID_${name}`;
 
+      const target = document.getElementById('id-card-capture') || idCardRef.current;
       let success = await downloadAsPDF({
-        element: idCardRef.current,
+        element: target as HTMLElement,
         filename: `${filename}.pdf`,
-        pdfOrientation: 'portrait'
+        pdfOrientation: 'portrait',
+        scale: 3
       });
 
       if (!success) {
         success = await downloadAsPNG({
-          element: idCardRef.current,
-          filename: `${filename}.png`
+          element: target as HTMLElement,
+          filename: `${filename}.png`,
+          scale: 3
         });
       }
 
       if (success) {
-        alert('Success! Your ID Card has been downloaded.');
+        alert('Success! Your Virtual ID Card has been downloaded.');
       } else {
-        window.print();
+        alert('Download Error: Could not generate document. Please try again.');
       }
     } catch (error: any) {
-      console.error('Download System Error:', error);
-      window.print();
+      console.error('Download Error:', error);
+      alert('Download Error: ' + (error.message || 'Unknown error'));
     } finally {
       setIsDownloading(false);
     }
@@ -198,19 +226,28 @@ export default function InternIDCardPage() {
           />
           <button 
             onClick={() => fileInputRef.current?.click()}
-            className="flex items-center gap-2 bg-slate-900 hover:bg-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 text-white px-6 py-3 rounded-2xl font-bold transition-all active:scale-95 shadow-lg"
+            className="flex items-center gap-2 bg-slate-900 hover:bg-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 text-white px-5 py-3 rounded-2xl font-bold transition-all active:scale-95 shadow-lg text-sm"
           >
             <Upload className="h-4 w-4 text-cyan-400" />
             {profile?.avatar_url ? 'Change Photo' : 'Upload Photo'}
           </button>
+
+          <button 
+            onClick={handleDownloadPNG}
+            disabled={isDownloading}
+            className="flex items-center gap-2 bg-slate-800 hover:bg-slate-900 text-white px-6 py-3 rounded-2xl font-bold transition-all active:scale-95 shadow-lg disabled:opacity-50 text-sm"
+          >
+            {isDownloading ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileImage className="h-4 w-4 text-emerald-400" />}
+            Download Image (PNG)
+          </button>
           
           <button 
-            onClick={handleDownloadID}
+            onClick={handleDownloadPDF}
             disabled={isDownloading}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-2xl font-bold transition-all active:scale-95 shadow-xl shadow-blue-600/20 disabled:opacity-50"
+            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-7 py-3 rounded-2xl font-bold transition-all active:scale-95 shadow-xl shadow-blue-600/20 disabled:opacity-50 text-sm"
           >
             {isDownloading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
-            {isDownloading ? 'Generating...' : 'Download ID Card'}
+            Download PDF
           </button>
         </div>
       </div>
@@ -218,11 +255,11 @@ export default function InternIDCardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         {/* Left: ID Card Preview */}
         <div className="py-10 flex flex-col items-center justify-center print:p-0">
-           <div ref={idCardRef} id="id-card-capture" className="bg-transparent rounded-[2.5rem] overflow-hidden">
+           <div ref={idCardRef} className="bg-transparent rounded-[2.5rem] overflow-hidden p-2">
               {profile && <IDCard profile={profile} />}
            </div>
            <p className="text-xs font-bold text-slate-400 mt-4 tracking-wide">
-             💡 Tip: Click &quot;Upload Photo&quot; to personalize your card photo!
+             💡 Click &quot;Download Image (PNG)&quot; or &quot;Download PDF&quot; to save your physical ID card!
            </p>
         </div>
 

@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { Calendar, ShieldCheck, Mail, MapPin } from 'lucide-react';
-import { motion } from 'framer-motion';
 
 interface IDCardProps {
   profile: {
@@ -36,11 +35,10 @@ export default function IDCard({ profile }: IDCardProps) {
     : name.slice(0, 2).toUpperCase();
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, scale: 0.96 }}
-      animate={{ opacity: 1, scale: 1 }}
+    <div 
       id="id-card-capture"
       className="relative w-[380px] h-[660px] mx-auto shadow-[0_30px_70px_-15px_rgba(0,0,0,0.3)] rounded-[2.5rem] overflow-hidden bg-white flex flex-col border border-slate-200 select-none"
+      style={{ backgroundColor: '#ffffff', color: '#0f172a' }}
     >
       {/* Lanyard Hole */}
       <div className="absolute top-3 left-1/2 -translate-x-1/2 w-14 h-3.5 bg-slate-200 rounded-full z-30 flex items-center justify-center">
@@ -134,6 +132,6 @@ export default function IDCard({ profile }: IDCardProps) {
          </div>
          <span className="text-[9px] font-mono text-cyan-400 tracking-widest uppercase">zayacodehub.in</span>
       </div>
-    </motion.div>
+    </div>
   );
 }
