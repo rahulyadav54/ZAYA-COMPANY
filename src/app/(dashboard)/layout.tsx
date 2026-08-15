@@ -122,9 +122,21 @@ export default function DashboardLayout({
   }, [userId, pathname, isAdminPath]);
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    router.push('/login');
-    router.refresh(); 
+    try {
+      await supabase.auth.signOut();
+    } catch (e) {
+      console.warn('Sign out notice:', e);
+    }
+    
+    try {
+      localStorage.removeItem('zaya_intern_session');
+      localStorage.clear();
+      sessionStorage.clear();
+    } catch (e) {
+      console.warn('Storage clear notice:', e);
+    }
+
+    window.location.href = '/login';
   };
 
   if (isLoading) {
