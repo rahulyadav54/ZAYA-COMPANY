@@ -16,12 +16,32 @@ export default function InternIDCardPage() {
 
   useEffect(() => {
     async function loadProfile() {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { getActiveUser } = await import('@/lib/getActiveUser');
+      const user = await getActiveUser();
       if (user) {
-        const { data: profileData } = await supabase.from('profiles').select('*').eq('id', user.id).single();
-        if (profileData) {
-          setProfile(profileData);
+        let p: any = null;
+        const { data: profileData } = await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle();
+        p = profileData;
+
+        if (!p && user.email) {
+          const { data: pEmail } = await supabase.from('profiles').select('*').eq('email', user.email).maybeSingle();
+          p = pEmail;
         }
+
+        if (!p && user.email) {
+          const { data: appData } = await supabase.from('applications').select('*').eq('email', user.email).maybeSingle();
+          if (appData) {
+            p = {
+              full_name: appData.full_name,
+              email: appData.email,
+              position: appData.position,
+              joining_date: appData.created_at ? new Date(appData.created_at).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+              intern_id: `ZCH-2026-${Math.floor(1000 + Math.random() * 9000)}`
+            };
+          }
+        }
+
+        if (p) setProfile(p);
       }
       setLoading(false);
     }

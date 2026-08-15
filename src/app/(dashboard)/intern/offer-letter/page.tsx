@@ -17,30 +17,38 @@ export default function OfferLetterPage() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
+        const { getActiveUser } = await import('@/lib/getActiveUser');
+        const user = await getActiveUser();
         if (user) {
-          // Fetch Profile
-          const { data: profileData } = await supabase.from('profiles').select('*').eq('id', user.id).single();
-          setProfile(profileData);
+          let p: any = null;
+          const { data: profileData } = await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle();
+          p = profileData;
 
-          // Try to fetch application details using email (case-insensitive)
-          if (profileData?.email) {
+          if (!p && user.email) {
+            const { data: pEmail } = await supabase.from('profiles').select('*').eq('email', user.email).maybeSingle();
+            p = pEmail;
+          }
+
+          setProfile(p);
+
+          const targetEmail = p?.email || user.email;
+          if (targetEmail) {
             const { data: appData } = await supabase
               .from('applications')
               .select('*')
-              .ilike('email', profileData.email)
+              .ilike('email', targetEmail)
               .order('created_at', { ascending: false })
               .limit(1)
               .maybeSingle();
             
             if (appData) {
               setApplication(appData);
-            } else if (profileData.full_name) {
+            } else if (p?.full_name) {
               // Fallback to name search if email search yields no results
               const { data: nameData } = await supabase
                 .from('applications')
                 .select('*')
-                .ilike('full_name', `%${profileData.full_name}%`)
+                .ilike('full_name', `%${p.full_name}%`)
                 .order('created_at', { ascending: false })
                 .limit(1)
                 .maybeSingle();

@@ -17,14 +17,19 @@ export default function InternSubmitPage() {
 
   useEffect(() => {
     async function fetchTasks() {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { getActiveUser } = await import('@/lib/getActiveUser');
+      const user = await getActiveUser();
       if (user) {
         setUserId(user.id);
         setUserEmail(user.email || '');
         
         // Fetch profile to get name
-        const { data: profile } = await supabase.from('profiles').select('full_name').eq('id', user.id).single();
-        if (profile) setUserName(profile.full_name);
+        let pName = user.user_metadata?.full_name;
+        if (!pName) {
+          const { data: profile } = await supabase.from('profiles').select('full_name').eq('id', user.id).maybeSingle();
+          if (profile?.full_name) pName = profile.full_name;
+        }
+        if (pName) setUserName(pName);
 
         const { data } = await supabase
           .from('tasks')

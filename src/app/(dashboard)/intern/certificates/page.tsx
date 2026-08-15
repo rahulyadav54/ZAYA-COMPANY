@@ -51,7 +51,8 @@ export default function InternCertificatesPage() {
 
   useEffect(() => {
     async function fetchCertificates() {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { getActiveUser } = await import('@/lib/getActiveUser');
+      const user = await getActiveUser();
       if (user) {
         const { data, error } = await supabase
           .from('submissions')

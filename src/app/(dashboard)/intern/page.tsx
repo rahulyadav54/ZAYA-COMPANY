@@ -19,9 +19,10 @@ export default function InternDashboard() {
   useEffect(() => {
     async function loadDashboardData() {
       try {
-        const { data: { user }, error: authError } = await supabase.auth.getUser();
+        const { getActiveUser } = await import('@/lib/getActiveUser');
+        const user = await getActiveUser();
         
-        if (authError || !user) {
+        if (!user) {
           setError("User not authenticated. Please log in again.");
           setIsLoading(false);
           return;
@@ -29,22 +30,49 @@ export default function InternDashboard() {
 
         // Fetch Profile
         try {
-           const { data: p } = await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle();
-           if (p) {
-             setProfile(p);
-             
-             // If profile position is generic or missing, fetch from applications
-             if (!p.position || p.position === 'Intern') {
-               const { data: appData } = await supabase
-                 .from('applications')
-                 .select('position')
-                 .eq('email', p.email)
-                 .eq('status', 'accepted')
-                 .maybeSingle();
-               if (appData) setApplication(appData);
-             }
-           }
-        } catch (e) { console.error("Profile load failed"); }
+          let p: any = null;
+          const { data: profById } = await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle();
+          p = profById;
+
+          if (!p && user.email) {
+            const { data: profByEmail } = await supabase.from('profiles').select('*').eq('email', user.email).maybeSingle();
+            p = profByEmail;
+          }
+
+          if (p) {
+            setProfile(p);
+            
+            // If profile position is generic or missing, fetch from applications
+            if (!p.position || p.position === 'Intern') {
+              const { data: appData } = await supabase
+                .from('applications')
+                .select('position')
+                .eq('email', p.email)
+                .eq('status', 'accepted')
+                .maybeSingle();
+              if (appData) setApplication(appData);
+            }
+          } else if (user.email) {
+            // Synthesize profile from accepted application if profile row missing
+            const { data: appData } = await supabase
+              .from('applications')
+              .select('*')
+              .eq('email', user.email)
+              .maybeSingle();
+
+            if (appData) {
+              const synthProf = {
+                full_name: appData.full_name,
+                email: appData.email,
+                position: appData.position,
+                joining_date: appData.created_at ? new Date(appData.created_at).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+                intern_id: `ZCH-2026-${Math.floor(1000 + Math.random() * 9000)}`
+              };
+              setProfile(synthProf);
+              setApplication(appData);
+            }
+          }
+        } catch (e) { console.error("Profile load failed", e); }
 
         // Fetch Submissions
         let allSubmissions: any[] = [];

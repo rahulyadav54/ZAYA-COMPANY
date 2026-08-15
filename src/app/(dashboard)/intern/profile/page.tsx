@@ -13,13 +13,24 @@ export default function InternProfilePage() {
 
   useEffect(() => {
     async function loadProfile() {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { getActiveUser } = await import('@/lib/getActiveUser');
+      const user = await getActiveUser();
       if (user) {
-        const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single();
-        if (data) {
-          // Merge metadata for avatar_url
-          setProfile({ ...data, ...user.user_metadata });
-          setFullName(data.full_name || '');
+        let p: any = null;
+        const { data } = await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle();
+        p = data;
+
+        if (!p && user.email) {
+          const { data: pEmail } = await supabase.from('profiles').select('*').eq('email', user.email).maybeSingle();
+          p = pEmail;
+        }
+
+        if (p) {
+          setProfile({ ...p, ...user.user_metadata });
+          setFullName(p.full_name || '');
+        } else {
+          setProfile({ email: user.email, full_name: user.user_metadata?.full_name || 'Intern', role: 'intern' });
+          setFullName(user.user_metadata?.full_name || 'Intern');
         }
       }
     }
