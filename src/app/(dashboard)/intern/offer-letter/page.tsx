@@ -6,10 +6,12 @@ import { FileText, Download, Loader2, ArrowLeft, Building2, MapPin, Mail, Phone,
 import Link from 'next/link';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import { resolveInternName, resolveInternPosition } from '@/lib/resolveInternDetails';
 
 export default function OfferLetterPage() {
   const [profile, setProfile] = useState<any>(null);
   const [application, setApplication] = useState<any>(null);
+  const [activeUser, setActiveUser] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isDownloading, setIsDownloading] = useState(false);
   const letterRef = useRef<HTMLDivElement>(null);
@@ -19,6 +21,8 @@ export default function OfferLetterPage() {
       try {
         const { getActiveUser } = await import('@/lib/getActiveUser');
         const user = await getActiveUser();
+        setActiveUser(user);
+
         if (user) {
           let p: any = null;
           const { data: profileData } = await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle();
@@ -29,42 +33,34 @@ export default function OfferLetterPage() {
             p = pEmail;
           }
 
-          setProfile(p);
-
+          let appData: any = null;
           const targetEmail = p?.email || user.email;
           if (targetEmail) {
-            const { data: appData } = await supabase
+            const { data: appRes } = await supabase
               .from('applications')
               .select('*')
               .ilike('email', targetEmail)
               .order('created_at', { ascending: false })
               .limit(1)
               .maybeSingle();
-            
-            if (appData) {
-              setApplication(appData);
-            } else if (p?.full_name) {
-              // Fallback to name search if email search yields no results
-              const { data: nameData } = await supabase
-                .from('applications')
-                .select('*')
-                .ilike('full_name', `%${p.full_name}%`)
-                .order('created_at', { ascending: false })
-                .limit(1)
-                .maybeSingle();
-              if (nameData) setApplication(nameData);
-            }
-          } else if (profileData?.full_name) {
-             // Search by name if email is missing
-             const { data: nameData } = await supabase
-                .from('applications')
-                .select('*')
-                .ilike('full_name', `%${profileData.full_name}%`)
-                .order('created_at', { ascending: false })
-                .limit(1)
-                .maybeSingle();
-              if (nameData) setApplication(nameData);
+            appData = appRes;
           }
+
+          const currentName = resolveInternName(p, appData, user);
+          if (!appData && currentName) {
+            const firstName = currentName.split(' ')[0];
+            const { data: nameRes } = await supabase
+              .from('applications')
+              .select('*')
+              .ilike('full_name', `%${firstName}%`)
+              .order('created_at', { ascending: false })
+              .limit(1)
+              .maybeSingle();
+            if (nameRes) appData = nameRes;
+          }
+
+          setProfile(p);
+          setApplication(appData);
         }
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -80,56 +76,44 @@ export default function OfferLetterPage() {
     setIsDownloading(true);
 
     try {
-      // Force scroll to top to prevent capture offsets
       window.scrollTo(0, 0);
-      
-      // Delay to ensure browser has finished rendering
       await new Promise(resolve => setTimeout(resolve, 800));
       
       const element = letterRef.current;
       const canvas = await html2canvas(element, {
-        scale: 2, // High resolution for sharp text
+        scale: 2,
         useCORS: true,
         allowTaint: false,
         logging: false,
         backgroundColor: '#ffffff',
         windowWidth: element.scrollWidth,
         windowHeight: element.scrollHeight,
-        scrollY: -window.scrollY, // Critical fix for scrolled offsets
+        scrollY: -window.scrollY,
         scrollX: 0
       });
-
-      const imgData = canvas.toDataURL('image/png', 1.0);
       
-      // Create PDF in A4 format
+      const imgData = canvas.toDataURL('image/png', 1.0);
       const pdf = new jsPDF({
         orientation: 'p',
         unit: 'mm',
         format: 'a4'
       });
 
-      const pageWidth = pdf.internal.pageSize.getWidth();
-      const pageHeight = pdf.internal.pageSize.getHeight();
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
       
-      // Calculate dimensions to fit the page exactly
-      const imgWidth = pageWidth;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      const elementWidth = canvas.width;
+      const elementHeight = canvas.height;
       
-      // If content is taller than the page, scale it down to fit perfectly
-      let finalHeight = imgHeight;
-      let finalWidth = imgWidth;
-      let xOffset = 0;
-      let yOffset = 0;
-
-      if (imgHeight > pageHeight) {
-        const ratio = pageHeight / imgHeight;
-        finalHeight = pageHeight;
-        finalWidth = imgWidth * ratio;
-        xOffset = (pageWidth - finalWidth) / 2;
-      }
+      const finalWidth = pdfWidth;
+      const finalHeight = (elementHeight * pdfWidth) / elementWidth;
+      
+      const xOffset = 0;
+      const yOffset = finalHeight > pdfHeight ? 0 : (pdfHeight - finalHeight) / 2;
 
       pdf.addImage(imgData, 'PNG', xOffset, yOffset, finalWidth, finalHeight, undefined, 'FAST');
-      pdf.save(`ZAYA_Offer_Letter_${profile?.full_name?.replace(/\s+/g, '_') || 'Intern'}.pdf`);
+      const filename = `ZAYA_Offer_Letter_${resolveInternName(profile, application, activeUser).replace(/\s+/g, '_')}.pdf`;
+      pdf.save(filename);
       
       alert('Success! Your Offer Letter has been downloaded.');
     } catch (error: any) {
@@ -154,6 +138,10 @@ export default function OfferLetterPage() {
     month: 'long',
     year: 'numeric'
   });
+
+  const internName = resolveInternName(profile, application, activeUser);
+  const internPosition = resolveInternPosition(profile, application, activeUser);
+  const internId = profile?.intern_id || application?.intern_id || `ZCH-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
 
   return (
     <div className="max-w-5xl mx-auto space-y-8 pb-20">
@@ -210,31 +198,29 @@ export default function OfferLetterPage() {
           <div className="space-y-6 leading-relaxed text-base" style={{ color: '#334155' }}>
             <div className="mb-8">
               <p className="font-bold" style={{ color: '#0f172a' }}>To,</p>
-              <p className="font-black text-xl mt-1" style={{ color: '#2563eb' }}>{profile?.full_name || application?.full_name || 'Accepted Intern'}</p>
+              <p className="font-black text-2xl mt-1" style={{ color: '#2563eb' }}>{internName}</p>
               <div className="flex flex-col mt-1">
-                <p className="font-medium uppercase text-xs tracking-widest" style={{ color: '#64748b' }}>
-                  {(profile?.position && profile.position !== 'Intern') ? profile.position : (application?.position || 'Web Designer Intern')}
+                <p className="font-bold uppercase text-xs tracking-widest" style={{ color: '#64748b' }}>
+                  {internPosition}
                 </p>
-                {(profile?.intern_id || application?.intern_id) && (
-                  <p className="text-[10px] font-black uppercase tracking-widest mt-1" style={{ color: '#94a3b8' }}>
-                    ID: {profile?.intern_id || application?.intern_id}
-                  </p>
-                )}
+                <p className="text-[10px] font-black uppercase tracking-widest mt-1" style={{ color: '#94a3b8' }}>
+                  ID: {internId}
+                </p>
               </div>
             </div>
 
-            <p>Dear <span className="font-bold" style={{ color: '#0f172a' }}>{(profile?.full_name || application?.full_name || 'Intern').split(' ')[0]}</span>,</p>
+            <p>Dear <span className="font-bold" style={{ color: '#0f172a' }}>{internName.split(' ')[0]}</span>,</p>
             
             <p>
               We are delighted to offer you an opportunity to join our team as an <span className="font-bold" style={{ color: '#0f172a' }}>
-                {(profile?.position && profile.position !== 'Intern') ? profile.position : (application?.position || 'Web Designer Intern')}
+                {internPosition}
               </span> at <span className="font-bold" style={{ color: '#2563eb' }}>ZAYA CODE HUB</span>. 
               The term of your placement will be for a duration of <span className="font-bold" style={{ color: '#0f172a' }}>{application?.duration || '1 month'}</span>, starting from <span className="font-bold" style={{ color: '#0f172a' }}>{profile?.joining_date ? new Date(profile.joining_date).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) : currentDate}</span>.
             </p>
 
             {/* Dynamic Content based on Position */}
             {(() => {
-              const pos = (profile?.position && profile.position !== 'Intern' ? profile.position : (application?.position || 'Intern')).toLowerCase();
+              const pos = internPosition.toLowerCase();
               let responsibilities = "working on various development projects, participating in code reviews, and collaborating with our team to build innovative solutions.";
               let team = "Development Team";
 
@@ -248,51 +234,47 @@ export default function OfferLetterPage() {
                 responsibilities = "building robust backend systems, developing automation scripts, working with data analysis tools, and participating in system architecture discussions.";
                 team = "Backend Engineering Team";
               } else if (pos.includes('graphic')) {
-                responsibilities = "creating stunning visual assets, designing brand identity materials, and collaborating on creative marketing collateral for our digital platforms.";
-                team = "Creative Graphics Team";
-              } else if (pos.includes('marketing')) {
-                responsibilities = "managing digital campaigns, optimizing social media presence, conducting market analysis, and developing content strategies to grow our community.";
-                team = "Growth & Marketing Team";
-              } else if (pos.includes('full stack') || pos.includes('web')) {
-                responsibilities = "building responsive web applications, integrating frontend interfaces with backend APIs, and participating in the full software development lifecycle.";
-                team = "Web Engineering Team";
+                responsibilities = "producing engaging visual graphics, social media banners, brand collateral, and collaborating with marketing and product teams.";
+                team = "Visual Design Team";
               }
 
               return (
-                <>
+                <div className="space-y-4">
                   <p>
-                    During this internship, you will be part of our <span className="font-bold" style={{ color: '#0f172a' }}>{team}</span> and report to your assigned supervisor. 
-                    Your main responsibilities will include {responsibilities}
+                    During this internship, you will be assigned to our <span className="font-bold" style={{ color: '#0f172a' }}>{team}</span>. Your primary responsibilities will include {responsibilities}
                   </p>
                   <p>
-                    In addition to your work, we have many exciting opportunities for you to participate in, such as weekly workshops, mentorship sessions, and real-world project experience that will help you develop your specialized {pos.replace('intern', '').trim() || 'technical'} skills.
+                    This is a remote position that requires dedication, continuous learning, and adherence to our code of conduct. You will work under the guidance of assigned technical mentors who will assist you in acquiring practical skills.
                   </p>
-                </>
+                </div>
               );
             })()}
 
             <p>
-              Please accept this offer by confirming your acceptance through your intern portal. We look forward to having you on board and embarking on this unforgettable professional journey with you!
+              Upon successful completion of all assigned tasks and project reviews, you will be awarded an official <span className="font-bold" style={{ color: '#0f172a' }}>Certificate of Completion</span> and a <span className="font-bold" style={{ color: '#0f172a' }}>Letter of Recommendation</span> based on your overall performance.
             </p>
 
-            <p>If you have any questions at all, please don't hesitate to contact our HR department.</p>
-
-            <div className="mt-16 pt-12">
-              <p className="font-bold" style={{ color: '#0f172a' }}>Sincerely,</p>
-              <div className="mt-8">
-                <div className="h-16 w-48 mb-2 relative" style={{ borderBottom: '1px solid #cbd5e1' }}>
-                   <p className="absolute bottom-2 left-0 font-serif text-2xl italic opacity-50" style={{ color: '#94a3b8' }}>Zaya Code Hub</p>
-                </div>
-                <p className="font-black uppercase tracking-widest text-xs" style={{ color: '#0f172a' }}>Human Resources Manager</p>
-                <p className="text-xs font-bold uppercase tracking-tighter" style={{ color: '#64748b' }}>Zaya Code Hub</p>
-              </div>
-            </div>
+            <p>
+              We look forward to a successful association and wish you the very best for your internship journey with us.
+            </p>
           </div>
 
-          {/* Footer Decoration */}
-          <div className="absolute bottom-0 left-0 right-0 h-2" style={{ background: 'linear-gradient(to right, #2563eb, #4f46e5)' }}></div>
-          <div className="absolute bottom-8 left-0 right-0 text-center">
-            <p className="text-[10px] font-black uppercase tracking-[0.5em]" style={{ color: '#cbd5e1' }}>www.zayacodehub.in</p>
+          {/* Signatures */}
+          <div className="mt-16 pt-8 flex justify-between items-end" style={{ borderTop: '1px solid #f1f5f9' }}>
+            <div className="text-left">
+              <div className="h-12 flex items-center">
+                <span className="font-black text-lg italic tracking-tighter" style={{ fontFamily: "'Playfair Display', serif", color: '#1e3a8a' }}>Rahul Yadav</span>
+              </div>
+              <p className="font-bold text-sm" style={{ color: '#0f172a' }}>Rahul Yadav</p>
+              <p className="text-xs font-medium" style={{ color: '#64748b' }}>Founder & CEO, ZAYA CODE HUB</p>
+            </div>
+
+            <div className="text-right">
+              <div className="inline-block p-3 rounded-xl border text-center" style={{ backgroundColor: '#f8fafc', borderColor: '#e2e8f0' }}>
+                <p className="text-[9px] font-black uppercase tracking-widest" style={{ color: '#2563eb' }}>Official Offer Document</p>
+                <p className="text-[8px] font-mono mt-0.5" style={{ color: '#94a3b8' }}>VERIFIED BY ZAYA CODE HUB</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>

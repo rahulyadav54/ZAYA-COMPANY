@@ -43,15 +43,20 @@ export default function InternIDCardPage() {
             appData = appRes;
           }
 
-          if (!appData && p?.full_name) {
+          const { resolveInternName, resolveInternPosition } = await import('@/lib/resolveInternDetails');
+
+          // Fallback search by name if email search didn't match candidate personal email
+          const currentName = resolveInternName(p, appData, user);
+          if (!appData && currentName) {
+            const firstName = currentName.split(' ')[0];
             const { data: nameRes } = await supabase
               .from('applications')
               .select('*')
-              .ilike('full_name', `%${p.full_name}%`)
+              .ilike('full_name', `%${firstName}%`)
               .order('created_at', { ascending: false })
               .limit(1)
               .maybeSingle();
-            appData = nameRes;
+            if (nameRes) appData = nameRes;
           }
 
           // Check cached avatar from localStorage
@@ -59,9 +64,9 @@ export default function InternIDCardPage() {
 
           const resolvedProfile = {
             id: user.id,
-            full_name: p?.full_name || appData?.full_name || user.user_metadata?.full_name || 'Accepted Intern',
+            full_name: resolveInternName(p, appData, user),
             email: p?.email || appData?.email || user.email,
-            position: (p?.position && p.position !== 'Intern') ? p.position : (appData?.position || 'Web Designer Intern'),
+            position: resolveInternPosition(p, appData, user),
             intern_id: p?.intern_id || appData?.intern_id || `ZCH-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`,
             created_at: p?.created_at || appData?.created_at || new Date().toISOString(),
             joining_date: p?.joining_date || appData?.created_at || new Date().toISOString().split('T')[0],
