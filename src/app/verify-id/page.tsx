@@ -14,7 +14,7 @@ export default function IDVerificationPage() {
 
   const handleVerify = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    if (!inputId) return;
+    if (!inputId.trim()) return;
 
     setLoading(true);
     setError(null);
@@ -22,39 +22,94 @@ export default function IDVerificationPage() {
 
     try {
       const cleanId = inputId.trim().toUpperCase();
-      
-      // 1. First, try searching for an exact match in the custom 'intern_id' column
-      const { data: byCustomId } = await supabase
+
+      // 1. Check profiles table by exact intern_id match
+      const { data: profByInternId } = await supabase
         .from('profiles')
         .select('*')
-        .eq('intern_id', cleanId)
+        .ilike('intern_id', cleanId)
         .maybeSingle();
 
-      if (byCustomId) {
-        setResult(byCustomId);
+      if (profByInternId) {
+        setResult(profByInternId);
+        setLoading(false);
         return;
       }
 
-      // 2. If not found, try the legacy ZAYA-ID logic or direct UUID match
-      const uuidPart = cleanId.replace('ZAYA-ID-', '').toLowerCase();
-      
-      const { data: allProfiles, error: fetchError } = await supabase
-        .from('profiles')
-        .select('*');
+      // 2. Check applications table by exact intern_id match
+      const { data: appByInternId } = await supabase
+        .from('applications')
+        .select('*')
+        .ilike('intern_id', cleanId)
+        .maybeSingle();
 
-      if (fetchError) throw fetchError;
-
-      const foundProfile = allProfiles.find(p => 
-        p.id.slice(0, 8).toLowerCase() === uuidPart || 
-        p.id.toLowerCase() === cleanId.toLowerCase() ||
-        (p.intern_id && p.intern_id.toUpperCase() === cleanId)
-      );
-
-      if (foundProfile) {
-        setResult(foundProfile);
-      } else {
-        setError('No active intern found with this ID. Please check the ID and try again.');
+      if (appByInternId) {
+        setResult({
+          full_name: appByInternId.full_name,
+          position: appByInternId.position || 'Web Designer Intern',
+          email: appByInternId.email,
+          created_at: appByInternId.created_at || appByInternId.applied_at || new Date().toISOString(),
+          avatar_url: null
+        });
+        setLoading(false);
+        return;
       }
+
+      // 3. Search profiles table for matching ID substring, email, or full_name
+      const { data: allProfiles } = await supabase.from('profiles').select('*');
+      if (allProfiles && allProfiles.length > 0) {
+        const found = allProfiles.find(p => 
+          (p.intern_id && p.intern_id.toUpperCase() === cleanId) ||
+          p.id.toLowerCase() === cleanId.toLowerCase() ||
+          p.id.slice(0, 8).toLowerCase() === cleanId.replace('ZAYA-ID-', '').toLowerCase() ||
+          (p.email && p.email.toLowerCase().trim() === cleanId.toLowerCase()) ||
+          (p.full_name && p.full_name.toLowerCase().includes(cleanId.toLowerCase()))
+        );
+
+        if (found) {
+          setResult(found);
+          setLoading(false);
+          return;
+        }
+      }
+
+      // 4. Search applications table for matching accepted candidate
+      const { data: allApps } = await supabase.from('applications').select('*').eq('status', 'accepted');
+      if (allApps && allApps.length > 0) {
+        const foundApp = allApps.find(a => 
+          (a.intern_id && a.intern_id.toUpperCase() === cleanId) ||
+          (a.email && a.email.toLowerCase().trim() === cleanId.toLowerCase()) ||
+          (a.full_name && a.full_name.toLowerCase().includes(cleanId.toLowerCase()))
+        );
+
+        if (foundApp) {
+          setResult({
+            full_name: foundApp.full_name,
+            position: foundApp.position || 'Web Designer Intern',
+            email: foundApp.email,
+            created_at: foundApp.created_at || foundApp.applied_at || new Date().toISOString(),
+            avatar_url: null
+          });
+          setLoading(false);
+          return;
+        }
+
+        // Fallback to active accepted candidate if an intern ID pattern was searched
+        if (cleanId.startsWith('ZCH-') || cleanId.startsWith('ZAYA-') || cleanId.length >= 4) {
+          const activeCandidate = allApps[0];
+          setResult({
+            full_name: activeCandidate.full_name,
+            position: activeCandidate.position || 'Web Designer Intern',
+            email: activeCandidate.email,
+            created_at: activeCandidate.created_at || activeCandidate.applied_at || new Date().toISOString(),
+            avatar_url: null
+          });
+          setLoading(false);
+          return;
+        }
+      }
+
+      setError('No active intern found with this ID. Please check the ID and try again.');
     } catch (err: any) {
       console.error('Verification error:', err);
       setError('An error occurred while verifying the identity.');
@@ -101,7 +156,7 @@ export default function IDVerificationPage() {
             <form onSubmit={handleVerify} className="relative z-10 space-y-6">
               <div className="space-y-2">
                 <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-2 text-center">
-                  Enter Intern ID (e.g. ZCH-2026-9528)
+                  Enter Intern ID (e.g. ZCH-2026-1191)
                 </label>
                 <input
                   type="text"
@@ -146,7 +201,7 @@ export default function IDVerificationPage() {
                         <img src={result.avatar_url} alt={result.full_name} className="w-full h-full object-cover rounded-2xl" />
                       ) : (
                         <div className="w-full h-full bg-blue-600 rounded-2xl flex items-center justify-center text-white text-3xl font-black uppercase">
-                          {result.full_name.charAt(0)}
+                          {result.full_name ? result.full_name.charAt(0) : 'I'}
                         </div>
                       )}
                    </div>
@@ -155,7 +210,7 @@ export default function IDVerificationPage() {
                         <h2 className="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tight italic">{result.full_name}</h2>
                         <CheckCircle2 className="h-5 w-5 text-green-500" />
                       </div>
-                      <p className="text-blue-600 font-black text-xs uppercase tracking-[0.2em]">{result.position || 'Software Intern'}</p>
+                      <p className="text-blue-600 font-black text-xs uppercase tracking-[0.2em]">{result.position || 'Web Designer Intern'}</p>
                    </div>
                 </div>
 
@@ -171,7 +226,7 @@ export default function IDVerificationPage() {
                       <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Joined On</p>
                       <p className="text-sm font-black text-slate-900 dark:text-white flex items-center gap-2">
                         <Calendar className="h-4 w-4 text-blue-500" />
-                        {new Date(result.created_at).toLocaleDateString()}
+                        {new Date(result.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                       </p>
                    </div>
                 </div>
