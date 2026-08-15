@@ -248,12 +248,6 @@ export default function DashboardLayout({
               <h2 className="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">
                 {isAdmin ? 'Management Console' : 'Intern Portal'}
               </h2>
-              <div className="flex items-center gap-2 mt-0.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
-                  System 100% Operational • Supabase Live
-                </span>
-              </div>
             </div>
           </div>
 
