@@ -162,18 +162,18 @@ async function sendApplicationConfirmationEmail(email: string, fullName: string,
       </html>
     `;
 
-    // 1. Try sending from custom domain onboarding@zayacodehub.in
+    // 1. Try sending from verified domain onboarding@hamrolearning.com
     let sendResult = await resend.emails.send({
-      from: 'ZAYA CODE HUB <onboarding@zayacodehub.in>',
+      from: 'ZAYA CODE HUB <onboarding@hamrolearning.com>',
       to: [email],
       subject: subject,
       html: htmlContent,
     });
 
     if (sendResult.error) {
-      console.warn('Custom domain email notice, trying support@zayacodehub.in:', sendResult.error.message);
+      console.warn('Custom domain email notice, trying support@hamrolearning.com:', sendResult.error.message);
       sendResult = await resend.emails.send({
-        from: 'ZAYA CODE HUB <support@zayacodehub.in>',
+        from: 'ZAYA CODE HUB <support@hamrolearning.com>',
         to: [email],
         subject: subject,
         html: htmlContent,

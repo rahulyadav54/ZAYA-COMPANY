@@ -1,42 +1,35 @@
 import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
 
-export async function POST(request: Request) {
+export async function POST(req: Request) {
   try {
-    if (!process.env.RESEND_API_KEY) {
-      console.warn('RESEND_API_KEY is not configured. Skipping email send.');
-      return NextResponse.json({ message: 'Email skipped (RESEND_API_KEY not configured)' });
-    }
+    const { email, fullName, title, submissionId } = await req.json();
+
     const resend = new Resend(process.env.RESEND_API_KEY);
-    const { email, fullName, taskTitle, paymentId, amount } = await request.json();
+    const subject = `Payment Confirmed & Task Under Review: ${title} - ZAYA CODE HUB`;
 
-    if (!email || !fullName || !taskTitle) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
-    }
-
-    const subject = `Project Submitted Successfully: ${taskTitle}`;
     const htmlContent = `
-      <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px; border: 1px solid #f1f5f9; border-radius: 24px; background-color: #ffffff;">
+      <div style="font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 30px; background-color: #ffffff; border-radius: 24px; border: 1px solid #e2e8f0; shadow: 0 10px 25px rgba(0,0,0,0.05);">
         <div style="text-align: center; margin-bottom: 30px;">
-          <div style="background-color: #2563eb; color: white; width: 60px; height: 60px; line-height: 60px; border-radius: 50%; font-size: 30px; margin: 0 auto; display: inline-block;">✓</div>
+          <h1 style="color: #2563eb; font-size: 24px; font-weight: 800; margin: 0;">ZAYA CODE HUB</h1>
+          <p style="color: #64748b; font-size: 14px; margin-top: 4px;">Payment Confirmed & Submission Received</p>
         </div>
-        <h1 style="color: #0f172a; font-size: 26px; text-align: center; margin-bottom: 8px;">Submission Confirmed!</h1>
-        <p style="color: #64748b; font-size: 16px; text-align: center; margin-bottom: 30px;">Hello ${fullName}, your project has been successfully submitted and the payment has been processed.</p>
         
-        <div style="background-color: #f8fafc; padding: 25px; border-radius: 16px; margin: 20px 0; border: 1px solid #e2e8f0;">
-          <h2 style="font-size: 14px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; margin-top: 0;">Submission Details</h2>
+        <p style="font-size: 16px; color: #1e293b; font-weight: 600;">Dear ${fullName},</p>
+        
+        <p style="font-size: 15px; color: #475569; line-height: 1.6;">
+          Your certificate processing fee payment for <strong>"${title}"</strong> has been successfully confirmed!
+        </p>
+
+        <div style="background-color: #f8fafc; padding: 20px; border-radius: 16px; margin: 20px 0; border: 1px solid #e2e8f0;">
           <table style="width: 100%; border-collapse: collapse;">
             <tr>
-              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Project Task:</td>
-              <td style="padding: 8px 0; color: #0f172a; font-size: 14px; font-weight: 600; text-align: right;">${taskTitle}</td>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Submission ID:</td>
+              <td style="padding: 8px 0; color: #0f172a; font-size: 14px; font-weight: 600; text-align: right;">${submissionId || 'CONFIRMED'}</td>
             </tr>
             <tr>
-              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Transaction ID:</td>
-              <td style="padding: 8px 0; color: #0f172a; font-size: 14px; font-weight: 600; text-align: right; font-family: monospace;">${paymentId}</td>
-            </tr>
-            <tr>
-              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Amount Paid:</td>
-              <td style="padding: 8px 0; color: #2563eb; font-size: 14px; font-weight: 700; text-align: right;">₹${amount}</td>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Task Title:</td>
+              <td style="padding: 8px 0; color: #0f172a; font-size: 14px; font-weight: 600; text-align: right;">${title}</td>
             </tr>
             <tr>
               <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Status:</td>
@@ -56,15 +49,14 @@ export async function POST(request: Request) {
       </div>
     `;
 
-    // 1. Try sending from custom domain
+    // 1. Send via verified custom domain onboarding@hamrolearning.com
     let sendResult = await resend.emails.send({
-      from: 'ZAYA CODE HUB <onboarding@zayacodehub.in>',
+      from: 'ZAYA CODE HUB <onboarding@hamrolearning.com>',
       to: [email],
       subject: subject,
       html: htmlContent,
     });
 
-    // 2. Fallback to onboarding@resend.dev if custom domain is not yet verified
     if (sendResult.error) {
       console.warn('Custom domain email notice, using resend.dev fallback:', sendResult.error.message);
       sendResult = await resend.emails.send({

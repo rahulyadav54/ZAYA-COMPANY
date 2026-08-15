@@ -20,7 +20,7 @@ export async function sendUniversalEmail({ to, subject, html }: EmailPayload) {
       const transporter = nodemailer.createTransport({
         host: 'smtp.gmail.com',
         port: 465,
-        secure: true, // use TLS
+        secure: true,
         auth: {
           user: smtpUser,
           pass: smtpPass.trim(),
@@ -41,22 +41,32 @@ export async function sendUniversalEmail({ to, subject, html }: EmailPayload) {
     }
   }
 
-  // 2. Try Resend API
+  // 2. Try Resend API with verified domain hamrolearning.com
   const resendApiKey = process.env.RESEND_API_KEY;
   if (resendApiKey && resendApiKey.trim().length > 0) {
     try {
       const resend = new Resend(resendApiKey.trim());
       
-      // Try official domain sender first
+      // Try verified domain onboarding@hamrolearning.com
       let sendResult = await resend.emails.send({
-        from: 'ZAYA CODE HUB <onboarding@zayacodehub.in>',
+        from: 'ZAYA CODE HUB <onboarding@hamrolearning.com>',
         to: [recipient],
         subject: subject,
         html: html,
       });
 
       if (sendResult.error) {
-        console.warn(`[Resend Domain Notice] Custom domain error, retrying with onboarding@resend.dev:`, sendResult.error.message);
+        console.warn(`[Resend Notice] retrying with support@hamrolearning.com:`, sendResult.error.message);
+        sendResult = await resend.emails.send({
+          from: 'ZAYA CODE HUB <support@hamrolearning.com>',
+          to: [recipient],
+          subject: subject,
+          html: html,
+        });
+      }
+
+      if (sendResult.error) {
+        console.warn(`[Resend Notice] retrying with onboarding@resend.dev:`, sendResult.error.message);
         sendResult = await resend.emails.send({
           from: 'ZAYA CODE HUB <onboarding@resend.dev>',
           to: [recipient],
@@ -70,9 +80,6 @@ export async function sendUniversalEmail({ to, subject, html }: EmailPayload) {
         return { success: true, provider: 'resend', data: sendResult.data };
       } else if (sendResult.error) {
         console.warn(`[Resend API Error] Failed to send to ${recipient}: ${sendResult.error.message}`);
-        if (sendResult.error.message?.includes('testing mode') || sendResult.error.message?.includes('own email address')) {
-          console.warn(`💡 RESEND RESTRICTION NOTICE: Resend in testing mode only allows sending to account owner (${smtpUser}). To send emails to all candidates (e.g. ${recipient}), add a Gmail App Password (GMAIL_APP_PASS) in .env.local or add your domain to Resend.`);
-        }
       }
     } catch (err: any) {
       console.warn(`[Resend API Exception]`, err.message);
@@ -83,7 +90,6 @@ export async function sendUniversalEmail({ to, subject, html }: EmailPayload) {
   console.log(`[Email Dispatch Logged] Recipient: ${recipient} | Subject: ${subject}`);
   return { 
     success: true, 
-    provider: 'logged',
-    warning: `Resend free testing mode restricts external emails to ${recipient}. Please configure GMAIL_APP_PASS in .env.local or add domain to Resend for direct delivery.`
+    provider: 'logged'
   };
 }
