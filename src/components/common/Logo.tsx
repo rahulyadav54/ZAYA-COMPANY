@@ -53,11 +53,17 @@ export default function Logo({ subtitle, className = '', size = 'md', href = '/'
 
       {/* Brand Name Typography */}
       <div className="flex flex-col">
-        <span className={`${textSizes[size]} font-black tracking-tight ${mainTextColor} leading-none whitespace-nowrap`}>
-          <span>ZAYA</span>
-          <span className="bg-gradient-to-r from-blue-500 via-indigo-500 to-cyan-400 bg-clip-text text-transparent">CODE</span>
-          <span>HUB</span>
-        </span>
+        <div className={`${textSizes[size]} font-black tracking-tight leading-none whitespace-nowrap flex items-center gap-1`}>
+          <span className={mainTextColor}>
+            ZAYA
+          </span>
+          <span className="text-blue-600 dark:text-blue-400 font-black">
+            CODE
+          </span>
+          <span className={mainTextColor}>
+            HUB
+          </span>
+        </div>
         
         {subtitle ? (
           <span className="text-[10px] font-extrabold uppercase tracking-wider text-blue-600 dark:text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded-md inline-block mt-1 self-start border border-blue-500/20">
