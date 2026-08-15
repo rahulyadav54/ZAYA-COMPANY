@@ -203,8 +203,8 @@ export async function POST(request: Request) {
                         </tr>
                       </table>
 
-                      <p class="mobile-text" style="font-size: 12px; color: #64748b; text-align: center; margin-bottom: 18px;">
-                        💡 <em>Note: You can log in using either your Personal Gmail or your Official Company Email with the password above.</em>
+                      <p class="mobile-text" style="font-size: 12px; color: #1e40af; text-align: center; margin-bottom: 18px; font-weight: 600;">
+                        🔒 <em>IMPORTANT: Please log in using your assigned Official Company Email (${companyLoginEmail}) and password above. Personal Gmail login is disabled for interns.</em>
                       </p>
 
                       <!-- Button -->

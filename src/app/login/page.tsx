@@ -74,8 +74,17 @@ function LoginForm() {
     setError(null);
     setSuccess(null);
 
+    const cleanEmail = email.trim().toLowerCase();
+    const isAdminUser = cleanEmail === 'zayacodehub@gmail.com' || cleanEmail.includes('admin');
+
+    if (!isAdminUser && !cleanEmail.endsWith('@zayacodehub.com')) {
+      setError('Personal email login is disabled for interns. Please log in using your official company email (e.g. name@zayacodehub.com).');
+      setIsLoading(false);
+      return;
+    }
+
     try {
-      console.log('Attempting login for:', email);
+      console.log('Attempting login for:', cleanEmail);
       
       let loggedInUser: any = null;
       let userRole = 'intern';

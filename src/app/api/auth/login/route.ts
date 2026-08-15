@@ -10,11 +10,21 @@ export async function POST(request: Request) {
     const cleanEmail = (email || '').toLowerCase().trim();
     const envServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
+    const isAdminUser = cleanEmail === 'zayacodehub@gmail.com' || cleanEmail.includes('admin');
+
+    // Strictly disallow personal email login for interns
+    if (!isAdminUser && !cleanEmail.endsWith('@zayacodehub.com')) {
+      return NextResponse.json({
+        success: false,
+        error: 'Personal email login is disabled for interns. Please log in using your official company email (e.g. name@zayacodehub.com).'
+      }, { status: 400 });
+    }
+
     const supabaseAnon = createClient(SUPABASE_PROJECT_URL, SUPABASE_PUBLIC_ANON_KEY, {
       auth: { persistSession: false }
     });
 
-    // 1. Try standard login with submitted email
+    // 1. Try standard login with official email
     const { data: authData, error: authError } = await supabaseAnon.auth.signInWithPassword({
       email: cleanEmail,
       password: password
@@ -25,53 +35,23 @@ export async function POST(request: Request) {
         success: true,
         session: authData.session,
         user: authData.user,
-        role: (cleanEmail.includes('admin') || cleanEmail === 'zayacodehub@gmail.com') ? 'admin' : 'intern'
+        role: isAdminUser ? 'admin' : 'intern'
       });
     }
 
-    // 2. Derive potential official email or personal email variant
-    let candidateOfficialEmail = cleanEmail;
-    const usernameInput = cleanEmail.split('@')[0].toLowerCase().trim().replace(/[^a-z0-9]/g, '');
-
-    if (!cleanEmail.endsWith('@zayacodehub.com')) {
-      candidateOfficialEmail = `${usernameInput}@zayacodehub.com`;
-    }
-
-    // 3. Try standard login with derived Official Email
-    if (candidateOfficialEmail !== cleanEmail) {
-      const { data: officialAuthData, error: officialAuthError } = await supabaseAnon.auth.signInWithPassword({
-        email: candidateOfficialEmail,
-        password: password
-      });
-
-      if (!officialAuthError && officialAuthData?.session) {
-        return NextResponse.json({
-          success: true,
-          session: officialAuthData.session,
-          user: officialAuthData.user,
-          role: 'intern'
-        });
-      }
-    }
-
-    // 4. Try Service Role Admin updateUser / confirm
+    // 2. Try Service Role Admin updateUser / confirm
     if (envServiceKey && envServiceKey.startsWith('ey')) {
       try {
         const supabaseAdmin = createClient(SUPABASE_PROJECT_URL, envServiceKey, {
           auth: { persistSession: false }
         });
 
-        const targetEmail = candidateOfficialEmail.endsWith('@zayacodehub.com') ? candidateOfficialEmail : cleanEmail;
-
         const { data: userList } = await supabaseAdmin.auth.admin.listUsers();
-        let targetUser = userList?.users?.find(u => 
-          u.email?.toLowerCase() === targetEmail.toLowerCase() || 
-          u.email?.toLowerCase() === cleanEmail.toLowerCase()
-        );
+        let targetUser = userList?.users?.find(u => u.email?.toLowerCase() === cleanEmail);
 
         if (!targetUser) {
           const { data: newAdminUser } = await supabaseAdmin.auth.admin.createUser({
-            email: targetEmail,
+            email: cleanEmail,
             password: password || 'ZayaIntern@2026',
             email_confirm: true
           });
@@ -85,7 +65,7 @@ export async function POST(request: Request) {
 
         if (targetUser) {
           const { data: signInSession, error: signInErr } = await supabaseAnon.auth.signInWithPassword({
-            email: targetUser.email || targetEmail,
+            email: targetUser.email || cleanEmail,
             password: password || 'ZayaIntern@2026'
           });
 
@@ -94,7 +74,7 @@ export async function POST(request: Request) {
               success: true,
               session: signInSession.session,
               user: signInSession.user,
-              role: 'intern'
+              role: isAdminUser ? 'admin' : 'intern'
             });
           }
         }
@@ -103,52 +83,36 @@ export async function POST(request: Request) {
       }
     }
 
-    // 5. Unstoppable Candidate & Intern Resolver: Match across applications and profiles
+    // 3. Fallback verification: Match accepted profile by official @zayacodehub.com email
     let acceptedApplicant: any = null;
 
     try {
-      const { data: appList } = await supabaseAnon
-        .from('applications')
-        .select('*');
-
-      if (appList && Array.isArray(appList)) {
-        acceptedApplicant = appList.find((a: any) => {
-          const appEmail = (a.email || '').toLowerCase().trim();
-          const appNameClean = (a.full_name || '').toLowerCase().trim().replace(/[^a-z0-9]/g, '');
-          return (
-            appEmail === cleanEmail ||
-            appEmail === candidateOfficialEmail ||
-            (usernameInput.length >= 3 && (appEmail.includes(usernameInput) || appNameClean.includes(usernameInput)))
-          );
-        });
+      const { data: profList } = await supabaseAnon.from('profiles').select('*');
+      if (profList && Array.isArray(profList)) {
+        acceptedApplicant = profList.find((p: any) => (p.email || '').toLowerCase().trim() === cleanEmail);
       }
     } catch (e) {
-      console.warn('App list lookup notice:', e);
+      console.warn('Profile list lookup notice:', e);
     }
 
     if (!acceptedApplicant) {
       try {
-        const { data: profList } = await supabaseAnon.from('profiles').select('*');
-        if (profList && Array.isArray(profList)) {
-          acceptedApplicant = profList.find((p: any) => {
-            const pEmail = (p.email || '').toLowerCase().trim();
-            const pNameClean = (p.full_name || '').toLowerCase().trim().replace(/[^a-z0-9]/g, '');
-            return (
-              pEmail === cleanEmail ||
-              pEmail === candidateOfficialEmail ||
-              (usernameInput.length >= 3 && (pEmail.includes(usernameInput) || pNameClean.includes(usernameInput)))
-            );
+        const usernamePrefix = cleanEmail.split('@')[0];
+        const { data: appList } = await supabaseAnon.from('applications').select('*').eq('status', 'accepted');
+        if (appList && Array.isArray(appList)) {
+          acceptedApplicant = appList.find((a: any) => {
+            const cleanName = (a.full_name || '').toLowerCase().trim().replace(/[^a-z0-9]/g, '');
+            return cleanName.includes(usernamePrefix) || cleanName === usernamePrefix;
           });
         }
       } catch (e) {
-        console.warn('Profile list lookup notice:', e);
+        console.warn('App list lookup notice:', e);
       }
     }
 
-    // If accepted candidate/profile exists OR default assigned password is used
     if (acceptedApplicant || password === 'ZayaIntern@2026' || (password && password.length >= 6)) {
       const internId = acceptedApplicant?.id || `intern-${Date.now()}`;
-      const internEmail = acceptedApplicant?.email || candidateOfficialEmail || cleanEmail;
+      const internEmail = cleanEmail;
       const internName = acceptedApplicant?.full_name || 'Accepted Intern';
 
       const syntheticSession = {
@@ -172,7 +136,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       success: false,
-      error: 'Invalid login credentials. Please check your email address and password.'
+      error: 'Invalid login credentials. Please check your official company email and password.'
     }, { status: 401 });
 
   } catch (error: any) {
