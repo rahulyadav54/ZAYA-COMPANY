@@ -210,10 +210,10 @@ export default function OfferLetterPage() {
           <div className="space-y-6 leading-relaxed text-base" style={{ color: '#334155' }}>
             <div className="mb-8">
               <p className="font-bold" style={{ color: '#0f172a' }}>To,</p>
-              <p className="font-black text-xl mt-1" style={{ color: '#2563eb' }}>{profile?.full_name}</p>
+              <p className="font-black text-xl mt-1" style={{ color: '#2563eb' }}>{profile?.full_name || application?.full_name || 'Accepted Intern'}</p>
               <div className="flex flex-col mt-1">
                 <p className="font-medium uppercase text-xs tracking-widest" style={{ color: '#64748b' }}>
-                  {profile?.position && profile.position !== 'Intern' ? profile.position : (application?.position || 'Processing Role...')}
+                  {(profile?.position && profile.position !== 'Intern') ? profile.position : (application?.position || 'Web Designer Intern')}
                 </p>
                 {(profile?.intern_id || application?.intern_id) && (
                   <p className="text-[10px] font-black uppercase tracking-widest mt-1" style={{ color: '#94a3b8' }}>
@@ -223,11 +223,11 @@ export default function OfferLetterPage() {
               </div>
             </div>
 
-            <p>Dear <span className="font-bold" style={{ color: '#0f172a' }}>{profile?.full_name?.split(' ')[0]}</span>,</p>
+            <p>Dear <span className="font-bold" style={{ color: '#0f172a' }}>{(profile?.full_name || application?.full_name || 'Intern').split(' ')[0]}</span>,</p>
             
             <p>
               We are delighted to offer you an opportunity to join our team as an <span className="font-bold" style={{ color: '#0f172a' }}>
-                {profile?.position && profile.position !== 'Intern' ? profile.position : (application?.position || 'Professional Intern')}
+                {(profile?.position && profile.position !== 'Intern') ? profile.position : (application?.position || 'Web Designer Intern')}
               </span> at <span className="font-bold" style={{ color: '#2563eb' }}>ZAYA CODE HUB</span>. 
               The term of your placement will be for a duration of <span className="font-bold" style={{ color: '#0f172a' }}>{application?.duration || '1 month'}</span>, starting from <span className="font-bold" style={{ color: '#0f172a' }}>{profile?.joining_date ? new Date(profile.joining_date).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) : currentDate}</span>.
             </p>

@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import IDCard from '@/components/intern/IDCard';
-import { Download, Share2, Printer, ShieldCheck, CreditCard, Loader2, Link as LinkIcon, Check } from 'lucide-react';
+import { Download, Share2, Printer, ShieldCheck, CreditCard, Loader2, Link as LinkIcon, Check, Upload, Image as ImageIcon } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 
@@ -12,60 +12,119 @@ export default function InternIDCardPage() {
   const [loading, setLoading] = useState(true);
   const [isDownloading, setIsDownloading] = useState(false);
   const [copied, setCopied] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const idCardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     async function loadProfile() {
-      const { getActiveUser } = await import('@/lib/getActiveUser');
-      const user = await getActiveUser();
-      if (user) {
-        let p: any = null;
-        const { data: profileData } = await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle();
-        p = profileData;
+      try {
+        const { getActiveUser } = await import('@/lib/getActiveUser');
+        const user = await getActiveUser();
+        if (user) {
+          let p: any = null;
+          const { data: profileData } = await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle();
+          p = profileData;
 
-        if (!p && user.email) {
-          const { data: pEmail } = await supabase.from('profiles').select('*').eq('email', user.email).maybeSingle();
-          p = pEmail;
-        }
-
-        if (!p && user.email) {
-          const { data: appData } = await supabase.from('applications').select('*').eq('email', user.email).maybeSingle();
-          if (appData) {
-            p = {
-              full_name: appData.full_name,
-              email: appData.email,
-              position: appData.position,
-              joining_date: appData.created_at ? new Date(appData.created_at).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
-              intern_id: `ZCH-2026-${Math.floor(1000 + Math.random() * 9000)}`
-            };
+          if (!p && user.email) {
+            const { data: pEmail } = await supabase.from('profiles').select('*').eq('email', user.email).maybeSingle();
+            p = pEmail;
           }
-        }
 
-        if (p) setProfile(p);
+          let appData: any = null;
+          const targetEmail = p?.email || user.email;
+          if (targetEmail) {
+            const { data: appRes } = await supabase
+              .from('applications')
+              .select('*')
+              .ilike('email', targetEmail)
+              .order('created_at', { ascending: false })
+              .limit(1)
+              .maybeSingle();
+            appData = appRes;
+          }
+
+          if (!appData && p?.full_name) {
+            const { data: nameRes } = await supabase
+              .from('applications')
+              .select('*')
+              .ilike('full_name', `%${p.full_name}%`)
+              .order('created_at', { ascending: false })
+              .limit(1)
+              .maybeSingle();
+            appData = nameRes;
+          }
+
+          // Check cached avatar from localStorage
+          const cachedAvatar = typeof window !== 'undefined' ? localStorage.getItem(`avatar_${user.id}`) : null;
+
+          const resolvedProfile = {
+            id: user.id,
+            full_name: p?.full_name || appData?.full_name || user.user_metadata?.full_name || 'Accepted Intern',
+            email: p?.email || appData?.email || user.email,
+            position: (p?.position && p.position !== 'Intern') ? p.position : (appData?.position || 'Web Designer Intern'),
+            intern_id: p?.intern_id || appData?.intern_id || `ZCH-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`,
+            created_at: p?.created_at || appData?.created_at || new Date().toISOString(),
+            joining_date: p?.joining_date || appData?.created_at || new Date().toISOString().split('T')[0],
+            avatar_url: cachedAvatar || p?.avatar_url || null
+          };
+
+          setProfile(resolvedProfile);
+        }
+      } catch (err) {
+        console.error('ID Card Profile Load Notice:', err);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     }
     loadProfile();
   }, []);
+
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      alert('Please select a valid image file (PNG, JPG, JPEG, WEBP).');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      const imageUrl = event.target?.result as string;
+      if (imageUrl && profile) {
+        const updatedProfile = { ...profile, avatar_url: imageUrl };
+        setProfile(updatedProfile);
+
+        try {
+          if (profile.id) {
+            localStorage.setItem(`avatar_${profile.id}`, imageUrl);
+            await supabase.from('profiles').update({ avatar_url: imageUrl }).eq('id', profile.id);
+          }
+        } catch (err) {
+          console.warn('Avatar save notice:', err);
+        }
+
+        alert('Photo uploaded successfully! Your ID Card has been updated.');
+      }
+    };
+    reader.readAsDataURL(file);
+  };
 
   const handleDownloadID = async () => {
     if (!idCardRef.current || !profile) return;
     setIsDownloading(true);
     
     try {
-      // Force scroll to top to prevent capture offsets
       window.scrollTo(0, 0);
-      
-      // Delay for layout stabilization
       await new Promise(resolve => setTimeout(resolve, 800));
       
       const element = idCardRef.current;
       const canvas = await html2canvas(element, {
-        scale: 2, // High resolution
+        scale: 2.5,
         useCORS: true,
         allowTaint: false,
         logging: false,
-        backgroundColor: null, 
+        backgroundColor: null,
         windowWidth: 800,
         scrollY: -window.scrollY,
         scrollX: 0
@@ -80,7 +139,7 @@ export default function InternIDCardPage() {
       
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = pdf.internal.pageSize.getHeight();
-      const imgWidth = 100; // Standard ID width on A4
+      const imgWidth = 100;
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
       
       const x = (pdfWidth - imgWidth) / 2;
@@ -89,17 +148,13 @@ export default function InternIDCardPage() {
       pdf.addImage(imgData, 'PNG', x, y, imgWidth, imgHeight, undefined, 'FAST');
       pdf.save(`ZAYA_ID_${profile.full_name.replace(/\s+/g, '_')}.pdf`);
       
-      alert('Success! Your ID Card has been downloaded.');
+      alert('Success! Your ID Card has been downloaded as PDF.');
     } catch (error: any) {
       console.error('Download System Error:', error);
       alert(`Download Failed: ${error.message || 'Unknown Error'}. Please try refreshing the page.`);
     } finally {
       setIsDownloading(false);
     }
-  };
-
-  const handlePrint = () => {
-    window.print();
   };
 
   const handleCopyLink = () => {
@@ -121,7 +176,7 @@ export default function InternIDCardPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
         <Loader2 className="h-12 w-12 animate-spin text-blue-600" />
-        <p className="text-slate-500 font-bold uppercase tracking-widest text-xs">Accessing Identity Vault...</p>
+        <p className="text-slate-500 font-bold uppercase tracking-widest text-xs">Accessing Digital Identity Vault...</p>
       </div>
     );
   }
@@ -137,16 +192,25 @@ export default function InternIDCardPage() {
              <span className="text-sm font-black text-blue-600 uppercase tracking-widest">Digital Identity</span>
            </div>
            <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight italic uppercase">Virtual ID Card</h1>
-           <p className="text-slate-500 mt-2 text-lg">Your official ZAYA CODE HUB intern identity for the 2026 program.</p>
+           <p className="text-slate-500 mt-2 text-lg">Your official ZAYA CODE HUB intern identity card.</p>
         </div>
         
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
+          <input 
+            type="file" 
+            ref={fileInputRef} 
+            accept="image/*" 
+            onChange={handlePhotoUpload} 
+            className="hidden" 
+          />
           <button 
-            onClick={handlePrint}
-            className="flex items-center gap-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-6 py-3 rounded-2xl font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all active:scale-95 shadow-lg"
+            onClick={() => fileInputRef.current?.click()}
+            className="flex items-center gap-2 bg-slate-900 hover:bg-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 text-white px-6 py-3 rounded-2xl font-bold transition-all active:scale-95 shadow-lg"
           >
-            <Printer className="h-4 w-4" /> Print
+            <Upload className="h-4 w-4 text-cyan-400" />
+            {profile?.avatar_url ? 'Change Photo' : 'Upload Photo'}
           </button>
+          
           <button 
             onClick={handleDownloadID}
             disabled={isDownloading}
@@ -160,10 +224,13 @@ export default function InternIDCardPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         {/* Left: ID Card Preview */}
-        <div className="py-10 flex justify-center print:p-0">
-           <div ref={idCardRef} id="id-card-capture" className="bg-transparent rounded-[3rem] overflow-hidden">
+        <div className="py-10 flex flex-col items-center justify-center print:p-0">
+           <div ref={idCardRef} id="id-card-capture" className="bg-transparent rounded-[2.5rem] overflow-hidden">
               {profile && <IDCard profile={profile} />}
            </div>
+           <p className="text-xs font-bold text-slate-400 mt-4 tracking-wide">
+             💡 Tip: Click &quot;Upload Photo&quot; to personalize your card photo!
+           </p>
         </div>
 
         {/* Right: Info & Guidelines */}
@@ -171,28 +238,28 @@ export default function InternIDCardPage() {
            <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 p-10 shadow-xl">
               <h3 className="text-xl font-black text-slate-900 dark:text-white uppercase italic mb-6 flex items-center gap-3">
                 <ShieldCheck className="h-6 w-6 text-green-500" />
-                Security & Usage
+                Security & Verification Guidelines
               </h3>
               <div className="space-y-6">
                 <div className="flex gap-4">
                    <div className="h-8 w-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center font-bold text-slate-500 shrink-0">1</div>
                    <div>
                       <p className="font-bold text-slate-900 dark:text-white">Official Verification</p>
-                      <p className="text-sm text-slate-500 font-medium">This ID card is your official proof of internship at Zaya Code Hub. It can be verified by any employer using your unique Intern ID.</p>
+                      <p className="text-sm text-slate-500 font-medium">This ID card serves as your official proof of selection at Zaya Code Hub for <strong className="text-blue-600 dark:text-blue-400">{profile?.position}</strong>.</p>
                    </div>
                 </div>
                 <div className="flex gap-4">
                    <div className="h-8 w-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center font-bold text-slate-500 shrink-0">2</div>
                    <div>
-                      <p className="font-bold text-slate-900 dark:text-white">Digital-First Access</p>
-                      <p className="text-sm text-slate-500 font-medium">Use this virtual ID for internal meetings, community events, and workshop access throughout your tenure.</p>
+                      <p className="font-bold text-slate-900 dark:text-white">Photo Personalization</p>
+                      <p className="text-sm text-slate-500 font-medium">Click &quot;Upload Photo&quot; above to upload your passport-style headshot. If no photo is uploaded, your card displays your default 3D emblem avatar.</p>
                    </div>
                 </div>
                 <div className="flex gap-4">
                    <div className="h-8 w-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center font-bold text-slate-500 shrink-0">3</div>
                    <div>
-                      <p className="font-bold text-slate-900 dark:text-white">Profile Sync</p>
-                      <p className="text-sm text-slate-500 font-medium">Any changes you make to your profile settings will automatically be reflected on this ID card in real-time.</p>
+                      <p className="font-bold text-slate-900 dark:text-white">Professional Access</p>
+                      <p className="text-sm text-slate-500 font-medium">Use this ID card for internal project submissions, team meetings, and sharing your accomplishment on LinkedIn.</p>
                    </div>
                 </div>
               </div>
