@@ -39,38 +39,31 @@ export default function Certificate({
     setIsDownloading(true);
 
     try {
-      // Ensure we are at the top for clean capture
-      window.scrollTo(0, 0);
-      
-      // Wait for any rendering to settle
-      await new Promise(resolve => setTimeout(resolve, 800));
-      
-      const canvas = await html2canvas(certificateRef.current, {
-        scale: 2.5, // Balanced scale for quality vs stability
-        useCORS: true,
-        allowTaint: false,
-        backgroundColor: '#ffffff',
-        logging: true,
-        windowWidth: 1200,
-        imageTimeout: 15000
-      });
-      
-      const imgData = canvas.toDataURL('image/png', 0.9);
-      const pdf = new jsPDF({
-        orientation: 'landscape',
-        unit: 'mm',
-        format: 'a4'
+      const { downloadAsPDF, downloadAsPNG } = await import('@/lib/downloadHelper');
+      const name = (internName || 'Intern').replace(/\s+/g, '_');
+      const filename = `ZAYA_Certificate_${name}`;
+
+      let success = await downloadAsPDF({
+        element: certificateRef.current,
+        filename: `${filename}.pdf`,
+        pdfOrientation: 'landscape'
       });
 
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
+      if (!success) {
+        success = await downloadAsPNG({
+          element: certificateRef.current,
+          filename: `${filename}.png`
+        });
+      }
 
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight, undefined, 'MEDIUM');
-      pdf.save(`ZAYA_Certificate_${internName.replace(/\s+/g, '_')}.pdf`);
-      alert('Success! Your certificate has been downloaded.');
+      if (success) {
+        alert('Success! Your certificate has been downloaded.');
+      } else {
+        window.print();
+      }
     } catch (error: any) {
       console.error('Certificate Generation Error:', error);
-      alert(`Download Failed: ${error.message || 'Unknown Error'}. Please ensure you are using a modern browser.`);
+      window.print();
     } finally {
       setIsDownloading(false);
     }

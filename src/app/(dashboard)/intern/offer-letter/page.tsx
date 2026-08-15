@@ -76,49 +76,31 @@ export default function OfferLetterPage() {
     setIsDownloading(true);
 
     try {
-      window.scrollTo(0, 0);
-      await new Promise(resolve => setTimeout(resolve, 800));
+      const { downloadAsPDF, downloadAsPNG } = await import('@/lib/downloadHelper');
+      const name = resolveInternName(profile, application, activeUser).replace(/\s+/g, '_');
+      const filename = `ZAYA_Offer_Letter_${name}`;
       
-      const element = letterRef.current;
-      const canvas = await html2canvas(element, {
-        scale: 2,
-        useCORS: true,
-        allowTaint: false,
-        logging: false,
-        backgroundColor: '#ffffff',
-        windowWidth: element.scrollWidth,
-        windowHeight: element.scrollHeight,
-        scrollY: -window.scrollY,
-        scrollX: 0
-      });
-      
-      const imgData = canvas.toDataURL('image/png', 1.0);
-      const pdf = new jsPDF({
-        orientation: 'p',
-        unit: 'mm',
-        format: 'a4'
+      let success = await downloadAsPDF({
+        element: letterRef.current,
+        filename: `${filename}.pdf`,
+        pdfOrientation: 'portrait'
       });
 
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
-      
-      const elementWidth = canvas.width;
-      const elementHeight = canvas.height;
-      
-      const finalWidth = pdfWidth;
-      const finalHeight = (elementHeight * pdfWidth) / elementWidth;
-      
-      const xOffset = 0;
-      const yOffset = finalHeight > pdfHeight ? 0 : (pdfHeight - finalHeight) / 2;
+      if (!success) {
+        success = await downloadAsPNG({
+          element: letterRef.current,
+          filename: `${filename}.png`
+        });
+      }
 
-      pdf.addImage(imgData, 'PNG', xOffset, yOffset, finalWidth, finalHeight, undefined, 'FAST');
-      const filename = `ZAYA_Offer_Letter_${resolveInternName(profile, application, activeUser).replace(/\s+/g, '_')}.pdf`;
-      pdf.save(filename);
-      
-      alert('Success! Your Offer Letter has been downloaded.');
+      if (success) {
+        alert('Success! Your Offer Letter has been downloaded.');
+      } else {
+        window.print();
+      }
     } catch (error: any) {
       console.error('PDF Generation Error:', error);
-      alert(`Download Failed: ${error.message || 'Unknown Error'}. Please try refreshing the page.`);
+      window.print();
     } finally {
       setIsDownloading(false);
     }

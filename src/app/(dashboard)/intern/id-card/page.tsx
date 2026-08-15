@@ -120,43 +120,31 @@ export default function InternIDCardPage() {
     setIsDownloading(true);
     
     try {
-      window.scrollTo(0, 0);
-      await new Promise(resolve => setTimeout(resolve, 800));
-      
-      const element = idCardRef.current;
-      const canvas = await html2canvas(element, {
-        scale: 2.5,
-        useCORS: true,
-        allowTaint: false,
-        logging: false,
-        backgroundColor: null,
-        windowWidth: 800,
-        scrollY: -window.scrollY,
-        scrollX: 0
+      const { downloadAsPDF, downloadAsPNG } = await import('@/lib/downloadHelper');
+      const name = (profile.full_name || 'Intern').replace(/\s+/g, '_');
+      const filename = `ZAYA_ID_${name}`;
+
+      let success = await downloadAsPDF({
+        element: idCardRef.current,
+        filename: `${filename}.pdf`,
+        pdfOrientation: 'portrait'
       });
-      
-      const imgData = canvas.toDataURL('image/png', 1.0);
-      const pdf = new jsPDF({
-        orientation: 'p',
-        unit: 'mm',
-        format: 'a4'
-      });
-      
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
-      const imgWidth = 100;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      
-      const x = (pdfWidth - imgWidth) / 2;
-      const y = (pdfHeight - imgHeight) / 2;
-      
-      pdf.addImage(imgData, 'PNG', x, y, imgWidth, imgHeight, undefined, 'FAST');
-      pdf.save(`ZAYA_ID_${profile.full_name.replace(/\s+/g, '_')}.pdf`);
-      
-      alert('Success! Your ID Card has been downloaded as PDF.');
+
+      if (!success) {
+        success = await downloadAsPNG({
+          element: idCardRef.current,
+          filename: `${filename}.png`
+        });
+      }
+
+      if (success) {
+        alert('Success! Your ID Card has been downloaded.');
+      } else {
+        window.print();
+      }
     } catch (error: any) {
       console.error('Download System Error:', error);
-      alert(`Download Failed: ${error.message || 'Unknown Error'}. Please try refreshing the page.`);
+      window.print();
     } finally {
       setIsDownloading(false);
     }
