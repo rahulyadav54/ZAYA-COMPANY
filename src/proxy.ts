@@ -1,4 +1,4 @@
-import { createServerClient, type CookieOptions } from '@supabase/ssr'
+import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function proxy(request: NextRequest) {
@@ -9,46 +9,21 @@ export async function proxy(request: NextRequest) {
   })
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    'https://jhfmkjkldxovscvobvoh.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpoZm1ramtsZHhvdnNjdm9idm9oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY3MTE5ODYsImV4cCI6MjEwMjI4Nzk4Nn0.WbuwLOnQzdCu2wqQkrmMSe2TQYh_h45JgNPzU5z-6k0',
     {
       cookies: {
-        get(name: string) {
-          return request.cookies.get(name)?.value
+        getAll() {
+          return request.cookies.getAll()
         },
-        set(name: string, value: string, options: CookieOptions) {
-          request.cookies.set({
-            name,
-            value,
-            ...options,
-          })
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
           response = NextResponse.next({
-            request: {
-              headers: request.headers,
-            },
+            request,
           })
-          response.cookies.set({
-            name,
-            value,
-            ...options,
-          })
-        },
-        remove(name: string, options: CookieOptions) {
-          request.cookies.set({
-            name,
-            value: '',
-            ...options,
-          })
-          response = NextResponse.next({
-            request: {
-              headers: request.headers,
-            },
-          })
-          response.cookies.set({
-            name,
-            value: '',
-            ...options,
-          })
+          cookiesToSet.forEach(({ name, value, options }) =>
+            response.cookies.set(name, value, options)
+          )
         },
       },
     }
@@ -56,45 +31,53 @@ export async function proxy(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser()
 
-  // Protected routes logic
-  const isDashboard = request.nextUrl.pathname.startsWith('/admin') || request.nextUrl.pathname.startsWith('/intern')
+  const pathname = request.nextUrl.pathname;
+  const isDashboard = pathname.startsWith('/admin') || pathname.startsWith('/intern');
   
   if (isDashboard && !user) {
-    const redirectUrl = request.nextUrl.clone()
-    redirectUrl.pathname = '/login'
-    redirectUrl.searchParams.set('next', request.nextUrl.pathname)
-    return NextResponse.redirect(redirectUrl)
+    const redirectUrl = request.nextUrl.clone();
+    redirectUrl.pathname = '/login';
+    if (pathname.startsWith('/intern')) {
+      redirectUrl.searchParams.set('next', '/intern');
+    } else {
+      redirectUrl.searchParams.delete('next');
+    }
+    return NextResponse.redirect(redirectUrl);
   }
 
-  // Role based protection
+  // Role based protection for authenticated users
   if (user && isDashboard) {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .maybeSingle()
+    const userEmail = (user.email || '').toLowerCase().trim();
+    let userRole = (userEmail.includes('admin') || userEmail === 'zayacodehub@gmail.com') ? 'admin' : 'intern';
 
-    if (request.nextUrl.pathname.startsWith('/admin') && profile?.role !== 'admin') {
-      return NextResponse.redirect(new URL('/intern', request.url))
+    try {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .maybeSingle();
+
+      if (profile?.role) {
+        userRole = profile.role;
+      }
+    } catch (e) {
+      console.warn('Proxy profile role notice:', e);
     }
 
-    if (request.nextUrl.pathname.startsWith('/intern') && profile?.role !== 'intern' && profile?.role !== 'admin') {
-      return NextResponse.redirect(new URL('/login', request.url))
+    if (pathname.startsWith('/admin') && userRole !== 'admin') {
+      return NextResponse.redirect(new URL('/intern', request.url));
+    }
+
+    if (pathname.startsWith('/intern') && userRole === 'admin') {
+      return NextResponse.redirect(new URL('/admin', request.url));
     }
   }
 
-  return response
+  return response;
 }
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * Feel free to modify this pattern to include more paths.
-     */
     '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 }
