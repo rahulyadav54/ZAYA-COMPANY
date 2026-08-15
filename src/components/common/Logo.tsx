@@ -8,9 +8,10 @@ interface LogoProps {
   className?: string;
   size?: 'sm' | 'md' | 'lg';
   href?: string;
+  forceWhite?: boolean;
 }
 
-export default function Logo({ subtitle, className = '', size = 'md', href = '/' }: LogoProps) {
+export default function Logo({ subtitle, className = '', size = 'md', href = '/', forceWhite = false }: LogoProps) {
   const iconSizes = {
     sm: 'w-8 h-8 text-xs',
     md: 'w-10 h-10 text-sm',
@@ -22,6 +23,9 @@ export default function Logo({ subtitle, className = '', size = 'md', href = '/'
     md: 'text-lg sm:text-xl',
     lg: 'text-xl sm:text-2xl'
   };
+
+  const mainTextColor = forceWhite ? 'text-white' : 'text-slate-900 dark:text-white';
+  const subTextColor = forceWhite ? 'text-slate-300' : 'text-slate-500 dark:text-slate-400';
 
   const logoContent = (
     <div className={`flex items-center gap-3 group shrink-0 ${className}`}>
@@ -49,8 +53,10 @@ export default function Logo({ subtitle, className = '', size = 'md', href = '/'
 
       {/* Brand Name Typography */}
       <div className="flex flex-col">
-        <span className={`${textSizes[size]} font-black tracking-tight text-slate-900 dark:text-white leading-none whitespace-nowrap`}>
-          ZAYA<span className="bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-500 bg-clip-text text-transparent">CODE</span>HUB
+        <span className={`${textSizes[size]} font-black tracking-tight ${mainTextColor} leading-none whitespace-nowrap`}>
+          <span>ZAYA</span>
+          <span className="bg-gradient-to-r from-blue-500 via-indigo-500 to-cyan-400 bg-clip-text text-transparent">CODE</span>
+          <span>HUB</span>
         </span>
         
         {subtitle ? (
@@ -58,7 +64,7 @@ export default function Logo({ subtitle, className = '', size = 'md', href = '/'
             {subtitle}
           </span>
         ) : (
-          <span className="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 mt-0.5">
+          <span className={`text-[9px] font-extrabold uppercase tracking-widest ${subTextColor} mt-1`}>
             Software & Tech Hub
           </span>
         )}

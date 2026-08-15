@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { Code2, Lock, Mail, Loader2, ArrowRight, AlertCircle, CheckCircle2, Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabaseClient';
+import Logo from '@/components/common/Logo';
 
 function LoginForm() {
   const [email, setEmail] = useState('');
@@ -183,14 +184,7 @@ function LoginForm() {
         </div>
 
         <div className="relative z-10">
-          <Link href="/" className="inline-flex items-center space-x-3">
-            <div className="h-12 w-12 bg-white rounded-xl flex items-center justify-center">
-               <img src="/logo.png" alt="Zaya Code Hub" className="h-8 w-8 object-contain" />
-            </div>
-            <span className="text-2xl font-black tracking-widest text-white uppercase">
-              Zaya<span className="text-blue-400">Code</span>Hub
-            </span>
-          </Link>
+          <Logo forceWhite={true} size="lg" />
         </div>
 
         <div className="relative z-10 max-w-lg">
