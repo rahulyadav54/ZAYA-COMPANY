@@ -239,7 +239,7 @@ export default function ApplicationsPage() {
         }
 
         try {
-          // Send acceptance email with official credentials
+          // Send acceptance email with official credentials directly to candidate email
           await fetch('/api/send-acceptance', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -247,27 +247,46 @@ export default function ApplicationsPage() {
               email: appData.email,
               fullName: appData.full_name,
               position: appData.position,
-              status: newStatus,
+              status: 'accepted',
               officialEmail: createdEmail,
               password: createdPassword
             }),
           });
         } catch (err) {
-          console.error('Failed to send email:', err);
+          console.error('Failed to send acceptance email:', err);
         }
 
         await fetchApplications();
-        if (createdEmail) {
-          alert(`🎉 Application ACCEPTED!\n\nAutomatic Intern Account Created:\n• Official Email: ${createdEmail}\n• Assigned Password: ${createdPassword}\n\nLogin credentials have been sent to candidate (${appData.email}).`);
-          return;
-        }
+        alert(`🎉 Application ACCEPTED!\n\nOfficial Intern Account Created:\n• Official Email: ${createdEmail || 'Generated'}\n• Password: ${createdPassword}\n\nSelection email and login credentials have been sent directly to candidate (${appData.email}).`);
+        return;
       }
-      
+
+      if (newStatus === 'rejected' && appData) {
+        try {
+          // Send polite rejection email directly to candidate email
+          await fetch('/api/send-acceptance', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: appData.email,
+              fullName: appData.full_name,
+              position: appData.position,
+              status: 'rejected'
+            }),
+          });
+        } catch (err) {
+          console.error('Failed to send rejection email:', err);
+        }
+
+        await fetchApplications();
+        alert(`Application REJECTED.\n\nNotification email has been sent directly to candidate (${appData.email}).`);
+        return;
+      }
+
       await fetchApplications();
-      alert(`Successfully updated status to ${newStatus.toUpperCase()}`);
     } catch (error: any) {
-      console.error('Error handling application decision:', error);
-      alert('Action failed: ' + (error.message || 'Unknown error'));
+      console.error('Error updating status:', error);
+      alert('Status update failed: ' + (error.message || 'Unknown error'));
     }
   };
 

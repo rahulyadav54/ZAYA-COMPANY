@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { Resend } from 'resend';
+import { sendUniversalEmail } from '@/lib/sendUniversalEmail';
 
 export async function POST(request: Request) {
   try {
@@ -9,8 +9,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Missing required parameters (email, fullName, position)' }, { status: 400 });
     }
 
-    const resend = new Resend(process.env.RESEND_API_KEY);
     const isAccepted = status?.toLowerCase() === 'accepted';
+    const recipientEmail = email.trim();
     
     // Format unique official company login email if not provided
     const nameSlug = fullName.toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -20,7 +20,7 @@ export async function POST(request: Request) {
 
     const subject = isAccepted
       ? `🎉 Congratulations ${fullName}! You are Selected for ${position} Internship at ZAYA CODE HUB`
-      : `Update on your application for ${position} at ZAYA CODE HUB`;
+      : `Update regarding your ${position} application at ZAYA CODE HUB`;
 
     let htmlContent = '';
 
@@ -215,7 +215,7 @@ export async function POST(request: Request) {
                         Welcome aboard! We are thrilled to have you with us.
                       </p>
                       <p class="mobile-text" style="font-size: 13px; color: #2563eb; font-weight: 900; margin: 0;">
-                        ZAYA CODE HUB Team
+                        ZAYA CODE HUB HR & Selection Board
                       </p>
                     </td>
                   </tr>
@@ -236,60 +236,91 @@ export async function POST(request: Request) {
         </html>
       `;
     } else {
+      // Rejection email template
       htmlContent = `
-        <div style="font-family: Arial, sans-serif; padding: 20px; background-color: #f8fafc;">
-          <div style="background-color: #ffffff; border-radius: 14px; padding: 20px; border: 1px solid #cbd5e1;">
-            <h2 style="color: #0f172a; font-size: 18px; margin-top: 0;">Hello ${fullName},</h2>
-            <p style="font-size: 13px; color: #334155; line-height: 1.6;">
-              Thank you for applying for the <strong>${position}</strong> role at <strong>ZAYA CODE HUB</strong>.
-            </p>
-            <p style="font-size: 13px; color: #334155; line-height: 1.6;">
-              After careful evaluation of all applications, we have decided to move forward with other candidates at this time. We encourage you to apply for future openings.
-            </p>
-            <p style="font-size: 13px; color: #334155;">
-              We wish you the very best in your professional journey.
-            </p>
-            <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 16px 0;" />
-            <p style="font-size: 10px; color: #94a3b8; text-align: center; margin: 0;">
-              ZAYA CODE HUB | Subramania Nagar, Salem, Tamil Nadu
-            </p>
-          </div>
-        </div>
+        <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+        <html xmlns="http://www.w3.org/1999/xhtml">
+        <head>
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+          <title>ZAYA CODE HUB - Application Status Update</title>
+        </head>
+        <body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+          <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f8fafc;">
+            <tr>
+              <td align="center" style="padding: 20px 8px;">
+                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 580px; background-color: #ffffff; border-radius: 16px; overflow: hidden; border: 1px solid #cbd5e1; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+                  
+                  <tr>
+                    <td align="center" style="background-color: #0f172a; padding: 24px 20px; color: #ffffff;">
+                      <span style="font-size: 10px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; background: rgba(255,255,255,0.15); color: #cbd5e1; padding: 4px 12px; border-radius: 12px; display: inline-block; margin-bottom: 8px;">
+                        ZAYA CODE HUB • APPLICATION UPDATE
+                      </span>
+                      <h1 style="margin: 0; font-size: 20px; font-weight: 800; color: #ffffff;">
+                        Application Status Update
+                      </h1>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="padding: 28px 24px;">
+                      <p style="font-size: 14px; color: #0f172a; font-weight: 800; margin-top: 0;">Dear ${fullName},</p>
+                      
+                      <p style="font-size: 13px; color: #334155; line-height: 1.6;">
+                        Thank you for taking the time to apply for the <strong>${position}</strong> Internship position at <strong>ZAYA CODE HUB</strong>.
+                      </p>
+
+                      <p style="font-size: 13px; color: #334155; line-height: 1.6;">
+                        After a thorough review of all submitted profiles, we regret to inform you that we are unable to offer you an internship position at this time. Due to a high volume of strong applications, our selection process was extremely competitive.
+                      </p>
+
+                      <p style="font-size: 13px; color: #334155; line-height: 1.6;">
+                        We sincerely appreciate your interest in ZAYA CODE HUB and encourage you to apply again for future internship programs and career opportunities on our platform.
+                      </p>
+
+                      <div style="background-color: #f1f5f9; border-radius: 10px; padding: 12px 14px; margin: 20px 0; border: 1px solid #e2e8f0;">
+                        <p style="margin: 0; font-size: 12px; color: #475569; line-height: 1.5;">
+                          💡 <em>Tip: You can explore open developer resources, technical tutorials, and future openings at <a href="https://www.zayacodehub.in/careers" style="color: #2563eb; font-weight: 700; text-decoration: none;">zayacodehub.in/careers</a>.</em>
+                        </p>
+                      </div>
+
+                      <p style="font-size: 13px; color: #0f172a; font-weight: 800; margin: 24px 0 2px 0;">
+                        We wish you all the very best in your academic and professional career!
+                      </p>
+                      <p style="font-size: 13px; color: #2563eb; font-weight: 900; margin: 0;">
+                        ZAYA CODE HUB Recruitment Team
+                      </p>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td align="center" style="background-color: #002855; padding: 18px 12px; color: #94a3b8; font-size: 11px;">
+                      <p style="margin: 0; font-weight: 700; color: #cbd5e1;">ZAYA CODE HUB • Subhashish Learning & Tech Pvt Ltd</p>
+                      <p style="margin: 3px 0 0 0;">Subramania Nagar, Salem, Tamil Nadu – 636005</p>
+                    </td>
+                  </tr>
+
+                </table>
+              </td>
+            </tr>
+          </table>
+        </body>
+        </html>
       `;
     }
 
-    // 1. Try sending from custom domain onboarding@zayacodehub.in
-    let sendResult = await resend.emails.send({
-      from: 'ZAYA CODE HUB <onboarding@zayacodehub.in>',
-      to: [email],
+    // Send universal email directly to candidate email address (recipientEmail)
+    const sendResult = await sendUniversalEmail({
+      to: recipientEmail,
       subject: subject,
-      html: htmlContent,
+      html: htmlContent
     });
 
-    if (sendResult.error) {
-      console.warn('Custom domain email notice, trying support@zayacodehub.in:', sendResult.error.message);
-      sendResult = await resend.emails.send({
-        from: 'ZAYA CODE HUB <support@zayacodehub.in>',
-        to: [email],
-        subject: subject,
-        html: htmlContent,
-      });
-    }
-
-    if (sendResult.error) {
-      console.warn('Domain email notice, trying resend.dev fallback:', sendResult.error.message);
-      sendResult = await resend.emails.send({
-        from: 'ZAYA CODE HUB <onboarding@resend.dev>',
-        to: [email],
-        subject: subject,
-        html: htmlContent,
-      });
-    }
-
     return NextResponse.json({ 
-      message: 'Acceptance email processed successfully', 
+      message: `${isAccepted ? 'Acceptance' : 'Rejection'} email sent to candidate`, 
       success: true,
-      data: sendResult.data || null
+      recipient: recipientEmail,
+      provider: sendResult.provider || 'universal'
     });
 
   } catch (error: any) {
