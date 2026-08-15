@@ -62,7 +62,7 @@ function LoginForm() {
         }
 
         console.log('Auto-redirecting logged-in user to:', targetPath);
-        window.location.href = targetPath;
+        router.replace(targetPath);
       }
     };
     checkUser();
@@ -173,7 +173,7 @@ function LoginForm() {
         }
         
         console.log('Role-validated redirecting to:', targetPath);
-        window.location.href = targetPath;
+        router.replace(targetPath);
       }
     } catch (err: any) {
       console.error('Login error:', err);
