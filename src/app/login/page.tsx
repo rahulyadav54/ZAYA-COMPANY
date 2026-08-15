@@ -123,10 +123,17 @@ function LoginForm() {
             });
         }
 
+        let targetPath = userRole === 'admin' ? '/admin' : '/intern';
         const nextPath = searchParams.get('next');
-        const targetPath = nextPath || (userRole === 'admin' ? '/admin' : '/intern');
-        console.log('Redirecting to:', targetPath);
+        if (nextPath) {
+          if (userRole === 'admin' && nextPath.startsWith('/admin')) {
+            targetPath = nextPath;
+          } else if (userRole === 'intern' && nextPath.startsWith('/intern')) {
+            targetPath = nextPath;
+          }
+        }
         
+        console.log('Role-validated redirecting to:', targetPath);
         window.location.href = targetPath;
       }
     } catch (err: any) {
