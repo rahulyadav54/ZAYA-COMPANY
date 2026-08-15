@@ -28,16 +28,40 @@ function LoginForm() {
     }
 
     const checkUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('role')
-          .eq('id', session.user.id)
-          .maybeSingle();
-        
+      if (errorType) return;
+
+      const { getActiveUser } = await import('@/lib/getActiveUser');
+      const activeUser = await getActiveUser();
+
+      if (activeUser) {
+        const activeEmail = (activeUser.email || '').toLowerCase().trim();
+        let userRole = (activeEmail.includes('admin') || activeEmail === 'zayacodehub@gmail.com') ? 'admin' : 'intern';
+
+        try {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('role')
+            .eq('id', activeUser.id)
+            .maybeSingle();
+
+          if (profile?.role) {
+            userRole = profile.role;
+          }
+        } catch (e) {
+          console.warn('Auto-redirect role notice:', e);
+        }
+
+        let targetPath = userRole === 'admin' ? '/admin' : '/intern';
         const nextPath = searchParams.get('next');
-        const targetPath = nextPath || (profile?.role === 'admin' ? '/admin' : '/intern');
+        if (nextPath) {
+          if (userRole === 'admin' && nextPath.startsWith('/admin')) {
+            targetPath = nextPath;
+          } else if (userRole === 'intern' && nextPath.startsWith('/intern')) {
+            targetPath = nextPath;
+          }
+        }
+
+        console.log('Auto-redirecting logged-in user to:', targetPath);
         window.location.href = targetPath;
       }
     };
@@ -97,31 +121,36 @@ function LoginForm() {
 
       if (loggedInUser) {
         // Fetch role from profiles
-        let { data: profile } = await supabase
-          .from('profiles')
-          .select('role')
-          .eq('id', loggedInUser.id)
-          .maybeSingle();
-
-        if (profile?.role) {
-          userRole = profile.role;
-        }
-
-        // Auto-create profile if missing
-        if (!profile) {
-          const userEmail = loggedInUser.email || email;
-          const fullName = loggedInUser.user_metadata?.full_name || 'Portal User';
-          const defaultRole = (userEmail.toLowerCase().includes('admin') || userEmail === 'zayacodehub@gmail.com') ? 'admin' : 'intern';
-          userRole = defaultRole;
-          
-          await supabase
+        try {
+          const { data: profile } = await supabase
             .from('profiles')
-            .upsert({
-              id: loggedInUser.id,
-              email: userEmail,
-              full_name: fullName,
-              role: defaultRole
-            });
+            .select('role')
+            .eq('id', loggedInUser.id)
+            .maybeSingle();
+
+          if (profile?.role) {
+            userRole = profile.role;
+          } else {
+            const userEmail = loggedInUser.email || email;
+            const fullName = loggedInUser.user_metadata?.full_name || 'Portal User';
+            const defaultRole = (userEmail.toLowerCase().includes('admin') || userEmail === 'zayacodehub@gmail.com') ? 'admin' : 'intern';
+            userRole = defaultRole;
+            
+            try {
+              await supabase
+                .from('profiles')
+                .upsert({
+                  id: loggedInUser.id,
+                  email: userEmail,
+                  full_name: fullName,
+                  role: defaultRole
+                });
+            } catch (upsertErr) {
+              console.warn('Client profile upsert notice:', upsertErr);
+            }
+          }
+        } catch (e) {
+          console.warn('Profile fetch notice during login:', e);
         }
 
         let targetPath = userRole === 'admin' ? '/admin' : '/intern';
