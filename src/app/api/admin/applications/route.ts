@@ -10,20 +10,34 @@ export async function GET() {
       auth: { persistSession: false }
     });
 
-    // 1. Try selecting with created_at ordering
+    // Clean up any accidental @zayacodehub.com entries in applications table
+    try {
+      await supabase
+        .from('applications')
+        .delete()
+        .ilike('email', '%@zayacodehub.com');
+    } catch (e) {
+      console.warn('Cleanup notice:', e);
+    }
+
+    // 1. Select applications
     let { data, error } = await supabase
       .from('applications')
       .select('*')
       .order('created_at', { ascending: false });
 
-    // 2. Fallback: Select all without ordering if column missing
     if (error || !data) {
-      console.warn('Primary applications select notice:', error?.message);
       const res = await supabase.from('applications').select('*');
       data = res.data;
     }
 
-    return NextResponse.json({ success: true, applications: data || [] });
+    // 2. Filter out any official company email rows from candidate applications list
+    const candidateApps = (data || []).filter((app: any) => {
+      const email = (app.email || '').toLowerCase().trim();
+      return !email.endsWith('@zayacodehub.com');
+    });
+
+    return NextResponse.json({ success: true, applications: candidateApps });
   } catch (err: any) {
     console.error('API get applications catch error:', err);
     return NextResponse.json({ success: false, error: err?.message, applications: [] }, { status: 500 });

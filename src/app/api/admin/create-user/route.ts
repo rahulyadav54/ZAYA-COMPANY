@@ -174,32 +174,17 @@ export async function POST(request: Request) {
         .eq('email', targetEmail);
     }
 
-    // 5. Guarantee accepted record in applications table so /api/admin/interns will ALWAYS pick it up
-    const targetCandidateEmail = personalEmail || email || targetEmail;
-    try {
-      const { data: existingApp } = await supabaseAnon
-        .from('applications')
-        .select('id')
-        .or(`email.eq.${targetCandidateEmail},email.eq.${targetEmail}`)
-        .maybeSingle();
-
-      if (existingApp?.id) {
+    // 5. Update existing candidate application status without inserting duplicate official email rows
+    const targetCandidateEmail = (personalEmail || email || '').toLowerCase().trim();
+    if (targetCandidateEmail && !targetCandidateEmail.endsWith('@zayacodehub.com')) {
+      try {
         await supabaseAnon
           .from('applications')
           .update({ status: 'accepted', position: finalPosition || 'Internship' })
-          .eq('id', existingApp.id);
-      } else {
-        await supabaseAnon.from('applications').insert({
-          full_name: fullName,
-          email: targetCandidateEmail,
-          phone: requestData.phone || '0000000000',
-          position: finalPosition || 'Internship',
-          resume_url: '(Official Intern Account Created)',
-          status: 'accepted'
-        });
+          .ilike('email', targetCandidateEmail);
+      } catch (err) {
+        console.warn('Application record sync notice:', err);
       }
-    } catch (err) {
-      console.warn('Application record sync notice:', err);
     }
 
     return NextResponse.json({ 
