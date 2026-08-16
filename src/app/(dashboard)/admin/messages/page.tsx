@@ -81,7 +81,7 @@ export default function AdminMessagesPage() {
               (iEmail && (mInternId === iEmail || mEmail === iEmail)) ||
               (iId && (mInternId === iId || mEmail === iId)) ||
               (iInternId && (mInternId === iInternId || mEmail === iInternId)) ||
-              (iName && mName && iName === iName)
+              (iName && mName && iName === mName)
             );
           });
 
@@ -612,7 +612,7 @@ export default function AdminMessagesPage() {
                   (iEmail && (rawId === iEmail || (item.email && item.email.toLowerCase().trim() === iEmail))) ||
                   (iId && rawId === iId) ||
                   (iInternId && rawId === iInternId) ||
-                  (iName && rawName && iName === iName)
+                  (iName && rawName && iName === rawName)
                 );
               });
 
