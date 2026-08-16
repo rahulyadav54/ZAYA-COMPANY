@@ -104,7 +104,7 @@ export default function InternExamsOverviewPage() {
           </div>
         </div>
         <Link
-          href="/practice/code"
+          href="/intern/code"
           className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-cyan-500/25 transition-all shrink-0 active:scale-95"
         >
           Open Coding Arena ➔

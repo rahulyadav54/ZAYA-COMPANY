@@ -181,7 +181,7 @@ export default function DashboardLayout({
         { section: 'MAIN MENU', items: [
           { name: 'My Tasks', href: '/intern', icon: CheckSquare },
           { name: 'Proctored Exams', href: '/intern/exams', icon: GraduationCap },
-          { name: 'Coding Skill Arena', href: '/practice/code', icon: Code2 },
+          { name: 'Coding Skill Arena', href: '/intern/code', icon: Code2 },
           { name: 'Submission', href: '/intern/submit', icon: FileText },
           { name: 'Messages', href: '/intern/messages', icon: Mail },
         ]},
