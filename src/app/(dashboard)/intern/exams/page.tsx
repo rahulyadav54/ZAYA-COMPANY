@@ -70,7 +70,9 @@ export default function InternExamsOverviewPage() {
             <ShieldAlert className="h-3.5 w-3.5" />
             <span>Anti-Cheating Environment Active</span>
           </div>
-          <h1 className="text-3xl md:text-4xl font-black uppercase tracking-tight italic">Proctored Examinations</h1>
+          <h1 className="text-3xl md:text-4xl font-black uppercase tracking-tight italic">
+            Welcome, {user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Intern Candidate'}!
+          </h1>
           <p className="text-slate-300 text-xs md:text-sm max-w-xl font-medium leading-relaxed">
             Take your official domain qualification tests under secured proctored conditions. Fullscreen lock, tab switch detection, and anti-copy enforcement are active during all tests.
           </p>
@@ -88,6 +90,25 @@ export default function InternExamsOverviewPage() {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* CODING SKILL ARENA BANNER */}
+      <div className="p-6 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-[2.5rem] border border-blue-500/30 shadow-xl flex flex-col md:flex-row items-center justify-between gap-4 text-white">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-white text-xl font-black shrink-0 shadow-lg shadow-cyan-500/30">
+            ⚡
+          </div>
+          <div>
+            <h3 className="text-lg font-black uppercase tracking-tight italic">In-House Coding Skill Arena</h3>
+            <p className="text-xs text-slate-300 font-medium">Solve 20+ algorithmic coding problems in JS, Python, C++, Java & earn XP Badges</p>
+          </div>
+        </div>
+        <Link
+          href="/practice/code"
+          className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-cyan-500/25 transition-all shrink-0 active:scale-95"
+        >
+          Open Coding Arena ➔
+        </Link>
       </div>
 
       {/* Available Exams */}

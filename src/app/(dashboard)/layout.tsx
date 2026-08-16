@@ -41,6 +41,8 @@ export default function DashboardLayout({
   const isAdminPath = pathname.startsWith('/admin');
   const isInternPath = pathname.startsWith('/intern');
 
+  const [userData, setUserData] = useState<string | null>(null);
+
   React.useEffect(() => {
     async function checkRole() {
       try {
@@ -53,6 +55,8 @@ export default function DashboardLayout({
         }
 
         setUserId(activeUser.id);
+        const name = activeUser.user_metadata?.full_name || activeUser.email?.split('@')[0] || 'Intern';
+        setUserData(name);
 
         const activeEmail = (activeUser.email || '').toLowerCase().trim();
         let userRole = (activeEmail.includes('admin') || activeEmail === 'zayacodehub@gmail.com') ? 'admin' : 'intern';
@@ -60,12 +64,15 @@ export default function DashboardLayout({
         try {
           const { data: profile } = await supabase
             .from('profiles')
-            .select('role')
+            .select('role, full_name')
             .eq('id', activeUser.id)
             .maybeSingle();
 
           if (profile?.role) {
             userRole = profile.role;
+          }
+          if (profile?.full_name) {
+            setUserData(profile.full_name);
           }
         } catch (e) {
           console.warn('Profile role fetch notice:', e);
@@ -96,7 +103,6 @@ export default function DashboardLayout({
   React.useEffect(() => {
     if (!userId || isAdminPath) return;
 
-    // Reset notification if user is on the messages page
     if (pathname === '/intern/messages') {
       setHasNewMessage(false);
     }
@@ -111,7 +117,6 @@ export default function DashboardLayout({
         if (payload.new.intern_id === userId && payload.new.sender_type === 'admin') {
           if (pathname !== '/intern/messages') {
             setHasNewMessage(true);
-            // Optional: Play a subtle sound or show browser notification if allowed
           }
         }
       })
@@ -176,6 +181,7 @@ export default function DashboardLayout({
         { section: 'MAIN MENU', items: [
           { name: 'My Tasks', href: '/intern', icon: CheckSquare },
           { name: 'Proctored Exams', href: '/intern/exams', icon: GraduationCap },
+          { name: 'Coding Skill Arena', href: '/practice/code', icon: Code2 },
           { name: 'Submission', href: '/intern/submit', icon: FileText },
           { name: 'Messages', href: '/intern/messages', icon: Mail },
         ]},
@@ -303,8 +309,8 @@ export default function DashboardLayout({
             </button>
             
             <div className="h-9 px-3.5 rounded-full bg-blue-50 dark:bg-blue-950/60 flex items-center gap-2 text-blue-600 dark:text-blue-400 font-black border border-blue-200/60 dark:border-blue-800 text-[10px] uppercase tracking-widest shadow-sm">
-              <span className="w-2 h-2 rounded-full bg-blue-600 dark:bg-blue-400 animate-pulse" />
-              <span>{isAdmin ? 'ADMINISTRATOR' : 'INTERN'}</span>
+              <User className="h-3.5 w-3.5" />
+              <span>{userData ? userData.toUpperCase() : (isAdmin ? 'ADMINISTRATOR' : 'INTERN')}</span>
             </div>
           </div>
         </header>
