@@ -21,32 +21,47 @@ export default function InternProfilePage() {
       if (!id) return;
       setIsLoading(true);
       
-      const targetId = Array.isArray(id) ? id[0] : id;
+      const targetId = decodeURIComponent(Array.isArray(id) ? id[0] : id).trim();
       let foundIntern: any = null;
 
-      // 1. Fetch profile by exact UUID id
+      // 1. Try fetching from /api/admin/interns first (same source as Manage Interns list)
       try {
-        const { data: profById } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', targetId)
-          .maybeSingle();
-        if (profById) foundIntern = profById;
+        const res = await fetch('/api/admin/interns');
+        const json = await res.json();
+        if (json.success && Array.isArray(json.interns)) {
+          const match = json.interns.find((i: any) => 
+            (i.id && String(i.id).toLowerCase() === targetId.toLowerCase()) ||
+            (i.intern_id && String(i.intern_id).toLowerCase() === targetId.toLowerCase()) ||
+            (i.email && i.email.toLowerCase() === targetId.toLowerCase()) ||
+            (i.personal_email && i.personal_email.toLowerCase() === targetId.toLowerCase())
+          );
+          if (match) {
+            foundIntern = {
+              id: match.id || match.intern_id,
+              full_name: match.full_name,
+              email: match.email,
+              personal_email: match.personal_email,
+              position: match.position || 'Web Designer Intern',
+              created_at: match.joining_date || match.created_at || new Date().toISOString(),
+              intern_id: match.intern_id
+            };
+          }
+        }
       } catch (e) {
-        console.warn('Profile fetch by id error:', e);
+        console.warn('API fetch intern profile notice:', e);
       }
 
-      // 2. Fetch profile by intern_id or email
+      // 2. Fetch profile by exact UUID id or intern_id/email
       if (!foundIntern) {
         try {
-          const { data: profByOther } = await supabase
+          const { data: profById } = await supabase
             .from('profiles')
             .select('*')
-            .or(`intern_id.ilike.${targetId},email.ilike.${targetId}`)
+            .or(`id.eq.${targetId},intern_id.ilike.${targetId},email.ilike.${targetId}`)
             .maybeSingle();
-          if (profByOther) foundIntern = profByOther;
+          if (profById) foundIntern = profById;
         } catch (e) {
-          console.warn('Profile fetch by intern_id/email error:', e);
+          console.warn('Profile fetch error:', e);
         }
       }
 
@@ -56,7 +71,7 @@ export default function InternProfilePage() {
           const { data: appData } = await supabase
             .from('applications')
             .select('*')
-            .or(`intern_id.ilike.${targetId},email.ilike.${targetId}`)
+            .or(`id.eq.${targetId},intern_id.ilike.${targetId},email.ilike.${targetId}`)
             .maybeSingle();
           if (appData) {
             foundIntern = {

@@ -333,7 +333,7 @@ export default function ManageInternsPage() {
               </p>
               <div className="w-full flex gap-2 mt-auto">
                 <Link 
-                  href={`/admin/interns/${intern.id}`}
+                  href={`/admin/interns/${encodeURIComponent(intern.id || intern.intern_id || intern.email)}`}
                   className="flex-1 py-2 flex items-center justify-center bg-slate-50 dark:bg-slate-800 text-foreground rounded-xl text-sm font-bold hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
                 >
                   View Profile
