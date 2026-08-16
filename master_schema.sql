@@ -73,7 +73,9 @@ CREATE TABLE IF NOT EXISTS public.jobs (
 -- 4. TASKS TABLE (Intern Tasks)
 CREATE TABLE IF NOT EXISTS public.tasks (
   id BIGSERIAL PRIMARY KEY,
-  intern_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
+  intern_id UUID,
+  intern_email TEXT,
+  intern_name TEXT,
   title TEXT NOT NULL,
   description TEXT,
   deadline DATE,
@@ -81,6 +83,15 @@ CREATE TABLE IF NOT EXISTS public.tasks (
   priority TEXT CHECK (priority IN ('low', 'medium', 'high')),
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Drop the FK constraint if it exists (allows tasks for non-auth interns)
+ALTER TABLE public.tasks DROP CONSTRAINT IF EXISTS tasks_intern_id_fkey;
+
+-- Add new columns if table already exists
+ALTER TABLE public.tasks ADD COLUMN IF NOT EXISTS intern_email TEXT;
+ALTER TABLE public.tasks ADD COLUMN IF NOT EXISTS intern_name TEXT;
+-- Make intern_id nullable (no longer required)
+ALTER TABLE public.tasks ALTER COLUMN intern_id DROP NOT NULL;
 
 -- 5. SUBMISSIONS TABLE (Task Submissions)
 CREATE TABLE IF NOT EXISTS public.submissions (
