@@ -157,9 +157,8 @@ ALTER TABLE public.intern_messages ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Allow public select intern_messages" ON public.intern_messages;
 DROP POLICY IF EXISTS "Allow public insert intern_messages" ON public.intern_messages;
 DROP POLICY IF EXISTS "Allow public update intern_messages" ON public.intern_messages;
-CREATE POLICY "Allow public select intern_messages" ON public.intern_messages FOR SELECT USING (true);
-CREATE POLICY "Allow public insert intern_messages" ON public.intern_messages FOR INSERT WITH CHECK (true);
-CREATE POLICY "Allow public update intern_messages" ON public.intern_messages FOR UPDATE USING (true);
+DROP POLICY IF EXISTS "Allow public all intern_messages" ON public.intern_messages;
+CREATE POLICY "Allow public all intern_messages" ON public.intern_messages FOR ALL USING (true) WITH CHECK (true);
 
 -- Applications Policies
 DROP POLICY IF EXISTS "Enable insert applications for anyone" ON public.applications;

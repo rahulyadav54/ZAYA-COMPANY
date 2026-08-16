@@ -23,10 +23,12 @@ export default function InternMessagesPage() {
       const activeUser = await getActiveUser();
       if (activeUser) {
         setUser(activeUser);
+        const userKeys = Array.from(new Set([activeUser.id, activeUser.email].filter(Boolean)));
+
         const { data, error } = await supabase
           .from('intern_messages')
           .select('*')
-          .or(`intern_id.eq.${activeUser.id},intern_id.eq.${activeUser.email || ''}`)
+          .in('intern_id', userKeys)
           .order('created_at', { ascending: true });
 
         if (!error && data) {
@@ -35,7 +37,7 @@ export default function InternMessagesPage() {
           await supabase
             .from('intern_messages')
             .update({ is_read: true })
-            .or(`intern_id.eq.${activeUser.id},intern_id.eq.${activeUser.email || ''}`)
+            .in('intern_id', userKeys)
             .eq('sender_type', 'admin')
             .eq('is_read', false);
         }
@@ -46,16 +48,17 @@ export default function InternMessagesPage() {
   }, []);
 
   useEffect(() => {
-    if (!user?.id) return;
+    if (!user) return;
+    const userKeys = Array.from(new Set([user.id, user.email].filter(Boolean)));
 
     const channel = supabase
-      .channel(`intern_messages_${user.id}`)
+      .channel(`intern_messages_${user.id || 'anon'}`)
       .on('postgres_changes', { 
         event: 'INSERT', 
         schema: 'public', 
         table: 'intern_messages' 
       }, (payload) => {
-         if (payload.new.intern_id === user.id || payload.new.intern_id === user.email) {
+         if (userKeys.includes(payload.new.intern_id)) {
             setMessages(prev => {
               if (prev.some(m => m.id === payload.new.id)) return prev;
               return [...prev, payload.new];
@@ -67,7 +70,7 @@ export default function InternMessagesPage() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [user?.id, user?.email]);
+  }, [user]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -102,16 +105,24 @@ export default function InternMessagesPage() {
         setIsUploading(true);
         const fileExt = selectedFile.name.split('.').pop();
         const fileName = `${Math.random()}.${fileExt}`;
-        const filePath = `${user.id}/${fileName}`;
+        const filePath = `${user.id || 'intern'}/${fileName}`;
 
         try {
-          const { error: uploadError } = await supabase.storage
-            .from('messages')
+          // Try 'resumes' bucket first as reliable storage
+          let { error: uploadError } = await supabase.storage
+            .from('resumes')
             .upload(filePath, selectedFile);
+
+          let bucketName = 'resumes';
+          if (uploadError) {
+            const res2 = await supabase.storage.from('messages').upload(filePath, selectedFile);
+            uploadError = res2.error;
+            bucketName = 'messages';
+          }
           
           if (!uploadError) {
             const { data: { publicUrl } } = supabase.storage
-              .from('messages')
+              .from(bucketName)
               .getPublicUrl(filePath);
             fileUrl = publicUrl;
             fileType = selectedFile.type.startsWith('image/') ? 'image' : 'pdf';
@@ -124,7 +135,7 @@ export default function InternMessagesPage() {
       const senderName = user.user_metadata?.full_name || user.full_name || user.email?.split('@')[0] || 'Intern';
 
       const payload = {
-        intern_id: user.id,
+        intern_id: user.id || user.email,
         intern_name: senderName,
         content: newMessage.trim(),
         sender_type: 'intern',
@@ -133,20 +144,29 @@ export default function InternMessagesPage() {
         is_read: false
       };
 
-      const { data: inserted, error } = await supabase.from('intern_messages').insert(payload).select('*').single();
+      const { data: insertedData, error: insertError } = await supabase
+        .from('intern_messages')
+        .insert(payload)
+        .select('*');
 
-      const newMsg = inserted || {
-        ...payload,
-        id: Date.now().toString(),
-        created_at: new Date().toISOString()
-      };
+      if (insertError) {
+        console.error('Send message error:', insertError);
+        alert(`Failed to send message: ${insertError.message}`);
+      } else {
+        const newMsg = (insertedData && insertedData[0]) || {
+          ...payload,
+          id: Date.now().toString(),
+          created_at: new Date().toISOString()
+        };
 
-      setMessages(prev => [...prev, newMsg]);
-      setNewMessage('');
-      setSelectedFile(null);
-      setFilePreview(null);
+        setMessages(prev => [...prev, newMsg]);
+        setNewMessage('');
+        setSelectedFile(null);
+        setFilePreview(null);
+      }
     } catch (err: any) {
       console.error('Send message notice:', err);
+      alert(`Failed to send message: ${err.message || err}`);
     } finally {
       setIsSending(false);
       setIsUploading(false);

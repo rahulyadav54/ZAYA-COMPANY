@@ -241,18 +241,17 @@ export default function AdminMessagesPage() {
     if (!internTarget) return;
     setIsLoadingMessages(true);
 
-    const idsToSearch = new Set<string>();
-    if (internTarget.intern_id) idsToSearch.add(internTarget.intern_id);
-    if (internTarget.id) idsToSearch.add(internTarget.id);
-    if (internTarget.email) idsToSearch.add(internTarget.email);
-
-    const orConditions = Array.from(idsToSearch).map(id => `intern_id.eq.${id}`).join(',');
+    const idsToSearch = Array.from(new Set([
+      internTarget.intern_id, 
+      internTarget.id, 
+      internTarget.email
+    ].filter(Boolean)));
 
     try {
       const { data, error } = await supabase
         .from('intern_messages')
         .select('*')
-        .or(orConditions)
+        .in('intern_id', idsToSearch)
         .order('created_at', { ascending: true });
 
       if (!error && data) {
@@ -260,7 +259,7 @@ export default function AdminMessagesPage() {
         await supabase
           .from('intern_messages')
           .update({ is_read: true })
-          .or(orConditions)
+          .in('intern_id', idsToSearch)
           .eq('sender_type', 'intern')
           .eq('is_read', false);
       } else {
@@ -301,7 +300,7 @@ export default function AdminMessagesPage() {
     let fileUrl: string | null = null;
     let fileType: string | null = null;
 
-    const targetId = selectedIntern.intern_id || selectedIntern.id;
+    const targetId = selectedIntern.intern_id || selectedIntern.id || selectedIntern.email;
 
     try {
       if (selectedFile) {
@@ -311,13 +310,20 @@ export default function AdminMessagesPage() {
         const filePath = `admin/${targetId}/${fileName}`;
 
         try {
-          const { error: uploadError } = await supabase.storage
-            .from('messages')
+          let { error: uploadError } = await supabase.storage
+            .from('resumes')
             .upload(filePath, selectedFile);
+
+          let bucketName = 'resumes';
+          if (uploadError) {
+            const res2 = await supabase.storage.from('messages').upload(filePath, selectedFile);
+            uploadError = res2.error;
+            bucketName = 'messages';
+          }
 
           if (!uploadError) {
             const { data: { publicUrl } } = supabase.storage
-              .from('messages')
+              .from(bucketName)
               .getPublicUrl(filePath);
             fileUrl = publicUrl;
             fileType = selectedFile.type.startsWith('image/') ? 'image' : 'pdf';
@@ -337,21 +343,30 @@ export default function AdminMessagesPage() {
         is_read: false
       };
 
-      const { data: inserted, error } = await supabase.from('intern_messages').insert(payload).select('*').single();
+      const { data: insertedData, error: insertError } = await supabase
+        .from('intern_messages')
+        .insert(payload)
+        .select('*');
 
-      const newMsg = inserted || {
-        ...payload,
-        id: Date.now().toString(),
-        created_at: new Date().toISOString()
-      };
+      if (insertError) {
+        console.error('Send admin message error:', insertError);
+        alert(`Failed to send message: ${insertError.message}`);
+      } else {
+        const newMsg = (insertedData && insertedData[0]) || {
+          ...payload,
+          id: Date.now().toString(),
+          created_at: new Date().toISOString()
+        };
 
-      setMessages(prev => [...prev, newMsg]);
-      setNewMessage('');
-      setSelectedFile(null);
-      setFilePreview(null);
-      fetchConversations();
-    } catch (err) {
+        setMessages(prev => [...prev, newMsg]);
+        setNewMessage('');
+        setSelectedFile(null);
+        setFilePreview(null);
+        fetchConversations();
+      }
+    } catch (err: any) {
       console.error('Send admin message notice:', err);
+      alert(`Failed to send message: ${err.message || err}`);
     } finally {
       setIsSending(false);
       setIsUploading(false);
