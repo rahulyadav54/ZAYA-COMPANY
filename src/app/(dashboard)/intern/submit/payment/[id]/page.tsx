@@ -113,6 +113,30 @@ export default function PaymentPage() {
     }
   };
 
+  const handleSkipPayment = async () => {
+    setIsProcessing(true);
+    try {
+      await supabase
+        .from('submissions')
+        .update({ 
+          payment_status: 'waived'
+        })
+        .eq('id', id);
+
+      if (submission?.task_id) {
+        await supabase.from('tasks').update({ status: 'submitted' }).eq('id', submission.task_id);
+      }
+
+      setIsSuccess(true);
+      setTimeout(() => {
+        router.push('/intern');
+      }, 2000);
+    } catch (error: any) {
+      alert(`Error: ${error.message}`);
+      setIsProcessing(false);
+    }
+  };
+
   if (isLoading) return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
       <Loader2 className="h-12 w-12 animate-spin text-blue-600" />
@@ -263,6 +287,15 @@ export default function PaymentPage() {
                   <span>Submit for Verification</span>
                 </>
               )}
+            </button>
+
+            <button
+              onClick={handleSkipPayment}
+              disabled={isProcessing}
+              className="w-full mt-4 py-4 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-[1.5rem] font-bold text-sm transition-all flex items-center justify-center gap-2 active:scale-95"
+            >
+              <CheckCircle2 className="h-4 w-4" />
+              <span>Submit Without Payment (Skip Fee)</span>
             </button>
           </div>
         </div>

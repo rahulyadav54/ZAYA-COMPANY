@@ -8,6 +8,7 @@ import Certificate from '@/components/intern/Certificate';
 
 export default function InternSubmitPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmittedSuccess, setIsSubmittedSuccess] = useState(false);
   const [tasks, setTasks] = useState<any[]>([]);
   const [userId, setUserId] = useState<string | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
@@ -73,7 +74,7 @@ export default function InternSubmitPage() {
         }
       }
 
-      // 2. Insert into submissions table
+      // 2. Insert into submissions table (waived/free payment)
       const { data: submission, error: submitError } = await supabase.from('submissions').insert({
         task_id: taskId,
         intern_id: userId,
@@ -81,7 +82,7 @@ export default function InternSubmitPage() {
         message: message,
         file_url: fileUrl,
         review_status: 'pending',
-        payment_status: 'pending',
+        payment_status: 'waived',
         cert_full_name: certFullName,
         cert_college: certCollege,
         cert_dept: certDept
@@ -89,7 +90,10 @@ export default function InternSubmitPage() {
 
       if (submitError) throw submitError;
 
-      // 3. Send "Submission Received" Email
+      // 3. Update task status to submitted
+      await supabase.from('tasks').update({ status: 'submitted' }).eq('id', taskId);
+
+      // 4. Send "Submission Received" Email
       const selectedTask = tasks.find(t => t.id === taskId);
       await fetch('/api/send-submission-received', {
         method: 'POST',
@@ -101,8 +105,8 @@ export default function InternSubmitPage() {
         })
       }).catch(err => console.error('Email failed', err));
 
-      // 4. Redirect to payment page
-      router.push(`/intern/submit/payment/${submission.id}`);
+      // 5. Show Success Modal / Redirect to Intern Dashboard
+      setIsSubmittedSuccess(true);
 
     } catch (error: any) {
       alert(`Error: ${error.message}`);
@@ -110,12 +114,34 @@ export default function InternSubmitPage() {
     }
   };
 
+  if (isSubmittedSuccess) {
+    return (
+      <div className="max-w-xl mx-auto flex flex-col items-center justify-center min-h-[60vh] text-center space-y-6 px-6 py-12">
+        <div className="bg-emerald-500/10 p-6 rounded-full border border-emerald-500/20 shadow-xl">
+          <CheckCircle2 className="h-16 w-16 text-emerald-500" />
+        </div>
+        <h1 className="text-3xl font-black text-slate-900 dark:text-white uppercase tracking-tight italic">
+          Submission Successful!
+        </h1>
+        <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed font-medium">
+          Your project files and documentation have been submitted directly to the evaluation queue. No payment is required!
+        </p>
+        <button
+          onClick={() => router.push('/intern')}
+          className="px-8 py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-blue-600/20 transition-all active:scale-95"
+        >
+          Return to Intern Dashboard
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-[1400px] mx-auto space-y-8 pb-20">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
           <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight italic uppercase">Project Submission</h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-2 text-lg">Step 1: Upload your work and verify certificate details.</p>
+          <p className="text-slate-500 dark:text-slate-400 mt-2 text-lg">Upload your work and verify certificate details.</p>
         </div>
         <div className="px-6 py-3 bg-blue-600/10 border border-blue-500/20 rounded-2xl flex items-center gap-3">
           <Award className="h-5 w-5 text-blue-500" />
@@ -243,12 +269,12 @@ export default function InternSubmitPage() {
               <button 
                 type="submit"
                 disabled={isSubmitting || tasks.length === 0}
-                className="group relative w-full py-5 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-200 dark:disabled:bg-slate-800 text-white rounded-[1.5rem] font-black text-lg transition-all duration-300 flex items-center justify-center gap-3 shadow-xl shadow-blue-600/20 active:scale-[0.98]"
+                className="group relative w-full py-5 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-200 dark:disabled:bg-slate-800 text-white rounded-[1.5rem] font-black text-lg transition-all duration-300 flex items-center justify-center gap-3 shadow-xl shadow-emerald-600/20 active:scale-[0.98]"
               >
                 {isSubmitting ? (
-                  <><Loader2 className="h-6 w-6 animate-spin" /><span>Saving details...</span></>
+                  <><Loader2 className="h-6 w-6 animate-spin" /><span>Submitting project...</span></>
                 ) : (
-                  <><Award className="h-5 w-5" /><span>Proceed to Payment</span><ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" /></>
+                  <><Send className="h-5 w-5" /><span>Submit Project Report</span><ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" /></>
                 )}
               </button>
             </div>
