@@ -45,7 +45,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
           {/* Brand */}
           <div className="space-y-6">
-            <Logo size="md" />
+            <Logo size="md" forceWhite={true} />
             <p className="text-slate-100 leading-relaxed font-bold">
               Empowering businesses through cutting-edge software solutions and nurturing the next generation of IT professionals.
             </p>
