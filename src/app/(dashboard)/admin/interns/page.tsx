@@ -266,11 +266,24 @@ export default function ManageInternsPage() {
     const priority = formData.get('priority') as string;
     const deadline = formData.get('deadline') as string;
 
+    const selectedIntern = interns.find(i => 
+      String(i.id) === String(selectedInternId) || 
+      (i.email && String(i.email).toLowerCase() === String(selectedInternId).toLowerCase())
+    ) || interns[0];
+
     const targetValue = taskTargetMode === 'individual' 
-      ? selectedInternId 
+      ? (selectedInternId || selectedIntern?.id || selectedIntern?.email) 
       : taskTargetMode === 'domain' 
         ? selectedDomain 
         : null;
+
+    const targetEmail = taskTargetMode === 'individual' 
+      ? (selectedIntern?.email || selectedIntern?.personal_email) 
+      : null;
+
+    const targetName = taskTargetMode === 'individual' 
+      ? selectedIntern?.full_name 
+      : null;
 
     try {
       const res = await fetch('/api/admin/tasks', {
@@ -279,6 +292,8 @@ export default function ManageInternsPage() {
         body: JSON.stringify({
           targetMode: taskTargetMode,
           targetValue,
+          targetEmail,
+          targetName,
           title,
           description,
           priority,
