@@ -78,35 +78,32 @@ export async function POST() {
       const destinationEmail = emailToPersonalMap.get(cleanRaw) || rawEmail;
 
       const emailHtml = `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
-          <div style="text-align: center; margin-bottom: 20px;">
-            <h2 style="color: #2563eb; margin: 0;">ZAYA CODE HUB</h2>
-            <p style="color: #64748b; font-size: 14px; margin: 5px 0 0 0;">New Task Assigned</p>
-          </div>
-          <div style="margin-bottom: 20px;">
-            <p>Hello <strong>${name || 'Intern'}</strong>,</p>
-            <p>A new task/project has been assigned to you. Please complete it before the deadline:</p>
-          </div>
-          <div style="background-color: #f8fafc; padding: 15px; border-radius: 6px; border-left: 4px solid #2563eb; margin-bottom: 20px;">
-            <h3 style="margin-top: 0; color: #1e293b;">${task.title}</h3>
-            <p style="white-space: pre-wrap; color: #334155;">${task.description || ''}</p>
-            <table style="width: 100%; margin-top: 15px; border-collapse: collapse;">
-              <tr>
-                <td style="padding: 4px 0; color: #64748b; font-weight: bold; width: 100px;">Priority:</td>
-                <td style="padding: 4px 0; color: #1e293b;">${(task.priority || 'medium').toUpperCase()}</td>
-              </tr>
-              <tr>
-                <td style="padding: 4px 0; color: #64748b; font-weight: bold;">Deadline:</td>
-                <td style="padding: 4px 0; color: #ef4444; font-weight: bold;">17 September 2026</td>
-              </tr>
-            </table>
-          </div>
-          <div style="text-align: center; margin-bottom: 20px;">
-            <a href="https://www.zayacodehub.in/login" style="background-color: #2563eb; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">View & Submit Task on Dashboard</a>
-          </div>
-          <div style="border-top: 1px solid #e2e8f0; padding-top: 15px; font-size: 12px; color: #64748b; text-align: center;">
-            <p>This is an automated message from ZAYA CODE HUB. Please submit your project work before 17 Sept 2026.</p>
-          </div>
+        <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 15px; line-height: 1.6; color: #111827; max-width: 600px;">
+          <p>Hello ${name || 'Intern'},</p>
+          
+          <p>You have been assigned a new internship task at <strong>ZAYA CODE HUB</strong>:</p>
+          
+          <p style="background: #f3f4f6; padding: 12px 16px; border-radius: 8px;">
+            <strong>Task:</strong> ${task.title}<br/>
+            <strong>Priority:</strong> ${(task.priority || 'medium').toUpperCase()}<br/>
+            <strong>Deadline:</strong> 17 September 2026
+          </p>
+          
+          <p><strong>Description:</strong><br/>
+          ${task.description || 'Please refer to your dashboard for full project requirements.'}</p>
+          
+          <p>Please log in to your intern portal to view the details and submit your project:</p>
+          
+          <p style="margin: 20px 0;">
+            <a href="https://www.zayacodehub.in/login" style="background-color: #2563eb; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">Log in to Intern Portal</a>
+          </p>
+          
+          <p style="color: #6b7280; font-size: 13px;">Or access directly at: <a href="https://www.zayacodehub.in/login" style="color: #2563eb;">https://www.zayacodehub.in/login</a></p>
+          
+          <br/>
+          <p>Best regards,<br/>
+          <strong>ZAYA CODE HUB Team</strong><br/>
+          <span style="color: #6b7280; font-size: 12px;">Official Internship & Project Management</span></p>
         </div>
       `;
 
