@@ -310,7 +310,7 @@ export default function AdminMessagesPage() {
         const filePath = `admin/${targetId}/${fileName}`;
 
         try {
-          const { uploadError } = await supabase.storage
+          const { error: uploadError } = await supabase.storage
             .from('messages')
             .upload(filePath, selectedFile);
 
