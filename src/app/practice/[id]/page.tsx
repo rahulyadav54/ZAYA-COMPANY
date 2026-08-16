@@ -201,6 +201,9 @@ export default function PublicProctoredExamRoomPage() {
     }
   };
 
+  const [isVerifyingAttempt, setIsVerifyingAttempt] = useState(false);
+  const [alreadyCompletedInfo, setAlreadyCompletedInfo] = useState<any>(null);
+
   // Start Exam & Enable Fullscreen + Mobile/Desktop Camera
   const startExam = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -208,6 +211,45 @@ export default function PublicProctoredExamRoomPage() {
       alert('Please fill in your Official Name and Email Address before starting the test.');
       return;
     }
+
+    // 1. Check if candidate with same email or phone number has already submitted/attempted this exam
+    setIsVerifyingAttempt(true);
+    setAlreadyCompletedInfo(null);
+
+    const cleanEmail = studentForm.email.trim().toLowerCase();
+    const cleanPhone = studentForm.phone.trim().replace(/[^0-9]/g, '');
+
+    try {
+      const { data: existingSubmissions, error } = await supabase
+        .from('exam_submissions')
+        .select('id, submitted_at, percentage, score, total_points, passed, status, intern_id, phone')
+        .eq('exam_id', exam.id);
+
+      if (existingSubmissions && existingSubmissions.length > 0) {
+        const matched = existingSubmissions.find((sub: any) => {
+          const subEmail = (sub.intern_id || '').trim().toLowerCase();
+          const subPhone = (sub.phone || '').trim().replace(/[^0-9]/g, '');
+
+          const isEmailMatch = cleanEmail && (subEmail === cleanEmail);
+          const isPhoneMatch = cleanPhone && subPhone && (
+            subPhone === cleanPhone || 
+            (cleanPhone.length >= 10 && subPhone.endsWith(cleanPhone.slice(-10))) ||
+            (subPhone.length >= 10 && cleanPhone.endsWith(subPhone.slice(-10)))
+          );
+
+          return isEmailMatch || isPhoneMatch;
+        });
+
+        if (matched) {
+          setAlreadyCompletedInfo(matched);
+          setIsVerifyingAttempt(false);
+          return;
+        }
+      }
+    } catch (err) {
+      console.warn('Check previous attempt error notice:', err);
+    }
+    setIsVerifyingAttempt(false);
 
     try {
       if (document.documentElement.requestFullscreen) {
@@ -494,7 +536,10 @@ export default function PublicProctoredExamRoomPage() {
                       type="email"
                       required
                       value={studentForm.email}
-                      onChange={(e) => setStudentForm({ ...studentForm, email: e.target.value })}
+                      onChange={(e) => {
+                        setStudentForm({ ...studentForm, email: e.target.value });
+                        if (alreadyCompletedInfo) setAlreadyCompletedInfo(null);
+                      }}
                       placeholder="e.g. rahul@example.com"
                       className="w-full p-3.5 bg-slate-900 border border-slate-700/80 rounded-xl outline-none text-white focus:border-blue-500 font-bold transition-colors"
                     />
@@ -504,7 +549,10 @@ export default function PublicProctoredExamRoomPage() {
                     <input
                       type="text"
                       value={studentForm.phone}
-                      onChange={(e) => setStudentForm({ ...studentForm, phone: e.target.value })}
+                      onChange={(e) => {
+                        setStudentForm({ ...studentForm, phone: e.target.value });
+                        if (alreadyCompletedInfo) setAlreadyCompletedInfo(null);
+                      }}
                       placeholder="e.g. +91 9876543210"
                       className="w-full p-3.5 bg-slate-900 border border-slate-700/80 rounded-xl outline-none text-white focus:border-blue-500 font-bold transition-colors"
                     />
@@ -521,6 +569,31 @@ export default function PublicProctoredExamRoomPage() {
                   </div>
                 </div>
               </div>
+
+              {/* Already Completed Warning Banner */}
+              {alreadyCompletedInfo && (
+                <div className="p-5 sm:p-6 bg-red-950/60 border-2 border-red-500/60 rounded-2xl space-y-3 text-red-200 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+                  <div className="flex items-start gap-3.5">
+                    <div className="p-2.5 bg-red-600/20 text-red-400 rounded-xl shrink-0 border border-red-500/30">
+                      <ShieldAlert className="h-6 w-6" />
+                    </div>
+                    <div className="space-y-1">
+                      <h4 className="font-black text-sm uppercase tracking-wider text-red-400 flex items-center gap-2">
+                        You Have Already Completed This Examination!
+                      </h4>
+                      <p className="text-xs text-red-300 leading-relaxed">
+                        A submission associated with your email (<strong>{studentForm.email}</strong>) or phone number was already recorded on <strong>{new Date(alreadyCompletedInfo.submitted_at).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</strong>.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="p-3 bg-slate-950/80 rounded-xl border border-red-500/30 flex items-center justify-between text-xs font-bold flex-wrap gap-2">
+                    <span>Previous Score: <strong className={alreadyCompletedInfo.passed ? 'text-emerald-400' : 'text-red-400'}>{alreadyCompletedInfo.percentage}% ({alreadyCompletedInfo.status?.toUpperCase() || 'COMPLETED'})</strong></span>
+                    <span className="text-[10px] text-amber-400 uppercase tracking-widest bg-amber-500/10 px-2.5 py-1 rounded-md border border-amber-500/20">
+                      Single Attempt Only
+                    </span>
+                  </div>
+                </div>
+              )}
 
               {/* Anti-Cheating Rules Summary */}
               <div className="p-6 bg-blue-950/30 rounded-2xl border border-blue-900/50 space-y-3 text-xs">
@@ -553,10 +626,25 @@ export default function PublicProctoredExamRoomPage() {
                 </button>
                 <button
                   type="submit"
-                  className="w-full sm:w-auto px-10 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl font-black text-xs uppercase tracking-widest shadow-xl shadow-blue-600/30 transition-all active:scale-95 flex items-center justify-center gap-3"
+                  disabled={isVerifyingAttempt || !!alreadyCompletedInfo}
+                  className="w-full sm:w-auto px-10 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-xl font-black text-xs uppercase tracking-widest shadow-xl shadow-blue-600/30 transition-all active:scale-95 flex items-center justify-center gap-3"
                 >
-                  <Maximize2 className="h-4 w-4" />
-                  <span>Launch Full-Screen Exam Room</span>
+                  {isVerifyingAttempt ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <span>Verifying Candidate Attempt...</span>
+                    </>
+                  ) : alreadyCompletedInfo ? (
+                    <>
+                      <AlertTriangle className="h-4 w-4 text-amber-400" />
+                      <span>Already Completed (Attempt Closed)</span>
+                    </>
+                  ) : (
+                    <>
+                      <Maximize2 className="h-4 w-4" />
+                      <span>Launch Full-Screen Exam Room</span>
+                    </>
+                  )}
                 </button>
               </div>
             </form>
