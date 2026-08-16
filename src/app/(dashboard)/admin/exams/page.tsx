@@ -302,14 +302,15 @@ export default function AdminExamsPage() {
         body: JSON.stringify({ ids: [subId] })
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to delete submission');
-
-      await supabase.from('exam_submissions').delete().eq('id', subId);
+      if (!res.ok) {
+        const { error: directErr } = await supabase.from('exam_submissions').delete().eq('id', subId);
+        if (directErr) throw new Error(data.error || directErr.message);
+      }
 
       setSubmissions(prev => prev.filter(s => s.id !== subId));
       setSelectedSubmissions(prev => prev.filter(id => id !== subId));
     } catch (e: any) {
-      alert(`Delete error: ${e.message}`);
+      alert(`Delete Error: ${e.message}\n\nPlease execute the SQL policy in your Supabase SQL Editor to enable RLS deletes.`);
     }
   }
 
@@ -324,14 +325,15 @@ export default function AdminExamsPage() {
         body: JSON.stringify({ ids: selectedSubmissions })
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to delete selected submissions');
-
-      await supabase.from('exam_submissions').delete().in('id', selectedSubmissions);
+      if (!res.ok) {
+        const { error: directErr } = await supabase.from('exam_submissions').delete().in('id', selectedSubmissions);
+        if (directErr) throw new Error(data.error || directErr.message);
+      }
 
       setSubmissions(prev => prev.filter(s => !selectedSubmissions.includes(s.id)));
       setSelectedSubmissions([]);
     } catch (e: any) {
-      alert(`Bulk Delete error: ${e.message}`);
+      alert(`Bulk Delete Error: ${e.message}\n\nPlease execute the SQL policy in your Supabase SQL Editor to enable RLS deletes.`);
     }
   }
 
