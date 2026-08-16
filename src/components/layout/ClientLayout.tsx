@@ -9,8 +9,10 @@ import AiZayaLaunchModal from "@/components/layout/AiZayaLaunchModal";
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isDashboard = pathname?.startsWith('/admin') || pathname?.startsWith('/intern');
+  const isExamRoom = (pathname?.startsWith('/practice/') && pathname !== '/practice' && pathname !== '/practice/code') ||
+                     (pathname?.startsWith('/practice/code/') && pathname !== '/practice/code');
 
-  if (isDashboard) {
+  if (isDashboard || isExamRoom) {
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100">
         {children}
