@@ -254,3 +254,71 @@ FOR INSERT TO anon WITH CHECK (bucket_id = 'messages');
 
 CREATE POLICY "Public Anon Read Messages" ON storage.objects 
 FOR SELECT TO public USING (bucket_id = 'messages');
+
+-- ==========================================
+-- 10. EXAM PORTAL TABLES (Anti-Cheating Proctored Exams)
+-- ==========================================
+
+CREATE TABLE IF NOT EXISTS public.exams (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  title TEXT NOT NULL,
+  description TEXT,
+  domain TEXT DEFAULT 'Full Stack',
+  duration_minutes INTEGER DEFAULT 30,
+  passing_score INTEGER DEFAULT 60,
+  max_violations INTEGER DEFAULT 3,
+  is_active BOOLEAN DEFAULT true,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public.exam_questions (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  exam_id UUID REFERENCES public.exams(id) ON DELETE CASCADE,
+  question_text TEXT NOT NULL,
+  options JSONB NOT NULL DEFAULT '[]'::jsonb,
+  correct_option INTEGER NOT NULL DEFAULT 0,
+  points INTEGER DEFAULT 1,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public.exam_submissions (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  exam_id UUID REFERENCES public.exams(id) ON DELETE CASCADE,
+  intern_id TEXT NOT NULL,
+  intern_name TEXT,
+  score INTEGER DEFAULT 0,
+  total_points INTEGER DEFAULT 0,
+  percentage NUMERIC(5,2) DEFAULT 0,
+  passed BOOLEAN DEFAULT false,
+  violations_count INTEGER DEFAULT 0,
+  violations_log JSONB DEFAULT '[]'::jsonb,
+  answers JSONB DEFAULT '{}'::jsonb,
+  status TEXT DEFAULT 'completed' CHECK (status IN ('in_progress', 'completed', 'disqualified')),
+  started_at TIMESTAMPTZ DEFAULT NOW(),
+  submitted_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Enable RLS for Exam Tables
+ALTER TABLE public.exams ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.exam_questions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.exam_submissions ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Public Read Exams" ON public.exams;
+DROP POLICY IF EXISTS "Public Manage Exams" ON public.exams;
+DROP POLICY IF EXISTS "Public Read Questions" ON public.exam_questions;
+DROP POLICY IF EXISTS "Public Manage Questions" ON public.exam_questions;
+DROP POLICY IF EXISTS "Public Read Exam Submissions" ON public.exam_submissions;
+DROP POLICY IF EXISTS "Public Insert Exam Submissions" ON public.exam_submissions;
+DROP POLICY IF EXISTS "Public Update Exam Submissions" ON public.exam_submissions;
+
+CREATE POLICY "Public Read Exams" ON public.exams FOR SELECT USING (true);
+CREATE POLICY "Public Manage Exams" ON public.exams FOR ALL USING (true);
+
+CREATE POLICY "Public Read Questions" ON public.exam_questions FOR SELECT USING (true);
+CREATE POLICY "Public Manage Questions" ON public.exam_questions FOR ALL USING (true);
+
+CREATE POLICY "Public Read Exam Submissions" ON public.exam_submissions FOR SELECT USING (true);
+CREATE POLICY "Public Insert Exam Submissions" ON public.exam_submissions FOR INSERT WITH CHECK (true);
+CREATE POLICY "Public Update Exam Submissions" ON public.exam_submissions FOR UPDATE USING (true);
+

@@ -20,7 +20,8 @@ import {
   ShieldCheck,
   Mail,
   Award,
-  IdCard
+  IdCard,
+  GraduationCap
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Logo from '@/components/common/Logo';
@@ -160,6 +161,7 @@ export default function DashboardLayout({
           { name: 'Manage Interns', href: '/admin/interns', icon: Users },
         ]},
         { section: 'MANAGEMENT', items: [
+          { name: 'Exam Portal', href: '/admin/exams', icon: GraduationCap },
           { name: 'Submissions', href: '/admin/submissions', icon: CheckSquare },
           { name: 'User Management', href: '/admin/users', icon: ShieldCheck },
           { name: 'Messages', href: '/admin/messages', icon: Mail },
@@ -173,6 +175,7 @@ export default function DashboardLayout({
     : [
         { section: 'MAIN MENU', items: [
           { name: 'My Tasks', href: '/intern', icon: CheckSquare },
+          { name: 'Proctored Exams', href: '/intern/exams', icon: GraduationCap },
           { name: 'Submission', href: '/intern/submit', icon: FileText },
           { name: 'Messages', href: '/intern/messages', icon: Mail },
         ]},
