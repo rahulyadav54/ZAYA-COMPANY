@@ -52,6 +52,14 @@ export default function ProctoredExamRoomPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [hasCameraPermission, setHasCameraPermission] = useState(false);
 
+  // Candidate Registration Details Form
+  const [candidateForm, setCandidateForm] = useState({
+    fullName: '',
+    internId: '',
+    phone: '',
+    collegeName: ''
+  });
+
   // 1. Fetch Exam Data
   useEffect(() => {
     async function loadExamDetails() {
@@ -64,6 +72,12 @@ export default function ProctoredExamRoomPage() {
           return;
         }
         setUser(activeUser);
+        setCandidateForm({
+          fullName: activeUser.user_metadata?.full_name || activeUser.full_name || '',
+          internId: activeUser.id || activeUser.email || '',
+          phone: activeUser.phone || activeUser.user_metadata?.phone || '',
+          collegeName: activeUser.user_metadata?.college || ''
+        });
 
         // Fetch Exam
         const { data: examData } = await supabase
@@ -96,6 +110,11 @@ export default function ProctoredExamRoomPage() {
 
   // 2. Start Exam & Enable Fullscreen + Camera
   const startExam = async () => {
+    if (!candidateForm.fullName.trim() || !candidateForm.internId.trim()) {
+      alert('Please fill in your Official Name and Student/Intern ID before starting the exam.');
+      return;
+    }
+
     try {
       // Request Fullscreen
       if (document.documentElement.requestFullscreen) {
@@ -271,8 +290,10 @@ export default function ProctoredExamRoomPage() {
 
     const payload = {
       exam_id: exam.id,
-      intern_id: user.id,
-      intern_name: user.user_metadata?.full_name || user.full_name || user.email?.split('@')[0] || 'Candidate',
+      intern_id: candidateForm.internId.trim() || user?.id || 'CANDIDATE',
+      intern_name: candidateForm.fullName.trim() || user?.user_metadata?.full_name || 'Candidate',
+      college_name: candidateForm.collegeName.trim() || null,
+      phone: candidateForm.phone.trim() || null,
       score: calculatedScore,
       total_points: totalPoints,
       percentage: percentage,
@@ -371,9 +392,54 @@ export default function ProctoredExamRoomPage() {
                 <span>Webcam Proctoring Preview Active</span>
               </li>
             </ul>
-            <div className="pt-2 text-[11px] text-amber-600 dark:text-amber-400 font-extrabold flex items-center gap-2">
-              <AlertTriangle className="h-4 w-4 shrink-0" />
-              <span>Exceeding {exam.max_violations} cheating violations results in immediate exam disqualification.</span>
+          {/* Candidate Registration Details Card */}
+          <div className="p-6 bg-slate-50 dark:bg-slate-800/50 rounded-3xl border border-slate-200/80 dark:border-slate-700/80 space-y-4 text-xs font-bold">
+            <h3 className="font-black text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+              <ShieldAlert className="h-4 w-4 text-blue-500" /> Candidate Verification & Details
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-[10px] uppercase tracking-widest text-slate-400 mb-1">Official Candidate Name *</label>
+                <input
+                  type="text"
+                  required
+                  value={candidateForm.fullName}
+                  onChange={(e) => setCandidateForm({ ...candidateForm, fullName: e.target.value })}
+                  placeholder="Enter your official full name"
+                  className="w-full p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none text-slate-900 dark:text-white focus:border-blue-600 font-extrabold"
+                />
+              </div>
+              <div>
+                <label className="block text-[10px] uppercase tracking-widest text-slate-400 mb-1">Student / Intern ID *</label>
+                <input
+                  type="text"
+                  required
+                  value={candidateForm.internId}
+                  onChange={(e) => setCandidateForm({ ...candidateForm, internId: e.target.value })}
+                  placeholder="e.g. ZAYA-INT-8942"
+                  className="w-full p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none text-slate-900 dark:text-white focus:border-blue-600 font-mono font-bold"
+                />
+              </div>
+              <div>
+                <label className="block text-[10px] uppercase tracking-widest text-slate-400 mb-1">Contact Phone Number</label>
+                <input
+                  type="text"
+                  value={candidateForm.phone}
+                  onChange={(e) => setCandidateForm({ ...candidateForm, phone: e.target.value })}
+                  placeholder="e.g. +91 9876543210"
+                  className="w-full p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none text-slate-900 dark:text-white focus:border-blue-600 font-bold"
+                />
+              </div>
+              <div>
+                <label className="block text-[10px] uppercase tracking-widest text-slate-400 mb-1">College / University Name</label>
+                <input
+                  type="text"
+                  value={candidateForm.collegeName}
+                  onChange={(e) => setCandidateForm({ ...candidateForm, collegeName: e.target.value })}
+                  placeholder="e.g. SRM Institute of Science & Tech"
+                  className="w-full p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none text-slate-900 dark:text-white focus:border-blue-600 font-bold"
+                />
+              </div>
             </div>
           </div>
 

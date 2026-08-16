@@ -287,6 +287,8 @@ CREATE TABLE IF NOT EXISTS public.exam_submissions (
   exam_id UUID REFERENCES public.exams(id) ON DELETE CASCADE,
   intern_id TEXT NOT NULL,
   intern_name TEXT,
+  college_name TEXT,
+  phone TEXT,
   score INTEGER DEFAULT 0,
   total_points INTEGER DEFAULT 0,
   percentage NUMERIC(5,2) DEFAULT 0,
@@ -298,6 +300,9 @@ CREATE TABLE IF NOT EXISTS public.exam_submissions (
   started_at TIMESTAMPTZ DEFAULT NOW(),
   submitted_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+ALTER TABLE public.exam_submissions ADD COLUMN IF NOT EXISTS college_name TEXT;
+ALTER TABLE public.exam_submissions ADD COLUMN IF NOT EXISTS phone TEXT;
 
 -- Enable RLS for Exam Tables
 ALTER TABLE public.exams ENABLE ROW LEVEL SECURITY;

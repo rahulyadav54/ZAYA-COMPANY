@@ -127,6 +127,8 @@ export default function AdminExamsPage() {
     }
   }
 
+  const bulkFileInputRef = useRef<HTMLInputElement>(null);
+
   async function openQuestionManager(exam: any) {
     setSelectedExam(exam);
     setShowQuestionModal(true);
@@ -141,6 +143,75 @@ export default function AdminExamsPage() {
       console.warn('Fetch questions notice:', e);
     }
   }
+
+  const handleBulkUploadJSON = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !selectedExam) return;
+
+    try {
+      const text = await file.text();
+      const json = JSON.parse(text);
+      if (!Array.isArray(json)) {
+        alert('Invalid JSON format. Expected an array of question objects.');
+        return;
+      }
+
+      setIsSubmitting(true);
+      const formattedQuestions = json.map(q => ({
+        exam_id: selectedExam.id,
+        question_text: q.question_text || q.question || 'Untitled Question',
+        options: Array.isArray(q.options) ? q.options : [q.option1 || 'Option A', q.option2 || 'Option B', q.option3 || 'Option C', q.option4 || 'Option D'],
+        correct_option: Number(q.correct_option ?? q.answerIndex ?? 0),
+        points: Number(q.points || 1)
+      }));
+
+      const { data, error } = await supabase
+        .from('exam_questions')
+        .insert(formattedQuestions)
+        .select('*');
+
+      if (!error && data) {
+        setExamQuestions(prev => [...prev, ...data]);
+        alert(`Successfully uploaded ${data.length} questions into question bank!`);
+        fetchExamsAndSubmissions();
+      }
+    } catch (err) {
+      alert('Error parsing JSON file. Please verify JSON format.');
+    } finally {
+      setIsSubmitting(false);
+      if (bulkFileInputRef.current) bulkFileInputRef.current.value = '';
+    }
+  };
+
+  const downloadSampleTemplate = () => {
+    const sample = [
+      {
+        question_text: "What is the primary purpose of the React useEffect hook?",
+        options: [
+          "Managing local component state",
+          "Performing side-effects like data fetching",
+          "Routing between pages",
+          "Styling DOM components"
+        ],
+        correct_option: 1,
+        points: 1
+      },
+      {
+        question_text: "Which SQL command is used to retrieve data from a database table?",
+        options: ["SELECT", "UPDATE", "INSERT", "DELETE"],
+        correct_option: 0,
+        points: 1
+      }
+    ];
+
+    const blob = new Blob([JSON.stringify(sample, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'sample_exam_questions.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   async function handleAddQuestion(e: React.FormEvent) {
     e.preventDefault();
@@ -393,6 +464,12 @@ export default function AdminExamsPage() {
                       <td className="p-5 pl-7">
                         <p className="font-extrabold text-slate-900 dark:text-white text-sm">{sub.intern_name || 'Candidate'}</p>
                         <p className="text-[10px] text-slate-400 font-mono">{sub.intern_id}</p>
+                        {sub.college_name && (
+                          <p className="text-[10px] text-blue-600 dark:text-blue-400 font-bold mt-0.5">🏫 {sub.college_name}</p>
+                        )}
+                        {sub.phone && (
+                          <p className="text-[10px] text-slate-400 font-medium">📞 {sub.phone}</p>
+                        )}
                       </td>
                       <td className="p-5 text-slate-700 dark:text-slate-300">
                         <p className="font-bold">{sub.exams?.title || 'Examination'}</p>
@@ -575,9 +652,31 @@ export default function AdminExamsPage() {
                   <span className="text-[10px] font-black text-blue-500 uppercase tracking-widest">Question Bank Manager</span>
                   <h3 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tight">{selectedExam.title}</h3>
                 </div>
-                <button onClick={() => setShowQuestionModal(false)} className="p-2 text-slate-400 hover:text-slate-600 rounded-xl">
-                  <X className="h-5 w-5" />
-                </button>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="file"
+                    ref={bulkFileInputRef}
+                    onChange={handleBulkUploadJSON}
+                    className="hidden"
+                    accept=".json,application/json"
+                  />
+                  <button
+                    onClick={() => bulkFileInputRef.current?.click()}
+                    className="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-black uppercase tracking-wider transition-all flex items-center gap-1.5 shadow-md"
+                  >
+                    <Plus className="h-3.5 w-3.5" /> Upload Questions JSON
+                  </button>
+                  <button
+                    onClick={downloadSampleTemplate}
+                    className="px-3.5 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:text-blue-600 rounded-xl text-xs font-bold transition-all"
+                    title="Download JSON Question Template"
+                  >
+                    📥 Template
+                  </button>
+                  <button onClick={() => setShowQuestionModal(false)} className="p-2 text-slate-400 hover:text-slate-600 rounded-xl">
+                    <X className="h-5 w-5" />
+                  </button>
+                </div>
               </div>
 
               {/* Questions List & Add Form */}
