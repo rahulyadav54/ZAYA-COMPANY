@@ -383,16 +383,23 @@ export default function AdminExamsPage() {
     URL.revokeObjectURL(url);
   };
 
+  const [selectedSubmissionDomain, setSelectedSubmissionDomain] = useState<string>('ALL');
+
   const filteredExams = exams.filter(e => 
     e.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
     e.domain.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const filteredSubmissions = submissions.filter(s => 
-    s.intern_name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    s.intern_id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    s.exams?.title?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const submissionDomains = ['ALL', ...Array.from(new Set(submissions.map(s => s.exams?.domain).filter(Boolean)))];
+
+  const filteredSubmissions = submissions.filter(s => {
+    const matchesSearch = s.intern_name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          s.intern_id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          s.college_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          s.exams?.title?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesDomain = selectedSubmissionDomain === 'ALL' || s.exams?.domain === selectedSubmissionDomain;
+    return matchesSearch && matchesDomain;
+  });
 
   return (
     <div className="space-y-8 max-w-7xl mx-auto">
@@ -548,7 +555,7 @@ export default function AdminExamsPage() {
           <div className="p-6 pb-2 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800">
             <div>
               <h3 className="font-black text-slate-900 dark:text-white uppercase tracking-tight text-sm">Attempt Results & Proctoring Audit</h3>
-              <p className="text-[10px] text-slate-400">Export report or select & delete submission records from database</p>
+              <p className="text-[10px] text-slate-400">Filter by domain, export report, or select & delete submission records from database</p>
             </div>
             <div className="flex items-center gap-3">
               {selectedSubmissions.length > 0 && (
@@ -568,6 +575,24 @@ export default function AdminExamsPage() {
                 <span>Export CSV / Excel</span>
               </button>
             </div>
+          </div>
+
+          {/* Domain Filter Bar */}
+          <div className="px-6 py-2 flex items-center gap-2 overflow-x-auto custom-scrollbar border-b border-slate-100 dark:border-slate-800">
+            <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider shrink-0 mr-1">Filter Domain:</span>
+            {submissionDomains.map((dom) => (
+              <button
+                key={dom}
+                onClick={() => setSelectedSubmissionDomain(dom)}
+                className={`px-3.5 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all shrink-0 ${
+                  selectedSubmissionDomain === dom
+                    ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20'
+                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
+                }`}
+              >
+                {dom} ({dom === 'ALL' ? submissions.length : submissions.filter(s => s.exams?.domain === dom).length})
+              </button>
+            ))}
           </div>
 
           <div className="overflow-x-auto">
