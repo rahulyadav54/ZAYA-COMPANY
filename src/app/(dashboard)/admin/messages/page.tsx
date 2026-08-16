@@ -434,10 +434,24 @@ export default function AdminMessagesPage() {
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Loading Threads...</p>
             </div>
           ) : (() => {
-            const combinedList = Array.from(new Map([
-              ...conversations.map(c => [c.intern_id || c.id, c]),
-              ...allInterns.map(i => [i.id || i.intern_id, { intern_id: i.id || i.intern_id, intern_name: i.full_name, email: i.email, last_message: 'Start new discussion...' }])
-            ]).values()).filter(item => {
+            const map = new Map<string, any>();
+            conversations.forEach(c => {
+              const k = c.intern_id || c.id;
+              if (k) map.set(k, c);
+            });
+            allInterns.forEach(i => {
+              const k = i.id || i.intern_id;
+              if (k && !map.has(k)) {
+                map.set(k, {
+                  intern_id: k,
+                  intern_name: i.full_name || i.intern_name,
+                  email: i.email,
+                  last_message: 'Start new discussion...'
+                });
+              }
+            });
+
+            const combinedList = Array.from(map.values()).filter(item => {
               if (!sidebarSearchQuery.trim()) return true;
               const q = sidebarSearchQuery.toLowerCase();
               return (
