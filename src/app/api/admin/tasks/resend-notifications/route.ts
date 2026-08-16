@@ -54,6 +54,7 @@ export async function POST() {
     }
 
     let sentCount = 0;
+    let lastError: string | null = null;
     for (const task of tasks) {
       let rawEmail = task.intern_email;
       let name = task.intern_name;
@@ -108,17 +109,29 @@ export async function POST() {
       `;
 
       try {
-        await sendUniversalEmail({
+        const sendRes = await sendUniversalEmail({
           to: destinationEmail,
           subject: `New Internship Task Assigned: ${task.title} (Due Sept 17)`,
           html: emailHtml
         });
-        sentCount++;
+        if (sendRes.success) {
+          sentCount++;
+        } else {
+          lastError = sendRes.error || 'Failed to send';
+        }
         // 300ms pause
         await new Promise(r => setTimeout(r, 300));
-      } catch (e) {
+      } catch (e: any) {
+        lastError = e?.message || 'Dispatch error';
         console.warn('Dispatch error for:', destinationEmail, e);
       }
+    }
+
+    if (sentCount === 0 && tasks.length > 0) {
+      return NextResponse.json({
+        success: false,
+        error: `Failed to send emails. Reason: ${lastError || 'Missing or invalid email credentials'}`
+      }, { status: 500 });
     }
 
     return NextResponse.json({
