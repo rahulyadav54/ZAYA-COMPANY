@@ -430,21 +430,25 @@ export default function PublicProctoredExamRoomPage() {
         {/* 2. PROCTORED TEST ROOM */}
         {isExamStarted && !isExamFinished && (
           <div className="space-y-6 select-none">
-            {/* Top Status Header */}
-            <div className="bg-slate-900 text-white p-5 px-8 rounded-3xl flex items-center justify-between shadow-xl border border-slate-800 sticky top-4 z-30">
+            {/* Top Status Header with ARM Engine Badge */}
+            <div className="bg-slate-900 text-white p-5 px-8 rounded-3xl flex flex-col md:flex-row items-center justify-between gap-4 shadow-xl border border-slate-800 sticky top-4 z-30">
               <div className="flex items-center gap-4">
-                <div className="h-10 w-10 rounded-2xl bg-blue-600 flex items-center justify-center">
-                  <ShieldAlert className="h-5 w-5" />
+                <div className="h-10 w-10 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-600/30">
+                  <ShieldAlert className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-black text-sm uppercase tracking-tight">{exam.title}</h3>
-                  <p className="text-[10px] text-blue-400 font-bold uppercase tracking-widest">Question {currentQuestionIdx + 1} of {questions.length}</p>
+                  <div className="flex items-center gap-2">
+                    <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 text-[8px] font-black rounded-full uppercase tracking-widest border border-emerald-500/30 flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> ARM ENGINE PROCTORING ACTIVE
+                    </span>
+                  </div>
+                  <h3 className="font-black text-sm uppercase tracking-tight italic mt-0.5">{exam.title}</h3>
                 </div>
               </div>
 
               <div className="flex items-center gap-6">
                 <div className="flex items-center gap-2 px-4 py-2 bg-amber-500/10 border border-amber-500/30 rounded-2xl text-amber-400 text-xs font-black">
-                  <AlertTriangle className="h-4 w-4" />
+                  <AlertTriangle className="h-4 w-4 text-amber-400" />
                   <span>Strikes: {violationsCount} / {exam.max_violations || 5}</span>
                 </div>
 
@@ -455,18 +459,28 @@ export default function PublicProctoredExamRoomPage() {
               </div>
             </div>
 
-            {/* Questions Grid & Proctor Camera */}
+            {/* Questions Grid with Candidate Security Watermark & Copy Protection */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <div className="md:col-span-3 bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-200/80 dark:border-slate-800 shadow-2xl p-8 space-y-6">
+              <div className="md:col-span-3 bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-200/80 dark:border-slate-800 shadow-2xl p-8 space-y-6 relative overflow-hidden select-none" style={{ userSelect: 'none', WebkitUserSelect: 'none' }}>
+                {/* Dynamic ARM Engine Security Watermark */}
+                <div className="absolute inset-0 pointer-events-none opacity-[0.04] dark:opacity-[0.06] flex items-center justify-center rotate-[-15deg] select-none text-xs font-black uppercase tracking-widest text-slate-900 dark:text-white leading-loose text-center">
+                  ARM ENGINE SECURE PROCTORING • CANDIDATE: {studentForm.fullName || 'STUDENT'} • ID: {studentForm.studentId || 'EXAM'} • CONFIDENTIAL DO NOT COPY
+                </div>
+
                 {questions.length === 0 ? (
                   <div className="py-12 text-center text-slate-400 uppercase font-black tracking-widest">
                     No questions available.
                   </div>
                 ) : (
                   <>
-                    <div className="space-y-3">
-                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Question {currentQuestionIdx + 1}</span>
-                      <h2 className="text-xl font-black text-slate-900 dark:text-white leading-relaxed">
+                    <div className="space-y-3 relative z-10">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Question {currentQuestionIdx + 1} of {questions.length}</span>
+                        <span className="px-2.5 py-0.5 bg-red-500/10 text-red-500 text-[9px] font-black rounded-full uppercase tracking-widest border border-red-500/20">
+                          🔒 COPY & SELECTION PROTECTED
+                        </span>
+                      </div>
+                      <h2 className="text-xl font-black text-slate-900 dark:text-white leading-relaxed select-none">
                         {questions[currentQuestionIdx]?.question_text}
                       </h2>
                     </div>
