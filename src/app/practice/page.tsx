@@ -35,20 +35,19 @@ export default function PublicPracticeHubPage() {
     coding_problems_solved: number;
     badges: string[];
   }>({
-    xp_points: 150,
-    streak_days: 3,
-    tests_completed: 2,
-    coding_problems_solved: 5,
-    badges: ['Code Novice', 'Honest Scholar']
+    xp_points: 0,
+    streak_days: 0,
+    tests_completed: 0,
+    coding_problems_solved: 0,
+    badges: []
   });
 
   useEffect(() => {
     async function loadData() {
       setIsLoading(true);
       try {
-        // Fetch User Auth
-        const { getActiveUser } = await import('@/lib/getActiveUser');
-        const user = await getActiveUser();
+        // Fetch Real Supabase Auth User
+        const { data: { user } } = await supabase.auth.getUser();
         if (user) {
           setCurrentUser(user);
           // Fetch User Practice Stats
@@ -60,13 +59,15 @@ export default function PublicPracticeHubPage() {
 
           if (stats) {
             setUserStats({
-              xp_points: stats.xp_points || 150,
-              streak_days: stats.streak_days || 1,
+              xp_points: stats.xp_points || 0,
+              streak_days: stats.streak_days || 0,
               tests_completed: stats.tests_completed || 0,
               coding_problems_solved: stats.coding_problems_solved || 0,
-              badges: Array.isArray(stats.badges) ? stats.badges : ['Code Novice']
+              badges: Array.isArray(stats.badges) ? stats.badges : []
             });
           }
+        } else {
+          setCurrentUser(null);
         }
 
         // Fetch Public Exams
@@ -85,6 +86,15 @@ export default function PublicPracticeHubPage() {
     }
     loadData();
   }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('zaya_intern_session');
+    }
+    setCurrentUser(null);
+    setUserStats({ xp_points: 0, streak_days: 0, tests_completed: 0, coding_problems_solved: 0, badges: [] });
+  };
 
   const domains = ['ALL', ...Array.from(new Set(exams.map(e => e.domain)))];
 
@@ -161,9 +171,17 @@ export default function PublicPracticeHubPage() {
                         🔥 {userStats.streak_days} DAY STREAK
                       </span>
                     </div>
-                    <h3 className="text-xl font-black uppercase tracking-tight italic text-white mt-1">
-                      Welcome Back, {currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0]}!
-                    </h3>
+                    <div className="flex items-center gap-2 mt-1">
+                      <h3 className="text-xl font-black uppercase tracking-tight italic text-white">
+                        Welcome Back, {currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0]}!
+                      </h3>
+                      <button
+                        onClick={handleLogout}
+                        className="px-2.5 py-1 bg-red-500/20 hover:bg-red-500/30 text-red-300 text-[9px] font-black rounded-lg uppercase tracking-wider border border-red-500/30 transition-all ml-2"
+                      >
+                        Logout
+                      </button>
+                    </div>
                   </div>
                 </div>
 
