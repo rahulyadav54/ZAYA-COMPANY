@@ -16,7 +16,8 @@ import {
   ExternalLink,
   ShieldCheck,
   CheckCircle2,
-  XCircle
+  XCircle,
+  Mail
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -26,6 +27,28 @@ export default function AdminDashboard() {
   const [recentActiveInterns, setRecentActiveInterns] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isSendingEmails, setIsSendingEmails] = useState(false);
+
+  const handleResendNotifications = async () => {
+    if (!confirm('Are you sure you want to send task assignment emails to all interns with pending tasks?')) return;
+    
+    setIsSendingEmails(true);
+    try {
+      const res = await fetch('/api/admin/tasks/resend-notifications', {
+        method: 'POST'
+      });
+      const json = await res.json();
+      if (!res.ok || !json.success) {
+        alert(`Error sending emails: ${json.error || 'Failed to send'}`);
+      } else {
+        alert(json.message || `Task notification emails sent successfully!`);
+      }
+    } catch (err: any) {
+      alert(`Network error: ${err.message}`);
+    } finally {
+      setIsSendingEmails(false);
+    }
+  };
 
   const fetchData = async () => {
     setIsRefreshing(true);
@@ -142,6 +165,14 @@ export default function AdminDashboard() {
           >
             <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
             <span>Refresh Data</span>
+          </button>
+          <button
+            onClick={handleResendNotifications}
+            disabled={isSendingEmails}
+            className="flex items-center gap-2 px-4 py-3 bg-amber-600 hover:bg-amber-500 rounded-2xl text-xs font-bold transition-all shadow-lg active:scale-95 disabled:opacity-50"
+          >
+            <Mail className="h-4 w-4" />
+            <span>{isSendingEmails ? 'Sending...' : 'Send Mail'}</span>
           </button>
           <Link
             href="/admin/applications"
