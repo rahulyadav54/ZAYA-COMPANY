@@ -32,6 +32,7 @@ export async function sendUniversalEmail({ to, subject, html }: EmailPayload) {
         from: `"ZAYA CODE HUB" <${smtpUser}>`,
         to: recipient,
         subject: subject,
+        text: html.replace(/<[^>]*>?/gm, '').trim(), // Plain-text fallback to reduce spam score
         html: html,
       });
 
