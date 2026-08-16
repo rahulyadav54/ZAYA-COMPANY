@@ -13,6 +13,7 @@ import Logo from '@/components/common/Logo';
 const navLinks = [
   { name: 'Home', href: '/' },
   { name: 'AI ZAYA', href: '/ai-zaya', badge: 'NEW' },
+  { name: 'Practice Tests', href: '/practice', badge: 'FREE' },
   { name: 'About', href: '/about' },
   { name: 'Services', href: '/services' },
   { name: 'Portfolio', href: '/portfolio' },
