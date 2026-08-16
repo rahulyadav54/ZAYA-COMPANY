@@ -44,9 +44,10 @@ export default function AdminMessagesPage() {
           const m = data.find(item => item.intern_id === id);
           return {
             intern_id: id,
+            id: id,
             intern_name: m?.intern_name || 'Intern',
             created_at: m?.created_at,
-            last_message: m?.content || 'Sent file/attachment'
+            last_message: m?.content || 'Sent attachment'
           };
         });
         setConversations(uniqueConvs);
@@ -60,51 +61,73 @@ export default function AdminMessagesPage() {
 
   const fetchAllInterns = async () => {
     setIsLoadingInterns(true);
+    let list: any[] = [];
+
+    // 1. Try API endpoint first (bypasses browser RLS)
     try {
-      const { data: profs } = await supabase.from('profiles').select('id, full_name, email, role, intern_id');
-      const { data: apps } = await supabase.from('applications').select('id, full_name, email, position, intern_id');
-
-      const combined: any[] = [];
-      const seen = new Set();
-
-      if (profs) {
-        for (const p of profs) {
-          const emailKey = (p.email || p.id).toLowerCase();
-          if (!seen.has(emailKey)) {
-            seen.add(emailKey);
-            combined.push({
-              id: p.id || p.intern_id,
-              full_name: p.full_name || p.email?.split('@')[0] || 'Intern Candidate',
-              email: p.email || '',
-              intern_id: p.intern_id || p.id
-            });
-          }
-        }
+      const res = await fetch('/api/admin/interns');
+      const json = await res.json();
+      if (json.success && Array.isArray(json.interns) && json.interns.length > 0) {
+        list = json.interns.map((i: any) => ({
+          id: i.id || i.intern_id || i.email,
+          intern_id: i.intern_id || i.id || i.email,
+          full_name: i.full_name || i.email?.split('@')[0] || 'Intern',
+          intern_name: i.full_name || i.email?.split('@')[0] || 'Intern',
+          email: i.email || '',
+          position: i.position || 'Intern'
+        }));
       }
-
-      if (apps) {
-        for (const a of apps) {
-          const emailKey = (a.email || a.id).toLowerCase();
-          if (!seen.has(emailKey)) {
-            seen.add(emailKey);
-            combined.push({
-              id: a.id || a.intern_id,
-              full_name: a.full_name || a.email?.split('@')[0] || 'Intern Candidate',
-              email: a.email || '',
-              intern_id: a.intern_id || a.id
-            });
-          }
-        }
-      }
-
-      setAllInterns(combined);
-      return combined;
     } catch (e) {
-      console.warn('Fetch interns notice:', e);
-      return [];
-    } finally {
-      setIsLoadingInterns(false);
+      console.warn('API fetch interns notice:', e);
     }
+
+    // 2. Client fallback
+    if (list.length === 0) {
+      try {
+        const { data: profs } = await supabase.from('profiles').select('*');
+        const { data: apps } = await supabase.from('applications').select('*');
+
+        const seen = new Set();
+        if (profs && Array.isArray(profs)) {
+          for (const p of profs) {
+            const key = (p.email || p.id).toLowerCase();
+            if (!seen.has(key)) {
+              seen.add(key);
+              list.push({
+                id: p.id || p.intern_id,
+                intern_id: p.intern_id || p.id,
+                full_name: p.full_name || p.email?.split('@')[0] || 'Intern',
+                intern_name: p.full_name || p.email?.split('@')[0] || 'Intern',
+                email: p.email || '',
+                position: p.department || 'Intern'
+              });
+            }
+          }
+        }
+
+        if (apps && Array.isArray(apps)) {
+          for (const a of apps) {
+            const key = (a.email || a.id).toLowerCase();
+            if (!seen.has(key)) {
+              seen.add(key);
+              list.push({
+                id: a.id || a.intern_id,
+                intern_id: a.intern_id || a.id,
+                full_name: a.full_name || a.email?.split('@')[0] || 'Intern Applicant',
+                intern_name: a.full_name || a.email?.split('@')[0] || 'Intern Applicant',
+                email: a.email || '',
+                position: a.position || 'Intern'
+              });
+            }
+          }
+        }
+      } catch (e) {
+        console.warn('Client fallback fetch interns notice:', e);
+      }
+    }
+
+    setAllInterns(list);
+    return list;
   };
 
   useEffect(() => {
@@ -122,11 +145,16 @@ export default function AdminMessagesPage() {
         table: 'intern_messages'
       }, (payload) => {
         const newMsg = payload.new;
-        if (selectedIntern && (newMsg.intern_id === selectedIntern.intern_id || newMsg.intern_id === selectedIntern.id)) {
-          setMessages(prev => {
-            if (prev.some(m => m.id === newMsg.id)) return prev;
-            return [...prev, newMsg];
-          });
+        if (selectedIntern) {
+          const sId = (selectedIntern.intern_id || selectedIntern.id || '').toLowerCase();
+          const sEmail = (selectedIntern.email || '').toLowerCase();
+          const mId = (newMsg.intern_id || '').toLowerCase();
+          if (mId === sId || mId === sEmail) {
+            setMessages(prev => {
+              if (prev.some(m => m.id === newMsg.id)) return prev;
+              return [...prev, newMsg];
+            });
+          }
         }
         fetchConversations();
       })
@@ -139,8 +167,11 @@ export default function AdminMessagesPage() {
 
   const handleStartNewMessage = (intern: any) => {
     setSelectedIntern({
-      intern_id: intern.id,
-      intern_name: intern.full_name
+      intern_id: intern.intern_id || intern.id || intern.email,
+      id: intern.id || intern.intern_id,
+      intern_name: intern.full_name || intern.intern_name || 'Intern',
+      full_name: intern.full_name || intern.intern_name || 'Intern',
+      email: intern.email || ''
     });
     setShowNewMessageModal(false);
     setSelectedInternIds([]);
@@ -167,10 +198,10 @@ export default function AdminMessagesPage() {
 
     try {
       const messagesToInsert = selectedInternIds.map(id => {
-        const intern = allInterns.find(i => i.id === id);
+        const intern = allInterns.find(i => i.id === id || i.intern_id === id);
         return {
-          intern_id: id,
-          intern_name: intern?.full_name || 'Intern',
+          intern_id: intern?.intern_id || intern?.id || id,
+          intern_name: intern?.full_name || intern?.intern_name || 'Intern',
           content: bulkMessage.trim(),
           sender_type: 'admin'
         };
@@ -195,8 +226,8 @@ export default function AdminMessagesPage() {
   };
 
   const filteredInterns = allInterns.filter(intern => 
-    intern.full_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    intern.email?.toLowerCase().includes(searchQuery.toLowerCase())
+    (intern.full_name || intern.intern_name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (intern.email || '').toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   useEffect(() => {
@@ -206,15 +237,21 @@ export default function AdminMessagesPage() {
   }, [selectedIntern]);
 
   async function loadMessages(internTarget: any) {
-    const targetId = typeof internTarget === 'string' ? internTarget : (internTarget?.intern_id || internTarget?.id);
-    if (!targetId) return;
-
+    if (!internTarget) return;
     setIsLoadingMessages(true);
+
+    const idsToSearch = new Set<string>();
+    if (internTarget.intern_id) idsToSearch.add(internTarget.intern_id);
+    if (internTarget.id) idsToSearch.add(internTarget.id);
+    if (internTarget.email) idsToSearch.add(internTarget.email);
+
+    const orConditions = Array.from(idsToSearch).map(id => `intern_id.eq.${id}`).join(',');
+
     try {
       const { data, error } = await supabase
         .from('intern_messages')
         .select('*')
-        .or(`intern_id.eq.${targetId},intern_id.eq.${internTarget?.email || ''}`)
+        .or(orConditions)
         .order('created_at', { ascending: true });
 
       if (!error && data) {
@@ -222,7 +259,7 @@ export default function AdminMessagesPage() {
         await supabase
           .from('intern_messages')
           .update({ is_read: true })
-          .or(`intern_id.eq.${targetId},intern_id.eq.${internTarget?.email || ''}`)
+          .or(orConditions)
           .eq('sender_type', 'intern')
           .eq('is_read', false);
       } else {
