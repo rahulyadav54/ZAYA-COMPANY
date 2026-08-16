@@ -41,7 +41,7 @@ export default function AdminExamsPage() {
     domain: 'Full Stack Web Development',
     duration_minutes: 30,
     passing_score: 60,
-    max_violations: 3,
+    max_violations: 5,
     is_active: true
   });
 

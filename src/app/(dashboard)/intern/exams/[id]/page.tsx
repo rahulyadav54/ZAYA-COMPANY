@@ -123,6 +123,7 @@ export default function ProctoredExamRoomPage() {
   const triggerViolation = (reason: string) => {
     if (!isExamStarted || isExamFinished || isDisqualified) return;
 
+    const maxAllowed = exam?.max_violations || 5;
     const timestamp = new Date().toISOString();
     const newCount = violationsCount + 1;
     const newLog = [...violationsLog, { type: reason, timestamp }];
@@ -132,14 +133,14 @@ export default function ProctoredExamRoomPage() {
     setWarningMessage(reason);
     setShowWarningModal(true);
 
-    // Check Disqualification Limit
-    if (newCount >= (exam?.max_violations || 3)) {
+    // Check if 5th strike reached (Final strike: Auto submit & close)
+    if (newCount >= maxAllowed) {
       setIsDisqualified(true);
       submitExam(newAnswersToScore(), true, newCount, newLog);
     }
   };
 
-  // 4. Anti-Cheating Event Listeners (Tab Switch, Key Combinations, Right Click, Copy/Paste)
+  // 4. Anti-Cheating Event Listeners (Tab Switch, Key Combinations, Right Click, Copy/Paste, Window Close/Resize)
   useEffect(() => {
     if (!isExamStarted || isExamFinished) return;
 
@@ -151,7 +152,7 @@ export default function ProctoredExamRoomPage() {
     };
 
     const handleWindowBlur = () => {
-      triggerViolation('Focus Lost (Switched to Another Window / App)');
+      triggerViolation('Focus Lost (Switched Window / Closed Application)');
     };
 
     // B. Fullscreen Exit Detection
@@ -161,7 +162,22 @@ export default function ProctoredExamRoomPage() {
       }
     };
 
-    // C. Right-Click & Copy/Paste Blocking
+    // C. Window Resize / Minimize Detection
+    const handleWindowResize = () => {
+      if (window.outerWidth < window.screen.width * 0.95 || window.outerHeight < window.screen.height * 0.95) {
+        triggerViolation('Browser Window Resized / Minimized');
+      }
+    };
+
+    // D. Window Close / Refresh Attempt Interception
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      triggerViolation('Attempted to Close or Refresh Browser Window');
+      e.preventDefault();
+      e.returnValue = 'Warning: Closing browser window will automatically submit and terminate your exam!';
+      return e.returnValue;
+    };
+
+    // E. Right-Click & Copy/Paste Blocking
     const handleContextMenu = (e: MouseEvent) => {
       e.preventDefault();
       triggerViolation('Right Click / Context Menu Triggered');
@@ -172,11 +188,10 @@ export default function ProctoredExamRoomPage() {
       triggerViolation('Copy / Cut / Paste Attempt Detected');
     };
 
-    // D. Developer Tools & Shortcut Blocking
+    // F. Developer Tools & Shortcut Blocking
     const handleKeyDown = (e: KeyboardEvent) => {
-      // F12 or Ctrl+Shift+I or Ctrl+Shift+J or Ctrl+U
       if (
-        e.keyCode === 123 ||
+        e.keyCode === 123 || // F12
         (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j')) ||
         (e.ctrlKey && (e.key === 'u' || e.key === 'U' || e.key === 'c' || e.key === 'C' || e.key === 'v' || e.key === 'V')) ||
         e.altKey
@@ -189,6 +204,8 @@ export default function ProctoredExamRoomPage() {
     document.addEventListener('visibilitychange', handleVisibilityChange);
     window.addEventListener('blur', handleWindowBlur);
     document.addEventListener('fullscreenchange', handleFullscreenChange);
+    window.addEventListener('resize', handleWindowResize);
+    window.addEventListener('beforeunload', handleBeforeUnload);
     document.addEventListener('contextmenu', handleContextMenu);
     document.addEventListener('copy', handleCopyPaste);
     document.addEventListener('cut', handleCopyPaste);
@@ -199,6 +216,8 @@ export default function ProctoredExamRoomPage() {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('blur', handleWindowBlur);
       document.removeEventListener('fullscreenchange', handleFullscreenChange);
+      window.removeEventListener('resize', handleWindowResize);
+      window.removeEventListener('beforeunload', handleBeforeUnload);
       document.removeEventListener('contextmenu', handleContextMenu);
       document.removeEventListener('copy', handleCopyPaste);
       document.removeEventListener('cut', handleCopyPaste);
@@ -531,35 +550,44 @@ export default function ProctoredExamRoomPage() {
       {/* 3. CHEATING VIOLATION WARNING MODAL */}
       <AnimatePresence>
         {showWarningModal && !isDisqualified && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md">
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
               className="bg-white dark:bg-slate-900 rounded-[2.5rem] border-2 border-red-500 shadow-2xl p-8 max-w-md w-full text-center space-y-5"
             >
-              <div className="w-16 h-16 bg-red-100 dark:bg-red-950/50 text-red-600 rounded-3xl flex items-center justify-center mx-auto">
+              <div className="w-16 h-16 bg-red-100 dark:bg-red-950/50 text-red-600 rounded-3xl flex items-center justify-center mx-auto animate-bounce">
                 <AlertTriangle className="h-8 w-8" />
               </div>
               <div>
                 <span className="px-3 py-1 bg-red-500/10 text-red-600 text-[10px] font-black rounded-full uppercase tracking-widest border border-red-500/20">
-                  Strike {violationsCount} of {exam.max_violations}
+                  Warning {violationsCount} of {exam.max_violations || 5}
                 </span>
                 <h3 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tight mt-2">
-                  Proctoring Violation Warning!
+                  Security Violation Detected!
                 </h3>
                 <p className="text-xs text-red-600 font-bold mt-1">
                   Reason: {warningMessage}
                 </p>
               </div>
               <p className="text-xs text-slate-500 font-medium leading-relaxed">
-                Swapping tabs, exiting fullscreen, or copying text is prohibited. Exceeding {exam.max_violations} strikes will automatically disqualify your test attempt.
+                Closing windows, swapping browser tabs, or exiting fullscreen is strictly monitored. Reaching {exam.max_violations || 5} warnings will automatically submit and terminate your exam.
               </p>
               <button
-                onClick={() => setShowWarningModal(false)}
-                className="w-full py-3.5 bg-red-600 hover:bg-red-700 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-red-600/30 transition-all"
+                onClick={async () => {
+                  setShowWarningModal(false);
+                  if (!document.fullscreenElement) {
+                    try {
+                      await document.documentElement.requestFullscreen();
+                    } catch (e) {
+                      console.warn('Re-enter fullscreen notice:', e);
+                    }
+                  }
+                }}
+                className="w-full py-3.5 bg-red-600 hover:bg-red-700 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-red-600/30 transition-all active:scale-95"
               >
-                I Understand & Resume Test
+                Re-Enter Fullscreen & Resume Test
               </button>
             </motion.div>
           </div>
