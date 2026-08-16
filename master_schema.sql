@@ -193,11 +193,13 @@ CREATE POLICY "Jobs insertable by admin" ON public.jobs FOR INSERT WITH CHECK (t
 
 -- Tasks & Submissions Policies
 DROP POLICY IF EXISTS "Tasks viewable by assigned intern or admin" ON public.tasks;
+DROP POLICY IF EXISTS "Allow public all tasks" ON public.tasks;
 DROP POLICY IF EXISTS "Submissions viewable by intern or admin" ON public.submissions;
 DROP POLICY IF EXISTS "Submissions insertable by intern" ON public.submissions;
-CREATE POLICY "Tasks viewable by assigned intern or admin" ON public.tasks FOR SELECT USING (true);
-CREATE POLICY "Submissions viewable by intern or admin" ON public.submissions FOR SELECT USING (true);
-CREATE POLICY "Submissions insertable by intern" ON public.submissions FOR INSERT WITH CHECK (true);
+DROP POLICY IF EXISTS "Allow public all submissions" ON public.submissions;
+
+CREATE POLICY "Allow public all tasks" ON public.tasks FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Allow public all submissions" ON public.submissions FOR ALL USING (true) WITH CHECK (true);
 
 -- Contact & Posts Policies
 DROP POLICY IF EXISTS "Anyone can send contact message" ON public.contact_messages;

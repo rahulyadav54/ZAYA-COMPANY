@@ -22,83 +22,94 @@ function IDVerificationContent() {
     setResult(null);
 
     try {
-      const cleanId = targetId.trim().toUpperCase();
+      const cleanId = targetId.trim();
+      const upperCleanId = cleanId.toUpperCase();
+      const lowerCleanId = cleanId.toLowerCase();
 
-      // 1. Check profiles table by exact or ilike intern_id match
-      const { data: profByInternId } = await supabase
-        .from('profiles')
-        .select('*')
-        .ilike('intern_id', cleanId)
-        .maybeSingle();
+      // 1. Query profiles table directly
+      try {
+        const { data: prof } = await supabase
+          .from('profiles')
+          .select('*')
+          .or(`id.eq.${cleanId},intern_id.ilike.${cleanId},email.ilike.${cleanId}`)
+          .maybeSingle();
 
-      if (profByInternId && profByInternId.full_name && profByInternId.full_name.trim() !== 'Accepted Intern') {
-        setResult(profByInternId);
-        setLoading(false);
-        return;
-      }
-
-      // 2. Check applications table by exact intern_id match
-      const { data: appByInternId } = await supabase
-        .from('applications')
-        .select('*')
-        .ilike('intern_id', cleanId)
-        .maybeSingle();
-
-      if (appByInternId) {
-        setResult({
-          full_name: appByInternId.full_name,
-          position: appByInternId.position || 'Web Designer Intern',
-          email: appByInternId.email,
-          created_at: appByInternId.created_at || appByInternId.applied_at || new Date().toISOString(),
-          avatar_url: null
-        });
-        setLoading(false);
-        return;
-      }
-
-      // 3. Search profiles table for matching UUID id, email, or intern_id substring
-      const { data: allProfiles } = await supabase.from('profiles').select('*');
-      if (allProfiles && allProfiles.length > 0) {
-        const found = allProfiles.find(p => 
-          (p.intern_id && p.intern_id.toUpperCase() === cleanId) ||
-          p.id.toLowerCase() === cleanId.toLowerCase() ||
-          p.id.slice(0, 8).toLowerCase() === cleanId.replace('ZAYA-ID-', '').replace('ZCH-', '').toLowerCase() ||
-          (p.email && p.email.toLowerCase().trim() === cleanId.toLowerCase())
-        );
-
-        if (found && found.full_name && found.full_name.trim() !== 'Accepted Intern') {
-          setResult(found);
+        if (prof && prof.full_name && prof.full_name.trim() !== 'Accepted Intern') {
+          setResult(prof);
           setLoading(false);
           return;
         }
+      } catch (e) {
+        console.warn('Profiles query notice:', e);
       }
 
-      // 4. Search applications table for matching applicant email or intern_id
-      const { data: allApps } = await supabase.from('applications').select('*');
-      if (allApps && allApps.length > 0) {
-        const foundApp = allApps.find(a => 
-          (a.intern_id && a.intern_id.toUpperCase() === cleanId) ||
-          (a.email && a.email.toLowerCase().trim() === cleanId.toLowerCase())
-        );
+      // 2. Query applications table directly
+      try {
+        const { data: app } = await supabase
+          .from('applications')
+          .select('*')
+          .or(`id.eq.${cleanId},intern_id.ilike.${cleanId},email.ilike.${cleanId}`)
+          .maybeSingle();
 
-        if (foundApp) {
+        if (app) {
           setResult({
-            full_name: foundApp.full_name,
-            position: foundApp.position || 'Web Designer Intern',
-            email: foundApp.email,
-            created_at: foundApp.created_at || foundApp.applied_at || new Date().toISOString(),
-            avatar_url: null
+            full_name: app.full_name,
+            position: app.position || 'Intern',
+            email: app.email,
+            created_at: app.created_at || app.applied_at || new Date().toISOString(),
+            avatar_url: null,
+            intern_id: app.intern_id || `ZCH-2026-${Math.floor(1000 + Math.random() * 9000)}`
           });
           setLoading(false);
           return;
         }
+      } catch (e) {
+        console.warn('Applications query notice:', e);
+      }
+
+      // 3. Fallback: Query Server API /api/admin/interns for complete aggregated search
+      try {
+        const res = await fetch('/api/admin/interns');
+        const json = await res.json();
+        if (json.success && Array.isArray(json.interns)) {
+          const found = json.interns.find((i: any) => {
+            const iId = String(i.id || '').toLowerCase();
+            const iInternId = String(i.intern_id || '').toUpperCase();
+            const iEmail = String(i.email || '').toLowerCase();
+            const iPersonalEmail = String(i.personal_email || '').toLowerCase();
+
+            return (
+              iId === lowerCleanId ||
+              iInternId === upperCleanId ||
+              iInternId.includes(upperCleanId) ||
+              iEmail === lowerCleanId ||
+              iPersonalEmail === lowerCleanId ||
+              (upperCleanId.length >= 4 && iInternId.endsWith(upperCleanId))
+            );
+          });
+
+          if (found) {
+            setResult({
+              full_name: found.full_name,
+              position: found.position || 'Intern',
+              email: found.email,
+              created_at: found.joining_date || found.created_at || new Date().toISOString(),
+              avatar_url: found.avatar_url || null,
+              intern_id: found.intern_id
+            });
+            setLoading(false);
+            return;
+          }
+        }
+      } catch (e) {
+        console.warn('API fallback query notice:', e);
       }
 
       // If no authentic record matched
       setError('Invalid Intern ID or Credentials Not Found. Please check the ID and try again.');
     } catch (err: any) {
       console.error('Verification error:', err);
-      setError('An error occurred while verifying the identity. Please try again.');
+      setError('An error occurred while verifying identity. Please try again.');
     } finally {
       setLoading(false);
     }

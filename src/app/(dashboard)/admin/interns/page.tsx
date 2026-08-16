@@ -18,6 +18,10 @@ export default function ManageInternsPage() {
   const [selectedInternId, setSelectedInternId] = useState<string | null>(null);
   const [editingIntern, setEditingIntern] = useState<any>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Bulk task state
+  const [taskTargetMode, setTaskTargetMode] = useState<'individual' | 'domain' | 'all'>('individual');
+  const [selectedDomain, setSelectedDomain] = useState<string>('');
   
   const [selectedCandidate, setSelectedCandidate] = useState<any>(null);
   const [manualFullName, setManualFullName] = useState('');
@@ -206,6 +210,30 @@ export default function ManageInternsPage() {
     setIsSubmitting(false);
   };
 
+  const uniqueDomains = Array.from(
+    new Set(
+      interns
+        .map(i => i.position)
+        .filter((pos): pos is string => Boolean(pos && pos.trim()))
+        .map(pos => pos.trim())
+    )
+  );
+
+  const getMatchingInternCount = () => {
+    if (taskTargetMode === 'individual') {
+      return selectedInternId ? 1 : 0;
+    }
+    if (taskTargetMode === 'all') {
+      return interns.length;
+    }
+    if (taskTargetMode === 'domain') {
+      if (!selectedDomain) return 0;
+      const search = selectedDomain.toLowerCase().trim();
+      return interns.filter(i => (i.position || '').toLowerCase().includes(search)).length;
+    }
+    return 0;
+  };
+
   const handleSendTask = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -216,26 +244,39 @@ export default function ManageInternsPage() {
     const priority = formData.get('priority') as string;
     const deadline = formData.get('deadline') as string;
 
-    const selectedIntern = interns.find(i => i.id === selectedInternId);
+    const targetValue = taskTargetMode === 'individual' 
+      ? selectedInternId 
+      : taskTargetMode === 'domain' 
+        ? selectedDomain 
+        : null;
 
-    const { error } = await supabase.from('tasks').insert({
-      intern_id: selectedInternId,
-      title,
-      description,
-      priority,
-      deadline: deadline ? new Date(deadline).toISOString() : null,
-      status: 'pending'
-    });
+    try {
+      const res = await fetch('/api/admin/tasks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          targetMode: taskTargetMode,
+          targetValue,
+          title,
+          description,
+          priority,
+          deadline
+        })
+      });
 
-    if (error) {
-      console.error(error);
-      alert(`Task sent successfully (Simulated! Please create a 'tasks' table in Supabase to actually save this data).`);
-    } else {
-      alert('Task sent successfully!');
+      const json = await res.json();
+
+      if (!res.ok || !json.success) {
+        alert(`Error assigning task: ${json.error || 'Failed to assign task'}`);
+      } else {
+        alert(json.message || `Task successfully assigned!`);
+        setShowTaskModal(false);
+      }
+    } catch (err: any) {
+      alert(`Network error: ${err.message}`);
+    } finally {
+      setIsSubmitting(false);
     }
-    
-    setShowTaskModal(false);
-    setIsSubmitting(false);
   };
 
   return (
@@ -256,6 +297,17 @@ export default function ManageInternsPage() {
             className="flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors font-bold text-sm"
           >
             <Download className="h-4 w-4" /> Download CSV
+          </button>
+          <button 
+            onClick={() => {
+              setTaskTargetMode('domain');
+              setSelectedInternId(null);
+              if (uniqueDomains.length > 0) setSelectedDomain(uniqueDomains[0]);
+              setShowTaskModal(true);
+            }}
+            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-colors font-bold text-sm shadow-md"
+          >
+            <Send className="h-4 w-4" /> Bulk Task
           </button>
           <button 
             onClick={() => setShowCreateModal(true)}
@@ -341,6 +393,7 @@ export default function ManageInternsPage() {
                 <button 
                   onClick={() => {
                     setSelectedInternId(intern.id);
+                    setTaskTargetMode('individual');
                     setShowTaskModal(true);
                   }}
                   className="flex-1 py-2 flex items-center justify-center gap-2 bg-blue-50 dark:bg-blue-900/20 text-blue-600 rounded-xl text-sm font-bold hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors"
@@ -514,26 +567,119 @@ export default function ManageInternsPage() {
         </div>
       )}
       {showTaskModal && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-xl w-full max-w-md overflow-hidden border border-slate-200 dark:border-slate-800">
-            <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-xl w-full max-w-lg overflow-hidden border border-slate-200 dark:border-slate-800 my-auto">
+            <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-950/50">
               <div>
-                <h2 className="text-xl font-bold text-foreground">Assign Task/Notification</h2>
+                <h2 className="text-xl font-bold text-foreground">Assign Task / Project</h2>
                 <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">
-                  Target: <span className="text-blue-600">{interns.find(i => i.id === selectedInternId)?.full_name}</span> 
-                  {' • '} 
-                  Role: <span className="text-slate-900 dark:text-white">{interns.find(i => i.id === selectedInternId)?.position || 'General Intern'}</span>
+                  Assign tasks to single or domain-matched interns
                 </p>
               </div>
               <button onClick={() => setShowTaskModal(false)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full">
                 <X className="h-5 w-5 text-slate-500" />
               </button>
             </div>
-            <form onSubmit={handleSendTask} className="p-6 space-y-4">
+
+            <form onSubmit={handleSendTask} className="p-6 space-y-5">
+              {/* Target Mode Selector Tabs */}
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Assign Target</label>
+                <div className="grid grid-cols-3 gap-2 p-1.5 bg-slate-100 dark:bg-slate-800 rounded-2xl">
+                  <button
+                    type="button"
+                    onClick={() => setTaskTargetMode('individual')}
+                    className={`py-2 px-3 rounded-xl text-xs font-bold transition-all ${taskTargetMode === 'individual' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-600 dark:text-slate-400 hover:text-foreground'}`}
+                  >
+                    👤 Individual
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setTaskTargetMode('domain');
+                      if (!selectedDomain && uniqueDomains.length > 0) setSelectedDomain(uniqueDomains[0]);
+                    }}
+                    className={`py-2 px-3 rounded-xl text-xs font-bold transition-all ${taskTargetMode === 'domain' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-600 dark:text-slate-400 hover:text-foreground'}`}
+                  >
+                    🎯 By Domain
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setTaskTargetMode('all')}
+                    className={`py-2 px-3 rounded-xl text-xs font-bold transition-all ${taskTargetMode === 'all' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-600 dark:text-slate-400 hover:text-foreground'}`}
+                  >
+                    👥 All Interns
+                  </button>
+                </div>
+              </div>
+
+              {/* Target Value Dropdowns based on Mode */}
+              {taskTargetMode === 'individual' && (
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-foreground">Select Intern</label>
+                  <select 
+                    value={selectedInternId || ''} 
+                    onChange={(e) => setSelectedInternId(e.target.value)}
+                    required
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-foreground font-semibold outline-none focus:ring-2 focus:ring-blue-600/50"
+                  >
+                    <option value="">-- Choose Intern --</option>
+                    {interns.map(i => (
+                      <option key={i.id} value={i.id}>
+                        {i.full_name} ({i.position || 'Intern'}) - {i.email}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {taskTargetMode === 'domain' && (
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-foreground">Select Domain / Role</label>
+                  <div className="space-y-2">
+                    <select 
+                      value={selectedDomain} 
+                      onChange={(e) => setSelectedDomain(e.target.value)}
+                      required
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-foreground font-semibold outline-none focus:ring-2 focus:ring-blue-600/50"
+                    >
+                      <option value="">-- Select Domain --</option>
+                      {uniqueDomains.map(dom => (
+                        <option key={dom} value={dom}>
+                          {dom} ({interns.filter(i => (i.position || '').toLowerCase().includes(dom.toLowerCase())).length} interns)
+                        </option>
+                      ))}
+                      <option value="Web">Full Stack / Web Development</option>
+                      <option value="Android">Android Development</option>
+                      <option value="Python">Python Development</option>
+                      <option value="UI">UI / UX Design</option>
+                      <option value="Graphic">Graphic Design</option>
+                      <option value="Marketing">Digital Marketing</option>
+                    </select>
+                    <input
+                      type="text"
+                      placeholder="Or type custom domain keyword (e.g. Data Science)"
+                      value={selectedDomain}
+                      onChange={(e) => setSelectedDomain(e.target.value)}
+                      className="w-full px-4 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-foreground"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Target Summary Banner */}
+              <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-2xl flex items-center justify-between">
+                <span className="text-xs font-bold text-blue-600 dark:text-blue-400">Target Recipients</span>
+                <span className="px-3 py-1 bg-blue-600 text-white rounded-full text-xs font-black">
+                  {getMatchingInternCount()} Intern(s)
+                </span>
+              </div>
+
               <div className="space-y-2">
                 <label className="text-sm font-bold text-foreground">Task Title</label>
-                <input required name="title" type="text" placeholder="e.g. Build Login Page" className="w-full px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-foreground" />
+                <input required name="title" type="text" placeholder="e.g. Build Payment Gateway Module" className="w-full px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-foreground" />
               </div>
+
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <label className="text-sm font-bold text-foreground">Priority</label>
@@ -548,12 +694,14 @@ export default function ManageInternsPage() {
                   <input required name="deadline" type="date" className="w-full px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-foreground" />
                 </div>
               </div>
+
               <div className="space-y-2">
-                <label className="text-sm font-bold text-foreground">Description / Details</label>
-                <textarea required name="description" rows={4} className="w-full px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-foreground resize-none"></textarea>
+                <label className="text-sm font-bold text-foreground">Description / Details (Markdown Supported)</label>
+                <textarea required name="description" rows={4} placeholder="Describe the task details, requirements, and links..." className="w-full px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-foreground resize-none"></textarea>
               </div>
-              <button disabled={isSubmitting} type="submit" className="w-full py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-colors mt-4">
-                {isSubmitting ? 'Sending...' : 'Send Task'}
+
+              <button disabled={isSubmitting || getMatchingInternCount() === 0} type="submit" className="w-full py-3 bg-blue-600 disabled:bg-slate-400 text-white rounded-xl font-bold hover:bg-blue-700 transition-colors mt-4">
+                {isSubmitting ? 'Sending Task...' : `Send Task to ${getMatchingInternCount()} Intern(s)`}
               </button>
             </form>
           </div>
