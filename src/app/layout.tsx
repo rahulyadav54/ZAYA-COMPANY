@@ -19,31 +19,34 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL("https://zayacodehub.in"),
   title: {
-    default: "ZAYA CODE HUB | Remote Internships, IT Solutions & Training",
+    default: "ZAYA CODE HUB | Practice Code, DSA Problems & Proctored Skill Tests",
     template: "%s | ZAYA CODE HUB",
   },
   description:
-    "Apply for top remote internships at ZAYA CODE HUB in Web Development, UI/UX Design, Python, Android, and Digital Marketing. Get hands-on experience and verifiable certificates.",
+    "ZAYA CODE HUB is the ultimate platform to practice coding, solve DSA (Data Structures & Algorithms) challenges in JavaScript, Python, C++, and Java, take proctored domain skill tests, and land remote software development internships.",
   keywords: [
-    "web designer internship",
+    "ZAYA Code Hub",
+    "practice code online",
+    "practice dsa problems",
+    "data structures and algorithms practice",
+    "online coding arena",
+    "proctored skill test online",
+    "online examination portal",
+    "leetcode practice online",
+    "hackerrank coding challenges",
+    "online code runner js python cpp java",
+    "remote internship with certificate",
     "full stack web developer internship",
     "ui ux design internship",
     "python developer internship",
     "android developer internship",
-    "digital marketing internship",
-    "graphic designer internship",
-    "remote internship with certificate",
-    "internship at zaya code hub",
-    "zaya code hub internship",
+    "software development internship India",
     "zaya code hub certificate verify",
     "zaya ai app",
     "ai zaya",
-    "software development internship",
-    "IT training India",
-    "Zaya Code Hub",
   ],
 
-  // ✅ AdSense Verification
+  // ✅ AdSense Verification & Search Engine Crawlers
   verification: {
     other: {
       "google-adsense-account": "ca-pub-1411920894777921",
@@ -51,12 +54,29 @@ export const metadata: Metadata = {
   },
 
   openGraph: {
-    title: "ZAYA CODE HUB | Remote Internships & Software Solutions",
+    title: "ZAYA CODE HUB | Practice Code, DSA & Proctored Skill Tests",
     description:
-      "Launch your career with an internship at Zaya Code Hub. Work on real-world projects, earn verifiable certificates, and gain expert mentorship.",
+      "Practice 20+ algorithmic DSA challenges, evaluate multi-language code, take proctored skill qualification tests, and apply for remote software development internships at ZAYA CODE HUB.",
     url: "https://zayacodehub.in",
     siteName: "ZAYA CODE HUB",
     type: "website",
+    locale: "en_US",
+    images: [
+      {
+        url: "https://zayacodehub.in/favicon.png",
+        width: 800,
+        height: 800,
+        alt: "ZAYA CODE HUB Platform",
+      },
+    ],
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: "ZAYA CODE HUB | Practice Code, DSA & Proctored Skill Tests",
+    description:
+      "Solve DSA problems online in JavaScript, Python, C++, and Java. Take proctored skill tests and get remote internships at ZAYA CODE HUB.",
+    images: ["https://zayacodehub.in/favicon.png"],
   },
 
   icons: {
@@ -68,29 +88,60 @@ export const metadata: Metadata = {
 
 const jsonLdOrg = {
   "@context": "https://schema.org",
-  "@type": "EducationalOrganization",
-  "name": "ZAYA CODE HUB",
-  "url": "https://zayacodehub.in",
-  "logo": "https://zayacodehub.in/favicon.png",
-  "description": "ZAYA CODE HUB is a premier software development and IT training company offering hands-on remote internships and digital products.",
-  "sameAs": [
-    "https://github.com/rahulyadav54/ZAYA-COMPANY",
-    "https://play.google.com/store/apps/details?id=com.zayaai.app"
-  ],
-  "address": {
-    "@type": "PostalAddress",
-    "streetAddress": "Subramania Nagar",
-    "addressLocality": "Salem",
-    "addressRegion": "Tamil Nadu",
-    "postalCode": "636005",
-    "addressCountry": "IN"
-  },
-  "contactPoint": {
-    "@type": "ContactPoint",
-    "telephone": "+91-7033399183",
-    "contactType": "customer service",
-    "email": "zayacodehub@gmail.com"
-  }
+  "@graph": [
+    {
+      "@type": "EducationalOrganization",
+      "@id": "https://zayacodehub.in/#organization",
+      "name": "ZAYA CODE HUB",
+      "url": "https://zayacodehub.in",
+      "logo": "https://zayacodehub.in/favicon.png",
+      "description": "ZAYA CODE HUB is an advanced coding arena, proctored examination engine, and remote software development internship platform.",
+      "sameAs": [
+        "https://github.com/rahulyadav54/ZAYA-COMPANY",
+        "https://play.google.com/store/apps/details?id=com.zayaai.app"
+      ],
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Subramania Nagar",
+        "addressLocality": "Salem",
+        "addressRegion": "Tamil Nadu",
+        "postalCode": "636005",
+        "addressCountry": "IN"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+91-7033399183",
+        "contactType": "customer service",
+        "email": "zayacodehub@gmail.com"
+      }
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://zayacodehub.in/#website",
+      "url": "https://zayacodehub.in",
+      "name": "ZAYA CODE HUB",
+      "publisher": {
+        "@id": "https://zayacodehub.in/#organization"
+      },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://zayacodehub.in/practice/code?search={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    },
+    {
+      "@type": "SoftwareApplication",
+      "name": "ZAYA CODE HUB Coding Skill Arena",
+      "operatingSystem": "All",
+      "applicationCategory": "EducationalApplication",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "INR"
+      },
+      "description": "Interactive multi-language online code execution runner for Data Structures & Algorithms (DSA) practice in JavaScript, Python, C++, and Java."
+    }
+  ]
 };
 
 export default function RootLayout({

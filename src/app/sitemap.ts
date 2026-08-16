@@ -33,6 +33,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const routes = [
     '',
+    '/practice',
+    '/practice/code',
     '/ai-zaya',
     '/about',
     '/services',
@@ -48,8 +50,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date(),
-    changeFrequency: (route === '' || route === '/ai-zaya' ? 'daily' : 'monthly') as "yearly" | "monthly" | "always" | "hourly" | "daily" | "weekly" | "never" | undefined,
-    priority: route === '' ? 1 : route === '/ai-zaya' ? 0.9 : 0.8,
+    changeFrequency: (route === '' || route === '/practice' || route === '/practice/code' || route === '/ai-zaya' ? 'daily' : 'weekly') as "yearly" | "monthly" | "always" | "hourly" | "daily" | "weekly" | "never" | undefined,
+    priority: route === '' ? 1.0 : (route === '/practice' || route === '/practice/code') ? 0.95 : route === '/ai-zaya' ? 0.9 : 0.8,
   }))
 
   return [...routes, ...magazineUrls]
