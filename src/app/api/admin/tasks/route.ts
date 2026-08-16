@@ -33,92 +33,148 @@ export async function POST(request: Request) {
       auth: { persistSession: false }
     });
 
-    // 1. Fetch profiles
-    const { data: profData, error: profErr } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('role', 'intern');
+    const internMap = new Map<string, any>();
 
-    let profilesList = profData || [];
+    // 1. Fetch profiles table (all non-admin profiles)
+    try {
+      const { data: profData } = await supabase.from('profiles').select('*');
+      if (profData && Array.isArray(profData)) {
+        for (const p of profData) {
+          if (p.role === 'admin') continue;
+          
+          const key = p.email ? p.email.toLowerCase().trim() : p.id;
+          internMap.set(key, {
+            id: p.id,
+            full_name: p.full_name || 'Intern',
+            email: p.email || '',
+            role: p.role || 'intern',
+            position: p.position || 'Internship',
+            phone: p.phone || '',
+            joining_date: p.joining_date || p.created_at || new Date().toISOString().split('T')[0],
+            intern_id: p.intern_id || `ZCH-2026-${Math.floor(1000 + Math.random() * 9000)}`,
+            has_profile: true
+          });
+        }
+      }
+    } catch (e) {
+      console.warn('Profiles query notice:', e);
+    }
 
-    // 2. Fetch accepted applications if profiles empty or for candidate fallback
-    const { data: appData } = await supabase
-      .from('applications')
-      .select('*')
-      .eq('status', 'accepted');
+    // 2. Fetch applications table (accepted candidates)
+    try {
+      const { data: appData } = await supabase
+        .from('applications')
+        .select('*')
+        .or('status.eq.accepted,status.eq.hired,status.eq.pending');
 
-    const applicationsList = appData || [];
+      if (appData && Array.isArray(appData)) {
+        for (const a of appData) {
+          const emailKey = (a.email || '').toLowerCase().trim();
+          if (emailKey) {
+            const cleanName = (a.full_name || 'intern').toLowerCase().trim().replace(/[^a-z0-9\s]/g, '');
+            const parts = cleanName.split(/\s+/).filter(Boolean);
+            const officialEmail = parts.length > 0 ? `${parts.join('')}@zayacodehub.com` : emailKey;
 
-    // Map profiles by email for quick lookup
-    const profileEmailMap = new Map<string, any>();
-    profilesList.forEach(p => {
-      if (p.email) profileEmailMap.set(p.email.toLowerCase().trim(), p);
-    });
+            const existingByPersonal = internMap.get(emailKey);
+            const existingByOfficial = internMap.get(officialEmail);
 
-    // Ensure all accepted applications have a profile row created if missing
-    for (const app of applicationsList) {
-      const emailKey = (app.email || '').toLowerCase().trim();
-      if (emailKey && !profileEmailMap.has(emailKey)) {
-        const cleanName = (app.full_name || 'intern').toLowerCase().trim().replace(/[^a-z0-9\s]/g, '');
-        const parts = cleanName.split(/\s+/).filter(Boolean);
-        const officialEmail = parts.length > 0 ? `${parts.join('')}@zayacodehub.com` : emailKey;
-
-        if (!profileEmailMap.has(officialEmail)) {
-          const newId = (app.user_id && isValidUUID(app.user_id)) ? app.user_id : generateUUID();
-          const { data: createdProf, error: createErr } = await supabase
-            .from('profiles')
-            .upsert({
-              id: newId,
-              email: officialEmail,
-              full_name: app.full_name,
-              role: 'intern',
-              position: app.position || 'Internship',
-              joining_date: app.created_at ? new Date(app.created_at).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
-              intern_id: `ZCH-2026-${Math.floor(1000 + Math.random() * 9000)}`
-            })
-            .select()
-            .maybeSingle();
-
-          if (!createErr && createdProf) {
-            profilesList.push(createdProf);
-            profileEmailMap.set(officialEmail, createdProf);
+            if (!existingByPersonal && !existingByOfficial) {
+              const assignedId = (a.user_id && isValidUUID(a.user_id)) ? a.user_id : generateUUID();
+              internMap.set(emailKey, {
+                id: assignedId,
+                full_name: a.full_name || 'Candidate Intern',
+                email: officialEmail,
+                personal_email: a.email,
+                role: 'intern',
+                position: a.position || 'Internship',
+                phone: a.phone || '',
+                joining_date: a.created_at ? new Date(a.created_at).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+                intern_id: `ZCH-2026-${Math.floor(1000 + Math.random() * 9000)}`,
+                has_profile: false
+              });
+            }
           }
         }
       }
+    } catch (e) {
+      console.warn('Applications query notice:', e);
     }
+
+    const allInterns = Array.from(internMap.values());
 
     // Filter target interns based on targetMode
     let targetInterns: any[] = [];
 
     if (targetMode === 'individual') {
-      targetInterns = profilesList.filter(p => 
-        (p.id && String(p.id) === String(targetValue)) ||
-        (p.email && p.email.toLowerCase().trim() === String(targetValue).toLowerCase().trim()) ||
-        (p.intern_id && String(p.intern_id) === String(targetValue))
+      const searchValue = String(targetValue || '').toLowerCase().trim();
+      targetInterns = allInterns.filter(p => 
+        (p.id && String(p.id).toLowerCase() === searchValue) ||
+        (p.email && p.email.toLowerCase().trim() === searchValue) ||
+        (p.personal_email && p.personal_email.toLowerCase().trim() === searchValue) ||
+        (p.intern_id && String(p.intern_id).toLowerCase() === searchValue)
       );
     } else if (targetMode === 'domain') {
-      const domainSearch = (targetValue || '').toLowerCase().trim();
-      targetInterns = profilesList.filter(p => {
+      const domainSearch = String(targetValue || '').toLowerCase().trim();
+      targetInterns = allInterns.filter(p => {
         const pos = (p.position || '').toLowerCase().trim();
-        return pos.includes(domainSearch) || pos === domainSearch;
+        return pos.includes(domainSearch) || domainSearch.includes(pos);
       });
     } else if (targetMode === 'all') {
-      targetInterns = profilesList;
+      targetInterns = allInterns;
     }
 
     if (targetInterns.length === 0) {
       return NextResponse.json({ 
         success: false, 
         error: targetMode === 'domain' 
-          ? `No active interns found for domain "${targetValue}".`
+          ? `No active interns found matching domain "${targetValue}".`
           : 'No target intern found for task assignment.' 
       }, { status: 404 });
     }
 
-    // Batch insert tasks
+    // Ensure all target interns have valid profiles in profiles table for FK tasks(intern_id)
+    const validProfileIds: string[] = [];
+
+    for (const intern of targetInterns) {
+      let profileId = intern.id;
+
+      if (!isValidUUID(profileId)) {
+        profileId = generateUUID();
+      }
+
+      // Upsert into profiles table to satisfy Foreign Key constraint
+      try {
+        const { data: upsertedProf, error: upsertErr } = await supabase
+          .from('profiles')
+          .upsert({
+            id: profileId,
+            email: intern.email || `${profileId}@zayacodehub.com`,
+            full_name: intern.full_name,
+            role: 'intern',
+            position: intern.position || 'Internship',
+            joining_date: intern.joining_date || new Date().toISOString().split('T')[0],
+            intern_id: intern.intern_id
+          }, { onConflict: 'id' })
+          .select('id')
+          .maybeSingle();
+
+        if (upsertedProf?.id) {
+          validProfileIds.push(upsertedProf.id);
+        } else {
+          validProfileIds.push(profileId);
+        }
+      } catch (err) {
+        console.warn('Profile sync warning for task assignment:', err);
+        validProfileIds.push(profileId);
+      }
+    }
+
+    // Format deadline
     const formattedDeadline = deadline ? new Date(deadline).toISOString().split('T')[0] : null;
-    const taskRows = targetInterns.map(intern => ({
-      intern_id: intern.id,
+
+    // Construct task rows
+    const taskRows = validProfileIds.map(profId => ({
+      intern_id: profId,
       title: title.trim(),
       description: description.trim(),
       priority: priority || 'medium',
@@ -126,6 +182,7 @@ export async function POST(request: Request) {
       status: 'pending'
     }));
 
+    // Insert tasks into database
     const { data: insertedData, error: insertErr } = await supabase
       .from('tasks')
       .insert(taskRows)
