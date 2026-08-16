@@ -41,6 +41,11 @@ CREATE TABLE IF NOT EXISTS public.applications (
 -- Ensure columns exist if table was created previously
 ALTER TABLE public.applications ADD COLUMN IF NOT EXISTS portfolio_url TEXT;
 ALTER TABLE public.applications ADD COLUMN IF NOT EXISTS cover_letter TEXT;
+ALTER TABLE public.applications ADD COLUMN IF NOT EXISTS leetcode_username TEXT;
+ALTER TABLE public.applications ADD COLUMN IF NOT EXISTS hackerrank_username TEXT;
+
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS leetcode_username TEXT;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS hackerrank_username TEXT;
 
 -- RLS Policies for applications
 ALTER TABLE public.applications ENABLE ROW LEVEL SECURITY;

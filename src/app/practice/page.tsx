@@ -103,6 +103,39 @@ export default function PublicPracticeHubPage() {
           </div>
         </section>
 
+        {/* HACKERRANK & LEETCODE INTEGRATION BANNER */}
+        <section className="py-8 px-6 bg-slate-900 text-white border-y border-slate-800">
+          <div className="container mx-auto max-w-6xl flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-500 to-emerald-500 flex items-center justify-center text-white font-black text-xl shadow-lg shrink-0">
+                <Code2 className="h-6 w-6" />
+              </div>
+              <div>
+                <h3 className="font-black text-lg uppercase tracking-tight italic">LeetCode & HackerRank Coding Benchmark</h3>
+                <p className="text-xs text-slate-300 font-medium">Link your LeetCode and HackerRank profiles to automatically sync your solved problems & badges to your ZAYA Code Hub Intern Profile.</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 shrink-0">
+              <a
+                href="https://leetcode.com/problemset/all/"
+                target="_blank"
+                rel="noreferrer"
+                className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs uppercase tracking-widest rounded-xl transition-all shadow-lg shadow-amber-500/20"
+              >
+                Practice LeetCode ↗
+              </a>
+              <a
+                href="https://www.hackerrank.com/domains/python"
+                target="_blank"
+                rel="noreferrer"
+                className="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs uppercase tracking-widest rounded-xl transition-all shadow-lg shadow-emerald-500/20"
+              >
+                Practice HackerRank ↗
+              </a>
+            </div>
+          </div>
+        </section>
+
         {/* Filter & Search Bar */}
         <section className="py-10 px-6 container mx-auto max-w-6xl space-y-8">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-6">
