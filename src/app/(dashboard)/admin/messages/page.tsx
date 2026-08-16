@@ -63,33 +63,58 @@ export default function AdminMessagesPage() {
       if (!error && data) {
         const sortedData = sortMessagesDescending(data);
         const convMap = new Map<string, any>();
+
         sortedData.forEach(m => {
-          if (!m.intern_id) return;
-          const matchingIntern = allInterns.find(i => 
-            (i.id && i.id.toLowerCase() === m.intern_id.toLowerCase()) ||
-            (i.intern_id && i.intern_id.toLowerCase() === m.intern_id.toLowerCase()) ||
-            (i.email && i.email.toLowerCase() === m.intern_id.toLowerCase())
-          );
+          if (!m.intern_id && !m.email && !m.intern_name) return;
+
+          const mInternId = (m.intern_id || '').toLowerCase().trim();
+          const mEmail = (m.email || '').toLowerCase().trim();
+          const mName = (m.intern_name || m.full_name || '').toLowerCase().trim();
+
+          const matchingIntern = allInterns.find(i => {
+            const iId = (i.id || '').toLowerCase().trim();
+            const iInternId = (i.intern_id || '').toLowerCase().trim();
+            const iEmail = (i.email || '').toLowerCase().trim();
+            const iName = (i.full_name || i.intern_name || '').toLowerCase().trim();
+
+            return (
+              (iEmail && (mInternId === iEmail || mEmail === iEmail)) ||
+              (iId && (mInternId === iId || mEmail === iId)) ||
+              (iInternId && (mInternId === iInternId || mEmail === iInternId)) ||
+              (iName && mName && iName === iName)
+            );
+          });
 
           const canonicalKey = matchingIntern 
-            ? (matchingIntern.email || matchingIntern.id || matchingIntern.intern_id).toLowerCase()
-            : m.intern_id.toLowerCase();
+            ? (matchingIntern.email || matchingIntern.id || matchingIntern.intern_id).toLowerCase().trim()
+            : (mEmail || mInternId || mName).toLowerCase().trim();
 
           if (!convMap.has(canonicalKey)) {
             convMap.set(canonicalKey, {
               intern_id: matchingIntern?.intern_id || matchingIntern?.id || m.intern_id,
               id: matchingIntern?.id || matchingIntern?.intern_id || m.intern_id,
-              email: matchingIntern?.email || (m.intern_id.includes('@') ? m.intern_id : ''),
+              email: matchingIntern?.email || m.email || (m.intern_id?.includes('@') ? m.intern_id : ''),
               intern_name: matchingIntern?.full_name || matchingIntern?.intern_name || m.intern_name || 'Intern',
               created_at: m.created_at,
               last_message: m.content || m.message || 'Sent attachment',
               all_ids: Array.from(new Set([
                 m.intern_id, 
+                m.email,
                 matchingIntern?.id, 
                 matchingIntern?.intern_id, 
                 matchingIntern?.email
               ].filter(Boolean)))
             });
+          } else {
+            const existing = convMap.get(canonicalKey);
+            existing.all_ids = Array.from(new Set([
+              ...existing.all_ids,
+              m.intern_id,
+              m.email,
+              matchingIntern?.id,
+              matchingIntern?.intern_id,
+              matchingIntern?.email
+            ].filter(Boolean)));
           }
         });
 
@@ -572,18 +597,50 @@ export default function AdminMessagesPage() {
             </div>
           ) : (() => {
             const map = new Map<string, any>();
+
+            const getCanonicalKey = (item: any) => {
+              const rawId = (item.intern_id || item.id || item.email || '').toLowerCase().trim();
+              const rawName = (item.intern_name || item.full_name || '').toLowerCase().trim();
+
+              const matching = allInterns.find(i => {
+                const iId = (i.id || '').toLowerCase().trim();
+                const iInternId = (i.intern_id || '').toLowerCase().trim();
+                const iEmail = (i.email || '').toLowerCase().trim();
+                const iName = (i.full_name || i.intern_name || '').toLowerCase().trim();
+
+                return (
+                  (iEmail && (rawId === iEmail || (item.email && item.email.toLowerCase().trim() === iEmail))) ||
+                  (iId && rawId === iId) ||
+                  (iInternId && rawId === iInternId) ||
+                  (iName && rawName && iName === iName)
+                );
+              });
+
+              return matching 
+                ? (matching.email || matching.id || matching.intern_id).toLowerCase().trim()
+                : (item.email || rawId || rawName).toLowerCase().trim();
+            };
+
             conversations.forEach(c => {
-              const k = c.intern_id || c.id;
-              if (k) map.set(k, c);
+              const key = getCanonicalKey(c);
+              if (!map.has(key)) {
+                map.set(key, c);
+              } else {
+                const existing = map.get(key);
+                existing.all_ids = Array.from(new Set([...(existing.all_ids || []), ...(c.all_ids || []), c.intern_id, c.id].filter(Boolean)));
+              }
             });
+
             allInterns.forEach(i => {
-              const k = i.id || i.intern_id;
-              if (k && !map.has(k)) {
-                map.set(k, {
-                  intern_id: k,
-                  intern_name: i.full_name || i.intern_name,
+              const key = getCanonicalKey(i);
+              if (!map.has(key)) {
+                map.set(key, {
+                  intern_id: i.intern_id || i.id || i.email,
+                  id: i.id || i.intern_id,
                   email: i.email,
-                  last_message: 'Start new discussion...'
+                  intern_name: i.full_name || i.intern_name || 'Intern',
+                  last_message: 'Start new discussion...',
+                  all_ids: Array.from(new Set([i.id, i.intern_id, i.email].filter(Boolean)))
                 });
               }
             });
@@ -610,7 +667,13 @@ export default function AdminMessagesPage() {
             }
 
             return combinedList.map((conv) => {
-              const isSelected = selectedIntern?.intern_id === conv.intern_id || selectedIntern?.id === conv.intern_id;
+              const isSelected = selectedIntern && (
+                (selectedIntern.email && conv.email && selectedIntern.email.toLowerCase() === conv.email.toLowerCase()) ||
+                (selectedIntern.intern_name && conv.intern_name && selectedIntern.intern_name.toLowerCase() === conv.intern_name.toLowerCase()) ||
+                (selectedIntern.id && conv.id && selectedIntern.id === conv.id) ||
+                (selectedIntern.intern_id && conv.intern_id && selectedIntern.intern_id === conv.intern_id) ||
+                (selectedIntern.all_ids && conv.all_ids && selectedIntern.all_ids.some((id: string) => (conv.all_ids || []).includes(id)))
+              );
               return (
                 <button
                   key={conv.intern_id || conv.id}
