@@ -3,8 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import Link from 'next/link';
-import Navbar from '@/components/layout/Navbar';
-import Footer from '@/components/layout/Footer';
 import { 
   GraduationCap, 
   Code2, 
@@ -58,8 +56,6 @@ export default function PublicPracticeHubPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col transition-colors duration-300">
-      <Navbar />
-
       <main className="flex-1">
         {/* Hero Section */}
         <section className="relative py-20 px-6 bg-gradient-to-br from-slate-900 via-indigo-950 to-blue-950 text-white overflow-hidden">
@@ -215,8 +211,6 @@ export default function PublicPracticeHubPage() {
           )}
         </section>
       </main>
-
-      <Footer />
     </div>
   );
 }

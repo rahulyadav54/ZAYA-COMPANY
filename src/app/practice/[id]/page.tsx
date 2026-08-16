@@ -3,8 +3,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
-import Navbar from '@/components/layout/Navbar';
-import Footer from '@/components/layout/Footer';
 import { 
   ShieldAlert, 
   Clock, 
@@ -317,23 +315,17 @@ export default function PublicProctoredExamRoomPage() {
 
   if (!exam) {
     return (
-      <div className="min-h-screen flex flex-col justify-between">
-        <Navbar />
-        <div className="py-20 text-center space-y-4">
-          <h2 className="text-2xl font-black uppercase text-red-600">Test Not Found</h2>
-          <button onClick={() => router.push('/practice')} className="px-6 py-3 bg-blue-600 text-white font-bold rounded-xl text-xs">
-            Return to Practice Hub
-          </button>
-        </div>
-        <Footer />
+      <div className="py-20 text-center space-y-4">
+        <h2 className="text-2xl font-black uppercase text-red-600">Test Not Found</h2>
+        <button onClick={() => router.push('/practice')} className="px-6 py-3 bg-blue-600 text-white font-bold rounded-xl text-xs">
+          Return to Practice Hub
+        </button>
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col justify-between transition-colors duration-300">
-      {!isExamStarted && <Navbar />}
-
       <main className="flex-1 py-10 px-4 sm:px-6 container mx-auto max-w-5xl">
         {/* 1. STUDENT REGISTRATION & START SCREEN */}
         {!isExamStarted && !isExamFinished && (
@@ -695,8 +687,6 @@ export default function PublicProctoredExamRoomPage() {
           </div>
         )}
       </main>
-
-      {!isExamStarted && <Footer />}
     </div>
   );
 }
