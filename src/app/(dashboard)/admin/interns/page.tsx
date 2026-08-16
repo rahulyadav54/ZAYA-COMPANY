@@ -266,34 +266,56 @@ export default function ManageInternsPage() {
     const priority = formData.get('priority') as string;
     const deadline = formData.get('deadline') as string;
 
-    const selectedIntern = interns.find(i => 
-      String(i.id) === String(selectedInternId) || 
-      (i.email && String(i.email).toLowerCase() === String(selectedInternId).toLowerCase())
-    ) || interns[0];
+    // Resolve target interns on the client side (the frontend already has the full list)
+    let resolvedInterns: any[] = [];
 
-    const targetValue = taskTargetMode === 'individual' 
-      ? (selectedInternId || selectedIntern?.id || selectedIntern?.email) 
-      : taskTargetMode === 'domain' 
-        ? selectedDomain 
-        : null;
+    if (taskTargetMode === 'individual') {
+      const found = interns.find(i => 
+        String(i.id) === String(selectedInternId) || 
+        (i.email && String(i.email).toLowerCase() === String(selectedInternId).toLowerCase())
+      );
+      if (found) {
+        resolvedInterns = [found];
+      } else if (interns.length > 0) {
+        resolvedInterns = [interns[0]];
+      }
+    } else if (taskTargetMode === 'domain') {
+      if (selectedDomain) {
+        const domainLower = selectedDomain.toLowerCase().trim();
+        resolvedInterns = interns.filter(i => {
+          const pos = (i.position || '').toLowerCase().trim();
+          return pos.includes(domainLower) || domainLower.includes(pos);
+        });
+      }
+      // Fallback: if domain filter matched nothing, send to all
+      if (resolvedInterns.length === 0) {
+        resolvedInterns = [...interns];
+      }
+    } else {
+      // 'all' mode
+      resolvedInterns = [...interns];
+    }
 
-    const targetEmail = taskTargetMode === 'individual' 
-      ? (selectedIntern?.email || selectedIntern?.personal_email) 
-      : null;
-
-    const targetName = taskTargetMode === 'individual' 
-      ? selectedIntern?.full_name 
-      : null;
+    if (resolvedInterns.length === 0) {
+      alert('No interns available to assign the task to.');
+      setIsSubmitting(false);
+      return;
+    }
 
     try {
       const res = await fetch('/api/admin/tasks', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          targetMode: taskTargetMode,
-          targetValue,
-          targetEmail,
-          targetName,
+          targetInterns: resolvedInterns.map(i => ({
+            id: i.id,
+            full_name: i.full_name,
+            email: i.email,
+            personal_email: i.personal_email,
+            position: i.position,
+            joining_date: i.joining_date,
+            intern_id: i.intern_id
+          })),
           title,
           description,
           priority,
