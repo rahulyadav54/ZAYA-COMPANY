@@ -195,6 +195,19 @@ export default function DashboardLayout({
         ]}
       ];
 
+  const isExamRoom = 
+    (pathname.startsWith('/intern/exams/') && pathname !== '/intern/exams') || 
+    (pathname.startsWith('/practice/') && pathname !== '/practice' && pathname !== '/practice/code') ||
+    (pathname.startsWith('/intern/code/') && pathname !== '/intern/code');
+
+  if (isExamRoom) {
+    return (
+      <div className="min-h-screen bg-slate-950 text-white w-full overflow-x-hidden">
+        {children}
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex transition-colors duration-300 relative">
       {/* Mobile Drawer Overlay Backdrop */}
