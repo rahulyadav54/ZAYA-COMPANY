@@ -24,16 +24,28 @@ export async function POST(request: Request) {
     // Format deadline
     const formattedDeadline = deadline ? new Date(deadline).toISOString().split('T')[0] : null;
 
-    // Build task rows — use intern_email and intern_name columns instead of intern_id FK
-    const taskRows = targetInterns.map((intern: any) => ({
-      title: title.trim(),
-      description: description.trim(),
-      priority: priority || 'medium',
-      deadline: formattedDeadline,
-      status: 'pending',
-      intern_email: intern.email || intern.personal_email || 'unknown',
-      intern_name: intern.full_name || 'Intern'
-    }));
+    const isValidUUID = (uuid: string): boolean => {
+      if (!uuid) return false;
+      const regex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+      return regex.test(uuid);
+    };
+
+    // Build task rows — use intern_email and intern_name, and link intern_id if UUID is valid
+    const taskRows = targetInterns.map((intern: any) => {
+      const row: any = {
+        title: title.trim(),
+        description: description.trim(),
+        priority: priority || 'medium',
+        deadline: formattedDeadline,
+        status: 'pending',
+        intern_email: intern.email || intern.personal_email || 'unknown',
+        intern_name: intern.full_name || 'Intern'
+      };
+      if (intern.id && isValidUUID(String(intern.id))) {
+        row.intern_id = intern.id;
+      }
+      return row;
+    });
 
     // Insert tasks into database
     const { data: insertedData, error: insertErr } = await supabase
