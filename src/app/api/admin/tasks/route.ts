@@ -30,10 +30,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, error: 'No target interns provided.' }, { status: 400 });
     }
 
-    const envServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-    const clientKey = (envServiceKey && envServiceKey.startsWith('ey')) ? envServiceKey : SUPABASE_PUBLIC_ANON_KEY;
-    
-    const supabase = createClient(SUPABASE_PROJECT_URL, clientKey, {
+    const supabase = createClient(SUPABASE_PROJECT_URL, SUPABASE_PUBLIC_ANON_KEY, {
       auth: { persistSession: false }
     });
 
