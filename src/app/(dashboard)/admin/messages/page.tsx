@@ -136,17 +136,18 @@ export default function AdminMessagesPage() {
     fetchAllInterns();
   }, []);
 
-  // Realtime updates for Admin messages
+  // Realtime updates & 3s polling for Admin messages
   useEffect(() => {
+    // 1. Supabase Realtime WebSocket Listener
     const channel = supabase
-      .channel('admin_messages_global_channel')
+      .channel('admin_messages_live')
       .on('postgres_changes', {
-        event: 'INSERT',
+        event: '*',
         schema: 'public',
         table: 'intern_messages'
-      }, (payload) => {
+      }, (payload: any) => {
         const newMsg = payload.new;
-        if (selectedIntern) {
+        if (newMsg && selectedIntern) {
           const sId = (selectedIntern.intern_id || selectedIntern.id || '').toLowerCase();
           const sEmail = (selectedIntern.email || '').toLowerCase();
           const mId = (newMsg.intern_id || '').toLowerCase();
@@ -161,8 +162,17 @@ export default function AdminMessagesPage() {
       })
       .subscribe();
 
+    // 2. 3-Second Background Polling Sync
+    const interval = setInterval(() => {
+      fetchConversations();
+      if (selectedIntern) {
+        loadMessages(selectedIntern);
+      }
+    }, 3000);
+
     return () => {
       supabase.removeChannel(channel);
+      clearInterval(interval);
     };
   }, [selectedIntern]);
 

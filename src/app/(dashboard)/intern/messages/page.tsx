@@ -51,24 +51,45 @@ export default function InternMessagesPage() {
     if (!user) return;
     const userKeys = Array.from(new Set([user.id, user.email].filter(Boolean)));
 
+    // 1. Supabase Realtime WebSocket Listener
     const channel = supabase
-      .channel(`intern_messages_${user.id || 'anon'}`)
+      .channel('intern_chat_live')
       .on('postgres_changes', { 
-        event: 'INSERT', 
+        event: '*', 
         schema: 'public', 
         table: 'intern_messages' 
-      }, (payload) => {
-         if (userKeys.includes(payload.new.intern_id)) {
+      }, (payload: any) => {
+         const newMsg = payload.new;
+         if (newMsg && userKeys.some(k => k === newMsg.intern_id || (k && newMsg.intern_id && k.toLowerCase() === newMsg.intern_id.toLowerCase()))) {
             setMessages(prev => {
-              if (prev.some(m => m.id === payload.new.id)) return prev;
-              return [...prev, payload.new];
+              if (prev.some(m => m.id === newMsg.id)) return prev;
+              return [...prev, newMsg];
             });
          }
       })
       .subscribe();
 
+    // 2. 3-Second Background Polling Sync (Guarantees instant sync even if WebSocket is blocked)
+    const interval = setInterval(async () => {
+      const { data } = await supabase
+        .from('intern_messages')
+        .select('*')
+        .in('intern_id', userKeys)
+        .order('created_at', { ascending: true });
+
+      if (data) {
+        setMessages(prev => {
+          if (data.length !== prev.length || data.some((m, idx) => m.id !== prev[idx]?.id)) {
+            return data;
+          }
+          return prev;
+        });
+      }
+    }, 3000);
+
     return () => {
       supabase.removeChannel(channel);
+      clearInterval(interval);
     };
   }, [user]);
 

@@ -163,6 +163,9 @@ DROP POLICY IF EXISTS "Allow public update intern_messages" ON public.intern_mes
 DROP POLICY IF EXISTS "Allow public all intern_messages" ON public.intern_messages;
 CREATE POLICY "Allow public all intern_messages" ON public.intern_messages FOR ALL USING (true) WITH CHECK (true);
 
+-- ENABLE SUPABASE REALTIME REPLICATION FOR MESSAGES
+ALTER PUBLICATION supabase_realtime ADD TABLE public.intern_messages;
+
 -- Applications Policies
 DROP POLICY IF EXISTS "Enable insert applications for anyone" ON public.applications;
 DROP POLICY IF EXISTS "Enable read applications for self or admin" ON public.applications;
