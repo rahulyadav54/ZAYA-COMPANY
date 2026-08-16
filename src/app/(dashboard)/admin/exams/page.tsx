@@ -48,6 +48,7 @@ export default function AdminExamsPage() {
   // Question Form
   const [newQuestion, setNewQuestion] = useState({
     question_text: '',
+    image_url: '',
     option1: '',
     option2: '',
     option3: '',
@@ -160,6 +161,7 @@ export default function AdminExamsPage() {
       const formattedQuestions = json.map(q => ({
         exam_id: selectedExam.id,
         question_text: q.question_text || q.question || 'Untitled Question',
+        image_url: q.image_url || q.image || q.diagram_url || null,
         options: Array.isArray(q.options) ? q.options : [q.option1 || 'Option A', q.option2 || 'Option B', q.option3 || 'Option C', q.option4 || 'Option D'],
         correct_option: Number(q.correct_option ?? q.answerIndex ?? 0),
         points: Number(q.points || 1)
@@ -187,6 +189,7 @@ export default function AdminExamsPage() {
     const sample = [
       {
         question_text: "What is the primary purpose of the React useEffect hook?",
+        image_url: "",
         options: [
           "Managing local component state",
           "Performing side-effects like data fetching",
@@ -197,8 +200,9 @@ export default function AdminExamsPage() {
         points: 1
       },
       {
-        question_text: "Which SQL command is used to retrieve data from a database table?",
-        options: ["SELECT", "UPDATE", "INSERT", "DELETE"],
+        question_text: "Identify the architectural data flow in the diagram below:",
+        image_url: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800",
+        options: ["Microservices Architecture", "Monolithic Architecture", "Event-Driven Serverless", "Peer-to-Peer Network"],
         correct_option: 0,
         points: 1
       }
@@ -231,6 +235,7 @@ export default function AdminExamsPage() {
         .insert({
           exam_id: selectedExam.id,
           question_text: newQuestion.question_text.trim(),
+          image_url: newQuestion.image_url.trim() || null,
           options: options,
           correct_option: Number(newQuestion.correct_option),
           points: 1
@@ -242,6 +247,7 @@ export default function AdminExamsPage() {
         setExamQuestions(prev => [...prev, data]);
         setNewQuestion({
           question_text: '',
+          image_url: '',
           option1: '',
           option2: '',
           option3: '',
@@ -873,13 +879,26 @@ export default function AdminExamsPage() {
                     <p className="text-xs text-slate-400 italic">No questions added yet. Use the form below to add MCQs.</p>
                   ) : (
                     examQuestions.map((q, idx) => (
-                      <div key={q.id} className="p-4 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 rounded-2xl space-y-2 relative group">
+                      <div key={q.id} className="p-4 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 rounded-2xl space-y-3 relative group">
                         <div className="flex items-start justify-between pr-8">
                           <p className="font-extrabold text-sm text-slate-900 dark:text-white">{idx + 1}. {q.question_text}</p>
                           <button onClick={() => handleDeleteQuestion(q.id)} className="text-red-500 opacity-80 hover:opacity-100 p-1">
                             <Trash2 className="h-4 w-4" />
                           </button>
                         </div>
+
+                        {/* Diagram Thumbnail Preview if present */}
+                        {(q.image_url || q.image) && (
+                          <div className="p-2 bg-slate-900/80 rounded-xl border border-slate-700 inline-flex items-center gap-3">
+                            <img
+                              src={q.image_url || q.image}
+                              alt="Question Diagram"
+                              className="h-16 w-24 object-contain rounded-lg bg-black"
+                            />
+                            <span className="text-[10px] text-blue-400 font-bold uppercase tracking-wider">🖼️ Diagram Attached</span>
+                          </div>
+                        )}
+
                         <div className="grid grid-cols-2 gap-2 text-xs">
                           {q.options?.map((opt: string, optIdx: number) => (
                             <div 
@@ -915,9 +934,32 @@ export default function AdminExamsPage() {
                       required
                       value={newQuestion.question_text}
                       onChange={(e) => setNewQuestion({ ...newQuestion, question_text: e.target.value })}
-                      placeholder="e.g. Which hook is used for side effects in React?"
-                      className="w-full p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none"
+                      placeholder="e.g. Identify the correct output or architecture in the diagram below:"
+                      className="w-full p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none text-slate-900 dark:text-white"
                     />
+                  </div>
+
+                  <div>
+                    <label className="block text-slate-700 dark:text-slate-300 uppercase tracking-widest text-[9px] mb-1">
+                      Image / Diagram URL (Optional - Architecture, Code Screenshot, Schematic, Formula)
+                    </label>
+                    <input
+                      type="url"
+                      value={newQuestion.image_url}
+                      onChange={(e) => setNewQuestion({ ...newQuestion, image_url: e.target.value })}
+                      placeholder="https://example.com/diagram.png or https://i.imgur.com/..."
+                      className="w-full p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none text-slate-900 dark:text-white font-mono text-xs"
+                    />
+                    {newQuestion.image_url && (
+                      <div className="mt-2 p-2 bg-slate-900 rounded-xl border border-slate-700 inline-block">
+                        <img
+                          src={newQuestion.image_url}
+                          alt="Diagram Preview"
+                          className="h-20 w-auto object-contain rounded-lg"
+                          onError={(e) => ((e.target as HTMLElement).style.display = 'none')}
+                        />
+                      </div>
+                    )}
                   </div>
 
                   <div className="grid grid-cols-2 gap-3">
@@ -929,7 +971,7 @@ export default function AdminExamsPage() {
                         value={newQuestion.option1}
                         onChange={(e) => setNewQuestion({ ...newQuestion, option1: e.target.value })}
                         placeholder="Option A"
-                        className="w-full p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none"
+                        className="w-full p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none text-slate-900 dark:text-white"
                       />
                     </div>
                     <div>
@@ -940,7 +982,7 @@ export default function AdminExamsPage() {
                         value={newQuestion.option2}
                         onChange={(e) => setNewQuestion({ ...newQuestion, option2: e.target.value })}
                         placeholder="Option B"
-                        className="w-full p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none"
+                        className="w-full p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none text-slate-900 dark:text-white"
                       />
                     </div>
                     <div>
@@ -951,7 +993,7 @@ export default function AdminExamsPage() {
                         value={newQuestion.option3}
                         onChange={(e) => setNewQuestion({ ...newQuestion, option3: e.target.value })}
                         placeholder="Option C"
-                        className="w-full p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none"
+                        className="w-full p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none text-slate-900 dark:text-white"
                       />
                     </div>
                     <div>
@@ -962,7 +1004,7 @@ export default function AdminExamsPage() {
                         value={newQuestion.option4}
                         onChange={(e) => setNewQuestion({ ...newQuestion, option4: e.target.value })}
                         placeholder="Option D"
-                        className="w-full p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none"
+                        className="w-full p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none text-slate-900 dark:text-white"
                       />
                     </div>
                   </div>

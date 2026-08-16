@@ -27,11 +27,27 @@ import {
   Layers, 
   Cpu
 } from 'lucide-react';
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'AI ZAYA — AI-Powered Intelligent Assistant | ZAYA CODE HUB',
-  description: 'AI ZAYA is an intelligent AI assistant developed by ZAYA CODE HUB featuring Brain Games, 50+ language support, voice experience, learning, and programming assistance. Install on Android now!',
+  description: 'AI ZAYA is an intelligent AI assistant developed by ZAYA CODE HUB featuring Brain Games, 50+ language support, voice experience, learning, and programming assistance. Available on Android Google Play Store.',
+  keywords: [
+    'AI ZAYA',
+    'ZAYA AI app',
+    'intelligent AI assistant Android',
+    'AI programming assistant',
+    'voice assistant app India',
+    'ZAYA CODE HUB AI'
+  ],
+  alternates: {
+    canonical: 'https://zayacodehub.in/ai-zaya',
+  },
+  openGraph: {
+    title: 'AI ZAYA — Smart AI Assistant & Android App | ZAYA CODE HUB',
+    description: 'Intelligent AI assistant by ZAYA CODE HUB with multi-language voice interactions, coding help, and brain games.',
+    url: 'https://zayacodehub.in/ai-zaya',
+  }
 };
 
 export default function AiZayaPage() {

@@ -23,15 +23,19 @@ export const metadata: Metadata = {
     template: "%s | ZAYA CODE HUB",
   },
   description:
-    "ZAYA CODE HUB is the ultimate platform to practice coding, solve DSA (Data Structures & Algorithms) challenges in JavaScript, Python, C++, and Java, take proctored domain skill tests, and land remote software development internships.",
+    "ZAYA CODE HUB is the official coding arena, proctored examination portal, and remote software internship platform. Practice 20+ DSA challenges in JavaScript, Python, C++, Java, take anti-cheating skill tests, and verify verified certificates.",
   keywords: [
     "ZAYA Code Hub",
+    "ZAYA CODE HUB",
+    "zayacodehub.in",
     "practice code online",
     "practice dsa problems",
     "data structures and algorithms practice",
     "online coding arena",
     "proctored skill test online",
     "online examination portal",
+    "zaya exam portal",
+    "zaya skill assessment",
     "leetcode practice online",
     "hackerrank coding challenges",
     "online code runner js python cpp java",
@@ -42,9 +46,30 @@ export const metadata: Metadata = {
     "android developer internship",
     "software development internship India",
     "zaya code hub certificate verify",
+    "verify intern id card zaya",
     "zaya ai app",
     "ai zaya",
   ],
+  authors: [{ name: "ZAYA CODE HUB Team", url: "https://zayacodehub.in" }],
+  creator: "ZAYA CODE HUB",
+  publisher: "ZAYA CODE HUB",
+  category: "technology",
+  alternates: {
+    canonical: "https://zayacodehub.in",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    nocache: false,
+    googleBot: {
+      index: true,
+      follow: true,
+      noimageindex: false,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
 
   // ✅ AdSense Verification & Search Engine Crawlers
   verification: {
@@ -140,6 +165,43 @@ const jsonLdOrg = {
         "priceCurrency": "INR"
       },
       "description": "Interactive multi-language online code execution runner for Data Structures & Algorithms (DSA) practice in JavaScript, Python, C++, and Java."
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is ZAYA CODE HUB?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "ZAYA CODE HUB is a premier developer ecosystem providing an interactive online coding arena for DSA problems, AI-proctored domain examinations, real-time certificate verification, and remote tech internships."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How can I take online proctored exams on ZAYA CODE HUB?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Navigate to https://zayacodehub.in/practice to view all active skill qualification exams. Select your domain (Full Stack, Python, DSA, AI), enter your details, and take the live proctored examination."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How to verify a ZAYA CODE HUB internship certificate or ID card?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Visit https://zayacodehub.in/verify to verify certificate IDs or https://zayacodehub.in/verify-id to verify student intern ID cards with real-time official verification records."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Which programming languages are supported in the ZAYA Code Arena?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "ZAYA Code Hub's Coding Arena supports JavaScript, Python, C++, and Java with real-time test case execution and algorithmic benchmarking."
+          }
+        }
+      ]
     }
   ]
 };
