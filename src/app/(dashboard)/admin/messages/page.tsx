@@ -397,7 +397,6 @@ export default function AdminMessagesPage() {
   };
 
   return (
-  return (
     <div className="h-[calc(100vh-7.5rem)] flex gap-4 md:gap-6">
       {/* Sidebar: Intern List */}
       <div className="w-[320px] lg:w-[380px] shrink-0 bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-200/80 dark:border-slate-800 shadow-2xl overflow-hidden flex flex-col transition-all">
