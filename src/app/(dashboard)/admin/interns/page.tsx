@@ -22,6 +22,17 @@ export default function ManageInternsPage() {
   // Bulk task state
   const [taskTargetMode, setTaskTargetMode] = useState<'individual' | 'domain' | 'all'>('individual');
   const [selectedDomain, setSelectedDomain] = useState<string>('');
+
+  // Custom Mail Modal state
+  const [showCustomMailModal, setShowCustomMailModal] = useState(false);
+  const [customMailTargetMode, setCustomMailTargetMode] = useState<'all' | 'domain' | 'single'>('all');
+  const [customMailSelectedDomain, setCustomMailSelectedDomain] = useState<string>('');
+  const [customMailSelectedIntern, setCustomMailSelectedIntern] = useState<any>(null);
+  const [customMailSubject, setCustomMailSubject] = useState('');
+  const [customMailMessage, setCustomMailMessage] = useState('');
+  const [customMailCtaText, setCustomMailCtaText] = useState('Open Intern Dashboard');
+  const [customMailCtaUrl, setCustomMailCtaUrl] = useState('https://www.zayacodehub.in/intern');
+  const [isSendingCustomMail, setIsSendingCustomMail] = useState(false);
   
   const [selectedCandidate, setSelectedCandidate] = useState<any>(null);
   const [manualFullName, setManualFullName] = useState('');
@@ -361,11 +372,52 @@ export default function ManageInternsPage() {
     }
   };
 
+  const handleSendCustomMail = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!customMailSubject.trim() || !customMailMessage.trim()) {
+      alert('Please provide both subject and message body.');
+      return;
+    }
+
+    setIsSendingCustomMail(true);
+    try {
+      const res = await fetch('/api/admin/send-custom-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          targetMode: customMailTargetMode,
+          targetDomain: customMailSelectedDomain,
+          targetIntern: customMailSelectedIntern,
+          subject: customMailSubject,
+          message: customMailMessage,
+          ctaText: customMailCtaText,
+          ctaUrl: customMailCtaUrl,
+        })
+      });
+
+      const json = await res.json();
+      if (!res.ok || !json.success) {
+        alert(`Error sending custom email: ${json.error || 'Failed to send'}`);
+      } else {
+        alert(json.message || 'Custom email successfully sent!');
+        setShowCustomMailModal(false);
+        setCustomMailSubject('');
+        setCustomMailMessage('');
+        setCustomMailCtaText('Open Intern Dashboard');
+        setCustomMailCtaUrl('https://www.zayacodehub.in/intern');
+      }
+    } catch (err: any) {
+      alert(`Network error: ${err.message}`);
+    } finally {
+      setIsSendingCustomMail(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <h1 className="text-2xl font-bold text-foreground">Manage Interns</h1>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <div className="relative hidden sm:block mr-2">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
             <input 
@@ -379,6 +431,16 @@ export default function ManageInternsPage() {
             className="flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors font-bold text-sm"
           >
             <Download className="h-4 w-4" /> Download CSV
+          </button>
+          <button 
+            onClick={() => {
+              setCustomMailTargetMode('all');
+              setCustomMailSelectedIntern(null);
+              setShowCustomMailModal(true);
+            }}
+            className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-colors font-bold text-sm shadow-md"
+          >
+            <Mail className="h-4 w-4" /> Custom Mail
           </button>
           <button 
             onClick={handleResendNotifications}
@@ -488,6 +550,17 @@ export default function ManageInternsPage() {
                   className="flex-1 py-2 flex items-center justify-center gap-2 bg-blue-50 dark:bg-blue-900/20 text-blue-600 rounded-xl text-sm font-bold hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors"
                 >
                   <Send className="h-4 w-4" /> Task
+                </button>
+                <button 
+                  onClick={() => {
+                    setCustomMailTargetMode('single');
+                    setCustomMailSelectedIntern(intern);
+                    setShowCustomMailModal(true);
+                  }}
+                  className="px-3 py-2 flex items-center justify-center bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 rounded-xl text-sm font-bold hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-colors"
+                  title="Send Custom Email"
+                >
+                  <Mail className="h-4 w-4" />
                 </button>
               </div>
             </div>
@@ -791,6 +864,188 @@ export default function ManageInternsPage() {
 
               <button disabled={isSubmitting || getMatchingInternCount() === 0} type="submit" className="w-full py-3 bg-blue-600 disabled:bg-slate-400 text-white rounded-xl font-bold hover:bg-blue-700 transition-colors mt-4">
                 {isSubmitting ? 'Sending Task...' : `Send Task to ${getMatchingInternCount()} Intern(s)`}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Custom Mail Modal */}
+      {showCustomMailModal && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-2xl w-full max-w-xl overflow-hidden border border-slate-200 dark:border-slate-800 my-auto">
+            <div className="p-8 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-950/50">
+              <div className="flex items-center gap-3">
+                <div className="p-3 bg-emerald-500/10 text-emerald-600 rounded-2xl">
+                  <Mail className="h-6 w-6" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-black text-slate-900 dark:text-white uppercase italic tracking-tight">Send Custom Email</h2>
+                  <p className="text-xs text-slate-400 font-medium">Broadcast announcements, updates or direct messages</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setShowCustomMailModal(false)} 
+                className="p-2 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-full transition-colors"
+              >
+                <X className="h-5 w-5 text-slate-500" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSendCustomMail} className="p-8 space-y-5">
+              {/* Target Selection */}
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Recipients</label>
+                <div className="grid grid-cols-3 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCustomMailTargetMode('all');
+                      setCustomMailSelectedIntern(null);
+                    }}
+                    className={`py-2.5 px-3 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-1.5 ${
+                      customMailTargetMode === 'all'
+                        ? 'bg-emerald-600 text-white shadow-md'
+                        : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'
+                    }`}
+                  >
+                    All Interns ({interns.length})
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCustomMailTargetMode('domain');
+                      if (uniqueDomains.length > 0) setCustomMailSelectedDomain(uniqueDomains[0]);
+                    }}
+                    className={`py-2.5 px-3 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-1.5 ${
+                      customMailTargetMode === 'domain'
+                        ? 'bg-emerald-600 text-white shadow-md'
+                        : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'
+                    }`}
+                  >
+                    By Domain
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCustomMailTargetMode('single');
+                      if (interns.length > 0) setCustomMailSelectedIntern(interns[0]);
+                    }}
+                    className={`py-2.5 px-3 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-1.5 ${
+                      customMailTargetMode === 'single'
+                        ? 'bg-emerald-600 text-white shadow-md'
+                        : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'
+                    }`}
+                  >
+                    Single Intern
+                  </button>
+                </div>
+              </div>
+
+              {/* Domain Selector */}
+              {customMailTargetMode === 'domain' && (
+                <div className="space-y-2 p-3 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Select Domain / Track</label>
+                  <select
+                    value={customMailSelectedDomain}
+                    onChange={(e) => setCustomMailSelectedDomain(e.target.value)}
+                    className="w-full px-4 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-foreground font-bold outline-none"
+                  >
+                    {uniqueDomains.map(d => (
+                      <option key={d} value={d}>{d}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {/* Single Intern Selector */}
+              {customMailTargetMode === 'single' && (
+                <div className="space-y-2 p-3 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Select Intern</label>
+                  <select
+                    value={customMailSelectedIntern?.id || (interns[0]?.id || '')}
+                    onChange={(e) => {
+                      const found = interns.find(i => i.id === e.target.value);
+                      if (found) setCustomMailSelectedIntern(found);
+                    }}
+                    className="w-full px-4 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-foreground font-bold outline-none"
+                  >
+                    {interns.map(i => (
+                      <option key={i.id} value={i.id}>{i.full_name || i.email} ({i.position || 'Intern'})</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {/* Subject */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-foreground">Subject Line</label>
+                <input 
+                  required 
+                  type="text" 
+                  placeholder="e.g. Important Announcement: Live Q&A Session Tomorrow" 
+                  value={customMailSubject}
+                  onChange={(e) => setCustomMailSubject(e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-foreground text-sm font-medium focus:ring-2 focus:ring-emerald-500/50 outline-none" 
+                />
+              </div>
+
+              {/* Message Body */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-foreground">Message Body (Paragraphs will be automatically formatted)</label>
+                <textarea 
+                  required 
+                  rows={5} 
+                  placeholder="Type your announcement, instructions, meeting link or custom message here..." 
+                  value={customMailMessage}
+                  onChange={(e) => setCustomMailMessage(e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-foreground text-sm font-medium focus:ring-2 focus:ring-emerald-500/50 outline-none resize-none"
+                />
+              </div>
+
+              {/* Optional Call to Action Button */}
+              <div className="grid grid-cols-2 gap-3 pt-1">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Button Text (Optional)</label>
+                  <input 
+                    type="text" 
+                    placeholder="e.g. Join Google Meet / View Portal" 
+                    value={customMailCtaText}
+                    onChange={(e) => setCustomMailCtaText(e.target.value)}
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-foreground"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Button URL (Optional)</label>
+                  <input 
+                    type="url" 
+                    placeholder="https://..." 
+                    value={customMailCtaUrl}
+                    onChange={(e) => setCustomMailCtaUrl(e.target.value)}
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-foreground"
+                  />
+                </div>
+              </div>
+
+              {/* Submit */}
+              <button 
+                disabled={isSendingCustomMail} 
+                type="submit" 
+                className="w-full py-3.5 bg-emerald-600 disabled:bg-slate-400 text-white rounded-2xl font-black hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-600/20 flex items-center justify-center gap-2 mt-4"
+              >
+                {isSendingCustomMail ? (
+                  <>
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                    <span>Dispatching Custom Emails...</span>
+                  </>
+                ) : (
+                  <>
+                    <Send className="h-5 w-5" />
+                    <span>Send Custom Email</span>
+                  </>
+                )}
               </button>
             </form>
           </div>
