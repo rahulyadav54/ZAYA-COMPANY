@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 import { sendUniversalEmail } from '@/lib/sendUniversalEmail';
+import { renderTaskAssignedEmail } from '@/lib/emailTemplates';
 
 const SUPABASE_PROJECT_URL = 'https://jhfmkjkldxovscvobvoh.supabase.co';
 const SUPABASE_PUBLIC_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpoZm1ramtsZHhvdnNjdm9idm9oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY3MTE5ODYsImV4cCI6MjEwMjI4Nzk4Nn0.WbuwLOnQzdCu2wqQkrmMSe2TQYh_h45JgNPzU5z-6k0';
@@ -78,35 +79,14 @@ export async function POST() {
       const cleanRaw = rawEmail.toLowerCase().trim();
       const destinationEmail = emailToPersonalMap.get(cleanRaw) || rawEmail;
 
-      const emailHtml = `
-        <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 15px; line-height: 1.6; color: #111827; max-width: 600px;">
-          <p>Hello ${name || 'Intern'},</p>
-          
-          <p>You have been assigned a new internship task at <strong>ZAYA CODE HUB</strong>:</p>
-          
-          <p style="background: #f3f4f6; padding: 12px 16px; border-radius: 8px;">
-            <strong>Task:</strong> ${task.title}<br/>
-            <strong>Priority:</strong> ${(task.priority || 'medium').toUpperCase()}<br/>
-            <strong>Deadline:</strong> 17 September 2026
-          </p>
-          
-          <p><strong>Description:</strong><br/>
-          ${task.description || 'Please refer to your dashboard for full project requirements.'}</p>
-          
-          <p>Please log in to your intern portal to view the details and submit your project:</p>
-          
-          <p style="margin: 20px 0;">
-            <a href="https://www.zayacodehub.in/login" style="background-color: #2563eb; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">Log in to Intern Portal</a>
-          </p>
-          
-          <p style="color: #6b7280; font-size: 13px;">Or access directly at: <a href="https://www.zayacodehub.in/login" style="color: #2563eb;">https://www.zayacodehub.in/login</a></p>
-          
-          <br/>
-          <p>Best regards,<br/>
-          <strong>ZAYA CODE HUB Team</strong><br/>
-          <span style="color: #6b7280; font-size: 12px;">Official Internship & Project Management</span></p>
-        </div>
-      `;
+      const emailHtml = renderTaskAssignedEmail({
+        internName: name,
+        taskTitle: task.title,
+        description: task.description || '',
+        priority: task.priority || 'HIGH',
+        deadline: '17 September 2026',
+        loginUrl: 'https://www.zayacodehub.in/login'
+      });
 
       try {
         const sendRes = await sendUniversalEmail({

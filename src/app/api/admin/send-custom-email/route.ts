@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { sendUniversalEmail } from '@/lib/sendUniversalEmail';
+import { renderCustomEmail } from '@/lib/emailTemplates';
 
 const SUPABASE_PROJECT_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://jhfmkjkldxovscvobvoh.supabase.co';
 const SUPABASE_PUBLIC_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpoZm1ramtsZHhvdnNjdm9idm9oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY3MTE5ODYsImV4cCI6MjEwMjI4Nzk4Nn0.WbuwLOnQzdCu2wqQkrmMSe2TQYh_h45JgNPzU5z-6k0';
@@ -99,37 +100,13 @@ export async function POST(req: Request) {
     for (const recipient of recipients) {
       const destinationEmail = emailToPersonalMap.get(recipient.email.toLowerCase().trim()) || recipient.email;
 
-      const formattedMessage = message
-        .split('\n')
-        .map((p: string) => p.trim())
-        .filter(Boolean)
-        .map((p: string) => `<p style="margin: 0 0 12px 0;">${p}</p>`)
-        .join('');
-
-      const ctaButtonHtml = ctaUrl && ctaUrl.trim() ? `
-        <div style="margin: 24px 0;">
-          <a href="${ctaUrl.trim()}" style="background-color: #2563eb; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">
-            ${ctaText && ctaText.trim() ? ctaText.trim() : 'View Details'}
-          </a>
-        </div>
-      ` : '';
-
-      const emailHtml = `
-        <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 15px; line-height: 1.6; color: #111827; max-width: 600px;">
-          <p>Hello <strong>${recipient.name || 'Intern'}</strong>,</p>
-          
-          <div style="margin: 16px 0;">
-            ${formattedMessage}
-          </div>
-
-          ${ctaButtonHtml}
-
-          <br/>
-          <p style="margin: 0;">Best regards,<br/>
-          <strong>ZAYA CODE HUB Team</strong><br/>
-          <span style="color: #6b7280; font-size: 12px;">Official Internship & Project Management</span></p>
-        </div>
-      `;
+      const emailHtml = renderCustomEmail({
+        recipientName: recipient.name,
+        subject: subject.trim(),
+        message: message.trim(),
+        ctaText: ctaText,
+        ctaUrl: ctaUrl,
+      });
 
       try {
         const sendRes = await sendUniversalEmail({
