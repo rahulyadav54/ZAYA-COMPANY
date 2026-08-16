@@ -203,6 +203,87 @@ export const BUILTIN_CODING_PROBLEMS = [
       { input: { nums: [1] }, expected: 1 },
       { input: { nums: [5, 4, -1, 7, 8] }, expected: 23 }
     ]
+  },
+  {
+    id: 'container-with-most-water',
+    title: '11. Container With Most Water',
+    difficulty: 'Medium',
+    category: 'Two Pointers',
+    languageSupport: ['JavaScript', 'Python', 'Java', 'C++'],
+    description: 'You are given an integer array `height` of length `n`. Find two lines that together with the x-axis form a container, such that the container contains the most water.',
+    sampleInput: 'height = [1,8,6,2,5,4,8,3,7]',
+    sampleOutput: '49',
+    starterCode: {
+      javascript: `function maxArea(height) {\n  let left = 0, right = height.length - 1;\n  let maxWater = 0;\n  while (left < right) {\n    const w = right - left;\n    const h = Math.min(height[left], height[right]);\n    maxWater = Math.max(maxWater, w * h);\n    if (height[left] < height[right]) left++;\n    else right--;\n  }\n  return maxWater;\n}`,
+      python: `def maxArea(height: list[int]) -> int:\n    l, r = 0, len(height) - 1\n    res = 0\n    while l < r:\n        area = (r - l) * min(height[l], height[r])\n        res = max(res, area)\n        if height[l] < height[r]: l += 1\n        else: r -= 1\n    return res`,
+      cpp: `int maxArea(vector<int>& height) {\n    int l = 0, r = height.size() - 1, maxW = 0;\n    while (l < r) {\n        maxW = max(maxW, (r - l) * min(height[l], height[r]));\n        if (height[l] < height[r]) l++; else r--;\n    }\n    return maxW;\n}`,
+      java: `public int maxArea(int[] height) {\n    int l = 0, r = height.length - 1, maxW = 0;\n    while (l < r) {\n        maxW = Math.max(maxW, (r - l) * Math.min(height[l], height[r]));\n        if (height[l] < height[r]) l++; else r--;\n    }\n    return maxW;\n}`
+    },
+    testCases: [
+      { input: { height: [1, 8, 6, 2, 5, 4, 8, 3, 7] }, expected: 49 },
+      { input: { height: [1, 1] }, expected: 1 }
+    ]
+  },
+  {
+    id: 'binary-search',
+    title: '12. Binary Search',
+    difficulty: 'Easy',
+    category: 'Binary Search',
+    languageSupport: ['JavaScript', 'Python', 'Java', 'C++'],
+    description: 'Given an array of integers `nums` sorted in ascending order, and an integer `target`, write a function to search `target` in `nums`. Return its index or `-1`.',
+    sampleInput: 'nums = [-1,0,3,5,9,12], target = 9',
+    sampleOutput: '4',
+    starterCode: {
+      javascript: `function search(nums, target) {\n  let low = 0, high = nums.length - 1;\n  while (low <= high) {\n    let mid = Math.floor((low + high) / 2);\n    if (nums[mid] === target) return mid;\n    else if (nums[mid] < target) low = mid + 1;\n    else high = mid - 1;\n  }\n  return -1;\n}`,
+      python: `def search(nums: list[int], target: int) -> int:\n    l, r = 0, len(nums) - 1\n    while l <= r:\n        m = l + (r - l) // 2\n        if nums[m] == target: return m\n        elif nums[m] < target: l = m + 1\n        else: r = m - 1\n    return -1`,
+      cpp: `int search(vector<int>& nums, int target) {\n    int low = 0, high = nums.size() - 1;\n    while (low <= high) {\n        int mid = low + (high - low) / 2;\n        if (nums[mid] == target) return mid;\n        else if (nums[mid] < target) low = mid + 1;\n        else high = mid - 1;\n    }\n    return -1;\n}`,
+      java: `public int search(int[] nums, int target) {\n    int low = 0, high = nums.length - 1;\n    while (low <= high) {\n        int mid = low + (high - low) / 2;\n        if (nums[mid] == target) return mid;\n        else if (nums[mid] < target) low = mid + 1;\n        else high = mid - 1;\n    }\n    return -1;\n}`
+    },
+    testCases: [
+      { input: { nums: [-1, 0, 3, 5, 9, 12], target: 9 }, expected: 4 },
+      { input: { nums: [-1, 0, 3, 5, 9, 12], target: 2 }, expected: -1 }
+    ]
+  },
+  {
+    id: 'single-number',
+    title: '13. Single Number',
+    difficulty: 'Easy',
+    category: 'Bit Manipulation',
+    languageSupport: ['JavaScript', 'Python', 'Java', 'C++'],
+    description: 'Given a non-empty array of integers `nums`, every element appears twice except for one. Find that single one. You must implement a solution with linear time complexity and constant extra space.',
+    sampleInput: 'nums = [4,1,2,1,2]',
+    sampleOutput: '4',
+    starterCode: {
+      javascript: `function singleNumber(nums) {\n  let res = 0;\n  for (let n of nums) res ^= n;\n  return res;\n}`,
+      python: `def singleNumber(nums: list[int]) -> int:\n    res = 0\n    for n in nums: res ^= n\n    return res`,
+      cpp: `int singleNumber(vector<int>& nums) {\n    int res = 0;\n    for (int n : nums) res ^= n;\n    return res;\n}`,
+      java: `public int singleNumber(int[] nums) {\n    int res = 0;\n    for (int n : nums) res ^= n;\n    return res;\n}`
+    },
+    testCases: [
+      { input: { nums: [2, 2, 1] }, expected: 1 },
+      { input: { nums: [4, 1, 2, 1, 2] }, expected: 4 },
+      { input: { nums: [1] }, expected: 1 }
+    ]
+  },
+  {
+    id: 'fizz-buzz',
+    title: '14. Fizz Buzz',
+    difficulty: 'Easy',
+    category: 'Math',
+    languageSupport: ['JavaScript', 'Python', 'Java', 'C++'],
+    description: 'Given an integer `n`, return a string array `answer` (1-indexed) where `answer[i] == "FizzBuzz"` if `i` is divisible by 3 and 5, `"Fizz"` if divisible by 3, `"Buzz"` if divisible by 5, or `i` as string.',
+    sampleInput: 'n = 5',
+    sampleOutput: '["1","2","Fizz","4","Buzz"]',
+    starterCode: {
+      javascript: `function fizzBuzz(n) {\n  const res = [];\n  for (let i = 1; i <= n; i++) {\n    if (i % 15 === 0) res.push("FizzBuzz");\n    else if (i % 3 === 0) res.push("Fizz");\n    else if (i % 5 === 0) res.push("Buzz");\n    else res.push(String(i));\n  }\n  return res;\n}`,
+      python: `def fizzBuzz(n: int) -> list[str]:\n    res = []\n    for i in range(1, n + 1):\n        if i % 15 == 0: res.append("FizzBuzz")\n        elif i % 3 == 0: res.append("Fizz")\n        elif i % 5 == 0: res.append("Buzz")\n        else: res.append(str(i))\n    return res`,
+      cpp: `vector<string> fizzBuzz(int n) {\n    vector<string> res;\n    for (int i = 1; i <= n; i++) {\n        if (i % 15 == 0) res.push_back("FizzBuzz");\n        else if (i % 3 == 0) res.push_back("Fizz");\n        else if (i % 5 == 0) res.push_back("Buzz");\n        else res.push_back(to_string(i));\n    }\n    return res;\n}`,
+      java: `public List<String> fizzBuzz(int n) {\n    List<String> res = new ArrayList<>();\n    for (int i = 1; i <= n; i++) {\n        if (i % 15 == 0) res.add("FizzBuzz");\n        else if (i % 3 == 0) res.add("Fizz");\n        else if (i % 5 == 0) res.add("Buzz");\n        else res.add(String.valueOf(i));\n    }\n    return res;\n}`
+    },
+    testCases: [
+      { input: { n: 3 }, expected: ["1", "2", "Fizz"] },
+      { input: { n: 5 }, expected: ["1", "2", "Fizz", "4", "Buzz"] }
+    ]
   }
 ];
 
