@@ -256,6 +256,29 @@ export default function ManageInternsPage() {
     return interns.length;
   };
 
+  const [isSendingEmails, setIsSendingEmails] = useState(false);
+
+  const handleResendNotifications = async () => {
+    if (!confirm('Are you sure you want to send task assignment emails to all interns with pending tasks?')) return;
+    
+    setIsSendingEmails(true);
+    try {
+      const res = await fetch('/api/admin/tasks/resend-notifications', {
+        method: 'POST'
+      });
+      const json = await res.json();
+      if (!res.ok || !json.success) {
+        alert(`Error sending emails: ${json.error || 'Failed to send'}`);
+      } else {
+        alert(json.message || `Task notification emails sent successfully!`);
+      }
+    } catch (err: any) {
+      alert(`Network error: ${err.message}`);
+    } finally {
+      setIsSendingEmails(false);
+    }
+  };
+
   const handleSendTask = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -356,6 +379,13 @@ export default function ManageInternsPage() {
             className="flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors font-bold text-sm"
           >
             <Download className="h-4 w-4" /> Download CSV
+          </button>
+          <button 
+            onClick={handleResendNotifications}
+            disabled={isSendingEmails}
+            className="flex items-center gap-2 px-4 py-2 bg-amber-600 text-white rounded-xl hover:bg-amber-700 transition-colors font-bold text-sm shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Mail className="h-4 w-4" /> {isSendingEmails ? 'Sending...' : 'Send Mail'}
           </button>
           <button 
             onClick={() => {
