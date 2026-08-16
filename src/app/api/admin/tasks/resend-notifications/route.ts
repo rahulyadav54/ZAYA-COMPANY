@@ -25,42 +25,58 @@ export async function POST() {
       return NextResponse.json({ success: true, count: 0, message: 'No pending tasks found to notify.' });
     }
 
-    // 2. Fetch profiles to resolve emails if needed
+    // 2. Fetch profiles to resolve emails
     const { data: profiles } = await supabase.from('profiles').select('id, email, full_name');
     const profMap = new Map();
     if (profiles) {
       profiles.forEach(p => profMap.set(p.id, p));
     }
 
-    // 3. Fetch applications to resolve emails if needed
-    const { data: applications } = await supabase.from('applications').select('user_id, email, full_name');
+    // 3. Fetch applications to map official email -> personal Gmail address
+    const { data: applications } = await supabase.from('applications').select('*');
+    const emailToPersonalMap = new Map<string, string>();
     const appMap = new Map();
     if (applications) {
-      applications.forEach(a => {
-        if (a.user_id) appMap.set(a.user_id, a);
-      });
+      for (const a of applications) {
+        if (a.email) {
+          const personal = a.email.toLowerCase().trim();
+          emailToPersonalMap.set(personal, personal);
+          if (a.user_id) appMap.set(a.user_id, a);
+
+          if (a.full_name) {
+            const clean = a.full_name.toLowerCase().trim().replace(/[^a-z0-9\s]/g, '');
+            const parts = clean.split(/\s+/).filter(Boolean);
+            const official = `${parts.join('')}@zayacodehub.com`;
+            emailToPersonalMap.set(official, personal);
+          }
+        }
+      }
     }
 
-    // 4. Send emails in parallel
+    // 4. Send emails in parallel to their actual personal Gmail inbox
     const emailPromises = tasks.map((task: any) => {
-      let emailAddress = task.intern_email;
+      let rawEmail = task.intern_email;
       let name = task.intern_name;
 
-      if (!emailAddress && task.intern_id) {
+      if (!rawEmail && task.intern_id) {
         const p = profMap.get(task.intern_id);
         if (p) {
-          emailAddress = p.email;
+          rawEmail = p.email;
           name = p.full_name;
         } else {
           const a = appMap.get(task.intern_id);
           if (a) {
-            emailAddress = a.email;
+            rawEmail = a.email;
             name = a.full_name;
           }
         }
       }
 
-      if (!emailAddress) return Promise.resolve();
+      if (!rawEmail) return Promise.resolve();
+
+      // Resolve actual personal Gmail if available
+      const cleanRaw = rawEmail.toLowerCase().trim();
+      const destinationEmail = emailToPersonalMap.get(cleanRaw) || rawEmail;
 
       const emailHtml = `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
@@ -70,7 +86,7 @@ export async function POST() {
           </div>
           <div style="margin-bottom: 20px;">
             <p>Hello <strong>${name || 'Intern'}</strong>,</p>
-            <p>A new task/project has been assigned to you. Here are the details:</p>
+            <p>A new task/project has been assigned to you. Please complete it before the deadline:</p>
           </div>
           <div style="background-color: #f8fafc; padding: 15px; border-radius: 6px; border-left: 4px solid #2563eb; margin-bottom: 20px;">
             <h3 style="margin-top: 0; color: #1e293b;">${task.title}</h3>
@@ -82,22 +98,22 @@ export async function POST() {
               </tr>
               <tr>
                 <td style="padding: 4px 0; color: #64748b; font-weight: bold;">Deadline:</td>
-                <td style="padding: 4px 0; color: #ef4444;">${task.deadline || 'N/A'}</td>
+                <td style="padding: 4px 0; color: #ef4444; font-weight: bold;">17 September 2026</td>
               </tr>
             </table>
           </div>
           <div style="text-align: center; margin-bottom: 20px;">
-            <a href="https://www.zayacodehub.in/login" style="background-color: #2563eb; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">View Task on Dashboard</a>
+            <a href="https://www.zayacodehub.in/login" style="background-color: #2563eb; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">View & Submit Task on Dashboard</a>
           </div>
           <div style="border-top: 1px solid #e2e8f0; padding-top: 15px; font-size: 12px; color: #64748b; text-align: center;">
-            <p>This is an automated message from ZAYA CODE HUB. Please do not reply directly to this email.</p>
+            <p>This is an automated message from ZAYA CODE HUB. Please submit your project work before 17 Sept 2026.</p>
           </div>
         </div>
       `;
 
       return sendUniversalEmail({
-        to: emailAddress,
-        subject: `[ZAYA CODE HUB] Task Assignment: ${task.title}`,
+        to: destinationEmail,
+        subject: `[ZAYA CODE HUB] Task Assigned (Due 17 Sept): ${task.title}`,
         html: emailHtml
       });
     });
@@ -108,7 +124,7 @@ export async function POST() {
     return NextResponse.json({
       success: true,
       count: sentCount,
-      message: `Successfully sent task notification emails to ${sentCount} interns!`
+      message: `Successfully dispatched task notification emails to ${sentCount} interns!`
     });
 
   } catch (err: any) {

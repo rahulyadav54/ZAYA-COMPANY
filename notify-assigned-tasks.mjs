@@ -29,15 +29,14 @@ const gmailPass = env.GMAIL_APP_PASS;
 
 if (!gmailPass) {
   console.error('❌ Error: GMAIL_APP_PASS is not configured in your .env or .env.local file.');
-  console.log('Please add GMAIL_APP_PASS=xxxx to your .env file first.');
+  console.log('Please add GMAIL_APP_PASS=xxxx to your .env.local file first.');
   process.exit(1);
 }
 
 const supabase = createClient(SUPABASE_PROJECT_URL, SUPABASE_PUBLIC_ANON_KEY);
 
 async function run() {
-  console.log('🚀 Starting email dispatch for already assigned tasks...');
-  console.log(`Connecting to Supabase at: ${SUPABASE_PROJECT_URL}`);
+  console.log('🚀 Starting email dispatch for all assigned tasks...');
   console.log(`Sending emails via Gmail: ${gmailUser}`);
 
   // Fetch pending tasks
@@ -58,20 +57,23 @@ async function run() {
 
   console.log(`📋 Found ${tasks.length} pending task(s) to process.`);
 
-  // Resolve profiles to match intern_id if needed
-  const { data: profiles } = await supabase.from('profiles').select('id, email, full_name');
-  const profMap = new Map();
-  if (profiles) {
-    profiles.forEach(p => profMap.set(p.id, p));
-  }
-
-  // Resolve applications to match intern_id if needed
-  const { data: applications } = await supabase.from('applications').select('user_id, email, full_name');
-  const appMap = new Map();
+  // Resolve applications to map official email -> personal Gmail address
+  const { data: applications } = await supabase.from('applications').select('*');
+  const emailToPersonalMap = new Map();
   if (applications) {
-    applications.forEach(a => {
-      if (a.user_id) appMap.set(a.user_id, a);
-    });
+    for (const a of applications) {
+      if (a.email) {
+        const personal = a.email.toLowerCase().trim();
+        emailToPersonalMap.set(personal, personal);
+
+        if (a.full_name) {
+          const clean = a.full_name.toLowerCase().trim().replace(/[^a-z0-9\s]/g, '');
+          const parts = clean.split(/\s+/).filter(Boolean);
+          const official = `${parts.join('')}@zayacodehub.com`;
+          emailToPersonalMap.set(official, personal);
+        }
+      }
+    }
   }
 
   const transporter = nodemailer.createTransport({
@@ -87,30 +89,16 @@ async function run() {
   let sentCount = 0;
 
   for (const task of tasks) {
-    // Resolve email and name
-    let email = task.intern_email;
-    let name = task.intern_name;
+    const rawEmail = (task.intern_email || '').toLowerCase().trim();
+    const destinationEmail = emailToPersonalMap.get(rawEmail) || rawEmail;
+    const name = task.intern_name || 'Intern';
 
-    if (!email && task.intern_id) {
-      const p = profMap.get(task.intern_id);
-      if (p) {
-        email = p.email;
-        name = p.full_name;
-      } else {
-        const a = appMap.get(task.intern_id);
-        if (a) {
-          email = a.email;
-          name = a.full_name;
-        }
-      }
-    }
-
-    if (!email) {
+    if (!destinationEmail) {
       console.warn(`⚠️ Skipped task #${task.id}: Cannot resolve intern email address.`);
       continue;
     }
 
-    console.log(`✉️ Sending task notification to ${name || 'Intern'} (${email})...`);
+    console.log(`✉️ Sending task notification to ${name} at personal Gmail: ${destinationEmail}...`);
 
     const emailHtml = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
@@ -119,8 +107,8 @@ async function run() {
           <p style="color: #64748b; font-size: 14px; margin: 5px 0 0 0;">New Task Assigned</p>
         </div>
         <div style="margin-bottom: 20px;">
-          <p>Hello <strong>${name || 'Intern'}</strong>,</p>
-          <p>A new task/project has been assigned to you. Here are the details:</p>
+          <p>Hello <strong>${name}</strong>,</p>
+          <p>A new task/project has been assigned to you. Please complete and submit it before the deadline:</p>
         </div>
         <div style="background-color: #f8fafc; padding: 15px; border-radius: 6px; border-left: 4px solid #2563eb; margin-bottom: 20px;">
           <h3 style="margin-top: 0; color: #1e293b;">${task.title}</h3>
@@ -132,15 +120,15 @@ async function run() {
             </tr>
             <tr>
               <td style="padding: 4px 0; color: #64748b; font-weight: bold;">Deadline:</td>
-              <td style="padding: 4px 0; color: #ef4444;">${task.deadline || 'N/A'}</td>
+              <td style="padding: 4px 0; color: #ef4444; font-weight: bold;">17 September 2026</td>
             </tr>
           </table>
         </div>
         <div style="text-align: center; margin-bottom: 20px;">
-          <a href="https://www.zayacodehub.in/login" style="background-color: #2563eb; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">View Task on Dashboard</a>
+          <a href="https://www.zayacodehub.in/login" style="background-color: #2563eb; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">View & Submit Task on Dashboard</a>
         </div>
         <div style="border-top: 1px solid #e2e8f0; padding-top: 15px; font-size: 12px; color: #64748b; text-align: center;">
-          <p>This is an automated message from ZAYA CODE HUB. Please do not reply directly to this email.</p>
+          <p>This is an automated message from ZAYA CODE HUB. Please submit your project work before 17 Sept 2026.</p>
         </div>
       </div>
     `;
@@ -148,18 +136,18 @@ async function run() {
     try {
       await transporter.sendMail({
         from: `"ZAYA CODE HUB" <${gmailUser}>`,
-        to: email,
-        subject: `[ZAYA CODE HUB] Task Assignment: ${task.title}`,
+        to: destinationEmail,
+        subject: `[ZAYA CODE HUB] Task Assigned (Due 17 Sept): ${task.title}`,
         html: emailHtml,
       });
-      console.log(`✅ Email sent successfully to ${email}`);
+      console.log(`✅ Email sent successfully to ${destinationEmail}`);
       sentCount++;
     } catch (err) {
-      console.error(`❌ Failed to send email to ${email}:`, err.message);
+      console.error(`❌ Failed to send email to ${destinationEmail}:`, err.message);
     }
   }
 
-  console.log(`\n🎉 Done! Successfully notified ${sentCount} interns.`);
+  console.log(`\n🎉 Done! Successfully sent task notification emails to ${sentCount} interns.`);
 }
 
 run();
