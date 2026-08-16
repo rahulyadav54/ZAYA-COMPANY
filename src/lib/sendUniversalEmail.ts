@@ -60,18 +60,30 @@ export async function sendUniversalEmail({ to, subject, html }: EmailPayload): P
     }
   }
 
-  // 2. Try Resend API fallback
+  // 2. Try Resend API (Using verified domain hamrolearning.com)
   const resendApiKey = (process.env.RESEND_API_KEY || '').trim();
   if (resendApiKey && resendApiKey.length > 0) {
     try {
       const resend = new Resend(resendApiKey);
       
-      const sendResult = await resend.emails.send({
-        from: 'ZAYA CODE HUB <onboarding@resend.dev>',
+      let sendResult = await resend.emails.send({
+        from: 'ZAYA CODE HUB <onboarding@hamrolearning.com>',
+        replyTo: 'zayacodehub@gmail.com',
         to: [recipient],
         subject: subject,
         html: html,
       });
+
+      if (sendResult.error) {
+        console.warn(`[Resend Notice] retrying with support@hamrolearning.com:`, sendResult.error.message);
+        sendResult = await resend.emails.send({
+          from: 'ZAYA CODE HUB <support@hamrolearning.com>',
+          replyTo: 'zayacodehub@gmail.com',
+          to: [recipient],
+          subject: subject,
+          html: html,
+        });
+      }
 
       if (!sendResult.error && sendResult.data) {
         console.log(`[Resend API] Email delivered successfully to ${recipient} | ID: ${sendResult.data.id}`);
