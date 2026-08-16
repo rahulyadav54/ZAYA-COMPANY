@@ -210,6 +210,28 @@ export default function ManageInternsPage() {
     setIsSubmitting(false);
   };
 
+  const matchDomainHelper = (position: string, domainQuery: string): boolean => {
+    if (!domainQuery || !domainQuery.trim()) return true;
+    const posClean = (position || '').toLowerCase().trim();
+    const queryClean = domainQuery.toLowerCase().trim();
+
+    if (posClean.includes(queryClean) || queryClean.includes(posClean)) return true;
+
+    const stopWords = new Set(['intern', 'internship', 'developer', 'engineer', 'junior', 'senior', 'role', 'position']);
+    const queryTokens = queryClean.split(/[\s/\-_]+/).filter(t => t.length > 1);
+    const posTokens = posClean.split(/[\s/\-_]+/).filter(t => t.length > 1);
+    const significantQueryTokens = queryTokens.filter(t => !stopWords.has(t));
+    const tokensToCheck = significantQueryTokens.length > 0 ? significantQueryTokens : queryTokens;
+
+    for (const qToken of tokensToCheck) {
+      for (const pToken of posTokens) {
+        if (pToken.includes(qToken) || qToken.includes(pToken)) return true;
+      }
+    }
+
+    return false;
+  };
+
   const uniqueDomains = Array.from(
     new Set(
       interns
@@ -221,17 +243,17 @@ export default function ManageInternsPage() {
 
   const getMatchingInternCount = () => {
     if (taskTargetMode === 'individual') {
-      return selectedInternId ? 1 : 0;
+      return selectedInternId ? 1 : (interns.length > 0 ? 1 : 0);
     }
     if (taskTargetMode === 'all') {
       return interns.length;
     }
     if (taskTargetMode === 'domain') {
-      if (!selectedDomain) return 0;
-      const search = selectedDomain.toLowerCase().trim();
-      return interns.filter(i => (i.position || '').toLowerCase().includes(search)).length;
+      if (!selectedDomain) return interns.length;
+      const count = interns.filter(i => matchDomainHelper(i.position || '', selectedDomain)).length;
+      return count > 0 ? count : interns.length;
     }
-    return 0;
+    return interns.length;
   };
 
   const handleSendTask = async (e: React.FormEvent<HTMLFormElement>) => {

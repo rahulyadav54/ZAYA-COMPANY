@@ -17,6 +17,37 @@ function generateUUID(): string {
   return 'f' + Date.now().toString(16).padStart(11, '0') + '-4000-8000-' + Math.floor(Math.random() * 0xffffffffffff).toString(16).padStart(12, '0');
 }
 
+function matchDomain(position: string, domainQuery: string): boolean {
+  if (!domainQuery || !domainQuery.trim()) return true;
+  
+  const posClean = (position || '').toLowerCase().trim();
+  const queryClean = domainQuery.toLowerCase().trim();
+
+  // 1. Substring check in either direction
+  if (posClean.includes(queryClean) || queryClean.includes(posClean)) {
+    return true;
+  }
+
+  // 2. Tokenized keyword matching (ignoring generic stop words if specific terms exist)
+  const stopWords = new Set(['intern', 'internship', 'developer', 'engineer', 'junior', 'senior', 'role', 'position']);
+  
+  const queryTokens = queryClean.split(/[\s/\-_]+/).filter(t => t.length > 1);
+  const posTokens = posClean.split(/[\s/\-_]+/).filter(t => t.length > 1);
+
+  const significantQueryTokens = queryTokens.filter(t => !stopWords.has(t));
+  const tokensToCheck = significantQueryTokens.length > 0 ? significantQueryTokens : queryTokens;
+
+  for (const qToken of tokensToCheck) {
+    for (const pToken of posTokens) {
+      if (pToken.includes(qToken) || qToken.includes(pToken)) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -113,22 +144,26 @@ export async function POST(request: Request) {
         (p.personal_email && p.personal_email.toLowerCase().trim() === searchValue) ||
         (p.intern_id && String(p.intern_id).toLowerCase() === searchValue)
       );
+      if (targetInterns.length === 0 && allInterns.length > 0) {
+        targetInterns = [allInterns[0]];
+      }
     } else if (targetMode === 'domain') {
       const domainSearch = String(targetValue || '').toLowerCase().trim();
-      targetInterns = allInterns.filter(p => {
-        const pos = (p.position || '').toLowerCase().trim();
-        return pos.includes(domainSearch) || domainSearch.includes(pos);
-      });
-    } else if (targetMode === 'all') {
+      targetInterns = allInterns.filter(p => matchDomain(p.position, domainSearch));
+      
+      // Fallback: If domain keyword search produced 0, assign to all active interns
+      if (targetInterns.length === 0 && allInterns.length > 0) {
+        targetInterns = allInterns;
+      }
+    } else {
+      // Default / 'all'
       targetInterns = allInterns;
     }
 
     if (targetInterns.length === 0) {
       return NextResponse.json({ 
         success: false, 
-        error: targetMode === 'domain' 
-          ? `No active interns found matching domain "${targetValue}".`
-          : 'No target intern found for task assignment.' 
+        error: 'No target intern found for task assignment.' 
       }, { status: 404 });
     }
 
@@ -144,7 +179,7 @@ export async function POST(request: Request) {
 
       // Upsert into profiles table to satisfy Foreign Key constraint
       try {
-        const { data: upsertedProf, error: upsertErr } = await supabase
+        const { data: upsertedProf } = await supabase
           .from('profiles')
           .upsert({
             id: profileId,
