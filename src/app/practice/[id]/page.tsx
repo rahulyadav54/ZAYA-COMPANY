@@ -48,6 +48,39 @@ export default function PublicProctoredExamRoomPage() {
   const [isExamFinished, setIsExamFinished] = useState(false);
   const [currentQuestionIdx, setCurrentQuestionIdx] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<{ [key: string]: number }>({});
+  const [markedForReview, setMarkedForReview] = useState<string[]>([]);
+
+  const handleSaveAndNext = () => {
+    const currentQ = questions[currentQuestionIdx];
+    if (currentQ) {
+      setMarkedForReview(prev => prev.filter(id => id !== currentQ.id));
+    }
+    if (currentQuestionIdx < questions.length - 1) {
+      setCurrentQuestionIdx(prev => prev + 1);
+    }
+  };
+
+  const handleMarkForReviewAndNext = () => {
+    const currentQ = questions[currentQuestionIdx];
+    if (currentQ) {
+      if (!markedForReview.includes(currentQ.id)) {
+        setMarkedForReview(prev => [...prev, currentQ.id]);
+      }
+    }
+    if (currentQuestionIdx < questions.length - 1) {
+      setCurrentQuestionIdx(prev => prev + 1);
+    }
+  };
+
+  const handleClearResponse = () => {
+    const currentQ = questions[currentQuestionIdx];
+    if (currentQ) {
+      const updated = { ...selectedAnswers };
+      delete updated[currentQ.id];
+      setSelectedAnswers(updated);
+      setMarkedForReview(prev => prev.filter(id => id !== currentQ.id));
+    }
+  };
   
   // Timer State
   const [timeLeftSeconds, setTimeLeftSeconds] = useState(0);
@@ -549,30 +582,51 @@ export default function PublicProctoredExamRoomPage() {
                       })}
                     </div>
 
-                    <div className="pt-6 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                      <button
-                        disabled={currentQuestionIdx === 0}
-                        onClick={() => setCurrentQuestionIdx(prev => prev - 1)}
-                        className="px-5 py-2.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl text-xs font-black uppercase tracking-wider disabled:opacity-30 flex items-center gap-2"
-                      >
-                        <ArrowLeft className="h-4 w-4" /> Previous
-                      </button>
+                    {/* Question Navigation Controls with Save, Review & Clear Options */}
+                    <div className="pt-6 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3">
+                      <div className="flex items-center gap-2">
+                        <button
+                          disabled={currentQuestionIdx === 0}
+                          onClick={() => setCurrentQuestionIdx(prev => prev - 1)}
+                          className="px-4 py-2.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl text-xs font-black uppercase tracking-wider disabled:opacity-30 flex items-center gap-1.5"
+                        >
+                          <ArrowLeft className="h-4 w-4" /> Prev
+                        </button>
 
-                      {currentQuestionIdx < questions.length - 1 ? (
                         <button
-                          onClick={() => setCurrentQuestionIdx(prev => prev + 1)}
-                          className="px-6 py-2.5 bg-blue-600 text-white rounded-xl text-xs font-black uppercase tracking-wider hover:bg-blue-700 transition-all flex items-center gap-2"
+                          onClick={handleClearResponse}
+                          className="px-4 py-2.5 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-black uppercase tracking-wider hover:bg-slate-300 transition-all"
                         >
-                          Next <ArrowRight className="h-4 w-4" />
+                          Clear Response
                         </button>
-                      ) : (
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        {/* Mark for Review Button (Yellow) */}
                         <button
-                          onClick={() => submitExam(newAnswersToScore(), false, violationsCount, violationsLog)}
-                          className="px-8 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-lg shadow-emerald-500/25 hover:from-emerald-600 hover:to-teal-700 transition-all"
+                          onClick={handleMarkForReviewAndNext}
+                          className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-black uppercase tracking-wider shadow-md shadow-amber-500/20 transition-all flex items-center gap-1.5 active:scale-95"
                         >
-                          Submit Test
+                          <span>🟨 Mark For Review & Next</span>
                         </button>
-                      )}
+
+                        {/* Save & Next Button (Green) */}
+                        {currentQuestionIdx < questions.length - 1 ? (
+                          <button
+                            onClick={handleSaveAndNext}
+                            className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black uppercase tracking-wider shadow-lg shadow-emerald-600/20 transition-all flex items-center gap-1.5 active:scale-95"
+                          >
+                            <span>🟩 Save & Next</span> <ArrowRight className="h-4 w-4" />
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => submitExam(newAnswersToScore(), false, violationsCount, violationsLog)}
+                            className="px-8 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-lg shadow-emerald-500/25 hover:from-emerald-600 hover:to-teal-700 transition-all"
+                          >
+                            Submit Test
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </>
                 )}
@@ -594,28 +648,58 @@ export default function PublicProctoredExamRoomPage() {
                   </div>
                 </div>
 
-                <div className="bg-white dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 space-y-3">
-                  <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Question Palette</h4>
-                  <div className="grid grid-cols-5 gap-2">
+                {/* Color-Coded Question Status Palette */}
+                <div className="bg-white dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 space-y-4 shadow-lg">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Question Palette</h4>
+                    <span className="text-[10px] font-black text-blue-500 uppercase">{currentQuestionIdx + 1} / {questions.length}</span>
+                  </div>
+
+                  <div className="grid grid-cols-5 gap-2 max-h-56 overflow-y-auto custom-scrollbar p-1">
                     {questions.map((q, idx) => {
                       const isAnswered = selectedAnswers[q.id] !== undefined;
+                      const isReview = markedForReview.includes(q.id);
                       const isCurrent = idx === currentQuestionIdx;
+
+                      let bgStyle = 'bg-slate-100 dark:bg-slate-800 text-slate-500 font-bold border border-slate-200 dark:border-slate-700';
+                      if (isReview) {
+                        bgStyle = 'bg-amber-500 text-white font-black shadow-md shadow-amber-500/20';
+                      } else if (isAnswered) {
+                        bgStyle = 'bg-emerald-600 text-white font-black shadow-md shadow-emerald-600/20';
+                      }
+
                       return (
                         <button
                           key={idx}
                           onClick={() => setCurrentQuestionIdx(idx)}
-                          className={`h-9 rounded-xl font-black text-xs transition-all ${
-                            isCurrent
-                              ? 'bg-blue-600 text-white ring-2 ring-blue-600 ring-offset-2 dark:ring-offset-slate-900'
-                              : isAnswered
-                              ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
-                              : 'bg-slate-100 dark:bg-slate-800 text-slate-500'
+                          className={`h-9 rounded-xl text-xs transition-all flex items-center justify-center relative ${bgStyle} ${
+                            isCurrent ? 'ring-4 ring-blue-500 ring-offset-2 dark:ring-offset-slate-900 scale-105 z-10' : ''
                           }`}
                         >
                           {idx + 1}
                         </button>
                       );
                     })}
+                  </div>
+
+                  {/* Color Legend Summary */}
+                  <div className="pt-3 border-t border-slate-100 dark:border-slate-800 grid grid-cols-3 gap-2 text-[9px] font-black uppercase text-center">
+                    <div className="p-2 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-xl border border-emerald-500/20">
+                      <span className="block text-xs font-black">
+                        {Object.keys(selectedAnswers).filter(id => !markedForReview.includes(id)).length}
+                      </span>
+                      <span>🟩 Saved</span>
+                    </div>
+                    <div className="p-2 bg-amber-500/10 text-amber-600 dark:text-amber-400 rounded-xl border border-amber-500/20">
+                      <span className="block text-xs font-black">{markedForReview.length}</span>
+                      <span>🟨 Review</span>
+                    </div>
+                    <div className="p-2 bg-slate-100 dark:bg-slate-800 text-slate-500 rounded-xl border border-slate-200 dark:border-slate-700">
+                      <span className="block text-xs font-black">
+                        {questions.length - Object.keys(selectedAnswers).length}
+                      </span>
+                      <span>⬜ Unanswered</span>
+                    </div>
                   </div>
                 </div>
               </div>
