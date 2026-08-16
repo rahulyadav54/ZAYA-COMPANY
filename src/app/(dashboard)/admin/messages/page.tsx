@@ -31,32 +31,78 @@ export default function AdminMessagesPage() {
 
   const [sidebarSearchQuery, setSidebarSearchQuery] = useState('');
 
-  const fetchConversations = async () => {
-    setIsLoading(true);
+  const sortMessagesAscending = (list: any[]) => {
+    if (!Array.isArray(list)) return [];
+    return [...list].sort((a, b) => {
+      const timeA = new Date(a.created_at || 0).getTime();
+      const timeB = new Date(b.created_at || 0).getTime();
+      if (timeA !== timeB) return timeA - timeB;
+      return String(a.id || '').localeCompare(String(b.id || ''));
+    });
+  };
+
+  const sortMessagesDescending = (list: any[]) => {
+    if (!Array.isArray(list)) return [];
+    return [...list].sort((a, b) => {
+      const timeA = new Date(a.created_at || 0).getTime();
+      const timeB = new Date(b.created_at || 0).getTime();
+      if (timeA !== timeB) return timeB - timeA;
+      return String(b.id || '').localeCompare(String(a.id || ''));
+    });
+  };
+
+  const fetchConversations = async (isInitial = false) => {
+    if (isInitial) setIsLoading(true);
     try {
       const { data, error } = await supabase
         .from('intern_messages')
         .select('*')
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .order('id', { ascending: false });
 
       if (!error && data) {
-        const uniqueIds = Array.from(new Set(data.map(m => m.intern_id)));
-        const uniqueConvs = uniqueIds.map(id => {
-          const m = data.find(item => item.intern_id === id);
-          return {
-            intern_id: id,
-            id: id,
-            intern_name: m?.intern_name || 'Intern',
-            created_at: m?.created_at,
-            last_message: m?.content || 'Sent attachment'
-          };
+        const sortedData = sortMessagesDescending(data);
+        const convMap = new Map<string, any>();
+        sortedData.forEach(m => {
+          if (!m.intern_id) return;
+          const matchingIntern = allInterns.find(i => 
+            (i.id && i.id.toLowerCase() === m.intern_id.toLowerCase()) ||
+            (i.intern_id && i.intern_id.toLowerCase() === m.intern_id.toLowerCase()) ||
+            (i.email && i.email.toLowerCase() === m.intern_id.toLowerCase())
+          );
+
+          const canonicalKey = matchingIntern 
+            ? (matchingIntern.email || matchingIntern.id || matchingIntern.intern_id).toLowerCase()
+            : m.intern_id.toLowerCase();
+
+          if (!convMap.has(canonicalKey)) {
+            convMap.set(canonicalKey, {
+              intern_id: matchingIntern?.intern_id || matchingIntern?.id || m.intern_id,
+              id: matchingIntern?.id || matchingIntern?.intern_id || m.intern_id,
+              email: matchingIntern?.email || (m.intern_id.includes('@') ? m.intern_id : ''),
+              intern_name: matchingIntern?.full_name || matchingIntern?.intern_name || m.intern_name || 'Intern',
+              created_at: m.created_at,
+              last_message: m.content || m.message || 'Sent attachment',
+              all_ids: Array.from(new Set([
+                m.intern_id, 
+                matchingIntern?.id, 
+                matchingIntern?.intern_id, 
+                matchingIntern?.email
+              ].filter(Boolean)))
+            });
+          }
         });
-        setConversations(uniqueConvs);
+
+        const uniqueConvs = Array.from(convMap.values());
+        setConversations(prev => {
+          if (JSON.stringify(prev) === JSON.stringify(uniqueConvs)) return prev;
+          return uniqueConvs;
+        });
       }
     } catch (e) {
       console.warn('Fetch conversations notice:', e);
     } finally {
-      setIsLoading(false);
+      if (isInitial) setIsLoading(false);
     }
   };
 
@@ -143,9 +189,15 @@ export default function AdminMessagesPage() {
   };
 
   useEffect(() => {
-    fetchConversations();
+    fetchConversations(true);
     fetchAllInterns();
   }, []);
+
+  useEffect(() => {
+    if (allInterns.length > 0) {
+      fetchConversations(false);
+    }
+  }, [allInterns]);
 
   // Realtime updates & 3s polling for Admin messages
   useEffect(() => {
@@ -162,22 +214,26 @@ export default function AdminMessagesPage() {
           const sId = (selectedIntern.intern_id || selectedIntern.id || '').toLowerCase();
           const sEmail = (selectedIntern.email || '').toLowerCase();
           const mId = (newMsg.intern_id || '').toLowerCase();
-          if (mId === sId || mId === sEmail) {
+          const matches = mId === sId || mId === sEmail || (selectedIntern.all_ids && selectedIntern.all_ids.some((id: string) => id.toLowerCase() === mId));
+          if (matches) {
             setMessages(prev => {
-              if (prev.some(m => m.id === newMsg.id)) return prev;
-              return [...prev, newMsg];
+              const exists = prev.some(m => m.id === newMsg.id);
+              const updated = exists
+                ? prev.map(m => m.id === newMsg.id ? newMsg : m)
+                : [...prev, newMsg];
+              return sortMessagesAscending(updated);
             });
           }
         }
-        fetchConversations();
+        fetchConversations(false);
       })
       .subscribe();
 
     // 2. 3-Second Background Polling Sync
     const interval = setInterval(() => {
-      fetchConversations();
+      fetchConversations(false);
       if (selectedIntern) {
-        loadMessages(selectedIntern);
+        loadMessages(selectedIntern, false);
       }
     }, 3000);
 
@@ -239,7 +295,7 @@ export default function AdminMessagesPage() {
       setIsBulkView(false);
       setBulkMessage('');
       setSelectedInternIds([]);
-      fetchConversations();
+      fetchConversations(false);
     } catch (err: any) {
       console.error(err);
       alert('Failed to send bulk message: ' + err.message);
@@ -255,18 +311,19 @@ export default function AdminMessagesPage() {
 
   useEffect(() => {
     if (selectedIntern) {
-      loadMessages(selectedIntern);
+      loadMessages(selectedIntern, true);
     }
   }, [selectedIntern]);
 
-  async function loadMessages(internTarget: any) {
+  async function loadMessages(internTarget: any, isInitial = false) {
     if (!internTarget) return;
-    setIsLoadingMessages(true);
+    if (isInitial) setIsLoadingMessages(true);
 
     const idsToSearch = Array.from(new Set([
       internTarget.intern_id, 
       internTarget.id, 
-      internTarget.email
+      internTarget.email,
+      ...(internTarget.all_ids || [])
     ].filter(Boolean)));
 
     try {
@@ -274,29 +331,58 @@ export default function AdminMessagesPage() {
         .from('intern_messages')
         .select('*')
         .in('intern_id', idsToSearch)
-        .order('created_at', { ascending: true });
+        .order('created_at', { ascending: true })
+        .order('id', { ascending: true });
 
       if (!error && data) {
-        setMessages(data);
-        await supabase
-          .from('intern_messages')
-          .update({ is_read: true })
-          .in('intern_id', idsToSearch)
-          .eq('sender_type', 'intern')
-          .eq('is_read', false);
-      } else {
+        const sortedData = sortMessagesAscending(data);
+        setMessages(prev => {
+          if (
+            prev.length === sortedData.length &&
+            prev.every((m, idx) => m.id === sortedData[idx]?.id && m.is_read === sortedData[idx]?.is_read && m.content === sortedData[idx]?.content)
+          ) {
+            return prev;
+          }
+          return sortedData;
+        });
+
+        const hasUnread = sortedData.some(m => (m.sender_type || '').toLowerCase() === 'intern' && !m.is_read);
+        if (hasUnread) {
+          await supabase
+            .from('intern_messages')
+            .update({ is_read: true })
+            .in('intern_id', idsToSearch)
+            .eq('sender_type', 'intern')
+            .eq('is_read', false);
+        }
+      } else if (isInitial) {
         setMessages([]);
       }
     } catch (e) {
       console.warn('Load messages notice:', e);
     } finally {
-      setIsLoadingMessages(false);
+      if (isInitial) setIsLoadingMessages(false);
     }
   }
 
+  const isInitialScrollRef = useRef(true);
+
+  useEffect(() => {
+    if (selectedIntern) {
+      isInitialScrollRef.current = true;
+      loadMessages(selectedIntern, true);
+    }
+  }, [selectedIntern]);
+
   useEffect(() => {
     if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
+      const isNearBottom = scrollHeight - scrollTop - clientHeight < 150;
+      
+      if (isInitialScrollRef.current || isNearBottom) {
+        scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+        isInitialScrollRef.current = false;
+      }
     }
   }, [messages]);
 
@@ -319,6 +405,7 @@ export default function AdminMessagesPage() {
     if ((!newMessage.trim() && !selectedFile) || isSending || !selectedIntern) return;
 
     setIsSending(true);
+    isInitialScrollRef.current = true;
     let fileUrl: string | null = null;
     let fileType: string | null = null;
 
@@ -596,7 +683,7 @@ export default function AdminMessagesPage() {
             {/* Messages Scroll Feed */}
             <div 
               ref={scrollRef}
-              className="flex-1 p-6 md:p-8 overflow-y-auto space-y-4 scroll-smooth"
+              className="flex-1 p-6 md:p-8 overflow-y-auto space-y-4"
               style={{ 
                 backgroundImage: 'radial-gradient(circle at 2px 2px, rgba(0,0,0,0.03) 1px, transparent 0)',
                 backgroundSize: '28px 28px'
@@ -616,10 +703,10 @@ export default function AdminMessagesPage() {
                 </div>
               ) : (
                 messages.map((msg, idx) => {
-                  const isAdmin = msg.sender_type === 'admin';
+                  const isAdmin = (msg.sender_type || '').toLowerCase() === 'admin';
                   return (
                     <motion.div 
-                      initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                      initial={false}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       key={msg.id || idx} 
                       className={`flex ${isAdmin ? 'justify-end' : 'justify-start'}`}

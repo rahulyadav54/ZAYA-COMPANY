@@ -17,6 +17,16 @@ export default function InternMessagesPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  const sortMessagesAscending = (list: any[]) => {
+    if (!Array.isArray(list)) return [];
+    return [...list].sort((a, b) => {
+      const timeA = new Date(a.created_at || 0).getTime();
+      const timeB = new Date(b.created_at || 0).getTime();
+      if (timeA !== timeB) return timeA - timeB;
+      return String(a.id || '').localeCompare(String(b.id || ''));
+    });
+  };
+
   useEffect(() => {
     async function loadMessages() {
       const { getActiveUser } = await import('@/lib/getActiveUser');
@@ -29,10 +39,12 @@ export default function InternMessagesPage() {
           .from('intern_messages')
           .select('*')
           .in('intern_id', userKeys)
-          .order('created_at', { ascending: true });
+          .order('created_at', { ascending: true })
+          .order('id', { ascending: true });
 
         if (!error && data) {
-          setMessages(data);
+          const sorted = sortMessagesAscending(data);
+          setMessages(sorted);
           // Mark messages from admin as read
           await supabase
             .from('intern_messages')
@@ -62,8 +74,11 @@ export default function InternMessagesPage() {
          const newMsg = payload.new;
          if (newMsg && userKeys.some(k => k === newMsg.intern_id || (k && newMsg.intern_id && k.toLowerCase() === newMsg.intern_id.toLowerCase()))) {
             setMessages(prev => {
-              if (prev.some(m => m.id === newMsg.id)) return prev;
-              return [...prev, newMsg];
+              const exists = prev.some(m => m.id === newMsg.id);
+              const updated = exists
+                ? prev.map(m => m.id === newMsg.id ? newMsg : m)
+                : [...prev, newMsg];
+              return sortMessagesAscending(updated);
             });
          }
       })
@@ -75,14 +90,19 @@ export default function InternMessagesPage() {
         .from('intern_messages')
         .select('*')
         .in('intern_id', userKeys)
-        .order('created_at', { ascending: true });
+        .order('created_at', { ascending: true })
+        .order('id', { ascending: true });
 
       if (data) {
+        const sorted = sortMessagesAscending(data);
         setMessages(prev => {
-          if (data.length !== prev.length || data.some((m, idx) => m.id !== prev[idx]?.id)) {
-            return data;
+          if (
+            prev.length === sorted.length &&
+            prev.every((m, idx) => m.id === sorted[idx]?.id && m.is_read === sorted[idx]?.is_read && m.content === sorted[idx]?.content)
+          ) {
+            return prev;
           }
-          return prev;
+          return sorted;
         });
       }
     }, 3000);
@@ -93,9 +113,17 @@ export default function InternMessagesPage() {
     };
   }, [user]);
 
+  const isInitialScrollRef = useRef(true);
+
   useEffect(() => {
     if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
+      const isNearBottom = scrollHeight - scrollTop - clientHeight < 150;
+      
+      if (isInitialScrollRef.current || isNearBottom) {
+        scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+        isInitialScrollRef.current = false;
+      }
     }
   }, [messages]);
 
@@ -118,6 +146,7 @@ export default function InternMessagesPage() {
     if ((!newMessage.trim() && !selectedFile) || isSending || !user) return;
 
     setIsSending(true);
+    isInitialScrollRef.current = true;
     let fileUrl: string | null = null;
     let fileType: string | null = null;
 
@@ -270,7 +299,7 @@ export default function InternMessagesPage() {
         {/* Chat Scroll Feed */}
         <div 
           ref={scrollRef}
-          className="flex-1 p-6 md:p-8 overflow-y-auto space-y-6 scroll-smooth"
+          className="flex-1 p-6 md:p-8 overflow-y-auto space-y-6"
           style={{ 
             backgroundImage: 'radial-gradient(circle at 2px 2px, rgba(0,0,0,0.03) 1px, transparent 0)',
             backgroundSize: '28px 28px'
@@ -313,10 +342,10 @@ export default function InternMessagesPage() {
             </div>
           ) : (
             messages.map((msg, idx) => {
-              const isIntern = msg.sender_type === 'intern';
+              const isIntern = (msg.sender_type || '').toLowerCase() === 'intern';
               return (
                 <motion.div 
-                  initial={{ opacity: 0, y: 12, scale: 0.98 }}
+                  initial={false}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   key={msg.id || idx}
                   className={`flex ${isIntern ? 'justify-end' : 'justify-start'}`}
