@@ -25,11 +25,51 @@ export default function PublicPracticeHubPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDomain, setSelectedDomain] = useState('ALL');
+  
+  // Student Auth & Gamification State
+  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [userStats, setUserStats] = useState<{
+    xp_points: number;
+    streak_days: number;
+    tests_completed: number;
+    coding_problems_solved: number;
+    badges: string[];
+  }>({
+    xp_points: 150,
+    streak_days: 3,
+    tests_completed: 2,
+    coding_problems_solved: 5,
+    badges: ['Code Novice', 'Honest Scholar']
+  });
 
   useEffect(() => {
-    async function fetchPublicExams() {
+    async function loadData() {
       setIsLoading(true);
       try {
+        // Fetch User Auth
+        const { getActiveUser } = await import('@/lib/getActiveUser');
+        const user = await getActiveUser();
+        if (user) {
+          setCurrentUser(user);
+          // Fetch User Practice Stats
+          const { data: stats } = await supabase
+            .from('user_practice_stats')
+            .select('*')
+            .eq('user_id', user.id)
+            .single();
+
+          if (stats) {
+            setUserStats({
+              xp_points: stats.xp_points || 150,
+              streak_days: stats.streak_days || 1,
+              tests_completed: stats.tests_completed || 0,
+              coding_problems_solved: stats.coding_problems_solved || 0,
+              badges: Array.isArray(stats.badges) ? stats.badges : ['Code Novice']
+            });
+          }
+        }
+
+        // Fetch Public Exams
         const { data } = await supabase
           .from('exams')
           .select('*, exam_questions(id)')
@@ -43,7 +83,7 @@ export default function PublicPracticeHubPage() {
         setIsLoading(false);
       }
     }
-    fetchPublicExams();
+    loadData();
   }, []);
 
   const domains = ['ALL', ...Array.from(new Set(exams.map(e => e.domain)))];
@@ -100,6 +140,74 @@ export default function PublicPracticeHubPage() {
                 </div>
               </div>
             </div>
+          </div>
+        </section>
+
+        {/* GAMIFIED STUDENT PERFORMANCE TRACKER */}
+        <section className="py-8 px-6 bg-slate-900 border-b border-slate-800 text-white">
+          <div className="container mx-auto max-w-6xl">
+            {currentUser ? (
+              <div className="p-6 bg-gradient-to-r from-slate-950 via-indigo-950/80 to-blue-950 rounded-3xl border border-blue-500/30 shadow-2xl flex flex-col lg:flex-row items-center justify-between gap-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-blue-600 to-cyan-500 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-blue-500/30 shrink-0">
+                    ⚡
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="px-2.5 py-0.5 bg-amber-500/20 text-amber-300 text-[10px] font-black rounded-full uppercase tracking-widest border border-amber-500/30">
+                        LEVEL {Math.floor(userStats.xp_points / 250) + 1} ARCHITECT
+                      </span>
+                      <span className="px-2.5 py-0.5 bg-emerald-500/20 text-emerald-300 text-[10px] font-black rounded-full uppercase tracking-widest border border-emerald-500/30 flex items-center gap-1">
+                        🔥 {userStats.streak_days} DAY STREAK
+                      </span>
+                    </div>
+                    <h3 className="text-xl font-black uppercase tracking-tight italic text-white mt-1">
+                      Welcome Back, {currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0]}!
+                    </h3>
+                  </div>
+                </div>
+
+                {/* Performance Stats Grid */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 w-full lg:w-auto">
+                  <div className="p-3 bg-white/5 rounded-2xl border border-white/10 text-center">
+                    <p className="text-[9px] text-slate-400 font-black uppercase tracking-widest">Total XP</p>
+                    <p className="text-lg font-black text-amber-400 font-mono">{userStats.xp_points} ⚡</p>
+                  </div>
+                  <div className="p-3 bg-white/5 rounded-2xl border border-white/10 text-center">
+                    <p className="text-[9px] text-slate-400 font-black uppercase tracking-widest">Tests Passed</p>
+                    <p className="text-lg font-black text-emerald-400 font-mono">{userStats.tests_completed}</p>
+                  </div>
+                  <div className="p-3 bg-white/5 rounded-2xl border border-white/10 text-center">
+                    <p className="text-[9px] text-slate-400 font-black uppercase tracking-widest">Coding Solved</p>
+                    <p className="text-lg font-black text-cyan-400 font-mono">{userStats.coding_problems_solved}</p>
+                  </div>
+                  <div className="p-3 bg-white/5 rounded-2xl border border-white/10 text-center">
+                    <p className="text-[9px] text-slate-400 font-black uppercase tracking-widest">Badges</p>
+                    <p className="text-lg font-black text-indigo-300 font-mono">🏆 {userStats.badges.length}</p>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="p-6 bg-gradient-to-r from-blue-900/40 via-indigo-900/40 to-slate-900 rounded-3xl border border-blue-500/30 flex flex-col md:flex-row items-center justify-between gap-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl bg-blue-600/20 text-blue-400 flex items-center justify-center shrink-0">
+                    <Award className="h-6 w-6" />
+                  </div>
+                  <div>
+                    <h3 className="font-black text-base uppercase tracking-tight text-white italic">Login First to Track Your Performance & Earn Badges!</h3>
+                    <p className="text-xs text-slate-300 font-medium">Log in to save solved coding problems, track daily streaks, earn XP points, and generate verified skill certificates.</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 shrink-0">
+                  <Link
+                    href="/login"
+                    className="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-black text-xs uppercase tracking-widest rounded-xl transition-all shadow-lg shadow-blue-600/30"
+                  >
+                    Login / Register
+                  </Link>
+                </div>
+              </div>
+            )}
           </div>
         </section>
 

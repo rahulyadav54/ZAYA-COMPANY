@@ -328,7 +328,18 @@ CREATE POLICY "Public Manage Exams" ON public.exams FOR ALL USING (true);
 CREATE POLICY "Public Read Questions" ON public.exam_questions FOR SELECT USING (true);
 CREATE POLICY "Public Manage Questions" ON public.exam_questions FOR ALL USING (true);
 
-CREATE POLICY "Public Read Exam Submissions" ON public.exam_submissions FOR SELECT USING (true);
-CREATE POLICY "Public Insert Exam Submissions" ON public.exam_submissions FOR INSERT WITH CHECK (true);
-CREATE POLICY "Public Update Exam Submissions" ON public.exam_submissions FOR UPDATE USING (true);
+-- 9. USER PRACTICE STATS & GAMIFICATION TABLE
+CREATE TABLE IF NOT EXISTS public.user_practice_stats (
+  user_id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  xp_points INTEGER DEFAULT 0,
+  streak_days INTEGER DEFAULT 1,
+  tests_completed INTEGER DEFAULT 0,
+  coding_problems_solved INTEGER DEFAULT 0,
+  badges JSONB DEFAULT '[]'::jsonb,
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE public.user_practice_stats ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Public Manage User Practice Stats" ON public.user_practice_stats;
+CREATE POLICY "Public Manage User Practice Stats" ON public.user_practice_stats FOR ALL USING (true);
 

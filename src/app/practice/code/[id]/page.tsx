@@ -58,7 +58,7 @@ export default function PublicCodingIDEPage() {
     }
   };
 
-  const runCodeSolution = () => {
+  const runCodeSolution = async () => {
     if (!problem) return;
     setIsExecuting(true);
     setOverallStatus('idle');
@@ -116,6 +116,33 @@ export default function PublicCodingIDEPage() {
       setExecutionTimeMs(Math.round(endMs - startMs));
       setExecutionOutput(results);
       setOverallStatus(allPassed ? 'success' : 'failed');
+
+      // Award +100 XP Points if all test cases passed
+      if (allPassed) {
+        try {
+          const { getActiveUser } = await import('@/lib/getActiveUser');
+          const user = await getActiveUser();
+          if (user) {
+            const { data: existing } = await supabase
+              .from('user_practice_stats')
+              .select('*')
+              .eq('user_id', user.id)
+              .single();
+
+            const newXP = (existing?.xp_points || 0) + 100;
+            const newSolved = (existing?.coding_problems_solved || 0) + 1;
+
+            await supabase.from('user_practice_stats').upsert({
+              user_id: user.id,
+              xp_points: newXP,
+              coding_problems_solved: newSolved,
+              updated_at: new Date().toISOString()
+            });
+          }
+        } catch (e) {
+          console.warn('Update XP notice:', e);
+        }
+      }
     } catch (err: any) {
       setOverallStatus('failed');
       setExecutionOutput([{
