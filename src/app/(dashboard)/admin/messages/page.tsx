@@ -64,8 +64,8 @@ export default function AdminMessagesPage() {
     setIsLoadingInterns(true);
     let list: any[] = [];
 
-    // 1. Try API endpoint first (bypasses browser RLS)
     try {
+      // 1. Try API endpoint first (bypasses browser RLS)
       const res = await fetch('/api/admin/interns');
       const json = await res.json();
       if (json.success && Array.isArray(json.interns) && json.interns.length > 0) {
@@ -128,7 +128,18 @@ export default function AdminMessagesPage() {
     }
 
     setAllInterns(list);
+    setIsLoadingInterns(false);
     return list;
+  };
+
+  const openNewMessageModal = (isBulk: boolean = false) => {
+    setIsBulkView(isBulk);
+    setShowNewMessageModal(true);
+    if (allInterns.length === 0) {
+      fetchAllInterns();
+    } else {
+      setIsLoadingInterns(false);
+    }
   };
 
   useEffect(() => {
@@ -440,10 +451,7 @@ export default function AdminMessagesPage() {
               </h2>
             </div>
             <button 
-              onClick={() => {
-                fetchAllInterns();
-                setShowNewMessageModal(true);
-              }}
+              onClick={() => openNewMessageModal(false)}
               className="p-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg shadow-blue-600/30 hover:scale-[1.05] active:scale-95 flex items-center justify-center"
               title="Start New Thread"
             >
@@ -752,10 +760,7 @@ export default function AdminMessagesPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-lg pt-4">
               <button 
-                onClick={() => {
-                  fetchAllInterns();
-                  setShowNewMessageModal(true);
-                }}
+                onClick={() => openNewMessageModal(false)}
                 className="p-5 bg-slate-50 dark:bg-slate-800/60 hover:bg-blue-50 dark:hover:bg-blue-900/20 border border-slate-200/80 dark:border-slate-700/80 rounded-2xl text-left transition-all group"
               >
                 <div className="h-9 w-9 rounded-xl bg-blue-600 text-white flex items-center justify-center mb-3 shadow-md group-hover:scale-105 transition-transform">
@@ -766,11 +771,7 @@ export default function AdminMessagesPage() {
               </button>
 
               <button 
-                onClick={() => {
-                  fetchAllInterns();
-                  setShowNewMessageModal(true);
-                  setIsBulkView(true);
-                }}
+                onClick={() => openNewMessageModal(true)}
                 className="p-5 bg-slate-50 dark:bg-slate-800/60 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 border border-slate-200/80 dark:border-slate-700/80 rounded-2xl text-left transition-all group"
               >
                 <div className="h-9 w-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center mb-3 shadow-md group-hover:scale-105 transition-transform">
