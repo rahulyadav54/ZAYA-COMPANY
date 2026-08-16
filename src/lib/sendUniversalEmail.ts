@@ -28,12 +28,26 @@ export async function sendUniversalEmail({ to, subject, html }: EmailPayload) {
         }
       });
 
+      const cleanSender = `"Zaya Code Hub" <${smtpUser}>`;
+      const plainText = html
+        .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+        .replace(/<br\s*[\/]?>/gi, '\n')
+        .replace(/<\/p>/gi, '\n\n')
+        .replace(/<[^>]*>/g, '')
+        .replace(/&nbsp;/g, ' ')
+        .replace(/\n\s*\n\s*\n/g, '\n\n')
+        .trim();
+
       const info = await transporter.sendMail({
-        from: `"ZAYA CODE HUB" <${smtpUser}>`,
+        from: cleanSender,
         to: recipient,
-        subject: subject,
-        text: html.replace(/<[^>]*>?/gm, '').trim(), // Plain-text fallback to reduce spam score
+        replyTo: smtpUser,
+        subject: subject.replace(/\[|\]/g, '').trim(), // Strip spam-triggering brackets
+        text: plainText,
         html: html,
+        headers: {
+          'X-Auto-Response-Suppress': 'OOF, AutoReply',
+        }
       });
 
       console.log(`[Nodemailer SMTP] Email delivered successfully to ${recipient} | Message ID: ${info.messageId}`);

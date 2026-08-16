@@ -114,7 +114,7 @@ export async function POST() {
         try {
           await sendUniversalEmail({
             to: destinationEmail,
-            subject: `[ZAYA CODE HUB] Task Assigned (Due 17 Sept): ${task.title}`,
+            subject: `New Internship Task Assigned: ${task.title} (Due Sept 17)`,
             html: emailHtml
           });
           // Wait 1.2s between each email to maintain high deliverability
