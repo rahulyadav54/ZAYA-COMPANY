@@ -209,19 +209,25 @@ export default function AdminMessagesPage() {
         schema: 'public',
         table: 'intern_messages'
       }, (payload: any) => {
-        const newMsg = payload.new;
-        if (newMsg && selectedIntern) {
+        const targetMsg = payload.new || payload.old;
+        if (targetMsg && selectedIntern) {
           const sId = (selectedIntern.intern_id || selectedIntern.id || '').toLowerCase();
           const sEmail = (selectedIntern.email || '').toLowerCase();
-          const mId = (newMsg.intern_id || '').toLowerCase();
+          const mId = (targetMsg.intern_id || '').toLowerCase();
           const matches = mId === sId || mId === sEmail || (selectedIntern.all_ids && selectedIntern.all_ids.some((id: string) => id.toLowerCase() === mId));
           if (matches) {
             setMessages(prev => {
-              const exists = prev.some(m => m.id === newMsg.id);
-              const updated = exists
-                ? prev.map(m => m.id === newMsg.id ? newMsg : m)
-                : [...prev, newMsg];
-              return sortMessagesAscending(updated);
+              if (payload.eventType === 'UPDATE' && payload.new) {
+                return sortMessagesAscending(prev.map(m => m.id === payload.new.id ? { ...m, ...payload.new } : m));
+              }
+              if (payload.new) {
+                const exists = prev.some(m => m.id === payload.new.id);
+                const updated = exists
+                  ? prev.map(m => m.id === payload.new.id ? payload.new : m)
+                  : [...prev, payload.new];
+                return sortMessagesAscending(updated);
+              }
+              return prev;
             });
           }
         }

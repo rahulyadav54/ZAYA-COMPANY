@@ -63,6 +63,19 @@ export default function InternMessagesPage() {
     if (!user) return;
     const userKeys = Array.from(new Set([user.id, user.email].filter(Boolean)));
 
+    const markAdminMessagesRead = async () => {
+      try {
+        await supabase
+          .from('intern_messages')
+          .update({ is_read: true })
+          .in('intern_id', userKeys)
+          .eq('sender_type', 'admin')
+          .eq('is_read', false);
+      } catch (e) {
+        console.warn('Mark admin read notice:', e);
+      }
+    };
+
     // 1. Supabase Realtime WebSocket Listener
     const channel = supabase
       .channel('intern_chat_live')
@@ -71,20 +84,30 @@ export default function InternMessagesPage() {
         schema: 'public', 
         table: 'intern_messages' 
       }, (payload: any) => {
-         const newMsg = payload.new;
-         if (newMsg && userKeys.some(k => k === newMsg.intern_id || (k && newMsg.intern_id && k.toLowerCase() === newMsg.intern_id.toLowerCase()))) {
+         const targetMsg = payload.new || payload.old;
+         if (targetMsg && userKeys.some(k => k === targetMsg.intern_id || (k && targetMsg.intern_id && k.toLowerCase() === targetMsg.intern_id.toLowerCase()))) {
             setMessages(prev => {
-              const exists = prev.some(m => m.id === newMsg.id);
-              const updated = exists
-                ? prev.map(m => m.id === newMsg.id ? newMsg : m)
-                : [...prev, newMsg];
-              return sortMessagesAscending(updated);
+              if (payload.eventType === 'UPDATE' && payload.new) {
+                return sortMessagesAscending(prev.map(m => m.id === payload.new.id ? { ...m, ...payload.new } : m));
+              }
+              if (payload.new) {
+                const exists = prev.some(m => m.id === payload.new.id);
+                const updated = exists
+                  ? prev.map(m => m.id === payload.new.id ? payload.new : m)
+                  : [...prev, payload.new];
+                return sortMessagesAscending(updated);
+              }
+              return prev;
             });
+
+            if (payload.new && (payload.new.sender_type || '').toLowerCase() === 'admin' && !payload.new.is_read) {
+              markAdminMessagesRead();
+            }
          }
       })
       .subscribe();
 
-    // 2. 3-Second Background Polling Sync (Guarantees instant sync even if WebSocket is blocked)
+    // 2. 3-Second Background Polling Sync
     const interval = setInterval(async () => {
       const { data } = await supabase
         .from('intern_messages')
@@ -104,6 +127,11 @@ export default function InternMessagesPage() {
           }
           return sorted;
         });
+
+        const hasUnreadAdmin = sorted.some(m => (m.sender_type || '').toLowerCase() === 'admin' && !m.is_read);
+        if (hasUnreadAdmin) {
+          markAdminMessagesRead();
+        }
       }
     }, 3000);
 
