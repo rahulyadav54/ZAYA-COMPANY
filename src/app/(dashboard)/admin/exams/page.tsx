@@ -277,6 +277,62 @@ export default function AdminExamsPage() {
     }
   }
 
+  async function handleDeleteSubmission(subId: string) {
+    if (!confirm('Are you sure you want to delete this submission record from database?')) return;
+    try {
+      await supabase.from('exam_submissions').delete().eq('id', subId);
+      setSubmissions(prev => prev.filter(s => s.id !== subId));
+    } catch (e) {
+      console.warn('Delete submission notice:', e);
+    }
+  }
+
+  const exportSubmissionsCSV = () => {
+    if (submissions.length === 0) {
+      alert('No submission data available to export.');
+      return;
+    }
+
+    const headers = [
+      'Candidate Name',
+      'Intern/Student ID',
+      'College Name',
+      'Phone Number',
+      'Exam Title',
+      'Domain',
+      'Score %',
+      'Points',
+      'Total Points',
+      'Result Status',
+      'Cheating Strikes',
+      'Submitted At'
+    ];
+
+    const rows = submissions.map(s => [
+      `"${(s.intern_name || 'Candidate').replace(/"/g, '""')}"`,
+      `"${(s.intern_id || '').replace(/"/g, '""')}"`,
+      `"${(s.college_name || '').replace(/"/g, '""')}"`,
+      `"${(s.phone || '').replace(/"/g, '""')}"`,
+      `"${(s.exams?.title || 'Examination').replace(/"/g, '""')}"`,
+      `"${(s.exams?.domain || '').replace(/"/g, '""')}"`,
+      `"${s.percentage}%"`,
+      `"${s.score}"`,
+      `"${s.total_points}"`,
+      `"${s.passed ? 'PASSED' : s.status === 'disqualified' ? 'DISQUALIFIED' : 'FAILED'}"`,
+      `"${s.violations_count || 0}"`,
+      `"${new Date(s.submitted_at).toLocaleString()}"`
+    ]);
+
+    const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `exam_submissions_export_${new Date().toISOString().slice(0, 10)}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
   const filteredExams = exams.filter(e => 
     e.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
     e.domain.toLowerCase().includes(searchTerm.toLowerCase())
@@ -438,7 +494,21 @@ export default function AdminExamsPage() {
 
       {/* TAB 2: SUBMISSIONS & CHEATING LOGS */}
       {activeTab === 'submissions' && (
-        <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-200/80 dark:border-slate-800 shadow-xl overflow-hidden">
+        <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-200/80 dark:border-slate-800 shadow-xl overflow-hidden space-y-4">
+          <div className="p-6 pb-2 flex items-center justify-between border-b border-slate-100 dark:border-slate-800">
+            <div>
+              <h3 className="font-black text-slate-900 dark:text-white uppercase tracking-tight text-sm">Attempt Results & Proctoring Audit</h3>
+              <p className="text-[10px] text-slate-400">Export report or delete individual submission records</p>
+            </div>
+            <button
+              onClick={exportSubmissionsCSV}
+              className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-black text-xs uppercase tracking-wider shadow-lg shadow-emerald-600/20 transition-all flex items-center gap-2"
+            >
+              <FileSpreadsheet className="h-4 w-4" />
+              <span>Export CSV / Excel</span>
+            </button>
+          </div>
+
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800 text-[10px] font-black uppercase tracking-widest text-slate-400">
@@ -448,13 +518,14 @@ export default function AdminExamsPage() {
                   <th className="p-5">Score & Result</th>
                   <th className="p-5">Cheating Violations</th>
                   <th className="p-5">Submitted At</th>
-                  <th className="p-5 text-right pr-7">Status</th>
+                  <th className="p-5 text-center">Status</th>
+                  <th className="p-5 text-right pr-7">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800 font-bold">
                 {filteredSubmissions.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="p-10 text-center text-slate-400 uppercase font-black tracking-widest">
+                    <td colSpan={7} className="p-10 text-center text-slate-400 uppercase font-black tracking-widest">
                       No candidate submissions logged yet.
                     </td>
                   </tr>
@@ -506,7 +577,7 @@ export default function AdminExamsPage() {
                       <td className="p-5 text-slate-400 text-[11px]">
                         {new Date(sub.submitted_at).toLocaleDateString()} {new Date(sub.submitted_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </td>
-                      <td className="p-5 text-right pr-7">
+                      <td className="p-5 text-center">
                         <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
                           sub.status === 'disqualified' 
                             ? 'bg-red-600 text-white' 
@@ -514,6 +585,15 @@ export default function AdminExamsPage() {
                         }`}>
                           {sub.status}
                         </span>
+                      </td>
+                      <td className="p-5 text-right pr-7">
+                        <button
+                          onClick={() => handleDeleteSubmission(sub.id)}
+                          title="Delete submission record"
+                          className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-xl transition-all"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
                       </td>
                     </tr>
                   ))
