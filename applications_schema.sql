@@ -23,6 +23,10 @@ CREATE TABLE IF NOT EXISTS public.applications (
 ALTER TABLE public.applications ENABLE ROW LEVEL SECURITY;
 
 -- 3. Create Policies
+DROP POLICY IF EXISTS "Enable insert for all users" ON public.applications;
+DROP POLICY IF EXISTS "Enable read access for admins" ON public.applications;
+DROP POLICY IF EXISTS "Enable read access for own applications" ON public.applications;
+
 -- Allow anyone to submit an application (Insert)
 CREATE POLICY "Enable insert for all users" ON public.applications
     FOR INSERT WITH CHECK (true);
