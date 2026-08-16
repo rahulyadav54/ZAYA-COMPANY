@@ -391,6 +391,7 @@ export default function ProctoredExamRoomPage() {
                 <span className="w-2 h-2 rounded-full bg-emerald-500" />
                 <span>Webcam Proctoring Preview Active</span>
               </li>
+            </ul>
             <div className="pt-2 text-[11px] text-amber-600 dark:text-amber-400 font-extrabold flex items-center gap-2">
               <AlertTriangle className="h-4 w-4 shrink-0" />
               <span>Exceeding {exam.max_violations} cheating violations results in immediate exam disqualification.</span>
