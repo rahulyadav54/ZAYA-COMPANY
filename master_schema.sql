@@ -134,9 +134,12 @@ CREATE TABLE IF NOT EXISTS public.intern_messages (
 ALTER TABLE public.intern_messages ADD COLUMN IF NOT EXISTS intern_id TEXT;
 ALTER TABLE public.intern_messages ADD COLUMN IF NOT EXISTS intern_name TEXT;
 ALTER TABLE public.intern_messages ADD COLUMN IF NOT EXISTS content TEXT;
+ALTER TABLE public.intern_messages ADD COLUMN IF NOT EXISTS message TEXT;
 ALTER TABLE public.intern_messages ADD COLUMN IF NOT EXISTS sender_type TEXT;
 ALTER TABLE public.intern_messages ADD COLUMN IF NOT EXISTS file_url TEXT;
 ALTER TABLE public.intern_messages ADD COLUMN IF NOT EXISTS file_type TEXT;
+ALTER TABLE public.intern_messages ALTER COLUMN content DROP NOT NULL;
+ALTER TABLE public.intern_messages ALTER COLUMN message DROP NOT NULL;
 
 -- ========================================================
 -- ENABLE ROW LEVEL SECURITY (RLS)

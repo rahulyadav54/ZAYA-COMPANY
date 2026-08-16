@@ -138,6 +138,7 @@ export default function InternMessagesPage() {
         intern_id: user.id || user.email,
         intern_name: senderName,
         content: newMessage.trim(),
+        message: newMessage.trim() || 'Attachment',
         sender_type: 'intern',
         file_url: fileUrl,
         file_type: fileType,
@@ -331,7 +332,7 @@ export default function InternMessagesPage() {
                           </div>
                         )}
                         <div className="space-y-1">
-                          {renderMessageContent(msg.content)}
+                          {renderMessageContent(msg.content || msg.message)}
                         </div>
                       </div>
                       <div className={`flex items-center gap-2 px-2 ${isIntern ? 'justify-end' : 'justify-start'}`}>

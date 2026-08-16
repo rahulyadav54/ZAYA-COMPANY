@@ -204,6 +204,7 @@ export default function AdminMessagesPage() {
           intern_id: intern?.intern_id || intern?.id || id,
           intern_name: intern?.full_name || intern?.intern_name || 'Intern',
           content: bulkMessage.trim(),
+          message: bulkMessage.trim(),
           sender_type: 'admin'
         };
       });
@@ -337,6 +338,7 @@ export default function AdminMessagesPage() {
         intern_id: targetId,
         intern_name: selectedIntern.intern_name || selectedIntern.full_name || 'Intern',
         content: newMessage.trim(),
+        message: newMessage.trim() || 'Attachment',
         sender_type: 'admin',
         file_url: fileUrl,
         file_type: fileType,
@@ -628,7 +630,7 @@ export default function AdminMessagesPage() {
                             </div>
                           )}
                           <div className="space-y-1">
-                            {renderMessageContent(msg.content)}
+                            {renderMessageContent(msg.content || msg.message)}
                           </div>
                         </div>
                         <div className={`flex items-center gap-2 mt-1 px-2 ${isAdmin ? 'justify-end' : 'justify-start'}`}>
