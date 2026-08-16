@@ -62,9 +62,18 @@ export default function PublicProctoredExamRoomPage() {
   // Result State
   const [examResult, setExamResult] = useState<any>(null);
 
-  // Webcam Stream
+  // Webcam Stream & Mobile Camera Support
   const videoRef = useRef<HTMLVideoElement>(null);
   const [hasCameraPermission, setHasCameraPermission] = useState(false);
+  const [cameraStream, setCameraStream] = useState<MediaStream | null>(null);
+
+  // Attach Stream to Video Element when mounted
+  useEffect(() => {
+    if (isExamStarted && cameraStream && videoRef.current) {
+      videoRef.current.srcObject = cameraStream;
+      videoRef.current.play().catch(e => console.warn('Video element play notice:', e));
+    }
+  }, [isExamStarted, cameraStream]);
 
   // Fetch Public Exam Data
   useEffect(() => {
@@ -98,7 +107,7 @@ export default function PublicProctoredExamRoomPage() {
     loadExamDetails();
   }, [id]);
 
-  // Start Exam & Enable Fullscreen + Camera
+  // Start Exam & Enable Fullscreen + Mobile/Desktop Camera
   const startExam = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!studentForm.fullName.trim() || !studentForm.email.trim()) {
@@ -114,14 +123,21 @@ export default function PublicProctoredExamRoomPage() {
       console.warn('Fullscreen request notice:', err);
     }
 
+    // Request Camera Access (Mobile Front Camera / Desktop Webcam)
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-      }
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } }
+      });
+      setCameraStream(stream);
       setHasCameraPermission(true);
     } catch (err) {
-      console.warn('Webcam permission notice:', err);
+      try {
+        const fallbackStream = await navigator.mediaDevices.getUserMedia({ video: true });
+        setCameraStream(fallbackStream);
+        setHasCameraPermission(true);
+      } catch (e) {
+        console.warn('Camera stream permission notice:', e);
+      }
     }
 
     setIsExamStarted(true);

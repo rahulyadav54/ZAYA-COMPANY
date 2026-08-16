@@ -48,9 +48,18 @@ export default function ProctoredExamRoomPage() {
   // Result Summary State
   const [examResult, setExamResult] = useState<any>(null);
 
-  // Webcam Stream
+  // Webcam Stream & Mobile Camera Support
   const videoRef = useRef<HTMLVideoElement>(null);
   const [hasCameraPermission, setHasCameraPermission] = useState(false);
+  const [cameraStream, setCameraStream] = useState<MediaStream | null>(null);
+
+  // Attach Stream to Video Element when mounted
+  useEffect(() => {
+    if (isExamStarted && cameraStream && videoRef.current) {
+      videoRef.current.srcObject = cameraStream;
+      videoRef.current.play().catch(e => console.warn('Video element play notice:', e));
+    }
+  }, [isExamStarted, cameraStream]);
 
   // Candidate Registration Details Form
   const [candidateForm, setCandidateForm] = useState({
@@ -108,7 +117,7 @@ export default function ProctoredExamRoomPage() {
     loadExamDetails();
   }, [id, router]);
 
-  // 2. Start Exam & Enable Fullscreen + Camera
+  // 2. Start Exam & Enable Fullscreen + Mobile/Desktop Camera
   const startExam = async () => {
     if (!candidateForm.fullName.trim() || !candidateForm.internId.trim()) {
       alert('Please fill in your Official Name and Student/Intern ID before starting the exam.');
@@ -124,15 +133,21 @@ export default function ProctoredExamRoomPage() {
       console.warn('Fullscreen request notice:', e);
     }
 
-    // Request Camera Access
+    // Request Camera Access (Mobile Front Camera / Desktop Webcam)
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-      }
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } }
+      });
+      setCameraStream(stream);
       setHasCameraPermission(true);
-    } catch (e) {
-      console.warn('Webcam proctoring permission notice:', e);
+    } catch (err) {
+      try {
+        const fallbackStream = await navigator.mediaDevices.getUserMedia({ video: true });
+        setCameraStream(fallbackStream);
+        setHasCameraPermission(true);
+      } catch (e) {
+        console.warn('Webcam proctoring permission notice:', e);
+      }
     }
 
     setIsExamStarted(true);
