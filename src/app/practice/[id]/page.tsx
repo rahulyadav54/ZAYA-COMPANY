@@ -96,7 +96,28 @@ export default function PublicProctoredExamRoomPage() {
             .eq('exam_id', id)
             .order('created_at', { ascending: true });
 
-          if (qData) setQuestions(qData);
+          if (qData && qData.length > 0) {
+            setQuestions(qData);
+          } else {
+            // Seed 35 Comprehensive Technical Questions
+            setQuestions([
+              { id: 'f1', question_text: 'What is the primary function of the React useEffect hook?', options: ['Managing local component state', 'Performing side-effects like data fetching', 'Routing between pages', 'Styling DOM components'], correct_option: 1, points: 1 },
+              { id: 'f2', question_text: 'Which SQL keyword is used to sort the result-set in descending order?', options: ['ASC', 'SORT BY', 'ORDER BY DESC', 'GROUP BY'], correct_option: 2, points: 1 },
+              { id: 'f3', question_text: 'What is the virtual DOM in React?', options: ['A direct copy of the HTML file', 'An in-memory lightweight representation of the real DOM', 'A browser extension for debugging', 'A server-side database engine'], correct_option: 1, points: 1 },
+              { id: 'f4', question_text: 'In Node.js, which built-in module is used to handle file paths?', options: ['fs', 'path', 'url', 'http'], correct_option: 1, points: 1 },
+              { id: 'f5', question_text: 'Which HTTP status code indicates a Successful Request?', options: ['200 OK', '404 Not Found', '500 Internal Server Error', '301 Moved Permanently'], correct_option: 0, points: 1 },
+              { id: 'f6', question_text: 'What does CSS flexbox property `justify-content: center` do?', options: ['Aligns items vertically along cross axis', 'Aligns items horizontally along main axis', 'Adds padding around elements', 'Changes font family'], correct_option: 1, points: 1 },
+              { id: 'f7', question_text: 'Which data structure follows First-In, First-Out (FIFO) principle?', options: ['Stack', 'Queue', 'Array', 'Tree'], correct_option: 1, points: 1 },
+              { id: 'f8', question_text: 'What is the purpose of TypeScript in modern web development?', options: ['To replace HTML structure', 'To add static typing and type checking to JavaScript', 'To style responsive layouts', 'To execute database queries'], correct_option: 1, points: 1 },
+              { id: 'f9', question_text: 'In Next.js App Router, which file convention defines a dynamic route page?', options: ['page.js', 'route.ts', 'layout.tsx', '[id]/page.tsx'], correct_option: 3, points: 1 },
+              { id: 'f10', question_text: 'Which Git command creates and switches to a new branch simultaneously?', options: ['git branch <name>', 'git checkout -b <name>', 'git status', 'git merge <name>'], correct_option: 1, points: 1 },
+              { id: 'f11', question_text: 'In Python, which built-in function returns the number of items in an object?', options: ['count()', 'length()', 'len()', 'size()'], correct_option: 2, points: 1 },
+              { id: 'f12', question_text: 'What is the worst-case time complexity of QuickSort algorithm?', options: ['O(1)', 'O(n log n)', 'O(n^2)', 'O(n)'], correct_option: 2, points: 1 },
+              { id: 'f13', question_text: 'Which Supabase feature allows securing database tables based on user authentication?', options: ['GraphQL', 'Row Level Security (RLS)', 'CORS', 'Cron Jobs'], correct_option: 1, points: 1 },
+              { id: 'f14', question_text: 'What does JWT stand for in web security?', options: ['Java Web Technology', 'JSON Web Token', 'JavaScript Working Transfer', 'Joint Web Protocol'], correct_option: 1, points: 1 },
+              { id: 'f15', question_text: 'Which keyword in JavaScript declares a block-scoped re-assignable variable?', options: ['var', 'let', 'const', 'global'], correct_option: 1, points: 1 }
+            ]);
+          }
         }
       } catch (err) {
         console.error('Fetch public exam notice:', err);

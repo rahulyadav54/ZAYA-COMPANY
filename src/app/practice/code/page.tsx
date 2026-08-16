@@ -124,24 +124,84 @@ export const BUILTIN_CODING_PROBLEMS = [
     ]
   },
   {
-    id: 'climbing-stairs',
-    title: '6. Climbing Stairs',
+    id: 'valid-anagram',
+    title: '7. Valid Anagram',
     difficulty: 'Easy',
-    category: 'Dynamic Programming',
+    category: 'Strings',
     languageSupport: ['JavaScript', 'Python', 'Java', 'C++'],
-    description: 'You are climbing a staircase. It takes `n` steps to reach the top. Each time you can either climb 1 or 2 steps. In how many distinct ways can you climb to the top?',
-    sampleInput: 'n = 3',
-    sampleOutput: '3',
+    description: 'Given two strings `s` and `t`, return `true` if `t` is an anagram of `s`, and `false` otherwise.',
+    sampleInput: 's = "anagram", t = "nagaram"',
+    sampleOutput: 'true',
     starterCode: {
-      javascript: `function climbStairs(n) {\n  if (n <= 2) return n;\n  let one = 1, two = 2;\n  for (let i = 3; i <= n; i++) {\n    let current = one + two;\n    one = two;\n    two = current;\n  }\n  return two;\n}`,
-      python: `def climbStairs(n: int) -> int:\n    if n <= 2: return n\n    one, two = 1, 2\n    for i in range(3, n + 1):\n        one, two = two, one + two\n    return two`,
-      cpp: `int climbStairs(int n) {\n    if (n <= 2) return n;\n    int one = 1, two = 2;\n    for (int i = 3; i <= n; i++) {\n        int temp = one + two;\n        one = two;\n        two = temp;\n    }\n    return two;\n}`,
-      java: `public int climbStairs(int n) {\n    if (n <= 2) return n;\n    int one = 1, two = 2;\n    for (int i = 3; i <= n; i++) {\n        int temp = one + two;\n        one = two;\n        two = temp;\n    }\n    return two;\n}`
+      javascript: `function isAnagram(s, t) {\n  if (s.length !== t.length) return false;\n  const count = {};\n  for (let c of s) count[c] = (count[c] || 0) + 1;\n  for (let c of t) {\n    if (!count[c]) return false;\n    count[c]--;\n  }\n  return true;\n}`,
+      python: `def isAnagram(s: str, t: str) -> bool:\n    if len(s) != len(t): return False\n    countS, countT = {}, {}\n    for i in range(len(s)):\n        countS[s[i]] = 1 + countS.get(s[i], 0)\n        countT[t[i]] = 1 + countT.get(t[i], 0)\n    return countS == countT`,
+      cpp: `bool isAnagram(string s, string t) {\n    if (s.length() != t.length()) return false;\n    unordered_map<char, int> count;\n    for (char c : s) count[c]++;\n    for (char c : t) {\n        if (--count[c] < 0) return false;\n    }\n    return true;\n}`,
+      java: `public boolean isAnagram(String s, String t) {\n    if (s.length() != t.length()) return false;\n    int[] store = new int[26];\n    for (int i = 0; i < s.length(); i++) {\n        store[s.charAt(i) - 'a']++;\n        store[t.charAt(i) - 'a']--;\n    }\n    for (int n : store) if (n != 0) return false;\n    return true;\n}`
     },
     testCases: [
-      { input: { n: 2 }, expected: 2 },
-      { input: { n: 3 }, expected: 3 },
-      { input: { n: 5 }, expected: 8 }
+      { input: { s: "anagram", t: "nagaram" }, expected: true },
+      { input: { s: "rat", t: "car" }, expected: false }
+    ]
+  },
+  {
+    id: 'best-time-to-buy-and-sell-stock',
+    title: '8. Best Time to Buy and Sell Stock',
+    difficulty: 'Easy',
+    category: 'Arrays & Sliding Window',
+    languageSupport: ['JavaScript', 'Python', 'Java', 'C++'],
+    description: 'You are given an array `prices` where `prices[i]` is the price of a given stock on the ith day. You want to maximize your profit by choosing a single day to buy one stock and choosing a different day in the future to sell that stock.',
+    sampleInput: 'prices = [7,1,5,3,6,4]',
+    sampleOutput: '5',
+    starterCode: {
+      javascript: `function maxProfit(prices) {\n  let minPrice = Infinity;\n  let maxProf = 0;\n  for (let price of prices) {\n    if (price < minPrice) minPrice = price;\n    else if (price - minPrice > maxProf) maxProf = price - minPrice;\n  }\n  return maxProf;\n}`,
+      python: `def maxProfit(prices: list[int]) -> int:\n    l, r = 0, 1\n    maxP = 0\n    while r < len(prices):\n        if prices[l] < prices[r]:\n            profit = prices[r] - prices[l]\n            maxP = max(maxP, profit)\n        else:\n            l = r\n        r += 1\n    return maxP`,
+      cpp: `int maxProfit(vector<int>& prices) {\n    int minPrice = INT_MAX, maxProf = 0;\n    for (int price : prices) {\n        minPrice = min(minPrice, price);\n        maxProf = max(maxProf, price - minPrice);\n    }\n    return maxProf;\n}`,
+      java: `public int maxProfit(int[] prices) {\n    int minPrice = Integer.MAX_VALUE, maxProf = 0;\n    for (int price : prices) {\n        minPrice = Math.min(minPrice, price);\n        maxProf = Math.max(maxProf, price - minPrice);\n    }\n    return maxProf;\n}`
+    },
+    testCases: [
+      { input: { prices: [7, 1, 5, 3, 6, 4] }, expected: 5 },
+      { input: { prices: [7, 6, 4, 3, 1] }, expected: 0 }
+    ]
+  },
+  {
+    id: 'valid-parentheses',
+    title: '9. Valid Parentheses',
+    difficulty: 'Easy',
+    category: 'Stack',
+    languageSupport: ['JavaScript', 'Python', 'Java', 'C++'],
+    description: 'Given a string `s` containing just the characters `(`, `)`, `{`, `}`, `[` and `]`, determine if the input string is valid.',
+    sampleInput: 's = "()[]{}"',
+    sampleOutput: 'true',
+    starterCode: {
+      javascript: `function isValid(s) {\n  const stack = [];\n  const closeToOpen = { ')': '(', '}': '{', ']': '[' };\n  for (let c of s) {\n    if (closeToOpen[c]) {\n      if (stack.length > 0 && stack[stack.length - 1] === closeToOpen[c]) {\n        stack.pop();\n      } else {\n        return false;\n      }\n    } else {\n      stack.push(c);\n    }\n  }\n  return stack.length === 0;\n}`,
+      python: `def isValid(s: str) -> bool:\n    stack = []\n    closeToOpen = { ")": "(", "]": "[", "}": "{" }\n    for c in s:\n        if c in closeToOpen:\n            if stack and stack[-1] == closeToOpen[c]:\n                stack.pop()\n            else:\n                return False\n        else:\n            stack.append(c)\n    return True if not stack else False`,
+      cpp: `bool isValid(string s) {\n    stack<char> st;\n    for (char c : s) {\n        if (c == \'(\' || c == \'{\' || c == \'[\') st.push(c);\n        else {\n            if (st.empty()) return false;\n            if (c == \')\' && st.top() != \'(\') return false;\n            if (c == \'}\' && st.top() != \'{\') return false;\n            if (c == \']\' && st.top() != \'[\') return false;\n            st.pop();\n        }\n    }\n    return st.empty();\n}`,
+      java: `public boolean isValid(String s) {\n    Stack<Character> stack = new Stack<>();\n    for (char c : s.toCharArray()) {\n        if (c == \'(\') stack.push(\')\');\n        else if (c == \'{\') stack.push(\'}\');\n        else if (c == \'[\') stack.push(\']\');\n        else if (stack.isEmpty() || stack.pop() != c) return false;\n    }\n    return stack.isEmpty();\n}`
+    },
+    testCases: [
+      { input: { s: "()[]{}" }, expected: true },
+      { input: { s: "(]" }, expected: false }
+    ]
+  },
+  {
+    id: 'maximum-subarray',
+    title: '10. Maximum Subarray',
+    difficulty: 'Medium',
+    category: 'Dynamic Programming',
+    languageSupport: ['JavaScript', 'Python', 'Java', 'C++'],
+    description: 'Given an integer array `nums`, find the subarray with the largest sum, and return its sum.',
+    sampleInput: 'nums = [-2,1,-3,4,-1,2,1,-5,4]',
+    sampleOutput: '6',
+    starterCode: {
+      javascript: `function maxSubArray(nums) {\n  let maxSub = nums[0];\n  let curSum = 0;\n  for (let n of nums) {\n    if (curSum < 0) curSum = 0;\n    curSum += n;\n    maxSub = Math.max(maxSub, curSum);\n  }\n  return maxSub;\n}`,
+      python: `def maxSubArray(nums: list[int]) -> int:\n    maxSub = nums[0]\n    curSum = 0\n    for n in nums:\n        if curSum < 0:\n            curSum = 0\n        curSum += n\n        maxSub = max(maxSub, curSum)\n    return maxSub`,
+      cpp: `int maxSubArray(vector<int>& nums) {\n    int maxSub = nums[0], curSum = 0;\n    for (int n : nums) {\n        if (curSum < 0) curSum = 0;\n        curSum += n;\n        maxSub = max(maxSub, curSum);\n    }\n    return maxSub;\n}`,
+      java: `public int maxSubArray(int[] nums) {\n    int maxSub = nums[0], curSum = 0;\n    for (int n : nums) {\n        if (curSum < 0) curSum = 0;\n        curSum += n;\n        maxSub = Math.max(maxSub, curSum);\n    }\n    return maxSub;\n}`
+    },
+    testCases: [
+      { input: { nums: [-2, 1, -3, 4, -1, 2, 1, -5, 4] }, expected: 6 },
+      { input: { nums: [1] }, expected: 1 },
+      { input: { nums: [5, 4, -1, 7, 8] }, expected: 23 }
     ]
   }
 ];
