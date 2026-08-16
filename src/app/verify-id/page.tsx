@@ -1,36 +1,37 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
 import { ShieldCheck, Calendar, CheckCircle2, XCircle, Code2, ArrowRight, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 
-export default function IDVerificationPage() {
+function IDVerificationContent() {
+  const searchParams = useSearchParams();
   const [inputId, setInputId] = useState('');
   const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleVerify = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    if (!inputId.trim()) return;
+  const executeVerify = async (targetId: string) => {
+    if (!targetId.trim()) return;
 
     setLoading(true);
     setError(null);
     setResult(null);
 
     try {
-      const cleanId = inputId.trim().toUpperCase();
+      const cleanId = targetId.trim().toUpperCase();
 
-      // 1. Check profiles table by exact intern_id match
+      // 1. Check profiles table by exact or ilike intern_id match
       const { data: profByInternId } = await supabase
         .from('profiles')
         .select('*')
         .ilike('intern_id', cleanId)
         .maybeSingle();
 
-      if (profByInternId) {
+      if (profByInternId && profByInternId.full_name && profByInternId.full_name.trim() !== 'Accepted Intern') {
         setResult(profByInternId);
         setLoading(false);
         return;
@@ -55,31 +56,29 @@ export default function IDVerificationPage() {
         return;
       }
 
-      // 3. Search profiles table for matching ID substring, email, or full_name
+      // 3. Search profiles table for matching UUID id, email, or intern_id substring
       const { data: allProfiles } = await supabase.from('profiles').select('*');
       if (allProfiles && allProfiles.length > 0) {
         const found = allProfiles.find(p => 
           (p.intern_id && p.intern_id.toUpperCase() === cleanId) ||
           p.id.toLowerCase() === cleanId.toLowerCase() ||
-          p.id.slice(0, 8).toLowerCase() === cleanId.replace('ZAYA-ID-', '').toLowerCase() ||
-          (p.email && p.email.toLowerCase().trim() === cleanId.toLowerCase()) ||
-          (p.full_name && p.full_name.toLowerCase().includes(cleanId.toLowerCase()))
+          p.id.slice(0, 8).toLowerCase() === cleanId.replace('ZAYA-ID-', '').replace('ZCH-', '').toLowerCase() ||
+          (p.email && p.email.toLowerCase().trim() === cleanId.toLowerCase())
         );
 
-        if (found) {
+        if (found && found.full_name && found.full_name.trim() !== 'Accepted Intern') {
           setResult(found);
           setLoading(false);
           return;
         }
       }
 
-      // 4. Search applications table for matching accepted candidate
-      const { data: allApps } = await supabase.from('applications').select('*').eq('status', 'accepted');
+      // 4. Search applications table for matching applicant email or intern_id
+      const { data: allApps } = await supabase.from('applications').select('*');
       if (allApps && allApps.length > 0) {
         const foundApp = allApps.find(a => 
           (a.intern_id && a.intern_id.toUpperCase() === cleanId) ||
-          (a.email && a.email.toLowerCase().trim() === cleanId.toLowerCase()) ||
-          (a.full_name && a.full_name.toLowerCase().includes(cleanId.toLowerCase()))
+          (a.email && a.email.toLowerCase().trim() === cleanId.toLowerCase())
         );
 
         if (foundApp) {
@@ -93,30 +92,30 @@ export default function IDVerificationPage() {
           setLoading(false);
           return;
         }
-
-        // Fallback to active accepted candidate if an intern ID pattern was searched
-        if (cleanId.startsWith('ZCH-') || cleanId.startsWith('ZAYA-') || cleanId.length >= 4) {
-          const activeCandidate = allApps[0];
-          setResult({
-            full_name: activeCandidate.full_name,
-            position: activeCandidate.position || 'Web Designer Intern',
-            email: activeCandidate.email,
-            created_at: activeCandidate.created_at || activeCandidate.applied_at || new Date().toISOString(),
-            avatar_url: null
-          });
-          setLoading(false);
-          return;
-        }
       }
 
-      setError('No active intern found with this ID. Please check the ID and try again.');
+      // If no authentic record matched
+      setError('Invalid Intern ID or Credentials Not Found. Please check the ID and try again.');
     } catch (err: any) {
       console.error('Verification error:', err);
-      setError('An error occurred while verifying the identity.');
+      setError('An error occurred while verifying the identity. Please try again.');
     } finally {
       setLoading(false);
     }
   };
+
+  const handleVerify = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    executeVerify(inputId);
+  };
+
+  useEffect(() => {
+    const queryId = searchParams.get('id') || searchParams.get('intern_id');
+    if (queryId) {
+      setInputId(queryId.toUpperCase());
+      executeVerify(queryId);
+    }
+  }, [searchParams]);
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center p-6 pb-20">
@@ -249,5 +248,17 @@ export default function IDVerificationPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function IDVerificationPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center p-6">
+        <Loader2 className="h-10 w-10 text-blue-600 animate-spin" />
+      </div>
+    }>
+      <IDVerificationContent />
+    </Suspense>
   );
 }

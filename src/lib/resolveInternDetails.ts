@@ -38,7 +38,7 @@ export function resolveInternName(profile?: any, application?: any, user?: any):
     return extracted;
   }
 
-  return 'Shivshankar Jayswal';
+  return 'Verified Intern';
 }
 
 export function resolveInternPosition(profile?: any, application?: any, user?: any): string {

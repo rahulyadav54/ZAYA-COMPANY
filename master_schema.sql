@@ -115,12 +115,23 @@ CREATE TABLE IF NOT EXISTS public.posts (
 -- 8. INTERN MESSAGES / CHAT TABLE
 CREATE TABLE IF NOT EXISTS public.intern_messages (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  sender_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
-  receiver_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
-  message TEXT NOT NULL,
+  intern_id TEXT NOT NULL,
+  intern_name TEXT,
+  content TEXT,
+  sender_type TEXT DEFAULT 'intern',
+  file_url TEXT,
+  file_type TEXT,
   is_read BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Ensure columns exist if table was created with older schema
+ALTER TABLE public.intern_messages ADD COLUMN IF NOT EXISTS intern_id TEXT;
+ALTER TABLE public.intern_messages ADD COLUMN IF NOT EXISTS intern_name TEXT;
+ALTER TABLE public.intern_messages ADD COLUMN IF NOT EXISTS content TEXT;
+ALTER TABLE public.intern_messages ADD COLUMN IF NOT EXISTS sender_type TEXT;
+ALTER TABLE public.intern_messages ADD COLUMN IF NOT EXISTS file_url TEXT;
+ALTER TABLE public.intern_messages ADD COLUMN IF NOT EXISTS file_type TEXT;
 
 -- ========================================================
 -- ENABLE ROW LEVEL SECURITY (RLS)
@@ -137,26 +148,50 @@ ALTER TABLE public.intern_messages ENABLE ROW LEVEL SECURITY;
 -- ========================================================
 -- RLS POLICIES FOR PUBLIC ACCESS
 -- ========================================================
+-- Messages Policies
+DROP POLICY IF EXISTS "Allow public select intern_messages" ON public.intern_messages;
+DROP POLICY IF EXISTS "Allow public insert intern_messages" ON public.intern_messages;
+DROP POLICY IF EXISTS "Allow public update intern_messages" ON public.intern_messages;
+CREATE POLICY "Allow public select intern_messages" ON public.intern_messages FOR SELECT USING (true);
+CREATE POLICY "Allow public insert intern_messages" ON public.intern_messages FOR INSERT WITH CHECK (true);
+CREATE POLICY "Allow public update intern_messages" ON public.intern_messages FOR UPDATE USING (true);
+
 -- Applications Policies
+DROP POLICY IF EXISTS "Enable insert applications for anyone" ON public.applications;
+DROP POLICY IF EXISTS "Enable read applications for self or admin" ON public.applications;
+DROP POLICY IF EXISTS "Enable update applications for admin" ON public.applications;
+DROP POLICY IF EXISTS "Allow public insert to applications" ON public.applications;
+DROP POLICY IF EXISTS "Allow public select to applications" ON public.applications;
+DROP POLICY IF EXISTS "Allow public update to applications" ON public.applications;
 CREATE POLICY "Enable insert applications for anyone" ON public.applications FOR INSERT WITH CHECK (true);
 CREATE POLICY "Enable read applications for self or admin" ON public.applications FOR SELECT USING (true);
 CREATE POLICY "Enable update applications for admin" ON public.applications FOR UPDATE USING (true);
 
 -- Profiles Policies
+DROP POLICY IF EXISTS "Public profiles are viewable by everyone" ON public.profiles;
+DROP POLICY IF EXISTS "Users can insert their own profile" ON public.profiles;
+DROP POLICY IF EXISTS "Users can update own profile" ON public.profiles;
 CREATE POLICY "Public profiles are viewable by everyone" ON public.profiles FOR SELECT USING (true);
 CREATE POLICY "Users can insert their own profile" ON public.profiles FOR INSERT WITH CHECK (auth.uid() = id);
 CREATE POLICY "Users can update own profile" ON public.profiles FOR UPDATE USING (auth.uid() = id);
 
 -- Jobs Policies
+DROP POLICY IF EXISTS "Jobs viewable by everyone" ON public.jobs;
+DROP POLICY IF EXISTS "Jobs insertable by admin" ON public.jobs;
 CREATE POLICY "Jobs viewable by everyone" ON public.jobs FOR SELECT USING (true);
 CREATE POLICY "Jobs insertable by admin" ON public.jobs FOR INSERT WITH CHECK (true);
 
 -- Tasks & Submissions Policies
+DROP POLICY IF EXISTS "Tasks viewable by assigned intern or admin" ON public.tasks;
+DROP POLICY IF EXISTS "Submissions viewable by intern or admin" ON public.submissions;
+DROP POLICY IF EXISTS "Submissions insertable by intern" ON public.submissions;
 CREATE POLICY "Tasks viewable by assigned intern or admin" ON public.tasks FOR SELECT USING (true);
 CREATE POLICY "Submissions viewable by intern or admin" ON public.submissions FOR SELECT USING (true);
 CREATE POLICY "Submissions insertable by intern" ON public.submissions FOR INSERT WITH CHECK (true);
 
 -- Contact & Posts Policies
+DROP POLICY IF EXISTS "Anyone can send contact message" ON public.contact_messages;
+DROP POLICY IF EXISTS "Posts viewable by everyone" ON public.posts;
 CREATE POLICY "Anyone can send contact message" ON public.contact_messages FOR INSERT WITH CHECK (true);
 CREATE POLICY "Posts viewable by everyone" ON public.posts FOR SELECT USING (true);
 
@@ -183,20 +218,39 @@ CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE PROCEDURE public.handle_new_user();
 
+-- Ensure columns exist if table was created previously
+ALTER TABLE public.applications ADD COLUMN IF NOT EXISTS portfolio_url TEXT;
+ALTER TABLE public.applications ADD COLUMN IF NOT EXISTS cover_letter TEXT;
+ALTER TABLE public.submissions ADD COLUMN IF NOT EXISTS certificate_id TEXT;
+ALTER TABLE public.submissions ADD COLUMN IF NOT EXISTS review_status TEXT DEFAULT 'pending';
+ALTER TABLE public.submissions ADD COLUMN IF NOT EXISTS cert_full_name TEXT;
+
 -- ==========================================
--- 9. SUPABASE STORAGE BUCKET setup FOR RESUMES
+-- 9. SUPABASE STORAGE BUCKETS setup
 -- ==========================================
 INSERT INTO storage.buckets (id, name, public) 
 VALUES ('resumes', 'resumes', true) 
 ON CONFLICT (id) DO UPDATE SET public = true;
 
+INSERT INTO storage.buckets (id, name, public) 
+VALUES ('messages', 'messages', true) 
+ON CONFLICT (id) DO UPDATE SET public = true;
+
 -- Drop existing policies if any
 DROP POLICY IF EXISTS "Public Anon Upload Resumes" ON storage.objects;
 DROP POLICY IF EXISTS "Public Anon Read Resumes" ON storage.objects;
+DROP POLICY IF EXISTS "Public Anon Upload Messages" ON storage.objects;
+DROP POLICY IF EXISTS "Public Anon Read Messages" ON storage.objects;
 
--- Create policy allowing anonymous candidate uploads
+-- Create policies allowing uploads and downloads
 CREATE POLICY "Public Anon Upload Resumes" ON storage.objects 
 FOR INSERT TO anon WITH CHECK (bucket_id = 'resumes');
 
 CREATE POLICY "Public Anon Read Resumes" ON storage.objects 
 FOR SELECT TO public USING (bucket_id = 'resumes');
+
+CREATE POLICY "Public Anon Upload Messages" ON storage.objects 
+FOR INSERT TO anon WITH CHECK (bucket_id = 'messages');
+
+CREATE POLICY "Public Anon Read Messages" ON storage.objects 
+FOR SELECT TO public USING (bucket_id = 'messages');

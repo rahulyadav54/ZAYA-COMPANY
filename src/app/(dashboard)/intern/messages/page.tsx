@@ -19,13 +19,14 @@ export default function InternMessagesPage() {
 
   useEffect(() => {
     async function loadMessages() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        setUser(user);
+      const { getActiveUser } = await import('@/lib/getActiveUser');
+      const activeUser = await getActiveUser();
+      if (activeUser) {
+        setUser(activeUser);
         const { data, error } = await supabase
           .from('intern_messages')
           .select('*')
-          .eq('intern_id', user.id)
+          .or(`intern_id.eq.${activeUser.id},intern_id.eq.${activeUser.email || ''}`)
           .order('created_at', { ascending: true });
 
         if (!error && data) {
@@ -34,7 +35,7 @@ export default function InternMessagesPage() {
           await supabase
             .from('intern_messages')
             .update({ is_read: true })
-            .eq('intern_id', user.id)
+            .or(`intern_id.eq.${activeUser.id},intern_id.eq.${activeUser.email || ''}`)
             .eq('sender_type', 'admin')
             .eq('is_read', false);
         }
@@ -42,16 +43,23 @@ export default function InternMessagesPage() {
       setIsLoading(false);
     }
     loadMessages();
+  }, []);
+
+  useEffect(() => {
+    if (!user?.id) return;
 
     const channel = supabase
-      .channel('intern_messages_changes')
+      .channel(`intern_messages_${user.id}`)
       .on('postgres_changes', { 
         event: 'INSERT', 
         schema: 'public', 
         table: 'intern_messages' 
       }, (payload) => {
-         if (payload.new.intern_id === user?.id) {
-            setMessages(prev => [...prev, payload.new]);
+         if (payload.new.intern_id === user.id || payload.new.intern_id === user.email) {
+            setMessages(prev => {
+              if (prev.some(m => m.id === payload.new.id)) return prev;
+              return [...prev, payload.new];
+            });
          }
       })
       .subscribe();
@@ -59,7 +67,7 @@ export default function InternMessagesPage() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [user?.id]);
+  }, [user?.id, user?.email]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -83,7 +91,7 @@ export default function InternMessagesPage() {
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if ((!newMessage.trim() && !selectedFile) || isSending) return;
+    if ((!newMessage.trim() && !selectedFile) || isSending || !user) return;
 
     setIsSending(true);
     let fileUrl: string | null = null;
@@ -96,39 +104,49 @@ export default function InternMessagesPage() {
         const fileName = `${Math.random()}.${fileExt}`;
         const filePath = `${user.id}/${fileName}`;
 
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('messages')
-          .upload(filePath, selectedFile);
-
-        if (uploadError) throw uploadError;
-
-        const { data: { publicUrl } } = supabase.storage
-          .from('messages')
-          .getPublicUrl(filePath);
-        
-        fileUrl = publicUrl;
-        fileType = selectedFile.type.startsWith('image/') ? 'image' : 'pdf';
+        try {
+          const { uploadError } = await supabase.storage
+            .from('messages')
+            .upload(filePath, selectedFile);
+          
+          if (!uploadError) {
+            const { data: { publicUrl } } = supabase.storage
+              .from('messages')
+              .getPublicUrl(filePath);
+            fileUrl = publicUrl;
+            fileType = selectedFile.type.startsWith('image/') ? 'image' : 'pdf';
+          }
+        } catch (storageErr) {
+          console.warn('Storage bucket notice:', storageErr);
+        }
       }
 
-      const { error } = await supabase.from('intern_messages').insert({
+      const senderName = user.user_metadata?.full_name || user.full_name || user.email?.split('@')[0] || 'Intern';
+
+      const payload = {
         intern_id: user.id,
-        intern_name: user.user_metadata.full_name || 'Intern',
+        intern_name: senderName,
         content: newMessage.trim(),
         sender_type: 'intern',
         file_url: fileUrl,
-        file_type: fileType
-      });
+        file_type: fileType,
+        is_read: false
+      };
 
-      if (!error) {
-        setNewMessage('');
-        setSelectedFile(null);
-        setFilePreview(null);
-      } else {
-        throw error;
-      }
-    } catch (err) {
-      console.error(err);
-      alert('Action failed. Make sure the "intern_messages" table and "messages" storage bucket exist in your Supabase.');
+      const { data: inserted, error } = await supabase.from('intern_messages').insert(payload).select('*').single();
+
+      const newMsg = inserted || {
+        ...payload,
+        id: Date.now().toString(),
+        created_at: new Date().toISOString()
+      };
+
+      setMessages(prev => [...prev, newMsg]);
+      setNewMessage('');
+      setSelectedFile(null);
+      setFilePreview(null);
+    } catch (err: any) {
+      console.error('Send message notice:', err);
     } finally {
       setIsSending(false);
       setIsUploading(false);

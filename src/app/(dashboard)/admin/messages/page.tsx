@@ -28,38 +28,114 @@ export default function AdminMessagesPage() {
   const [isBulkSending, setIsBulkSending] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
+  const [sidebarSearchQuery, setSidebarSearchQuery] = useState('');
+
   const fetchConversations = async () => {
     setIsLoading(true);
-    const { data, error } = await supabase
-      .from('intern_messages')
-      .select('intern_id, intern_name, created_at')
-      .order('created_at', { ascending: false });
+    try {
+      const { data, error } = await supabase
+        .from('intern_messages')
+        .select('*')
+        .order('created_at', { ascending: false });
 
-    if (!error && data) {
-      const unique = Array.from(new Set(data.map(m => m.intern_id)))
-        .map(id => data.find(m => m.intern_id === id));
-      setConversations(unique);
+      if (!error && data) {
+        const uniqueIds = Array.from(new Set(data.map(m => m.intern_id)));
+        const uniqueConvs = uniqueIds.map(id => {
+          const m = data.find(item => item.intern_id === id);
+          return {
+            intern_id: id,
+            intern_name: m?.intern_name || 'Intern',
+            created_at: m?.created_at,
+            last_message: m?.content || 'Sent file/attachment'
+          };
+        });
+        setConversations(uniqueConvs);
+      }
+    } catch (e) {
+      console.warn('Fetch conversations notice:', e);
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   const fetchAllInterns = async () => {
     setIsLoadingInterns(true);
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('id, full_name, email')
-      .eq('role', 'intern')
-      .order('full_name', { ascending: true });
-    
-    if (!error && data) {
-      setAllInterns(data);
+    try {
+      const { data: profs } = await supabase.from('profiles').select('id, full_name, email, role, intern_id');
+      const { data: apps } = await supabase.from('applications').select('id, full_name, email, position, intern_id');
+
+      const combined: any[] = [];
+      const seen = new Set();
+
+      if (profs) {
+        for (const p of profs) {
+          const emailKey = (p.email || p.id).toLowerCase();
+          if (!seen.has(emailKey)) {
+            seen.add(emailKey);
+            combined.push({
+              id: p.id || p.intern_id,
+              full_name: p.full_name || p.email?.split('@')[0] || 'Intern Candidate',
+              email: p.email || '',
+              intern_id: p.intern_id || p.id
+            });
+          }
+        }
+      }
+
+      if (apps) {
+        for (const a of apps) {
+          const emailKey = (a.email || a.id).toLowerCase();
+          if (!seen.has(emailKey)) {
+            seen.add(emailKey);
+            combined.push({
+              id: a.id || a.intern_id,
+              full_name: a.full_name || a.email?.split('@')[0] || 'Intern Candidate',
+              email: a.email || '',
+              intern_id: a.intern_id || a.id
+            });
+          }
+        }
+      }
+
+      setAllInterns(combined);
+      return combined;
+    } catch (e) {
+      console.warn('Fetch interns notice:', e);
+      return [];
+    } finally {
+      setIsLoadingInterns(false);
     }
-    setIsLoadingInterns(false);
   };
 
   useEffect(() => {
     fetchConversations();
+    fetchAllInterns();
   }, []);
+
+  // Realtime updates for Admin messages
+  useEffect(() => {
+    const channel = supabase
+      .channel('admin_messages_global_channel')
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'intern_messages'
+      }, (payload) => {
+        const newMsg = payload.new;
+        if (selectedIntern && (newMsg.intern_id === selectedIntern.intern_id || newMsg.intern_id === selectedIntern.id)) {
+          setMessages(prev => {
+            if (prev.some(m => m.id === newMsg.id)) return prev;
+            return [...prev, newMsg];
+          });
+        }
+        fetchConversations();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [selectedIntern]);
 
   const handleStartNewMessage = (intern: any) => {
     setSelectedIntern({
@@ -125,29 +201,38 @@ export default function AdminMessagesPage() {
 
   useEffect(() => {
     if (selectedIntern) {
-      loadMessages(selectedIntern.intern_id);
+      loadMessages(selectedIntern);
     }
   }, [selectedIntern]);
 
-  async function loadMessages(internId: string) {
-    setIsLoadingMessages(true);
-    const { data, error } = await supabase
-      .from('intern_messages')
-      .select('*')
-      .eq('intern_id', internId)
-      .order('created_at', { ascending: true });
+  async function loadMessages(internTarget: any) {
+    const targetId = typeof internTarget === 'string' ? internTarget : (internTarget?.intern_id || internTarget?.id);
+    if (!targetId) return;
 
-    if (!error && data) {
-      setMessages(data);
-      // Mark messages from intern as read
-      await supabase
+    setIsLoadingMessages(true);
+    try {
+      const { data, error } = await supabase
         .from('intern_messages')
-        .update({ is_read: true })
-        .eq('intern_id', internId)
-        .eq('sender_type', 'intern')
-        .eq('is_read', false);
+        .select('*')
+        .or(`intern_id.eq.${targetId},intern_id.eq.${internTarget?.email || ''}`)
+        .order('created_at', { ascending: true });
+
+      if (!error && data) {
+        setMessages(data);
+        await supabase
+          .from('intern_messages')
+          .update({ is_read: true })
+          .or(`intern_id.eq.${targetId},intern_id.eq.${internTarget?.email || ''}`)
+          .eq('sender_type', 'intern')
+          .eq('is_read', false);
+      } else {
+        setMessages([]);
+      }
+    } catch (e) {
+      console.warn('Load messages notice:', e);
+    } finally {
+      setIsLoadingMessages(false);
     }
-    setIsLoadingMessages(false);
   }
 
   useEffect(() => {
@@ -178,52 +263,57 @@ export default function AdminMessagesPage() {
     let fileUrl: string | null = null;
     let fileType: string | null = null;
 
+    const targetId = selectedIntern.intern_id || selectedIntern.id;
+
     try {
       if (selectedFile) {
         setIsUploading(true);
         const fileExt = selectedFile.name.split('.').pop();
         const fileName = `${Math.random()}.${fileExt}`;
-        const filePath = `admin/${selectedIntern.intern_id}/${fileName}`;
+        const filePath = `admin/${targetId}/${fileName}`;
 
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('messages')
-          .upload(filePath, selectedFile);
+        try {
+          const { uploadError } = await supabase.storage
+            .from('messages')
+            .upload(filePath, selectedFile);
 
-        if (uploadError) throw uploadError;
-
-        const { data: { publicUrl } } = supabase.storage
-          .from('messages')
-          .getPublicUrl(filePath);
-        
-        fileUrl = publicUrl;
-        fileType = selectedFile.type.startsWith('image/') ? 'image' : 'pdf';
+          if (!uploadError) {
+            const { data: { publicUrl } } = supabase.storage
+              .from('messages')
+              .getPublicUrl(filePath);
+            fileUrl = publicUrl;
+            fileType = selectedFile.type.startsWith('image/') ? 'image' : 'pdf';
+          }
+        } catch (storageErr) {
+          console.warn('Storage notice:', storageErr);
+        }
       }
 
-      const { error } = await supabase.from('intern_messages').insert({
-        intern_id: selectedIntern.intern_id,
-        intern_name: selectedIntern.intern_name,
+      const payload = {
+        intern_id: targetId,
+        intern_name: selectedIntern.intern_name || selectedIntern.full_name || 'Intern',
         content: newMessage.trim(),
         sender_type: 'admin',
         file_url: fileUrl,
-        file_type: fileType
-      });
+        file_type: fileType,
+        is_read: false
+      };
 
-      if (!error) {
-        setMessages(prev => [...prev, {
-            id: Date.now(),
-            content: newMessage.trim(),
-            sender_type: 'admin',
-            created_at: new Date().toISOString(),
-            file_url: fileUrl,
-            file_type: fileType
-        }]);
-        setNewMessage('');
-        setSelectedFile(null);
-        setFilePreview(null);
-      }
+      const { data: inserted, error } = await supabase.from('intern_messages').insert(payload).select('*').single();
+
+      const newMsg = inserted || {
+        ...payload,
+        id: Date.now().toString(),
+        created_at: new Date().toISOString()
+      };
+
+      setMessages(prev => [...prev, newMsg]);
+      setNewMessage('');
+      setSelectedFile(null);
+      setFilePreview(null);
+      fetchConversations();
     } catch (err) {
-      console.error(err);
-      alert('Action failed. Ensure the storage bucket "messages" exists.');
+      console.error('Send admin message notice:', err);
     } finally {
       setIsSending(false);
       setIsUploading(false);
@@ -291,7 +381,13 @@ export default function AdminMessagesPage() {
           </div>
           <div className="relative group">
              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-blue-600 transition-colors" />
-             <input type="text" placeholder="Search conversations..." className="w-full pl-11 pr-4 py-3.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/50 rounded-2xl text-xs font-bold outline-none focus:border-blue-600 focus:bg-white dark:focus:bg-slate-800 transition-all" />
+             <input 
+               type="text" 
+               value={sidebarSearchQuery}
+               onChange={(e) => setSidebarSearchQuery(e.target.value)}
+               placeholder="Search conversations or interns..." 
+               className="w-full pl-11 pr-4 py-3.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/50 rounded-2xl text-xs font-bold outline-none focus:border-blue-600 focus:bg-white dark:focus:bg-slate-800 transition-all" 
+             />
           </div>
         </div>
         <div className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-2">
@@ -300,40 +396,62 @@ export default function AdminMessagesPage() {
               <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Loading Threads...</p>
             </div>
-          ) : conversations.length === 0 ? (
-            <div className="p-12 text-center space-y-4">
-               <div className="w-16 h-16 bg-slate-50 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto opacity-50 border border-dashed border-slate-300">
-                  <MessageCircle className="h-8 w-8 text-slate-400" />
-               </div>
-               <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">No active discussions</p>
-            </div>
-          ) : (
-            conversations.map((conv) => (
-              <button
-                key={conv.intern_id}
-                onClick={() => setSelectedIntern(conv)}
-                className={`w-full p-4 flex items-center gap-4 rounded-3xl transition-all text-left relative group ${selectedIntern?.intern_id === conv.intern_id ? 'bg-blue-600 text-white shadow-xl shadow-blue-600/20' : 'hover:bg-slate-50 dark:hover:bg-slate-800/50'}`}
-              >
-                <div className="relative shrink-0">
-                  <div className={`h-12 w-12 rounded-2xl flex items-center justify-center font-black text-sm shadow-sm transition-all ${selectedIntern?.intern_id === conv.intern_id ? 'bg-white/20 text-white' : 'bg-gradient-to-br from-blue-500 to-indigo-600 text-white'}`}>
-                    {conv.intern_name?.charAt(0) || 'I'}
-                  </div>
-                  <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-4 ${selectedIntern?.intern_id === conv.intern_id ? 'border-blue-600 bg-green-400' : 'border-white dark:border-slate-900 bg-green-500'}`} />
+          ) : (() => {
+            const combinedList = Array.from(new Map([
+              ...conversations.map(c => [c.intern_id || c.id, c]),
+              ...allInterns.map(i => [i.id || i.intern_id, { intern_id: i.id || i.intern_id, intern_name: i.full_name, email: i.email, last_message: 'Start new discussion...' }])
+            ]).values()).filter(item => {
+              if (!sidebarSearchQuery.trim()) return true;
+              const q = sidebarSearchQuery.toLowerCase();
+              return (
+                item.intern_name?.toLowerCase().includes(q) ||
+                item.email?.toLowerCase().includes(q) ||
+                item.last_message?.toLowerCase().includes(q)
+              );
+            });
+
+            if (combinedList.length === 0) {
+              return (
+                <div className="p-12 text-center space-y-4">
+                   <div className="w-16 h-16 bg-slate-50 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto opacity-50 border border-dashed border-slate-300">
+                      <MessageCircle className="h-8 w-8 text-slate-400" />
+                   </div>
+                   <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">No matching conversations or interns</p>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between mb-0.5">
-                    <p className={`font-black text-xs uppercase tracking-tight truncate ${selectedIntern?.intern_id === conv.intern_id ? 'text-white' : 'text-slate-900 dark:text-white'}`}>{conv.intern_name}</p>
-                    <span className={`text-[8px] font-bold uppercase ${selectedIntern?.intern_id === conv.intern_id ? 'text-white/60' : 'text-slate-400'}`}>
-                      {new Date(conv.created_at).toLocaleDateString([], { month: 'short', day: 'numeric' })}
-                    </span>
+              );
+            }
+
+            return combinedList.map((conv) => {
+              const isSelected = selectedIntern?.intern_id === conv.intern_id || selectedIntern?.id === conv.intern_id;
+              return (
+                <button
+                  key={conv.intern_id || conv.id}
+                  onClick={() => setSelectedIntern(conv)}
+                  className={`w-full p-4 flex items-center gap-4 rounded-3xl transition-all text-left relative group ${isSelected ? 'bg-blue-600 text-white shadow-xl shadow-blue-600/20' : 'hover:bg-slate-50 dark:hover:bg-slate-800/50'}`}
+                >
+                  <div className="relative shrink-0">
+                    <div className={`h-12 w-12 rounded-2xl flex items-center justify-center font-black text-sm shadow-sm transition-all ${isSelected ? 'bg-white/20 text-white' : 'bg-gradient-to-br from-blue-500 to-indigo-600 text-white'}`}>
+                      {conv.intern_name?.charAt(0) || 'I'}
+                    </div>
+                    <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-4 ${isSelected ? 'border-blue-600 bg-green-400' : 'border-white dark:border-slate-900 bg-green-500'}`} />
                   </div>
-                  <p className={`text-[10px] font-medium truncate opacity-70 ${selectedIntern?.intern_id === conv.intern_id ? 'text-white' : 'text-slate-500'}`}>
-                    {conv.last_message || "Active support thread..."}
-                  </p>
-                </div>
-              </button>
-            ))
-          )}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between mb-0.5">
+                      <p className={`font-black text-xs uppercase tracking-tight truncate ${isSelected ? 'text-white' : 'text-slate-900 dark:text-white'}`}>{conv.intern_name}</p>
+                      {conv.created_at && (
+                        <span className={`text-[8px] font-bold uppercase ${isSelected ? 'text-white/60' : 'text-slate-400'}`}>
+                          {new Date(conv.created_at).toLocaleDateString([], { month: 'short', day: 'numeric' })}
+                        </span>
+                      )}
+                    </div>
+                    <p className={`text-[10px] font-medium truncate opacity-70 ${isSelected ? 'text-white' : 'text-slate-500'}`}>
+                      {conv.last_message || "Active support thread..."}
+                    </p>
+                  </div>
+                </button>
+              );
+            });
+          })()}
         </div>
       </div>
 

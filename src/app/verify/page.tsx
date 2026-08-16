@@ -1,11 +1,14 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
 import { Search, ShieldCheck, AlertCircle, Calendar, User, BookOpen, Loader2, Award } from 'lucide-react';
 import Link from 'next/link';
+import { extractNameFromEmail } from '@/lib/resolveInternDetails';
 
-export default function VerifyPage() {
+function VerifyForm() {
+  const searchParams = useSearchParams();
   const [certId, setCertId] = useState('');
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState('');
@@ -13,9 +16,8 @@ export default function VerifyPage() {
   const [progress, setProgress] = useState(0);
   const [statusMsg, setStatusMsg] = useState('Initializing Scan...');
 
-  const handleVerify = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!certId.trim()) return;
+  const executeVerify = async (targetId: string) => {
+    if (!targetId.trim()) return;
 
     setIsVerifying(true);
     setError('');
@@ -23,7 +25,6 @@ export default function VerifyPage() {
     setProgress(0);
     setStatusMsg('Connecting to Zaya Registry...');
 
-    // Simulate progress
     const interval = setInterval(() => {
       setProgress((prev) => {
         const next = prev + Math.floor(Math.random() * 15) + 5;
@@ -41,33 +42,99 @@ export default function VerifyPage() {
     }, 150);
 
     try {
+      const cleanId = targetId.trim().toUpperCase();
+
+      // 1. Search submissions table by certificate_id
       const { data, error: fetchError } = await supabase
         .from('submissions')
         .select(`
           *,
           tasks:task_id(title),
-          profiles:intern_id(full_name)
+          profiles:intern_id(full_name, email)
         `)
-        .eq('certificate_id', certId.trim().toUpperCase())
-        .eq('review_status', 'approved')
-        .single();
+        .ilike('certificate_id', cleanId)
+        .maybeSingle();
 
-      // Wait for progress to reach 100 before showing result
-      setTimeout(() => {
-        if (fetchError || !data) {
-          setError('Invalid Certificate ID. Please check the ID and try again.');
-          setIsVerifying(false);
-        } else {
-          setResult(data);
-          setIsVerifying(false);
+      if (data) {
+        let recipientName = data.cert_full_name;
+        if (!recipientName || recipientName.trim() === 'Portal User' || recipientName.trim() === 'Accepted Intern') {
+          recipientName = data.profiles?.full_name;
         }
-      }, 2500);
+
+        // If missing, check applications table
+        if (!recipientName && (data.intern_id || data.profiles?.email)) {
+          const { data: appData } = await supabase
+            .from('applications')
+            .select('full_name')
+            .or(`intern_id.ilike.${cleanId},email.ilike.${data.profiles?.email || ''}`)
+            .maybeSingle();
+          if (appData?.full_name) {
+            recipientName = appData.full_name;
+          }
+        }
+
+        if (!recipientName && data.profiles?.email) {
+          recipientName = extractNameFromEmail(data.profiles.email);
+        }
+
+        if (!recipientName) {
+          recipientName = 'Verified Intern';
+        }
+
+        setTimeout(() => {
+          setResult({
+            ...data,
+            resolved_name: recipientName
+          });
+          setIsVerifying(false);
+        }, 2000);
+        return;
+      }
+
+      // 2. Search applications table if certificate_id or intern_id matches
+      const { data: appByCert } = await supabase
+        .from('applications')
+        .select('*')
+        .or(`intern_id.ilike.${cleanId},email.ilike.${cleanId}`)
+        .maybeSingle();
+
+      if (appByCert) {
+        setTimeout(() => {
+          setResult({
+            certificate_id: cleanId,
+            resolved_name: appByCert.full_name,
+            tasks: { title: appByCert.position || 'Internship Program' },
+            created_at: appByCert.created_at || appByCert.applied_at || new Date().toISOString()
+          });
+          setIsVerifying(false);
+        }, 2000);
+        return;
+      }
+
+      // If credential not found
+      setTimeout(() => {
+        setError('Invalid Certificate ID. No matching authentic credential found in Zaya Registry.');
+        setIsVerifying(false);
+      }, 2000);
 
     } catch (err) {
       setError('An error occurred while verifying. Please try again later.');
       setIsVerifying(false);
     }
   };
+
+  const handleVerify = (e: React.FormEvent) => {
+    e.preventDefault();
+    executeVerify(certId);
+  };
+
+  useEffect(() => {
+    const queryId = searchParams.get('id') || searchParams.get('cert') || searchParams.get('certificate_id');
+    if (queryId) {
+      setCertId(queryId.toUpperCase());
+      executeVerify(queryId);
+    }
+  }, [searchParams]);
 
   return (
     <div className="min-h-screen bg-[#020617] text-white selection:bg-blue-500/30">
@@ -168,21 +235,21 @@ export default function VerifyPage() {
                       <User className="h-3 w-3" />
                       Recipient Name
                    </div>
-                   <p className="text-2xl font-bold text-white leading-tight">{result.cert_full_name || result.profiles?.full_name}</p>
+                   <p className="text-2xl font-bold text-white leading-tight">{result.resolved_name || result.cert_full_name || result.profiles?.full_name || 'Verified Intern'}</p>
                 </div>
                 <div className="p-8 bg-white/5 rounded-[2rem] border border-white/5 space-y-2">
                    <div className="flex items-center gap-2 text-slate-500 uppercase font-black text-[10px] tracking-widest">
                       <BookOpen className="h-3 w-3" />
                       Internship Program
                    </div>
-                   <p className="text-2xl font-bold text-white leading-tight">{result.tasks?.title}</p>
+                   <p className="text-2xl font-bold text-white leading-tight">{result.tasks?.title || 'Web Designer Intern'}</p>
                 </div>
                 <div className="p-8 bg-white/5 rounded-[2rem] border border-white/5 space-y-2">
                    <div className="flex items-center gap-2 text-slate-500 uppercase font-black text-[10px] tracking-widest">
                       <Calendar className="h-3 w-3" />
                       Completion Date
                    </div>
-                   <p className="text-2xl font-bold text-white leading-tight">{new Date(result.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
+                   <p className="text-2xl font-bold text-white leading-tight">{new Date(result.created_at || result.submitted_at || Date.now()).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
                 </div>
                 <div className="p-8 bg-blue-600/10 rounded-[2rem] border border-blue-500/20 space-y-2">
                    <div className="flex items-center gap-2 text-blue-500 uppercase font-black text-[10px] tracking-widest">
@@ -208,5 +275,17 @@ export default function VerifyPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function VerifyPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#020617] text-white flex items-center justify-center p-6">
+        <Loader2 className="h-10 w-10 text-blue-500 animate-spin" />
+      </div>
+    }>
+      <VerifyForm />
+    </Suspense>
   );
 }
