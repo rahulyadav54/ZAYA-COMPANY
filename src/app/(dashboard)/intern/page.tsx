@@ -84,9 +84,26 @@ export default function InternDashboard() {
            if (s) allSubmissions = s;
         } catch (e) { console.error("Submissions load failed"); }
 
-        // Fetch Tasks and dynamically update their status based on submissions
+        // Fetch Tasks — match by intern_id (auth UUID) OR intern_email (bulk assignment)
         try {
-           const { data: t } = await supabase.from('tasks').select('*').eq('intern_id', user.id).order('created_at', { ascending: false });
+           const userEmail = user.email || profile?.email || '';
+           const profileEmail = profile?.email || '';
+           
+           // Build OR filter for all possible email matches
+           const emailFilters = [userEmail, profileEmail].filter(e => e && e.trim());
+           const uniqueEmails = [...new Set(emailFilters.map(e => e.toLowerCase().trim()))];
+           
+           let orParts = [`intern_id.eq.${user.id}`];
+           for (const em of uniqueEmails) {
+             orParts.push(`intern_email.eq.${em}`);
+           }
+
+           const { data: t } = await supabase
+             .from('tasks')
+             .select('*')
+             .or(orParts.join(','))
+             .order('created_at', { ascending: false });
+
            if (t) {
              const updatedTasks = t.map(task => {
                 // Prioritize approved submissions if multiple exist

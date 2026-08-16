@@ -32,10 +32,14 @@ export default function InternSubmitPage() {
         }
         if (pName) setUserName(pName);
 
+        const userEmail = user.email || '';
+        const orParts = [`intern_id.eq.${user.id}`];
+        if (userEmail) orParts.push(`intern_email.eq.${userEmail.toLowerCase().trim()}`);
+
         const { data } = await supabase
           .from('tasks')
           .select('*')
-          .eq('intern_id', user.id)
+          .or(orParts.join(','))
           .neq('status', 'completed');
         if (data) setTasks(data);
       }

@@ -95,10 +95,14 @@ export default function InternProfilePage() {
 
         // Fetch tasks
         try {
+          const internEmail = (foundIntern.email || foundIntern.personal_email || '').toLowerCase().trim();
+          const orParts = [`intern_id.eq.${queryId}`];
+          if (internEmail) orParts.push(`intern_email.eq.${internEmail}`);
+
           const { data: taskData } = await supabase
             .from('tasks')
             .select('*')
-            .or(`intern_id.eq.${queryId},intern_id.eq.${foundIntern.email || ''}`)
+            .or(orParts.join(','))
             .order('created_at', { ascending: false });
           if (taskData) setTasks(taskData);
         } catch (e) {
