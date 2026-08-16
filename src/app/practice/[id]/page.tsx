@@ -652,64 +652,65 @@ export default function PublicProctoredExamRoomPage() {
         </main>
       )}
 
-      {/* 2. FULL-PAGE PROCTORED TEST ROOM (EDGE-TO-EDGE WORKSPACE) */}
+      {/* 2. FULL-PAGE PROCTORED TEST ROOM (ENTERPRISE ASSESSMENT PLATFORM) */}
       {isExamStarted && !isExamFinished && (
-        <div className="fixed inset-0 z-50 w-full h-full bg-slate-950 flex flex-col select-none overflow-hidden" style={{ userSelect: 'none', WebkitUserSelect: 'none' }}>
-          {/* TOP NAVBAR (FULL WIDTH EDGE-TO-EDGE) */}
-          <header className="h-16 border-b border-slate-800 bg-slate-900/90 backdrop-blur px-3 sm:px-6 flex items-center justify-between gap-2 sm:gap-4 shrink-0 z-30">
-            {/* Left: Brand, Domain & Title */}
-            <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-              <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-600/30 shrink-0">
+        <div className="fixed inset-0 z-50 w-full h-full bg-slate-950 flex flex-col select-none overflow-hidden font-sans" style={{ userSelect: 'none', WebkitUserSelect: 'none' }}>
+          {/* TOP HEADER (WIDE ENTERPRISE HEADER BAR) */}
+          <header className="h-16 border-b border-slate-800/90 bg-slate-900/95 backdrop-blur px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4 shrink-0 z-30 shadow-md">
+            {/* Left: Shield Icon, Domain, & Exam Title */}
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-600/30 shrink-0">
                 <ShieldAlert className="h-5 w-5 text-white" />
               </div>
               <div className="min-w-0">
-                <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
-                  <span className="px-2 py-0.5 bg-emerald-500/15 text-emerald-400 text-[8px] sm:text-[9px] font-black rounded-full uppercase tracking-widest border border-emerald-500/30 flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> ARM PROCTOR
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="px-2.5 py-0.5 bg-emerald-500/15 text-emerald-400 text-[10px] font-black rounded-full uppercase tracking-widest border border-emerald-500/30 flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> ARM PROCTOR ACTIVE
                   </span>
-                  <span className="hidden md:inline-block px-2 py-0.5 bg-blue-500/10 text-blue-400 text-[9px] font-black rounded-full uppercase tracking-wider border border-blue-500/20">
+                  <span className="hidden md:inline-block px-2.5 py-0.5 bg-blue-500/10 text-blue-400 text-[10px] font-black rounded-full uppercase tracking-wider border border-blue-500/20">
                     {exam.domain || 'SKILL TEST'}
                   </span>
                 </div>
-                <h2 className="font-black text-xs sm:text-sm uppercase tracking-tight text-white truncate max-w-[140px] sm:max-w-xs md:max-w-md mt-0.5">
+                <h1 className="font-black text-sm sm:text-base uppercase tracking-tight text-white truncate max-w-[160px] sm:max-w-xs md:max-w-md lg:max-w-lg mt-0.5">
                   {exam.title}
-                </h2>
+                </h1>
               </div>
             </div>
 
-            {/* Mobile Tab Switcher (Visible on mobile/tablet screens < lg) */}
+            {/* Mobile Tab Switcher (Visible on small screens < lg) */}
             <div className="flex lg:hidden items-center bg-slate-950 p-1 rounded-xl border border-slate-800 shrink-0">
               <button
                 onClick={() => setMobileTab('question')}
-                className={`px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all ${
-                  mobileTab === 'question' ? 'bg-blue-600 text-white shadow' : 'text-slate-400 hover:text-white'
+                className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all ${
+                  mobileTab === 'question' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-400 hover:text-white'
                 }`}
               >
                 📝 Q.{currentQuestionIdx + 1}
               </button>
               <button
                 onClick={() => setMobileTab('palette')}
-                className={`px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all ${
-                  mobileTab === 'palette' ? 'bg-blue-600 text-white shadow' : 'text-slate-400 hover:text-white'
+                className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all ${
+                  mobileTab === 'palette' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-400 hover:text-white'
                 }`}
               >
                 🎛️ Palette ({Object.keys(selectedAnswers).length}/{questions.length})
               </button>
             </div>
 
-            {/* Center: Countdown Timer */}
-            <div className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-slate-950/80 border border-blue-500/30 rounded-xl text-blue-300 font-mono text-xs sm:text-base font-black shadow-inner shrink-0">
-              <Clock className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${timeLeftSeconds < 300 ? 'text-red-400 animate-pulse' : 'text-blue-400'}`} />
+            {/* Center / Right: Digital Timer */}
+            <div className="flex items-center gap-2 px-4 py-2 bg-slate-950/90 border border-blue-500/30 rounded-xl text-blue-300 font-mono text-sm sm:text-base font-black shadow-inner shrink-0">
+              <Clock className={`h-4 w-4 ${timeLeftSeconds < 300 ? 'text-red-400 animate-pulse' : 'text-blue-400'}`} />
+              <span className="text-xs text-slate-400 uppercase font-sans font-bold hidden sm:inline">Time Remaining:</span>
               <span className={timeLeftSeconds < 300 ? 'text-red-400' : 'text-blue-300'}>
                 {formatTimer(timeLeftSeconds)}
               </span>
             </div>
 
-            {/* Right: Security Strikes & Fullscreen & Submit Action */}
+            {/* Right: Security Strikes & Fullscreen / Submit */}
             <div className="flex items-center gap-2 sm:gap-3 shrink-0">
               {/* Strikes Counter */}
-              <div className="flex items-center gap-1 px-2.5 py-1 sm:px-3 sm:py-1.5 bg-amber-500/10 border border-amber-500/30 rounded-xl text-amber-400 text-[10px] sm:text-[11px] font-black">
-                <AlertTriangle className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-amber-400" />
+              <div className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-500/10 border border-amber-500/30 rounded-xl text-amber-400 text-[11px] font-black">
+                <AlertTriangle className="h-3.5 w-3.5 text-amber-400" />
                 <span>Strikes: {violationsCount}/{exam.max_violations || 5}</span>
               </div>
 
@@ -717,102 +718,87 @@ export default function PublicProctoredExamRoomPage() {
               <button
                 onClick={toggleFullscreen}
                 title={isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'}
-                className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold transition-all border border-slate-700"
+                className="hidden sm:flex items-center gap-1.5 px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold transition-all border border-slate-700 active:scale-95"
               >
                 {isFullscreen ? <Minimize2 className="h-3.5 w-3.5" /> : <Maximize2 className="h-3.5 w-3.5" />}
                 <span className="text-[10px] uppercase tracking-wider">{isFullscreen ? 'Window' : 'Full'}</span>
               </button>
 
-              {/* End Exam Quick Trigger */}
+              {/* Submit Exam Button */}
               <button
                 onClick={() => setShowSubmitConfirmModal(true)}
-                className="px-2.5 sm:px-3.5 py-1 sm:py-1.5 bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white border border-red-500/30 rounded-xl text-[10px] sm:text-[11px] font-black uppercase tracking-wider transition-all"
+                className="px-4 py-2 bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white border border-red-500/30 rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-md active:scale-95"
               >
-                Submit
+                Submit Exam
               </button>
             </div>
           </header>
 
-          {/* MAIN WORKSPACE (RESPONSIVE FLEX CONTAINER: SIDE-BY-SIDE ON DESKTOP, TABBED ON MOBILE) */}
+          {/* MAIN 2-COLUMN FULL-PAGE WORKSPACE (72% QUESTION AREA : 28% PROCTOR & PALETTE SIDEBAR) */}
           <div className="flex-1 flex flex-col lg:flex-row overflow-hidden bg-slate-950 w-full h-[calc(100vh-64px)]">
-            {/* LEFT COLUMN: QUESTION WORKSPACE */}
+            {/* LEFT COLUMN: LARGE EXPANSIVE QUESTION WORKSPACE */}
             <main className={`w-full lg:w-[72%] xl:w-[75%] flex flex-col h-full overflow-hidden bg-slate-950 lg:border-r border-slate-800/80 relative ${
               mobileTab === 'question' ? 'flex' : 'hidden lg:flex'
             }`}>
               {/* Dynamic Translucent Watermark */}
-              <div className="absolute inset-0 pointer-events-none opacity-[0.035] flex items-center justify-center rotate-[-12deg] select-none text-sm font-black uppercase tracking-widest text-white leading-loose text-center z-0 p-8">
+              <div className="absolute inset-0 pointer-events-none opacity-[0.03] flex items-center justify-center rotate-[-12deg] select-none text-sm font-black uppercase tracking-widest text-white leading-loose text-center z-0 p-8">
                 ARM ENGINE SECURE PROCTORING • CANDIDATE: {studentForm.fullName || 'STUDENT'} • ID: {studentForm.studentId || 'EXAM'} • CONFIDENTIAL DO NOT COPY • TIME: {new Date().toLocaleTimeString()}
               </div>
 
-              {/* Sub-Header Strip: Question Number, Completion Progress Bar & Security Tags */}
-              <div className="h-12 border-b border-slate-800/80 bg-slate-900/50 px-4 sm:px-6 flex items-center justify-between shrink-0 z-10 gap-3">
-                {/* Question Count & Mark */}
-                <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-                  <span className="text-xs font-black text-blue-400 uppercase tracking-widest flex items-center gap-1.5">
-                    Question <span className="text-white text-sm">{currentQuestionIdx + 1}</span> of {questions.length}
+              {/* Sub-Header Strip: Question Number, Points, and Copy Protection Indicator */}
+              <div className="h-14 border-b border-slate-800/80 bg-slate-900/60 px-6 lg:px-8 flex items-center justify-between shrink-0 z-10 gap-3">
+                <div className="flex items-center gap-3">
+                  <span className="px-3 py-1 bg-blue-500/15 text-blue-400 border border-blue-500/30 rounded-xl text-xs font-black uppercase tracking-wider flex items-center gap-1.5 shadow-sm">
+                    Question <span className="text-white text-sm font-black">{currentQuestionIdx + 1}</span> of {questions.length}
                   </span>
-                  <span className="px-2 py-0.5 bg-slate-800 text-slate-300 text-[10px] font-bold rounded-md border border-slate-700">
+                  <span className="px-2.5 py-1 bg-slate-800 text-slate-300 text-xs font-bold rounded-xl border border-slate-700">
                     +{questions[currentQuestionIdx]?.points || 1}.00 Mark
                   </span>
                 </div>
 
-                {/* Completion Progress Tracker Bar */}
-                <div className="flex items-center gap-2 sm:gap-3 bg-slate-950/60 px-3 py-1 rounded-xl border border-slate-800">
-                  <span className="text-[10px] font-black text-emerald-400 uppercase tracking-wider flex items-center gap-1">
-                    <Check className="h-3 w-3 stroke-[3]" /> Completed: {Object.keys(selectedAnswers).length}/{questions.length}
-                  </span>
-                  <div className="w-20 sm:w-32 h-2 bg-slate-800 rounded-full overflow-hidden border border-slate-700/60">
-                    <div 
-                      className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-300 rounded-full"
-                      style={{ width: `${(Object.keys(selectedAnswers).length / (questions.length || 1)) * 100}%` }}
-                    />
-                  </div>
-                </div>
-
-                {/* Security Tag */}
-                <div className="hidden sm:flex items-center gap-2 shrink-0">
-                  <span className="px-2.5 py-0.5 bg-red-500/10 text-red-400 text-[9px] font-black rounded-full uppercase tracking-widest border border-red-500/20 flex items-center gap-1">
-                    <Lock className="h-2.5 w-2.5" /> Protected
+                <div className="flex items-center gap-2">
+                  <span className="px-3 py-1 bg-red-500/10 text-red-400 text-[10px] font-black rounded-full uppercase tracking-widest border border-red-500/20 flex items-center gap-1.5">
+                    <Lock className="h-3 w-3" /> Copy & Selection Protected
                   </span>
                 </div>
               </div>
 
-              {/* Scrollable Question & Options Content */}
-              <div className="flex-1 overflow-y-auto p-4 sm:p-8 md:p-10 space-y-6 sm:space-y-8 relative z-10 custom-scrollbar">
+              {/* Scrollable Question & Large Clickable Option Cards */}
+              <div className="flex-1 overflow-y-auto px-6 py-8 sm:px-10 sm:py-10 lg:px-12 lg:py-10 space-y-8 relative z-10 custom-scrollbar max-w-5xl">
                 {questions.length === 0 ? (
                   <div className="py-20 text-center text-slate-500 font-bold uppercase tracking-widest">
                     No questions available for this evaluation.
                   </div>
                 ) : (
                   <>
-                    {/* Question Statement */}
+                    {/* Question Statement (Large, Comfortable 22-26px Typography) */}
                     <div className="space-y-4">
-                      <h2 className="text-base sm:text-xl md:text-2xl font-bold text-white leading-relaxed select-none tracking-tight">
+                      <h2 className="text-xl sm:text-2xl lg:text-[25px] font-bold text-white leading-relaxed select-none tracking-tight">
                         {questions[currentQuestionIdx]?.question_text}
                       </h2>
 
-                      {/* Question Diagram / Image (if available) */}
+                      {/* Question Diagram / Schematic Image (if available) */}
                       {(questions[currentQuestionIdx]?.image_url || questions[currentQuestionIdx]?.image) && (
-                        <div className="relative inline-block max-w-2xl group my-2">
+                        <div className="relative inline-block max-w-2xl group my-3">
                           <div 
                             onClick={() => setZoomedImage(questions[currentQuestionIdx]?.image_url || questions[currentQuestionIdx]?.image)}
-                            className="relative rounded-2xl overflow-hidden border border-slate-800 bg-slate-900/80 cursor-pointer shadow-lg hover:border-blue-500 transition-all p-2"
+                            className="relative rounded-2xl overflow-hidden border border-slate-800 bg-slate-900/80 cursor-pointer shadow-xl hover:border-blue-500 transition-all p-3"
                           >
                             <img
                               src={questions[currentQuestionIdx]?.image_url || questions[currentQuestionIdx]?.image}
                               alt="Question Diagram / Schematic"
-                              className="max-h-72 sm:max-h-80 w-auto object-contain rounded-xl mx-auto"
+                              className="max-h-72 sm:max-h-84 w-auto object-contain rounded-xl mx-auto"
                             />
-                            <div className="absolute top-3 right-3 px-2.5 py-1 bg-slate-950/85 backdrop-blur rounded-lg border border-slate-700/80 text-[10px] font-bold text-blue-400 flex items-center gap-1.5 opacity-90 group-hover:opacity-100 shadow-md">
-                              <Eye className="h-3 w-3" /> Click to Zoom Diagram
+                            <div className="absolute top-4 right-4 px-3 py-1.5 bg-slate-950/90 backdrop-blur rounded-xl border border-slate-700/80 text-xs font-bold text-blue-400 flex items-center gap-2 opacity-90 group-hover:opacity-100 shadow-md">
+                              <Eye className="h-3.5 w-3.5" /> Click to Zoom Diagram
                             </div>
                           </div>
                         </div>
                       )}
                     </div>
 
-                    {/* Options List */}
-                    <div className="space-y-3 pt-2 max-w-4xl">
+                    {/* Answer Options: Large Clickable Cards (65-75px height) */}
+                    <div className="space-y-4 pt-2">
                       {questions[currentQuestionIdx]?.options?.map((opt: string, optIdx: number) => {
                         const isSelected = selectedAnswers[questions[currentQuestionIdx].id] === optIdx;
                         const isImageOpt = typeof opt === 'string' && (opt.startsWith('http') || opt.startsWith('data:image') || /\.(png|jpg|jpeg|svg|webp|gif)/i.test(opt));
@@ -821,31 +807,40 @@ export default function PublicProctoredExamRoomPage() {
                           <button
                             key={optIdx}
                             onClick={() => setSelectedAnswers({ ...selectedAnswers, [questions[currentQuestionIdx].id]: optIdx })}
-                            className={`w-full p-3.5 sm:p-5 rounded-2xl text-left text-xs sm:text-sm font-semibold transition-all flex items-center justify-between border cursor-pointer ${
+                            className={`w-full min-h-[64px] sm:min-h-[72px] p-4 sm:p-5 rounded-2xl text-left transition-all flex items-center justify-between border cursor-pointer group ${
                               isSelected
-                                ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white border-blue-400 shadow-xl shadow-blue-600/25 scale-[1.005]'
-                                : 'bg-slate-900/90 hover:bg-slate-800/90 text-slate-200 border-slate-800 hover:border-slate-700'
+                                ? 'bg-gradient-to-r from-blue-600/90 to-indigo-600/90 text-white border-blue-400 shadow-xl shadow-blue-600/25 ring-2 ring-blue-500/40 scale-[1.008]'
+                                : 'bg-slate-900/85 hover:bg-slate-800/90 text-slate-200 border-slate-800/90 hover:border-slate-700 shadow-sm'
                             }`}
                           >
-                            <div className="flex items-center gap-3 sm:gap-4 min-w-0">
-                              <span className={`w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center text-xs font-black shrink-0 transition-colors ${
-                                isSelected ? 'bg-white/20 text-white' : 'bg-slate-800 text-slate-400 border border-slate-700'
+                            <div className="flex items-center gap-4 sm:gap-5 min-w-0">
+                              {/* Large Clearly Visible A/B/C/D Indicator Badge */}
+                              <span className={`w-10 h-10 rounded-xl flex items-center justify-center text-sm font-black shrink-0 transition-colors shadow-sm ${
+                                isSelected 
+                                  ? 'bg-white text-blue-700' 
+                                  : 'bg-slate-800 text-slate-300 border border-slate-700 group-hover:border-slate-600 group-hover:text-white'
                               }`}>
                                 {String.fromCharCode(65 + optIdx)}
                               </span>
+
+                              {/* Option Text Vertically Centered */}
                               {isImageOpt ? (
-                                <img src={opt} alt={`Option ${String.fromCharCode(65 + optIdx)}`} className="max-h-24 max-w-xs rounded-lg object-contain border border-slate-700 p-1 bg-slate-950" />
+                                <img src={opt} alt={`Option ${String.fromCharCode(65 + optIdx)}`} className="max-h-24 max-w-xs rounded-xl object-contain border border-slate-700 p-1.5 bg-slate-950" />
                               ) : (
-                                <span className="leading-snug break-words">{opt}</span>
+                                <span className="text-sm sm:text-base lg:text-[17px] font-medium leading-normal break-words">
+                                  {opt}
+                                </span>
                               )}
                             </div>
-                            <div className="shrink-0 ml-2 sm:ml-3">
+
+                            {/* Obvious Selected Check Icon */}
+                            <div className="shrink-0 ml-3">
                               {isSelected ? (
-                                <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-white text-blue-600 flex items-center justify-center shadow">
-                                  <Check className="h-3.5 w-3.5 sm:h-4 sm:w-4 stroke-[3]" />
+                                <div className="w-7 h-7 rounded-full bg-white text-blue-600 flex items-center justify-center shadow-lg">
+                                  <Check className="h-4 w-4 stroke-[3]" />
                                 </div>
                               ) : (
-                                <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full border border-slate-700 bg-slate-950/40" />
+                                <div className="w-6 h-6 rounded-full border-2 border-slate-700 bg-slate-950/40 group-hover:border-slate-600" />
                               )}
                             </div>
                           </button>
@@ -856,52 +851,51 @@ export default function PublicProctoredExamRoomPage() {
                 )}
               </div>
 
-              {/* Bottom Sticky Action Bar */}
-              <footer className="h-20 border-t border-slate-800 bg-slate-900/95 px-3 sm:px-6 flex items-center justify-between shrink-0 z-20 gap-2">
+              {/* Bottom Sticky Action Toolbar (Spacious & Distinct) */}
+              <footer className="h-20 border-t border-slate-800 bg-slate-900/95 px-6 lg:px-8 flex items-center justify-between shrink-0 z-20 gap-3 shadow-lg">
                 {/* Left Navigation Controls */}
-                <div className="flex items-center gap-2 sm:gap-3">
+                <div className="flex items-center gap-3">
                   <button
                     disabled={currentQuestionIdx === 0}
                     onClick={() => setCurrentQuestionIdx(prev => prev - 1)}
-                    className="px-3 sm:px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 disabled:opacity-30 disabled:hover:bg-slate-800 rounded-xl text-[11px] sm:text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 border border-slate-700"
+                    className="px-4 sm:px-5 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 disabled:opacity-30 disabled:hover:bg-slate-800 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 border border-slate-700 active:scale-95"
                   >
-                    <ArrowLeft className="h-3.5 w-3.5 sm:h-4 sm:w-4" /> <span className="hidden sm:inline">Previous</span>
+                    <ArrowLeft className="h-4 w-4" /> <span>Previous</span>
                   </button>
 
                   <button
                     onClick={handleClearResponse}
                     disabled={selectedAnswers[questions[currentQuestionIdx]?.id] === undefined}
-                    className="px-3 sm:px-4 py-2.5 bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-slate-200 disabled:opacity-30 rounded-xl text-[11px] sm:text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 border border-slate-700/60"
+                    className="px-4 py-3 bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-slate-200 disabled:opacity-30 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 border border-slate-700/60 active:scale-95"
                   >
-                    <RotateCcw className="h-3.5 w-3.5" /> <span className="hidden sm:inline">Clear</span>
+                    <RotateCcw className="h-4 w-4" /> <span>Clear Response</span>
                   </button>
                 </div>
 
                 {/* Right Action Controls */}
-                <div className="flex items-center gap-2 sm:gap-3">
+                <div className="flex items-center gap-3">
                   {/* Mark for Review & Next */}
                   <button
                     onClick={handleMarkForReviewAndNext}
-                    className="px-3 sm:px-5 py-2.5 bg-amber-500/20 hover:bg-amber-500 text-amber-300 hover:text-slate-950 border border-amber-500/40 rounded-xl text-[11px] sm:text-xs font-black uppercase tracking-wider transition-all flex items-center gap-1.5 sm:gap-2 active:scale-95 shadow-lg shadow-amber-500/10"
+                    className="px-4 sm:px-6 py-3 bg-amber-500/20 hover:bg-amber-500 text-amber-300 hover:text-slate-950 border border-amber-500/40 rounded-xl text-xs font-black uppercase tracking-wider transition-all flex items-center gap-2 active:scale-95 shadow-lg shadow-amber-500/10"
                   >
-                    <Bookmark className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                    <span className="hidden sm:inline">Mark For Review</span>
-                    <span className="sm:hidden">Review</span>
+                    <Bookmark className="h-4 w-4" />
+                    <span>Mark For Review & Next</span>
                   </button>
 
-                  {/* Save & Next / Final Submit */}
+                  {/* Save & Next / Review & Submit */}
                   {currentQuestionIdx < questions.length - 1 ? (
                     <button
                       onClick={handleSaveAndNext}
-                      className="px-4 sm:px-7 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-xl text-[11px] sm:text-xs font-black uppercase tracking-wider shadow-xl shadow-emerald-600/30 transition-all flex items-center gap-1.5 sm:gap-2 active:scale-95"
+                      className="px-6 sm:px-8 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-xl text-xs font-black uppercase tracking-wider shadow-xl shadow-emerald-600/30 transition-all flex items-center gap-2.5 active:scale-95"
                     >
                       <span>Save & Next</span>
-                      <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                      <ArrowRight className="h-4 w-4" />
                     </button>
                   ) : (
                     <button
                       onClick={() => setShowSubmitConfirmModal(true)}
-                      className="px-5 sm:px-8 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl text-[11px] sm:text-xs font-black uppercase tracking-widest shadow-xl shadow-blue-600/30 transition-all active:scale-95"
+                      className="px-6 sm:px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-xl shadow-blue-600/30 transition-all active:scale-95"
                     >
                       Review & Submit
                     </button>
@@ -910,7 +904,7 @@ export default function PublicProctoredExamRoomPage() {
               </footer>
             </main>
 
-            {/* RIGHT COLUMN: PROCTOR FEED & QUESTION PALETTE */}
+            {/* RIGHT COLUMN: PROCTOR FEED, DYNAMIC PROGRESS & QUESTION PALETTE */}
             <aside className={`w-full lg:w-[28%] xl:w-[25%] flex flex-col h-full overflow-hidden bg-slate-900/60 ${
               mobileTab === 'palette' ? 'flex' : 'hidden lg:flex'
             }`}>
@@ -918,8 +912,8 @@ export default function PublicProctoredExamRoomPage() {
               <div className="p-4 border-b border-slate-800/80 bg-slate-900/40 shrink-0">
                 <div className="bg-slate-950 rounded-2xl p-3 border border-slate-800 space-y-2 shadow-xl">
                   <div className="flex items-center justify-between">
-                    <span className="text-[9px] font-black uppercase tracking-widest text-emerald-400 flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" /> Live Camera Stream
+                    <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400 flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" /> PROCTOR ACTIVE
                     </span>
                     <Camera className="h-3.5 w-3.5 text-slate-400" />
                   </div>
@@ -937,54 +931,26 @@ export default function PublicProctoredExamRoomPage() {
                 </div>
               </div>
 
-              {/* 2. Interactive Question Palette (Scrollable) */}
-              <div className="flex-1 flex flex-col p-4 overflow-hidden">
-                <div className="flex items-center justify-between mb-3 shrink-0">
-                  <h4 className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Question Palette</h4>
-                  <span className="text-[11px] font-black text-blue-400 uppercase">{currentQuestionIdx + 1} / {questions.length}</span>
+              {/* 2. Dynamic Question Progress Section */}
+              <div className="p-4 border-b border-slate-800/80 bg-slate-950/60 space-y-2.5 shrink-0">
+                <div className="flex items-center justify-between text-xs font-black">
+                  <span className="text-slate-300 uppercase tracking-wider">Exam Progress</span>
+                  <span className="text-blue-400">{Object.keys(selectedAnswers).length} / {questions.length} Answered</span>
                 </div>
-
-                <div className="flex-1 overflow-y-auto custom-scrollbar pr-1">
-                  <div className="grid grid-cols-5 gap-2 p-1">
-                    {questions.map((q, idx) => {
-                      const isAnswered = selectedAnswers[q.id] !== undefined;
-                      const isReview = markedForReview.includes(q.id);
-                      const isCurrent = idx === currentQuestionIdx;
-
-                      let bgStyle = 'bg-slate-800/80 text-slate-400 border border-slate-700/60 hover:bg-slate-700/80';
-                      if (isReview) {
-                        bgStyle = 'bg-amber-500 text-slate-950 font-black shadow-md shadow-amber-500/30 border border-amber-400';
-                      } else if (isAnswered) {
-                        bgStyle = 'bg-emerald-600 text-white font-black shadow-md shadow-emerald-600/30 border border-emerald-500';
-                      }
-
-                      return (
-                        <button
-                          key={idx}
-                          onClick={() => {
-                            setCurrentQuestionIdx(idx);
-                            setMobileTab('question');
-                          }}
-                          className={`h-10 rounded-xl text-xs font-black transition-all flex items-center justify-center relative ${bgStyle} ${
-                            isCurrent ? 'ring-2 ring-blue-400 ring-offset-2 ring-offset-slate-950 scale-105 z-10' : ''
-                          }`}
-                        >
-                          {idx + 1}
-                        </button>
-                      );
-                    })}
-                  </div>
+                {/* Dynamic Progress Bar */}
+                <div className="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden border border-slate-700/60">
+                  <div 
+                    className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-300 rounded-full shadow-sm"
+                    style={{ width: `${(Object.keys(selectedAnswers).length / (questions.length || 1)) * 100}%` }}
+                  />
                 </div>
-              </div>
-
-              {/* 3. Legend Summary & Submit Button Footer */}
-              <div className="p-4 border-t border-slate-800/80 bg-slate-950/80 space-y-3 shrink-0">
-                <div className="grid grid-cols-3 gap-2 text-[10px] font-black uppercase text-center">
+                {/* Summary Chips */}
+                <div className="grid grid-cols-3 gap-2 text-[10px] font-black uppercase text-center pt-1">
                   <div className="p-2 bg-emerald-500/10 text-emerald-400 rounded-xl border border-emerald-500/20">
                     <span className="block text-sm font-black text-emerald-300">
                       {Object.keys(selectedAnswers).filter(id => !markedForReview.includes(id)).length}
                     </span>
-                    <span>Saved</span>
+                    <span>Answered</span>
                   </div>
                   <div className="p-2 bg-amber-500/10 text-amber-400 rounded-xl border border-amber-500/20">
                     <span className="block text-sm font-black text-amber-300">{markedForReview.length}</span>
@@ -994,16 +960,82 @@ export default function PublicProctoredExamRoomPage() {
                     <span className="block text-sm font-black text-slate-200">
                       {questions.length - Object.keys(selectedAnswers).length}
                     </span>
-                    <span>Left</span>
+                    <span>Unanswered</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* 3. Interactive Question Palette (Scrollable Grid) */}
+              <div className="flex-1 flex flex-col p-4 overflow-hidden">
+                <div className="flex items-center justify-between mb-3 shrink-0">
+                  <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">Question Palette</h3>
+                  <span className="text-xs font-black text-blue-400 uppercase">Q.{currentQuestionIdx + 1}</span>
+                </div>
+
+                {/* 5-Column Grid with 5 Distinct States */}
+                <div className="flex-1 overflow-y-auto custom-scrollbar pr-1">
+                  <div className="grid grid-cols-5 gap-2 p-1">
+                    {questions.map((q, idx) => {
+                      const isAnswered = selectedAnswers[q.id] !== undefined;
+                      const isReview = markedForReview.includes(q.id);
+                      const isCurrent = idx === currentQuestionIdx;
+
+                      // 5 Clear Visual States:
+                      // 1. Current: Ring & elevation
+                      // 2. Answered + Review: Emerald bg with amber indicator
+                      // 3. Answered: Emerald filled + check
+                      // 4. Review only: Amber filled
+                      // 5. Unanswered: Slate neutral
+                      let bgStyle = 'bg-slate-800/90 text-slate-400 border border-slate-700/70 hover:bg-slate-700/80 hover:text-white';
+                      if (isAnswered && isReview) {
+                        bgStyle = 'bg-emerald-600 text-white font-black shadow-md border-2 border-amber-400';
+                      } else if (isReview) {
+                        bgStyle = 'bg-amber-500 text-slate-950 font-black shadow-md border border-amber-400';
+                      } else if (isAnswered) {
+                        bgStyle = 'bg-emerald-600 text-white font-black shadow-md border border-emerald-500';
+                      }
+
+                      return (
+                        <button
+                          key={idx}
+                          onClick={() => {
+                            setCurrentQuestionIdx(idx);
+                            setMobileTab('question');
+                          }}
+                          className={`h-11 rounded-xl text-xs font-black transition-all flex items-center justify-center relative ${bgStyle} ${
+                            isCurrent ? 'ring-2 ring-blue-400 ring-offset-2 ring-offset-slate-950 scale-105 z-10' : ''
+                          }`}
+                        >
+                          <span>{idx + 1}</span>
+                          {/* Answered + Review Corner Badge */}
+                          {isAnswered && isReview && (
+                            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-amber-400 ring-2 ring-slate-950" />
+                          )}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
 
-                <button
-                  onClick={() => setShowSubmitConfirmModal(true)}
-                  className="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl font-black text-xs uppercase tracking-widest shadow-xl shadow-blue-600/25 transition-all active:scale-95"
-                >
-                  Submit Examination
-                </button>
+                {/* Compact Clean Palette Legend */}
+                <div className="pt-3 border-t border-slate-800/80 mt-2 grid grid-cols-2 gap-2 text-[10px] font-bold text-slate-400 shrink-0">
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-3 h-3 rounded-md bg-emerald-600 border border-emerald-500" />
+                    <span>✓ Answered</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-3 h-3 rounded-md bg-amber-500 border border-amber-400" />
+                    <span>⚑ Review</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-3 h-3 rounded-md bg-slate-800 border border-slate-700" />
+                    <span>● Unanswered</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-3 h-3 rounded-md bg-slate-800 border-2 border-blue-400" />
+                    <span>◉ Current</span>
+                  </div>
+                </div>
               </div>
             </aside>
           </div>
