@@ -397,21 +397,28 @@ export default function AdminMessagesPage() {
   };
 
   return (
-    <div className="h-[calc(100vh-8rem)] flex gap-4 md:gap-6">
+  return (
+    <div className="h-[calc(100vh-7.5rem)] flex gap-4 md:gap-6">
       {/* Sidebar: Intern List */}
-      <div className="w-[30%] min-w-[320px] bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden flex flex-col transition-all">
-        <div className="p-7 border-b border-slate-100 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl">
-          <div className="flex items-center justify-between mb-6">
+      <div className="w-[320px] lg:w-[380px] shrink-0 bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-200/80 dark:border-slate-800 shadow-2xl overflow-hidden flex flex-col transition-all">
+        {/* Sidebar Header */}
+        <div className="p-6 md:p-7 border-b border-slate-100 dark:border-slate-800/80 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl">
+          <div className="flex items-center justify-between mb-5">
             <div>
-              <h2 className="text-lg font-black text-slate-900 dark:text-white uppercase tracking-tight">Messages</h2>
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Support Inbox</p>
+              <span className="px-3 py-1 bg-blue-500/10 text-blue-600 dark:text-blue-400 text-[9px] font-black rounded-full uppercase tracking-widest border border-blue-500/20">
+                Support Inbox
+              </span>
+              <h2 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tight mt-2 italic">
+                Messages
+              </h2>
             </div>
             <button 
               onClick={() => {
                 fetchAllInterns();
                 setShowNewMessageModal(true);
               }}
-              className="p-3 bg-blue-600 text-white rounded-2xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/30 hover:scale-105 active:scale-95"
+              className="p-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg shadow-blue-600/30 hover:scale-[1.05] active:scale-95 flex items-center justify-center"
+              title="Start New Thread"
             >
               <Plus className="h-5 w-5" />
             </button>
@@ -422,16 +429,18 @@ export default function AdminMessagesPage() {
                type="text" 
                value={sidebarSearchQuery}
                onChange={(e) => setSidebarSearchQuery(e.target.value)}
-               placeholder="Search conversations or interns..." 
-               className="w-full pl-11 pr-4 py-3.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/50 rounded-2xl text-xs font-bold outline-none focus:border-blue-600 focus:bg-white dark:focus:bg-slate-800 transition-all" 
+               placeholder="Search interns or messages..." 
+               className="w-full pl-11 pr-4 py-3.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60 rounded-2xl text-xs font-bold outline-none focus:border-blue-600 focus:bg-white dark:focus:bg-slate-800 transition-all text-slate-900 dark:text-white placeholder:text-slate-400" 
              />
           </div>
         </div>
-        <div className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-2">
+
+        {/* Sidebar List */}
+        <div className="flex-1 overflow-y-auto p-3 space-y-2 scroll-smooth">
           {isLoading ? (
-            <div className="p-10 flex flex-col items-center gap-4">
-              <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Loading Threads...</p>
+            <div className="p-12 flex flex-col items-center justify-center gap-3">
+              <Loader2 className="h-7 w-7 animate-spin text-blue-600" />
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Loading Inbox Threads...</p>
             </div>
           ) : (() => {
             const map = new Map<string, any>();
@@ -463,11 +472,11 @@ export default function AdminMessagesPage() {
 
             if (combinedList.length === 0) {
               return (
-                <div className="p-12 text-center space-y-4">
-                   <div className="w-16 h-16 bg-slate-50 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto opacity-50 border border-dashed border-slate-300">
+                <div className="p-12 text-center space-y-4 my-auto">
+                   <div className="w-16 h-16 bg-slate-50 dark:bg-slate-800/80 rounded-3xl flex items-center justify-center mx-auto opacity-60 border border-dashed border-slate-300 dark:border-slate-700">
                       <MessageCircle className="h-8 w-8 text-slate-400" />
                    </div>
-                   <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">No matching conversations or interns</p>
+                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">No matching interns</p>
                 </div>
               );
             }
@@ -478,24 +487,34 @@ export default function AdminMessagesPage() {
                 <button
                   key={conv.intern_id || conv.id}
                   onClick={() => setSelectedIntern(conv)}
-                  className={`w-full p-4 flex items-center gap-4 rounded-3xl transition-all text-left relative group ${isSelected ? 'bg-blue-600 text-white shadow-xl shadow-blue-600/20' : 'hover:bg-slate-50 dark:hover:bg-slate-800/50'}`}
+                  className={`w-full p-4 flex items-center gap-4 rounded-3xl transition-all text-left relative group ${
+                    isSelected 
+                      ? 'bg-gradient-to-r from-blue-600 via-blue-600 to-indigo-700 text-white shadow-xl shadow-blue-600/25 scale-[1.01]' 
+                      : 'hover:bg-slate-50 dark:hover:bg-slate-800/50 text-slate-900 dark:text-white'
+                  }`}
                 >
                   <div className="relative shrink-0">
-                    <div className={`h-12 w-12 rounded-2xl flex items-center justify-center font-black text-sm shadow-sm transition-all ${isSelected ? 'bg-white/20 text-white' : 'bg-gradient-to-br from-blue-500 to-indigo-600 text-white'}`}>
+                    <div className={`h-12 w-12 rounded-2xl flex items-center justify-center font-black text-sm shadow-md transition-all ${
+                      isSelected ? 'bg-white/20 text-white' : 'bg-gradient-to-br from-blue-600 to-indigo-700 text-white'
+                    }`}>
                       {conv.intern_name?.charAt(0) || 'I'}
                     </div>
-                    <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-4 ${isSelected ? 'border-blue-600 bg-green-400' : 'border-white dark:border-slate-900 bg-green-500'}`} />
+                    <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 ${
+                      isSelected ? 'border-blue-600 bg-emerald-400' : 'border-white dark:border-slate-900 bg-emerald-500'
+                    }`} />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between mb-0.5">
-                      <p className={`font-black text-xs uppercase tracking-tight truncate ${isSelected ? 'text-white' : 'text-slate-900 dark:text-white'}`}>{conv.intern_name}</p>
+                    <div className="flex items-center justify-between mb-1">
+                      <p className={`font-black text-xs uppercase tracking-tight truncate ${isSelected ? 'text-white' : 'text-slate-900 dark:text-white'}`}>
+                        {conv.intern_name}
+                      </p>
                       {conv.created_at && (
-                        <span className={`text-[8px] font-bold uppercase ${isSelected ? 'text-white/60' : 'text-slate-400'}`}>
+                        <span className={`text-[8px] font-bold uppercase shrink-0 ${isSelected ? 'text-white/70' : 'text-slate-400'}`}>
                           {new Date(conv.created_at).toLocaleDateString([], { month: 'short', day: 'numeric' })}
                         </span>
                       )}
                     </div>
-                    <p className={`text-[10px] font-medium truncate opacity-70 ${isSelected ? 'text-white' : 'text-slate-500'}`}>
+                    <p className={`text-[10px] font-medium truncate ${isSelected ? 'text-white/80' : 'text-slate-400'}`}>
                       {conv.last_message || "Active support thread..."}
                     </p>
                   </div>
@@ -507,72 +526,87 @@ export default function AdminMessagesPage() {
       </div>
 
       {/* Main: Chat Area */}
-      <div className="flex-1 bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden flex flex-col">
+      <div className="flex-1 bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-200/80 dark:border-slate-800 shadow-2xl overflow-hidden flex flex-col">
         {selectedIntern ? (
           <>
-            {/* Header */}
-            <div className="p-6 px-8 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl sticky top-0 z-10">
+            {/* Active Header Bar */}
+            <div className="p-6 px-8 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl sticky top-0 z-10">
                <div className="flex items-center gap-4">
                   <div className="relative">
-                    <div className="h-14 w-14 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center border border-slate-200 dark:border-slate-700 shadow-inner">
-                       <User className="h-7 w-7 text-slate-500" />
+                    <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center font-black text-white text-xl shadow-lg shadow-blue-600/20">
+                       {selectedIntern.intern_name?.charAt(0) || 'I'}
                     </div>
-                    <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-4 border-white dark:border-slate-900 rounded-full shadow-sm" />
+                    <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-4 border-white dark:border-slate-900 rounded-full shadow-sm" />
                   </div>
                   <div>
-                     <h3 className="font-black text-slate-900 dark:text-white uppercase tracking-tight text-xl leading-none mb-1.5">{selectedIntern.intern_name}</h3>
+                     <h3 className="font-black text-slate-900 dark:text-white uppercase tracking-tight text-xl leading-none mb-1.5 italic">
+                       {selectedIntern.intern_name}
+                     </h3>
                      <div className="flex items-center gap-2">
-                        <span className="flex h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Active now</span>
+                        <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Active Thread • Instant Sync</span>
                      </div>
                   </div>
                </div>
                <div className="flex items-center gap-3">
-                  <button className="p-3 bg-slate-50 dark:bg-slate-800 rounded-2xl text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all active:scale-95">
-                    <Clock className="h-5 w-5" />
-                  </button>
+                  <Link 
+                    href={`/admin/interns/${encodeURIComponent(selectedIntern.intern_id || selectedIntern.id)}`}
+                    className="flex items-center gap-2 px-5 py-2.5 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-all border border-blue-200 dark:border-blue-800"
+                  >
+                    View Profile
+                  </Link>
                </div>
             </div>
 
-            {/* Messages */}
+            {/* Messages Scroll Feed */}
             <div 
               ref={scrollRef}
-              className="flex-1 p-6 overflow-y-auto space-y-4 scroll-smooth custom-scrollbar"
+              className="flex-1 p-6 md:p-8 overflow-y-auto space-y-4 scroll-smooth"
               style={{ 
-                backgroundImage: 'radial-gradient(circle at 2px 2px, rgba(0,0,0,0.02) 1px, transparent 0)',
-                backgroundSize: '32px 32px'
+                backgroundImage: 'radial-gradient(circle at 2px 2px, rgba(0,0,0,0.03) 1px, transparent 0)',
+                backgroundSize: '28px 28px'
               }}
             >
               {isLoadingMessages ? (
-                <div className="h-full flex items-center justify-center"><Loader2 className="h-10 w-10 animate-spin text-blue-600" /></div>
+                <div className="h-full flex flex-col items-center justify-center gap-3">
+                  <Loader2 className="h-10 w-10 animate-spin text-blue-600" />
+                  <p className="text-xs font-black text-slate-400 uppercase tracking-widest">Loading Messages...</p>
+                </div>
+              ) : messages.length === 0 ? (
+                <div className="h-full flex flex-col items-center justify-center text-center p-10 space-y-3 opacity-60">
+                  <div className="w-16 h-16 bg-blue-50 dark:bg-slate-800 rounded-full flex items-center justify-center text-blue-600 border border-blue-100">
+                    <MessageCircle className="h-8 w-8" />
+                  </div>
+                  <p className="text-xs font-black text-slate-400 uppercase tracking-widest">No messages in this thread yet. Send a message below to start.</p>
+                </div>
               ) : (
                 messages.map((msg, idx) => {
                   const isAdmin = msg.sender_type === 'admin';
                   return (
                     <motion.div 
-                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                      initial={{ opacity: 0, y: 10, scale: 0.98 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       key={msg.id || idx} 
                       className={`flex ${isAdmin ? 'justify-end' : 'justify-start'}`}
                     >
-                      <div className={`max-w-[70%] space-y-1.5`}>
-                        <div className={`px-6 py-4 rounded-[2rem] text-[13px] font-medium shadow-xl transition-all leading-relaxed ${
+                      <div className={`max-w-[75%] md:max-w-[65%] space-y-1.5`}>
+                        <div className={`px-6 py-4 rounded-[2rem] text-sm font-medium shadow-xl transition-all leading-relaxed ${
                           isAdmin 
-                            ? 'bg-gradient-to-br from-blue-600 to-indigo-700 text-white rounded-tr-none shadow-blue-500/10' 
-                            : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-tl-none border border-slate-100 dark:border-slate-700 shadow-lg'
+                            ? 'bg-gradient-to-br from-blue-600 via-blue-600 to-indigo-700 text-white rounded-tr-none shadow-blue-600/15' 
+                            : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 rounded-tl-none border border-slate-200/80 dark:border-slate-700 shadow-md'
                         }`}>
                           {msg.file_url && (
                             <div className="mb-4">
                               {msg.file_type === 'image' ? (
-                                <img src={msg.file_url} alt="Uploaded" className="max-w-full rounded-2xl cursor-pointer hover:scale-[1.02] transition-transform shadow-2xl border-4 border-white/10" onClick={() => window.open(msg.file_url, '_blank')} />
+                                <img src={msg.file_url} alt="Uploaded Attachment" className="max-w-full rounded-2xl cursor-pointer hover:scale-[1.01] transition-transform shadow-xl border-4 border-white/10" onClick={() => window.open(msg.file_url, '_blank')} />
                               ) : (
-                                <a href={msg.file_url} target="_blank" rel="noreferrer" className={`flex items-center gap-4 p-5 rounded-2xl transition-all border ${isAdmin ? 'bg-white/10 hover:bg-white/20 border-white/10' : 'bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-inner'}`}>
+                                <a href={msg.file_url} target="_blank" rel="noreferrer" className={`flex items-center gap-4 p-4 rounded-2xl transition-all border ${isAdmin ? 'bg-white/10 hover:bg-white/20 border-white/10' : 'bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 border-slate-200 dark:border-slate-700'}`}>
                                   <div className={`h-12 w-12 rounded-xl flex items-center justify-center shrink-0 ${isAdmin ? 'bg-white/20' : 'bg-blue-600'}`}>
-                                    <FileText className={`h-6 w-6 ${isAdmin ? 'text-white' : 'text-white'}`} />
+                                    <FileText className="h-6 w-6 text-white" />
                                   </div>
                                   <div className="text-left min-w-0">
-                                    <p className={`text-[10px] font-black uppercase tracking-widest ${isAdmin ? 'text-white/60' : 'text-slate-400'}`}>Document attachment</p>
-                                    <p className={`underline truncate font-bold text-sm ${isAdmin ? 'text-white' : 'text-blue-600'}`}>Preview Resource</p>
+                                    <p className={`text-[10px] font-black uppercase tracking-widest ${isAdmin ? 'text-white/60' : 'text-slate-400'}`}>Attached File</p>
+                                    <p className={`underline truncate font-bold text-xs ${isAdmin ? 'text-white' : 'text-blue-600'}`}>Open Document</p>
                                   </div>
                                 </a>
                               )}
@@ -583,21 +617,13 @@ export default function AdminMessagesPage() {
                           </div>
                         </div>
                         <div className={`flex items-center gap-2 mt-1 px-2 ${isAdmin ? 'justify-end' : 'justify-start'}`}>
-                          <p className="text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em] opacity-80">
+                          <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">
                             {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </p>
                           {isAdmin && (
-                             <div className="flex items-center gap-1">
-                                {msg.is_read ? (
-                                   <div className="flex items-center gap-1.5">
-                                      <span className="text-[9px] font-black text-blue-500 uppercase tracking-widest">Seen</span>
-                                      <div className="w-1 h-1 rounded-full bg-blue-500" />
-                                      <span className="text-[8px] font-bold text-slate-400">{new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                                   </div>
-                                ) : (
-                                   <span className="text-[9px] font-black text-slate-300 uppercase tracking-widest">Sent</span>
-                                )}
-                             </div>
+                             <span className="text-[9px] font-black text-blue-500 uppercase tracking-widest">
+                               {msg.is_read ? '✓✓ Seen' : '✓ Sent'}
+                             </span>
                           )}
                         </div>
                       </div>
@@ -607,37 +633,37 @@ export default function AdminMessagesPage() {
               )}
             </div>
 
-            {/* Input */}
-            <div className="p-7 px-10 border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-[0_-20px_50px_rgba(0,0,0,0.02)]">
+            {/* Message Input Box */}
+            <div className="p-6 md:p-8 border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900">
               <AnimatePresence>
                 {selectedFile && (
                   <motion.div 
-                    initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                    initial={{ opacity: 0, scale: 0.95, y: 10 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.9, y: 10 }}
-                    className="mb-6 p-5 bg-slate-50 dark:bg-slate-800/50 border-2 border-blue-100/50 dark:border-blue-900/30 rounded-3xl flex items-center justify-between shadow-sm"
+                    exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                    className="mb-4 p-4 bg-slate-50 dark:bg-slate-800/60 border border-blue-200 dark:border-blue-900/40 rounded-2xl flex items-center justify-between"
                   >
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-3">
                        {filePreview ? (
-                         <img src={filePreview} className="h-16 w-16 rounded-2xl object-cover shadow-md border-2 border-white dark:border-slate-700" />
+                         <img src={filePreview} className="h-14 w-14 rounded-xl object-cover shadow-sm border border-white" />
                        ) : (
-                         <div className="h-16 w-16 rounded-2xl bg-blue-600 flex items-center justify-center shadow-lg">
-                            <FileText className="h-8 w-8 text-white" />
+                         <div className="h-14 w-14 rounded-xl bg-blue-600 flex items-center justify-center text-white font-bold">
+                            <FileText className="h-7 w-7" />
                          </div>
                        )}
                        <div>
-                          <p className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-tight truncate max-w-[250px]">{selectedFile.name}</p>
-                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{(selectedFile.size / 1024 / 1024).toFixed(2)} MB • Ready for secure transmission</p>
+                          <p className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-tight truncate max-w-[220px]">{selectedFile.name}</p>
+                          <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{(selectedFile.size / 1024 / 1024).toFixed(2)} MB</p>
                        </div>
                     </div>
-                    <button onClick={() => {setSelectedFile(null); setFilePreview(null);}} className="p-3 bg-white dark:bg-slate-800 hover:bg-red-50 dark:hover:bg-red-900/20 group rounded-2xl transition-all shadow-sm">
-                       <X className="h-5 w-5 text-slate-400 group-hover:text-red-600 transition-colors" />
+                    <button onClick={() => {setSelectedFile(null); setFilePreview(null);}} className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 text-slate-400 hover:text-red-600 rounded-xl transition-all">
+                       <X className="h-5 w-5" />
                     </button>
                   </motion.div>
                 )}
               </AnimatePresence>
 
-              <form onSubmit={handleSendMessage} className="relative flex items-center gap-4">
+              <form onSubmit={handleSendMessage} className="relative flex items-center gap-3">
                 <input 
                   type="file" 
                   ref={fileInputRef} 
@@ -649,37 +675,83 @@ export default function AdminMessagesPage() {
                   type="button"
                   disabled={isSending}
                   onClick={() => fileInputRef.current?.click()}
-                  className="p-5 bg-slate-50 dark:bg-slate-800 rounded-3xl text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all shadow-sm active:scale-95 disabled:opacity-50 border border-transparent hover:border-blue-100 dark:hover:border-blue-800"
+                  className="p-4 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-2xl transition-all active:scale-95 disabled:opacity-50"
+                  title="Attach File or Photo"
                 >
-                  <Paperclip className="h-6 w-6" />
+                  <Paperclip className="h-5 w-5" />
                 </button>
-                <div className="flex-1 relative group">
+                <div className="flex-1 relative">
                   <input
                     type="text"
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
-                    placeholder="Compose an official message..."
-                    className="w-full pl-8 pr-28 py-5.5 bg-slate-50 dark:bg-slate-800/80 border-2 border-transparent rounded-[2rem] text-sm font-bold focus:border-blue-600/50 focus:bg-white dark:focus:bg-slate-900 outline-none transition-all shadow-inner text-foreground placeholder:text-slate-400"
+                    placeholder="Type an official message or instruction..."
+                    className="w-full pl-6 pr-32 py-4 bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80 rounded-2xl text-xs font-bold focus:border-blue-600 focus:bg-white dark:focus:bg-slate-900 outline-none transition-all text-slate-900 dark:text-white placeholder:text-slate-400"
                   />
                   <button
                     type="submit"
                     disabled={(!newMessage.trim() && !selectedFile) || isSending}
-                    className="absolute right-3 top-3 bottom-3 px-10 bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-[1.5rem] font-black text-xs uppercase tracking-[0.2em] hover:shadow-xl hover:shadow-blue-600/30 transition-all active:scale-95 disabled:opacity-50 flex items-center gap-2"
+                    className="absolute right-2 top-2 bottom-2 px-6 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-black text-xs uppercase tracking-widest hover:from-blue-700 hover:to-indigo-700 transition-all shadow-md shadow-blue-600/20 active:scale-95 disabled:opacity-40 flex items-center gap-2"
                   >
-                    {isSending || isUploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <><span>Reply</span><Send className="h-4 w-4" /></>}
+                    {isSending || isUploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <><span>Send</span><Send className="h-3.5 w-3.5" /></>}
                   </button>
                 </div>
               </form>
             </div>
           </>
         ) : (
-          <div className="h-full flex flex-col items-center justify-center text-center p-20 space-y-6">
-            <div className="w-24 h-24 bg-slate-50 dark:bg-slate-800 rounded-full flex items-center justify-center border-2 border-dashed border-slate-200 dark:border-slate-700">
-               <MessageCircle className="h-10 w-10 text-slate-300" />
+          /* Executive Command Center Empty State */
+          <div className="h-full flex flex-col items-center justify-center text-center p-8 md:p-12 space-y-8 my-auto">
+            <div className="relative">
+              <div className="w-24 h-24 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-[2rem] flex items-center justify-center text-white shadow-2xl shadow-blue-600/30 transform -rotate-3">
+                 <MessageCircle className="h-12 w-12" />
+              </div>
+              <div className="absolute -bottom-2 -right-2 w-7 h-7 bg-emerald-500 border-4 border-white dark:border-slate-900 rounded-full flex items-center justify-center shadow-md">
+                 <Check className="h-4 w-4 text-white stroke-[3]" />
+              </div>
             </div>
-            <div className="max-w-xs space-y-2">
-               <h3 className="font-black text-slate-900 dark:text-white uppercase text-xl">Command Center</h3>
-               <p className="text-sm text-slate-500 font-medium">Select an intern conversation from the left to start providing professional support.</p>
+            
+            <div className="max-w-md space-y-3">
+               <span className="px-4 py-1.5 bg-blue-500/10 text-blue-600 dark:text-blue-400 text-[10px] font-black rounded-full uppercase tracking-widest border border-blue-500/20">
+                 Support Inbox • Active Engine
+               </span>
+               <h3 className="font-black text-slate-900 dark:text-white uppercase text-2xl tracking-tight italic">
+                 Command Center
+               </h3>
+               <p className="text-xs text-slate-500 dark:text-slate-400 font-bold leading-relaxed">
+                 Select an intern thread from the sidebar to view past messages, send direct guidance, or upload official documents.
+               </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-lg pt-4">
+              <button 
+                onClick={() => {
+                  fetchAllInterns();
+                  setShowNewMessageModal(true);
+                }}
+                className="p-5 bg-slate-50 dark:bg-slate-800/60 hover:bg-blue-50 dark:hover:bg-blue-900/20 border border-slate-200/80 dark:border-slate-700/80 rounded-2xl text-left transition-all group"
+              >
+                <div className="h-9 w-9 rounded-xl bg-blue-600 text-white flex items-center justify-center mb-3 shadow-md group-hover:scale-105 transition-transform">
+                  <Plus className="h-5 w-5" />
+                </div>
+                <h4 className="font-black text-slate-900 dark:text-white text-xs uppercase tracking-tight">Initiate Thread</h4>
+                <p className="text-[10px] font-bold text-slate-400 mt-1">Start a discussion with any registered intern</p>
+              </button>
+
+              <button 
+                onClick={() => {
+                  fetchAllInterns();
+                  setShowNewMessageModal(true);
+                  setIsBulkView(true);
+                }}
+                className="p-5 bg-slate-50 dark:bg-slate-800/60 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 border border-slate-200/80 dark:border-slate-700/80 rounded-2xl text-left transition-all group"
+              >
+                <div className="h-9 w-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center mb-3 shadow-md group-hover:scale-105 transition-transform">
+                  <Send className="h-4 w-4" />
+                </div>
+                <h4 className="font-black text-slate-900 dark:text-white text-xs uppercase tracking-tight">Broadcast Announcement</h4>
+                <p className="text-[10px] font-bold text-slate-400 mt-1">Send a message to multiple selected interns</p>
+              </button>
             </div>
           </div>
         )}
