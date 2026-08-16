@@ -267,6 +267,22 @@ export default function AdminExamsPage() {
     }
   }
 
+  const [selectedSubmissions, setSelectedSubmissions] = useState<string[]>([]);
+
+  const toggleSelectSubmission = (subId: string) => {
+    setSelectedSubmissions(prev => 
+      prev.includes(subId) ? prev.filter(id => id !== subId) : [...prev, subId]
+    );
+  };
+
+  const toggleSelectAllSubmissions = () => {
+    if (selectedSubmissions.length === filteredSubmissions.length && filteredSubmissions.length > 0) {
+      setSelectedSubmissions([]);
+    } else {
+      setSelectedSubmissions(filteredSubmissions.map(s => s.id));
+    }
+  };
+
   async function handleDeleteExam(examId: string) {
     if (!confirm('Are you sure you want to delete this exam? All associated questions will be removed.')) return;
     try {
@@ -278,12 +294,44 @@ export default function AdminExamsPage() {
   }
 
   async function handleDeleteSubmission(subId: string) {
-    if (!confirm('Are you sure you want to delete this submission record from database?')) return;
+    if (!confirm('Are you sure you want to permanently delete this submission record from database?')) return;
     try {
+      const res = await fetch('/api/admin/delete-submission', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids: [subId] })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to delete submission');
+
       await supabase.from('exam_submissions').delete().eq('id', subId);
+
       setSubmissions(prev => prev.filter(s => s.id !== subId));
-    } catch (e) {
-      console.warn('Delete submission notice:', e);
+      setSelectedSubmissions(prev => prev.filter(id => id !== subId));
+    } catch (e: any) {
+      alert(`Delete error: ${e.message}`);
+    }
+  }
+
+  async function handleBulkDeleteSubmissions() {
+    if (selectedSubmissions.length === 0) return;
+    if (!confirm(`Are you sure you want to permanently delete ${selectedSubmissions.length} selected submission record(s) from database?`)) return;
+
+    try {
+      const res = await fetch('/api/admin/delete-submission', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids: selectedSubmissions })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to delete selected submissions');
+
+      await supabase.from('exam_submissions').delete().in('id', selectedSubmissions);
+
+      setSubmissions(prev => prev.filter(s => !selectedSubmissions.includes(s.id)));
+      setSelectedSubmissions([]);
+    } catch (e: any) {
+      alert(`Bulk Delete error: ${e.message}`);
     }
   }
 
@@ -495,25 +543,44 @@ export default function AdminExamsPage() {
       {/* TAB 2: SUBMISSIONS & CHEATING LOGS */}
       {activeTab === 'submissions' && (
         <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-200/80 dark:border-slate-800 shadow-xl overflow-hidden space-y-4">
-          <div className="p-6 pb-2 flex items-center justify-between border-b border-slate-100 dark:border-slate-800">
+          <div className="p-6 pb-2 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800">
             <div>
               <h3 className="font-black text-slate-900 dark:text-white uppercase tracking-tight text-sm">Attempt Results & Proctoring Audit</h3>
-              <p className="text-[10px] text-slate-400">Export report or delete individual submission records</p>
+              <p className="text-[10px] text-slate-400">Export report or select & delete submission records from database</p>
             </div>
-            <button
-              onClick={exportSubmissionsCSV}
-              className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-black text-xs uppercase tracking-wider shadow-lg shadow-emerald-600/20 transition-all flex items-center gap-2"
-            >
-              <FileSpreadsheet className="h-4 w-4" />
-              <span>Export CSV / Excel</span>
-            </button>
+            <div className="flex items-center gap-3">
+              {selectedSubmissions.length > 0 && (
+                <button
+                  onClick={handleBulkDeleteSubmissions}
+                  className="px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl font-black text-xs uppercase tracking-wider shadow-lg shadow-red-600/20 transition-all flex items-center gap-2"
+                >
+                  <Trash2 className="h-4 w-4" />
+                  <span>Delete Selected ({selectedSubmissions.length})</span>
+                </button>
+              )}
+              <button
+                onClick={exportSubmissionsCSV}
+                className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-black text-xs uppercase tracking-wider shadow-lg shadow-emerald-600/20 transition-all flex items-center gap-2"
+              >
+                <FileSpreadsheet className="h-4 w-4" />
+                <span>Export CSV / Excel</span>
+              </button>
+            </div>
           </div>
 
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800 text-[10px] font-black uppercase tracking-widest text-slate-400">
                 <tr>
-                  <th className="p-5 pl-7">Candidate</th>
+                  <th className="p-5 pl-7 w-10">
+                    <input
+                      type="checkbox"
+                      checked={selectedSubmissions.length === filteredSubmissions.length && filteredSubmissions.length > 0}
+                      onChange={toggleSelectAllSubmissions}
+                      className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                    />
+                  </th>
+                  <th className="p-5">Candidate</th>
                   <th className="p-5">Exam Title</th>
                   <th className="p-5">Score & Result</th>
                   <th className="p-5">Cheating Violations</th>
@@ -525,78 +592,89 @@ export default function AdminExamsPage() {
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800 font-bold">
                 {filteredSubmissions.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="p-10 text-center text-slate-400 uppercase font-black tracking-widest">
+                    <td colSpan={8} className="p-10 text-center text-slate-400 uppercase font-black tracking-widest">
                       No candidate submissions logged yet.
                     </td>
                   </tr>
                 ) : (
-                  filteredSubmissions.map((sub) => (
-                    <tr key={sub.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors">
-                      <td className="p-5 pl-7">
-                        <p className="font-extrabold text-slate-900 dark:text-white text-sm">{sub.intern_name || 'Candidate'}</p>
-                        <p className="text-[10px] text-slate-400 font-mono">{sub.intern_id}</p>
-                        {sub.college_name && (
-                          <p className="text-[10px] text-blue-600 dark:text-blue-400 font-bold mt-0.5">🏫 {sub.college_name}</p>
-                        )}
-                        {sub.phone && (
-                          <p className="text-[10px] text-slate-400 font-medium">📞 {sub.phone}</p>
-                        )}
-                      </td>
-                      <td className="p-5 text-slate-700 dark:text-slate-300">
-                        <p className="font-bold">{sub.exams?.title || 'Examination'}</p>
-                        <p className="text-[9px] text-blue-500 font-black uppercase tracking-widest">{sub.exams?.domain}</p>
-                      </td>
-                      <td className="p-5">
-                        <div className="flex items-center gap-2">
-                          <span className={`text-sm font-black ${sub.passed ? 'text-emerald-500' : 'text-red-500'}`}>
-                            {sub.percentage}%
-                          </span>
-                          <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest ${
-                            sub.passed ? 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/20' : 'bg-red-500/10 text-red-600 border border-red-500/20'
-                          }`}>
-                            {sub.passed ? 'PASSED' : 'FAILED'}
-                          </span>
-                        </div>
-                        <p className="text-[10px] text-slate-400 mt-0.5">{sub.score} / {sub.total_points} Points</p>
-                      </td>
-                      <td className="p-5">
-                        <div className="flex items-center gap-2">
-                          <AlertTriangle className={`h-4 w-4 ${sub.violations_count > 0 ? 'text-amber-500' : 'text-slate-300'}`} />
-                          <span className={`font-mono font-bold ${sub.violations_count >= 3 ? 'text-red-600' : 'text-slate-700 dark:text-slate-300'}`}>
-                            {sub.violations_count} Strike(s)
-                          </span>
-                        </div>
-                        {sub.violations_log?.length > 0 && (
-                          <div className="text-[9px] text-slate-400 mt-1 max-w-xs space-y-0.5">
-                            {sub.violations_log.map((v: any, i: number) => (
-                              <p key={i}>• {v.type || 'Violation'} at {new Date(v.timestamp).toLocaleTimeString()}</p>
-                            ))}
+                  filteredSubmissions.map((sub) => {
+                    const isSelected = selectedSubmissions.includes(sub.id);
+                    return (
+                      <tr key={sub.id} className={`transition-colors ${isSelected ? 'bg-blue-50/60 dark:bg-blue-950/20' : 'hover:bg-slate-50/80 dark:hover:bg-slate-800/40'}`}>
+                        <td className="p-5 pl-7 w-10">
+                          <input
+                            type="checkbox"
+                            checked={isSelected}
+                            onChange={() => toggleSelectSubmission(sub.id)}
+                            className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                          />
+                        </td>
+                        <td className="p-5">
+                          <p className="font-extrabold text-slate-900 dark:text-white text-sm">{sub.intern_name || 'Candidate'}</p>
+                          <p className="text-[10px] text-slate-400 font-mono">{sub.intern_id}</p>
+                          {sub.college_name && (
+                            <p className="text-[10px] text-blue-600 dark:text-blue-400 font-bold mt-0.5">🏫 {sub.college_name}</p>
+                          )}
+                          {sub.phone && (
+                            <p className="text-[10px] text-slate-400 font-medium">📞 {sub.phone}</p>
+                          )}
+                        </td>
+                        <td className="p-5 text-slate-700 dark:text-slate-300">
+                          <p className="font-bold">{sub.exams?.title || 'Examination'}</p>
+                          <p className="text-[9px] text-blue-500 font-black uppercase tracking-widest">{sub.exams?.domain}</p>
+                        </td>
+                        <td className="p-5">
+                          <div className="flex items-center gap-2">
+                            <span className={`text-sm font-black ${sub.passed ? 'text-emerald-500' : 'text-red-500'}`}>
+                              {sub.percentage}%
+                            </span>
+                            <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest ${
+                              sub.passed ? 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/20' : 'bg-red-500/10 text-red-600 border border-red-500/20'
+                            }`}>
+                              {sub.passed ? 'PASSED' : 'FAILED'}
+                            </span>
                           </div>
-                        )}
-                      </td>
-                      <td className="p-5 text-slate-400 text-[11px]">
-                        {new Date(sub.submitted_at).toLocaleDateString()} {new Date(sub.submitted_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                      </td>
-                      <td className="p-5 text-center">
-                        <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
-                          sub.status === 'disqualified' 
-                            ? 'bg-red-600 text-white' 
-                            : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'
-                        }`}>
-                          {sub.status}
-                        </span>
-                      </td>
-                      <td className="p-5 text-right pr-7">
-                        <button
-                          onClick={() => handleDeleteSubmission(sub.id)}
-                          title="Delete submission record"
-                          className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-xl transition-all"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </td>
-                    </tr>
-                  ))
+                          <p className="text-[10px] text-slate-400 mt-0.5">{sub.score} / {sub.total_points} Points</p>
+                        </td>
+                        <td className="p-5">
+                          <div className="flex items-center gap-2">
+                            <AlertTriangle className={`h-4 w-4 ${sub.violations_count > 0 ? 'text-amber-500' : 'text-slate-300'}`} />
+                            <span className={`font-mono font-bold ${sub.violations_count >= 3 ? 'text-red-600' : 'text-slate-700 dark:text-slate-300'}`}>
+                              {sub.violations_count} Strike(s)
+                            </span>
+                          </div>
+                          {sub.violations_log?.length > 0 && (
+                            <div className="text-[9px] text-slate-400 mt-1 max-w-xs space-y-0.5">
+                              {sub.violations_log.map((v: any, i: number) => (
+                                <p key={i}>• {v.type || 'Violation'} at {new Date(v.timestamp).toLocaleTimeString()}</p>
+                              ))}
+                            </div>
+                          )}
+                        </td>
+                        <td className="p-5 text-slate-400 text-[11px]">
+                          {new Date(sub.submitted_at).toLocaleDateString()} {new Date(sub.submitted_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </td>
+                        <td className="p-5 text-center">
+                          <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
+                            sub.status === 'disqualified' 
+                              ? 'bg-red-600 text-white' 
+                              : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'
+                          }`}>
+                            {sub.status}
+                          </span>
+                        </td>
+                        <td className="p-5 text-right pr-7">
+                          <button
+                            onClick={() => handleDeleteSubmission(sub.id)}
+                            title="Delete submission record permanently"
+                            className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-xl transition-all active:scale-95"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })
                 )}
               </tbody>
             </table>

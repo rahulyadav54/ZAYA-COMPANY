@@ -328,6 +328,13 @@ CREATE POLICY "Public Manage Exams" ON public.exams FOR ALL USING (true);
 CREATE POLICY "Public Read Questions" ON public.exam_questions FOR SELECT USING (true);
 CREATE POLICY "Public Manage Questions" ON public.exam_questions FOR ALL USING (true);
 
+DROP POLICY IF EXISTS "Public Read Exam Submissions" ON public.exam_submissions;
+DROP POLICY IF EXISTS "Public Insert Exam Submissions" ON public.exam_submissions;
+DROP POLICY IF EXISTS "Public Update Exam Submissions" ON public.exam_submissions;
+DROP POLICY IF EXISTS "Public Delete Exam Submissions" ON public.exam_submissions;
+DROP POLICY IF EXISTS "Public Manage Exam Submissions" ON public.exam_submissions;
+CREATE POLICY "Public Manage Exam Submissions" ON public.exam_submissions FOR ALL USING (true);
+
 -- 9. USER PRACTICE STATS & GAMIFICATION TABLE
 CREATE TABLE IF NOT EXISTS public.user_practice_stats (
   user_id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
