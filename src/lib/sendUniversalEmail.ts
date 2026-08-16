@@ -18,13 +18,14 @@ export async function sendUniversalEmail({ to, subject, html }: EmailPayload) {
   if (smtpPass && smtpPass.trim().length > 0) {
     try {
       const transporter = nodemailer.createTransport({
-        host: 'smtp.gmail.com',
-        port: 465,
-        secure: true,
+        service: 'gmail',
         auth: {
           user: smtpUser,
           pass: smtpPass.trim(),
         },
+        tls: {
+          rejectUnauthorized: false
+        }
       });
 
       const info = await transporter.sendMail({

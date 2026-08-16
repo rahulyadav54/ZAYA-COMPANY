@@ -29,7 +29,6 @@ const gmailPass = env.GMAIL_APP_PASS;
 
 if (!gmailPass) {
   console.error('❌ Error: GMAIL_APP_PASS is not configured in your .env or .env.local file.');
-  console.log('Please add GMAIL_APP_PASS=xxxx to your .env.local file first.');
   process.exit(1);
 }
 
@@ -77,13 +76,14 @@ async function run() {
   }
 
   const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465,
-    secure: true,
+    service: 'gmail',
     auth: {
       user: gmailUser,
       pass: gmailPass.trim(),
     },
+    tls: {
+      rejectUnauthorized: false
+    }
   });
 
   let sentCount = 0;
