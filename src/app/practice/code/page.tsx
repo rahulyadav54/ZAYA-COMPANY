@@ -284,6 +284,128 @@ export const BUILTIN_CODING_PROBLEMS = [
       { input: { n: 3 }, expected: ["1", "2", "Fizz"] },
       { input: { n: 5 }, expected: ["1", "2", "Fizz", "4", "Buzz"] }
     ]
+  },
+  {
+    id: 'product-of-array-except-self',
+    title: '15. Product of Array Except Self',
+    difficulty: 'Medium',
+    category: 'Arrays & Hashing',
+    languageSupport: ['JavaScript', 'Python', 'Java', 'C++'],
+    description: 'Given an integer array `nums`, return an array `answer` such that `answer[i]` is equal to the product of all the elements of `nums` except `nums[i]`. Must run in O(n) time.',
+    sampleInput: 'nums = [1,2,3,4]',
+    sampleOutput: '[24,12,8,6]',
+    starterCode: {
+      javascript: `function productExceptSelf(nums) {\n  const n = nums.length;\n  const res = new Array(n).fill(1);\n  let prefix = 1;\n  for (let i = 0; i < n; i++) {\n    res[i] = prefix;\n    prefix *= nums[i];\n  }\n  let postfix = 1;\n  for (let i = n - 1; i >= 0; i--) {\n    res[i] *= postfix;\n    postfix *= nums[i];\n  }\n  return res;\n}`,
+      python: `def productExceptSelf(nums: list[int]) -> list[int]:\n    res = [1] * len(nums)\n    prefix = 1\n    for i in range(len(nums)):\n        res[i] = prefix\n        prefix *= nums[i]\n    postfix = 1\n    for i in range(len(nums) - 1, -1, -1):\n        res[i] *= postfix\n        postfix *= nums[i]\n    return res`,
+      cpp: `vector<int> productExceptSelf(vector<int>& nums) {\n    int n = nums.size();\n    vector<int> res(n, 1);\n    int prefix = 1;\n    for (int i = 0; i < n; i++) { res[i] = prefix; prefix *= nums[i]; }\n    int postfix = 1;\n    for (int i = n - 1; i >= 0; i--) { res[i] *= postfix; postfix *= nums[i]; }\n    return res;\n}`,
+      java: `public int[] productExceptSelf(int[] nums) {\n    int n = nums.length;\n    int[] res = new int[n];\n    int prefix = 1;\n    for (int i = 0; i < n; i++) { res[i] = prefix; prefix *= nums[i]; }\n    int postfix = 1;\n    for (int i = n - 1; i >= 0; i--) { res[i] *= postfix; postfix *= nums[i]; }\n    return res;\n}`
+    },
+    testCases: [
+      { input: { nums: [1, 2, 3, 4] }, expected: [24, 12, 8, 6] },
+      { input: { nums: [-1, 1, 0, -3, 3] }, expected: [0, 0, 9, 0, 0] }
+    ]
+  },
+  {
+    id: 'move-zeroes',
+    title: '16. Move Zeroes',
+    difficulty: 'Easy',
+    category: 'Two Pointers',
+    languageSupport: ['JavaScript', 'Python', 'Java', 'C++'],
+    description: 'Given an integer array `nums`, move all `0`s to the end of it while maintaining the relative order of the non-zero elements in-place.',
+    sampleInput: 'nums = [0,1,0,3,12]',
+    sampleOutput: '[1,3,12,0,0]',
+    starterCode: {
+      javascript: `function moveZeroes(nums) {\n  let l = 0;\n  for (let r = 0; r < nums.length; r++) {\n    if (nums[r] !== 0) {\n      [nums[l], nums[r]] = [nums[r], nums[l]];\n      l++;\n    }\n  }\n  return nums;\n}`,
+      python: `def moveZeroes(nums: list[int]) -> list[int]:\n    l = 0\n    for r in range(len(nums)):\n        if nums[r]:\n            nums[l], nums[r] = nums[r], nums[l]\n            l += 1\n    return nums`,
+      cpp: `vector<int> moveZeroes(vector<int>& nums) {\n    int l = 0;\n    for (int r = 0; r < nums.size(); r++) {\n        if (nums[r] != 0) swap(nums[l++], nums[r]);\n    }\n    return nums;\n}`,
+      java: `public int[] moveZeroes(int[] nums) {\n    int l = 0;\n    for (int r = 0; r < nums.length; r++) {\n        if (nums[r] != 0) {\n          int temp = nums[l]; nums[l] = nums[r]; nums[r] = temp;\n          l++;\n        }\n    }\n    return nums;\n}`
+    },
+    testCases: [
+      { input: { nums: [0, 1, 0, 3, 12] }, expected: [1, 3, 12, 0, 0] },
+      { input: { nums: [0] }, expected: [0] }
+    ]
+  },
+  {
+    id: 'majority-element',
+    title: '17. Majority Element',
+    difficulty: 'Easy',
+    category: 'Arrays & Hashing',
+    languageSupport: ['JavaScript', 'Python', 'Java', 'C++'],
+    description: 'Given an array `nums` of size `n`, return the majority element. The majority element is the element that appears more than ⌊n / 2⌋ times.',
+    sampleInput: 'nums = [2,2,1,1,1,2,2]',
+    sampleOutput: '2',
+    starterCode: {
+      javascript: `function majorityElement(nums) {\n  let res = 0, count = 0;\n  for (let n of nums) {\n    if (count === 0) res = n;\n    count += (n === res) ? 1 : -1;\n  }\n  return res;\n}`,
+      python: `def majorityElement(nums: list[int]) -> int:\n    res, count = 0, 0\n    for n in nums:\n        if count == 0: res = n\n        count += 1 if n == res else -1\n    return res`,
+      cpp: `int majorityElement(vector<int>& nums) {\n    int res = 0, count = 0;\n    for (int n : nums) {\n        if (count == 0) res = n;\n        count += (n == res) ? 1 : -1;\n    }\n    return res;\n}`,
+      java: `public int majorityElement(int[] nums) {\n    int res = 0, count = 0;\n    for (int n : nums) {\n        if (count == 0) res = n;\n        count += (n == res) ? 1 : -1;\n    }\n    return res;\n}`
+    },
+    testCases: [
+      { input: { nums: [3, 2, 3] }, expected: 3 },
+      { input: { nums: [2, 2, 1, 1, 1, 2, 2] }, expected: 2 }
+    ]
+  },
+  {
+    id: 'fibonacci-number',
+    title: '18. Fibonacci Number',
+    difficulty: 'Easy',
+    category: 'Dynamic Programming',
+    languageSupport: ['JavaScript', 'Python', 'Java', 'C++'],
+    description: 'The Fibonacci numbers, commonly denoted `F(n)` form a sequence, such that each number is the sum of the two preceding ones, starting from 0 and 1.',
+    sampleInput: 'n = 4',
+    sampleOutput: '3',
+    starterCode: {
+      javascript: `function fib(n) {\n  if (n <= 1) return n;\n  let a = 0, b = 1;\n  for (let i = 2; i <= n; i++) {\n    let c = a + b;\n    a = b;\n    b = c;\n  }\n  return b;\n}`,
+      python: `def fib(n: int) -> int:\n    if n <= 1: return n\n    a, b = 0, 1\n    for _ in range(2, n + 1):\n        a, b = b, a + b\n    return b`,
+      cpp: `int fib(int n) {\n    if (n <= 1) return n;\n    int a = 0, b = 1;\n    for (int i = 2; i <= n; i++) {\n        int c = a + b; a = b; b = c;\n    }\n    return b;\n}`,
+      java: `public int fib(int n) {\n    if (n <= 1) return n;\n    int a = 0, b = 1;\n    for (int i = 2; i <= n; i++) {\n        int c = a + b; a = b; b = c;\n    }\n    return b;\n}`
+    },
+    testCases: [
+      { input: { n: 2 }, expected: 1 },
+      { input: { n: 3 }, expected: 2 },
+      { input: { n: 4 }, expected: 3 }
+    ]
+  },
+  {
+    id: 'power-of-two',
+    title: '19. Power of Two',
+    difficulty: 'Easy',
+    category: 'Bit Manipulation',
+    languageSupport: ['JavaScript', 'Python', 'Java', 'C++'],
+    description: 'Given an integer `n`, return `true` if it is a power of two. Otherwise, return `false`. An integer `n` is a power of two, if there exists an integer `x` such that `n == 2^x`.',
+    sampleInput: 'n = 16',
+    sampleOutput: 'true',
+    starterCode: {
+      javascript: `function isPowerOfTwo(n) {\n  return n > 0 && (n & (n - 1)) === 0;\n}`,
+      python: `def isPowerOfTwo(n: int) -> bool:\n    return n > 0 and (n & (n - 1)) == 0`,
+      cpp: `bool isPowerOfTwo(int n) {\n    return n > 0 && (n & (n - 1)) == 0;\n}`,
+      java: `public boolean isPowerOfTwo(int n) {\n    return n > 0 && (n & (n - 1)) == 0;\n}`
+    },
+    testCases: [
+      { input: { n: 1 }, expected: true },
+      { input: { n: 16 }, expected: true },
+      { input: { n: 3 }, expected: false }
+    ]
+  },
+  {
+    id: 'search-in-rotated-sorted-array',
+    title: '20. Search in Rotated Sorted Array',
+    difficulty: 'Medium',
+    category: 'Binary Search',
+    languageSupport: ['JavaScript', 'Python', 'Java', 'C++'],
+    description: 'Given the array `nums` after the possible rotation and an integer `target`, return the index of `target` if it is in `nums`, or `-1` if it is not in `nums`. Must run in O(log n).',
+    sampleInput: 'nums = [4,5,6,7,0,1,2], target = 0',
+    sampleOutput: '4',
+    starterCode: {
+      javascript: `function search(nums, target) {\n  let l = 0, r = nums.length - 1;\n  while (l <= r) {\n    let m = Math.floor((l + r) / 2);\n    if (nums[m] === target) return m;\n    if (nums[l] <= nums[m]) {\n      if (target >= nums[l] && target < nums[m]) r = m - 1;\n      else l = m + 1;\n    } else {\n      if (target > nums[m] && target <= nums[r]) l = m + 1;\n      else r = m - 1;\n    }\n  }\n  return -1;\n}`,
+      python: `def search(nums: list[int], target: int) -> int:\n    l, r = 0, len(nums) - 1\n    while l <= r:\n        m = (l + r) // 2\n        if nums[m] == target: return m\n        if nums[l] <= nums[m]:\n            if nums[l] <= target < nums[m]: r = m - 1\n            else: l = m + 1\n        else:\n            if nums[m] < target <= nums[r]: l = m + 1\n            else: r = m - 1\n    return -1`,
+      cpp: `int search(vector<int>& nums, int target) {\n    int l = 0, r = nums.size() - 1;\n    while (l <= r) {\n        int m = l + (r - l) / 2;\n        if (nums[m] == target) return m;\n        if (nums[l] <= nums[m]) {\n            if (target >= nums[l] && target < nums[m]) r = m - 1;\n            else l = m + 1;\n        } else {\n            if (target > nums[m] && target <= nums[r]) l = m + 1;\n            else r = m - 1;\n        }\n    }\n    return -1;\n}`,
+      java: `public int search(int[] nums, int target) {\n    int l = 0, r = nums.length - 1;\n    while (l <= r) {\n        int m = l + (r - l) / 2;\n        if (nums[m] == target) return m;\n        if (nums[l] <= nums[m]) {\n            if (target >= nums[l] && target < nums[m]) r = m - 1;\n            else l = m + 1;\n        } else {\n            if (target > nums[m] && target <= nums[r]) l = m + 1;\n            else r = m - 1;\n        }\n    }\n    return -1;\n}`
+    },
+    testCases: [
+      { input: { nums: [4, 5, 6, 7, 0, 1, 2], target: 0 }, expected: 4 },
+      { input: { nums: [4, 5, 6, 7, 0, 1, 2], target: 3 }, expected: -1 }
+    ]
   }
 ];
 
