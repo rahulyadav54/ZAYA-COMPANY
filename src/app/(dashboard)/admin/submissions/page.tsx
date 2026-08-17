@@ -56,11 +56,15 @@ export default function AdminSubmissionsPage() {
 
   const updateReviewStatus = async (id: string, status: string) => {
     let updateData: any = { review_status: status };
+    const sub = submissions.find(s => s.id === id);
     
     // If approving, generate a unique Certificate ID
     if (status === 'approved') {
       const uniqueId = `ZAYA-2026-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
       updateData.certificate_id = uniqueId;
+      updateData.email = sub?.intern_email || sub?.profiles?.email;
+      updateData.fullName = sub?.cert_full_name || sub?.profiles?.full_name;
+      updateData.taskTitle = sub?.tasks?.title;
     }
 
     try {
@@ -76,14 +80,11 @@ export default function AdminSubmissionsPage() {
       }
 
       // Sync tasks table status
-      if (status === 'approved') {
-        const sub = submissions.find(s => s.id === id);
-        if (sub?.task_id) {
-          await supabase.from('tasks').update({ status: 'completed' }).eq('id', sub.task_id);
-        }
+      if (status === 'approved' && sub?.task_id) {
+        await supabase.from('tasks').update({ status: 'completed' }).eq('id', sub.task_id);
       }
       setSubmissions(submissions.map(s => s.id === id ? { ...s, ...updateData } : s));
-      alert(`Submission ${status === 'approved' ? 'Approved & Certificate Issued!' : status}!`);
+      alert(`Submission ${status === 'approved' ? 'Approved & Certificate Email Sent to Intern!' : status}!`);
     } catch (err: any) {
       alert(`Failed to update status: ${err.message}`);
     }
