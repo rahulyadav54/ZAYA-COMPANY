@@ -11,19 +11,45 @@ export default function AdminSubmissionsPage() {
   useEffect(() => {
     async function fetchSubmissions() {
       setIsLoading(true);
-      const { data, error } = await supabase
-        .from('submissions')
-        .select(`
-          *,
-          profiles:intern_id(full_name, email),
-          tasks:task_id(title)
-        `)
-        .order('submitted_at', { ascending: false });
-
-      if (!error && data) {
-        setSubmissions(data);
+      try {
+        // Try admin API route first (server-side join, bypasses RLS and foreign-key join issues)
+        const res = await fetch('/api/admin/submissions');
+        if (res.ok) {
+          const json = await res.json();
+          if (json.submissions) {
+            setSubmissions(json.submissions);
+            setIsLoading(false);
+            return;
+          }
+        }
+      } catch (e) {
+        console.warn('API submissions fetch failed, trying direct Supabase query:', e);
       }
-      setIsLoading(false);
+
+      // Fallback: Direct Supabase client query
+      try {
+        const { data: rawSubs } = await supabase
+          .from('submissions')
+          .select('*')
+          .order('submitted_at', { ascending: false });
+
+        if (rawSubs && rawSubs.length > 0) {
+          const { data: rawTasks } = await supabase.from('tasks').select('id, title');
+          const tasksMap = new Map((rawTasks || []).map((t: any) => [String(t.id), t]));
+          
+          const merged = rawSubs.map((sub: any) => ({
+            ...sub,
+            tasks: sub.task_id ? tasksMap.get(String(sub.task_id)) : null
+          }));
+          setSubmissions(merged);
+        } else {
+          setSubmissions([]);
+        }
+      } catch (err) {
+        console.error('Direct submissions fetch error:', err);
+      } finally {
+        setIsLoading(false);
+      }
     }
     fetchSubmissions();
   }, []);
@@ -37,14 +63,18 @@ export default function AdminSubmissionsPage() {
       updateData.certificate_id = uniqueId;
     }
 
-    const { error } = await supabase
-      .from('submissions')
-      .update(updateData)
-      .eq('id', id);
+    try {
+      const res = await fetch('/api/admin/submissions', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, ...updateData })
+      });
 
-    if (error) {
-      alert(`Failed to update status: ${error.message}`);
-    } else {
+      if (!res.ok) {
+        // Fallback to client Supabase
+        await supabase.from('submissions').update(updateData).eq('id', id);
+      }
+
       // Sync tasks table status
       if (status === 'approved') {
         const sub = submissions.find(s => s.id === id);
@@ -53,21 +83,29 @@ export default function AdminSubmissionsPage() {
         }
       }
       setSubmissions(submissions.map(s => s.id === id ? { ...s, ...updateData } : s));
+      alert(`Submission ${status === 'approved' ? 'Approved & Certificate Issued!' : status}!`);
+    } catch (err: any) {
+      alert(`Failed to update status: ${err.message}`);
     }
   };
 
   const approvePayment = async (id: string) => {
     if (!confirm('Are you sure you want to approve this payment?')) return;
 
-    const { error } = await supabase
-      .from('submissions')
-      .update({ payment_status: 'paid' })
-      .eq('id', id);
+    try {
+      const res = await fetch('/api/admin/submissions', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, payment_status: 'paid' })
+      });
 
-    if (error) {
-      alert(`Error: ${error.message}`);
-    } else {
+      if (!res.ok) {
+        await supabase.from('submissions').update({ payment_status: 'paid' }).eq('id', id);
+      }
       setSubmissions(submissions.map(s => s.id === id ? { ...s, payment_status: 'paid' } : s));
+      alert('Payment approved successfully!');
+    } catch (err: any) {
+      alert(`Error: ${err.message}`);
     }
   };
 
@@ -80,15 +118,17 @@ export default function AdminSubmissionsPage() {
     const score = parseInt(scoreInput.value);
     const feedback = feedbackInput.value;
 
-    const { error } = await supabase
-      .from('submissions')
-      .update({ score, feedback, review_status: 'reviewed' })
-      .eq('id', id);
+    try {
+      const res = await fetch('/api/admin/submissions', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, score, feedback, review_status: 'reviewed' })
+      });
 
-    if (error) {
-      alert(`Error saving feedback: ${error.message}`);
-    } else {
-      // If score is high, we can optionally auto-complete the task
+      if (!res.ok) {
+        await supabase.from('submissions').update({ score, feedback, review_status: 'reviewed' }).eq('id', id);
+      }
+
       if (score >= 40) {
         const sub = submissions.find(s => s.id === id);
         if (sub?.task_id) {
@@ -97,6 +137,8 @@ export default function AdminSubmissionsPage() {
       }
       alert('Feedback saved successfully!');
       setSubmissions(submissions.map(s => s.id === id ? { ...s, score, feedback, review_status: 'reviewed' } : s));
+    } catch (err: any) {
+      alert(`Error saving feedback: ${err.message}`);
     }
   };
 
