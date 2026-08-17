@@ -100,16 +100,25 @@ export default function InternSubmitPage() {
         insertPayload.intern_id = userId;
       }
 
-      const { data: submission, error: submitError } = await supabase
+      let { data: submission, error: submitError } = await supabase
         .from('submissions')
         .insert(insertPayload)
         .select()
-        .single();
+        .maybeSingle();
 
-      if (submitError) throw submitError;
+      if (submitError && submitError.message.includes('schema cache')) {
+        // Resilient fallback: remove intern_email if column not in DB yet and retry
+        const safePayload = { ...insertPayload };
+        delete safePayload.intern_email;
+        const retry = await supabase.from('submissions').insert(safePayload).select().maybeSingle();
+        if (retry.error) throw retry.error;
+        submission = retry.data;
+      } else if (submitError) {
+        throw submitError;
+      }
 
       // 3. Update task status to submitted
-      await supabase.from('tasks').update({ status: 'submitted' }).eq('id', taskId);
+      await supabase.from('tasks').update({ status: 'submitted' }).eq('id', taskId).catch(e => console.warn('Task update notice:', e));
 
       // 4. Send "Submission Received" Email
       const selectedTask = tasks.find(t => t.id === taskId);
