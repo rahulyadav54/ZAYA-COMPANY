@@ -118,7 +118,11 @@ export default function InternSubmitPage() {
       }
 
       // 3. Update task status to submitted
-      await supabase.from('tasks').update({ status: 'submitted' }).eq('id', taskId).catch(e => console.warn('Task update notice:', e));
+      try {
+        await supabase.from('tasks').update({ status: 'submitted' }).eq('id', taskId);
+      } catch (taskErr) {
+        console.warn('Task update notice:', taskErr);
+      }
 
       // 4. Send "Submission Received" Email
       const selectedTask = tasks.find(t => t.id === taskId);
