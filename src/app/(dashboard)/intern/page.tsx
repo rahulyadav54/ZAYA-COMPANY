@@ -74,15 +74,33 @@ export default function InternDashboard() {
           }
         } catch (e) { console.error("Profile load failed", e); }
 
-        // Fetch Submissions
+        // Fetch Submissions — try by intern_id first, then fallback to email match
         let allSubmissions: any[] = [];
         try {
-           const { data: s } = await supabase
-             .from('submissions')
-             .select('*, tasks(title, duration_months)')
-             .eq('intern_id', user.id);
-           if (s) allSubmissions = s;
-        } catch (e) { console.error("Submissions load failed"); }
+          const { data: s1 } = await supabase
+            .from('submissions')
+            .select('*, tasks(title, duration_months)')
+            .eq('intern_id', user.id);
+          if (s1 && s1.length > 0) {
+            allSubmissions = s1;
+          } else if (user.email) {
+            // Fallback: look up by email in tasks assigned to this intern
+            const { data: s2 } = await supabase
+              .from('submissions')
+              .select('*, tasks(title, duration_months)')
+              .order('submitted_at', { ascending: false });
+            if (s2) {
+              // Filter to submissions whose task is assigned to this user's email
+              const userEmailLower = user.email.toLowerCase().trim();
+              const { data: userTasks } = await supabase
+                .from('tasks')
+                .select('id')
+                .or(`intern_email.eq.${userEmailLower},intern_id.eq.${user.id}`);
+              const userTaskIds = new Set((userTasks || []).map((t: any) => t.id));
+              allSubmissions = s2.filter((s: any) => userTaskIds.has(s.task_id));
+            }
+          }
+        } catch (e) { console.error("Submissions load failed", e); }
 
         // Fetch Tasks — match by intern_id (auth UUID) OR intern_email (bulk assignment)
         try {
@@ -116,10 +134,13 @@ export default function InternDashboard() {
                   })[0];
 
                 if (sub) {
-                   if (sub.review_status === 'approved') return { ...task, status: 'completed' };
-                   if (sub.review_status === 'pending') return { ...task, status: 'in review' };
-                   if (sub.review_status === 'rejected') return { ...task, status: 'rejected' };
+                   if (sub.review_status === 'approved') return { ...task, status: 'completed', submission: sub };
+                   if (sub.review_status === 'rejected') return { ...task, status: 'rejected', submission: sub };
+                   // Any other review_status (pending, reviewed, revision) = submitted / in review
+                   return { ...task, status: 'in review', submission: sub };
                 }
+                // Also check task's own status field (set to 'submitted' on form submit)
+                if (task.status === 'submitted') return { ...task, status: 'in review' };
                 return task;
              });
              setTasks(updatedTasks);
@@ -161,6 +182,7 @@ export default function InternDashboard() {
   }
 
   const completedCount = certificates.length;
+  const inReviewCount = tasks?.filter(t => t.status === 'in review').length || 0;
   const pendingCount = tasks?.filter(t => t.status !== 'completed' && t.status !== 'in review').length || 0;
 
   return (
@@ -182,11 +204,12 @@ export default function InternDashboard() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         {[
           { label: 'Completed', value: completedCount, icon: CheckCircle2, color: 'text-green-500', bg: 'bg-green-500/10' },
+          { label: 'In Review', value: inReviewCount, icon: Clock, color: 'text-blue-500', bg: 'bg-blue-500/10' },
           { label: 'Pending', value: pendingCount, icon: Clock, color: 'text-orange-500', bg: 'bg-orange-500/10' },
-          { label: 'Rewards', value: certificates.length, icon: Award, color: 'text-blue-500', bg: 'bg-blue-500/10' },
+          { label: 'Rewards', value: certificates.length, icon: Award, color: 'text-purple-500', bg: 'bg-purple-500/10' },
         ].map((stat) => (
           <div key={stat.label} className="p-8 bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-200 dark:border-slate-800 flex items-center gap-6 group hover:border-blue-500/30 transition-all">
             <div className={`p-5 rounded-2xl ${stat.bg} ${stat.color} group-hover:scale-110 transition-transform`}>

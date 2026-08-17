@@ -145,8 +145,8 @@ export default function AdminSubmissionsPage() {
                   <React.Fragment key={sub.id}>
                     <tr className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
                       <td className="px-6 py-4">
-                        <div className="font-bold text-foreground">{sub.profiles?.full_name || 'Unknown Intern'}</div>
-                        <div className="text-xs text-slate-500 dark:text-slate-400">{sub.profiles?.email}</div>
+                        <div className="font-bold text-foreground">{sub.cert_full_name || sub.profiles?.full_name || 'Unknown Intern'}</div>
+                        <div className="text-xs text-slate-500 dark:text-slate-400">{sub.profiles?.email || sub.cert_college || ''}</div>
                       </td>
                       <td className="px-6 py-4 text-foreground text-sm font-medium">
                         {sub.tasks?.title || 'Unknown Task'}

@@ -54,16 +54,25 @@ export default function InternCertificatesPage() {
       const { getActiveUser } = await import('@/lib/getActiveUser');
       const user = await getActiveUser();
       if (user) {
-        const { data, error } = await supabase
+        // First try by intern_id
+        const { data: d1 } = await supabase
           .from('submissions')
           .select('*, tasks(title, duration_months)')
           .eq('intern_id', user.id)
           .eq('review_status', 'approved');
 
-        if (error) {
-          console.error('Error fetching certificates:', error);
+        if (d1 && d1.length > 0) {
+          setCertificates(d1);
+        } else if (user.email) {
+          // Fallback: find by intern_email
+          const { data: d2 } = await supabase
+            .from('submissions')
+            .select('*, tasks(title, duration_months)')
+            .eq('intern_email', user.email.toLowerCase().trim())
+            .eq('review_status', 'approved');
+          setCertificates(d2 || []);
         } else {
-          setCertificates(data || []);
+          setCertificates([]);
         }
       }
       setIsLoading(false);

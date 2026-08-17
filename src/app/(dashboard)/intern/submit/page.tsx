@@ -78,10 +78,12 @@ export default function InternSubmitPage() {
         }
       }
 
-      // 2. Insert into submissions table (waived/free payment)
-      const { data: submission, error: submitError } = await supabase.from('submissions').insert({
+      // Check if the userId is a real UUID or a synthetic ID
+      const isSyntheticId = !userId || userId.startsWith('intern-');
+
+      // 2. Insert into submissions table
+      const insertPayload: any = {
         task_id: taskId,
-        intern_id: userId,
         github_link: githubLink,
         message: message,
         file_url: fileUrl,
@@ -89,8 +91,20 @@ export default function InternSubmitPage() {
         payment_status: 'waived',
         cert_full_name: certFullName,
         cert_college: certCollege,
-        cert_dept: certDept
-      }).select().single();
+        cert_dept: certDept,
+        intern_email: userEmail,  // always store email for fallback lookup
+      };
+
+      // Only set intern_id if it's a real UUID (not synthetic) to avoid FK violation
+      if (!isSyntheticId) {
+        insertPayload.intern_id = userId;
+      }
+
+      const { data: submission, error: submitError } = await supabase
+        .from('submissions')
+        .insert(insertPayload)
+        .select()
+        .single();
 
       if (submitError) throw submitError;
 
@@ -117,6 +131,7 @@ export default function InternSubmitPage() {
       setIsSubmitting(false);
     }
   };
+
 
   if (isSubmittedSuccess) {
     return (
