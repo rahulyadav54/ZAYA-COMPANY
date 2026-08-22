@@ -24,10 +24,12 @@ interface Purchase {
 }
 
 const CATEGORIES = ['All', 'IT', 'Product', 'Service-Based', 'Testing', 'Other'];
+const ACCESS_TOKEN_KEY = 'zaya_placement_access_token';
 
 export default function PlacementDashboardPage() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
+  const [accessToken, setAccessToken] = useState('');
   const [purchase, setPurchase] = useState<Purchase | null>(null);
   const [companies, setCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState(true);
@@ -37,21 +39,42 @@ export default function PlacementDashboardPage() {
   useEffect(() => {
     async function init() {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.user) { router.replace('/login'); return; }
-      setUser(session.user);
+      const guestToken = window.localStorage.getItem(ACCESS_TOKEN_KEY) || '';
 
-      // Verify payment
-      const { data: purchaseData } = await supabase
-        .from('placement_purchases')
-        .select('amount_inr, razorpay_payment_id, purchased_at, status')
-        .eq('user_id', session.user.id)
-        .single();
+      if (session?.user) {
+        setUser(session.user);
+        const { data: purchaseData } = await supabase
+          .from('placement_purchases')
+          .select('amount_inr, razorpay_payment_id, purchased_at, status, guest_access_token')
+          .eq('user_id', session.user.id)
+          .maybeSingle();
 
-      if (!purchaseData || purchaseData.status !== 'paid') {
+        if (!purchaseData || purchaseData.status !== 'paid') {
+          router.replace('/placement-prep');
+          return;
+        }
+
+        setPurchase(purchaseData);
+        setAccessToken(purchaseData.guest_access_token || guestToken);
+      } else if (guestToken) {
+        const res = await fetch(`/api/placement/check-access?token=${encodeURIComponent(guestToken)}`);
+        const data = await res.json();
+        if (!data.hasAccess) {
+          router.replace('/placement-prep');
+          return;
+        }
+
+        setAccessToken(guestToken);
+        setPurchase({
+          amount_inr: 199,
+          razorpay_payment_id: data.payment_id || null,
+          purchased_at: new Date().toISOString(),
+          status: 'paid',
+        });
+      } else {
         router.replace('/placement-prep');
         return;
       }
-      setPurchase(purchaseData);
 
       // Load companies (safe fields — no drive_link)
       const { data } = await supabase
@@ -169,7 +192,7 @@ export default function PlacementDashboardPage() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredCompanies.map(company => (
-              <CompanyCard key={company.id} company={company} isPaid={true} />
+              <CompanyCard key={company.id} company={company} isPaid={true} accessToken={accessToken} />
             ))}
           </div>
         )}

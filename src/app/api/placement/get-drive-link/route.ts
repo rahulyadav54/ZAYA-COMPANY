@@ -5,34 +5,41 @@ export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const companyId = searchParams.get('company_id');
+    const accessToken = searchParams.get('token') || req.headers.get('X-Placement-Token');
     if (!companyId) {
       return NextResponse.json({ error: 'Missing company_id' }, { status: 400 });
     }
 
-    // Authenticate the user
     const authHeader = req.headers.get('Authorization');
-    if (!authHeader) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-    const token = authHeader.replace('Bearer ', '');
 
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
     const supabaseAnon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
     const supabaseService = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
-    const supabaseUser = createClient(supabaseUrl, supabaseAnon);
-    const { data: { user }, error: authError } = await supabaseUser.auth.getUser(token);
-    if (authError || !user) {
+    // Check payment status using service role
+    const supabaseAdmin = createClient(supabaseUrl, supabaseService);
+
+    let purchaseQuery = supabaseAdmin
+      .from('placement_purchases')
+      .select('status, user_id, guest_access_token')
+      .eq('guest_access_token', accessToken || '');
+
+    if (authHeader) {
+      const token = authHeader.replace('Bearer ', '');
+      const supabaseUser = createClient(supabaseUrl, supabaseAnon);
+      const { data: { user }, error: authError } = await supabaseUser.auth.getUser(token);
+      if (authError || !user) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      }
+      purchaseQuery = supabaseAdmin
+        .from('placement_purchases')
+        .select('status, user_id, guest_access_token')
+        .eq('user_id', user.id);
+    } else if (!accessToken) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Check payment status using service role
-    const supabaseAdmin = createClient(supabaseUrl, supabaseService);
-    const { data: purchase } = await supabaseAdmin
-      .from('placement_purchases')
-      .select('status')
-      .eq('user_id', user.id)
-      .single();
+    const { data: purchase } = await purchaseQuery.maybeSingle();
 
     if (!purchase || purchase.status !== 'paid') {
       return NextResponse.json({ error: 'Access denied. Purchase placement access first.' }, { status: 403 });

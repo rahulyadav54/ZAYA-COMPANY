@@ -16,22 +16,26 @@ interface Company {
 interface CompanyCardProps {
   company: Company;
   isPaid: boolean;
+  accessToken?: string;
 }
 
-export default function CompanyCard({ company, isPaid }: CompanyCardProps) {
+export default function CompanyCard({ company, isPaid, accessToken }: CompanyCardProps) {
   const [loading, setLoading] = useState(false);
 
   async function handleOpenKit() {
     setLoading(true);
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        window.location.href = '/login';
+      const token = session?.access_token || accessToken || window.localStorage.getItem('zaya_placement_access_token') || '';
+      if (!token) {
+        window.location.href = '/placement-prep';
         return;
       }
 
       const res = await fetch(`/api/placement/get-drive-link?company_id=${company.id}`, {
-        headers: { Authorization: `Bearer ${session.access_token}` },
+        headers: session?.access_token
+          ? { Authorization: `Bearer ${session.access_token}` }
+          : { 'X-Placement-Token': token },
       });
       const data = await res.json();
 

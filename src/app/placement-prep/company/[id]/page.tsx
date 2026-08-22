@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
 import { Building2, ExternalLink, ArrowLeft, CheckCircle, Lock, Loader2 } from 'lucide-react';
+const ACCESS_TOKEN_KEY = 'zaya_placement_access_token';
 
 interface Company {
   id: string;
@@ -49,10 +50,13 @@ export default function CompanyDetailPage() {
     setOpening(true);
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) { router.push('/login'); return; }
+      const token = session?.access_token || window.localStorage.getItem(ACCESS_TOKEN_KEY) || '';
+      if (!token) { router.push('/placement-prep'); return; }
 
       const res = await fetch(`/api/placement/get-drive-link?company_id=${id}`, {
-        headers: { Authorization: `Bearer ${session.access_token}` },
+        headers: session?.access_token
+          ? { Authorization: `Bearer ${session.access_token}` }
+          : { 'X-Placement-Token': token },
       });
       const data = await res.json();
       if (res.ok && data.drive_link) {
