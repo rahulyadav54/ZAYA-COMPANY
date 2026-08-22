@@ -28,7 +28,7 @@ export async function POST(req: Request) {
     const supabaseAdmin = createClient(supabaseUrl, supabaseService);
     const { data: purchase } = await supabaseAdmin
       .from('placement_purchases')
-      .select('id, user_id, guest_access_token, status, razorpay_order_id')
+      .select('id, user_id, guest_access_token, status, razorpay_order_id, guest_phone, guest_email, guest_name')
       .eq('razorpay_order_id', body.razorpay_order_id)
       .maybeSingle();
 

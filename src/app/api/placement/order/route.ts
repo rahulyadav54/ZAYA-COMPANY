@@ -8,6 +8,7 @@ const PLACEMENT_AMOUNT_INR = 199;
 type OrderRequestBody = {
   guest_email?: string;
   guest_name?: string;
+  guest_phone?: string;
   access_token?: string;
 };
 
@@ -32,10 +33,11 @@ export async function POST(req: Request) {
     const body = (await req.json()) as OrderRequestBody;
     const guestEmail = body.guest_email?.trim().toLowerCase() || '';
     const guestName = body.guest_name?.trim() || '';
+    const guestPhone = body.guest_phone?.trim() || '';
     const accessToken = body.access_token?.trim() || crypto.randomUUID();
 
-    if (!user && !guestEmail) {
-      return NextResponse.json({ error: 'Email is required for guest checkout' }, { status: 400 });
+    if (!user && (!guestName || !guestPhone || !guestEmail)) {
+      return NextResponse.json({ error: 'Name, phone, and email are required for guest checkout' }, { status: 400 });
     }
 
     const supabaseAdmin = createClient(supabaseUrl, supabaseService);
@@ -66,6 +68,7 @@ export async function POST(req: Request) {
         user_id: user?.id || '',
         guest_email: guestEmail,
         guest_name: guestName,
+        guest_phone: guestPhone,
         access_token: accessToken,
         purpose: 'placement_prep_access',
       },
@@ -75,6 +78,7 @@ export async function POST(req: Request) {
       user_id: user?.id || null,
       guest_email: guestEmail || null,
       guest_name: guestName || null,
+      guest_phone: guestPhone || null,
       guest_access_token: accessToken,
       amount_inr: PLACEMENT_AMOUNT_INR,
       razorpay_order_id: order.id,

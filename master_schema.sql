@@ -393,6 +393,7 @@ CREATE TABLE IF NOT EXISTS public.placement_purchases (
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
   guest_email TEXT,
   guest_name TEXT,
+  guest_phone TEXT,
   guest_access_token TEXT UNIQUE,
   amount_inr INTEGER NOT NULL DEFAULT 199,
   razorpay_order_id TEXT,
@@ -405,6 +406,7 @@ CREATE TABLE IF NOT EXISTS public.placement_purchases (
 ALTER TABLE public.placement_purchases ALTER COLUMN user_id DROP NOT NULL;
 ALTER TABLE public.placement_purchases ADD COLUMN IF NOT EXISTS guest_email TEXT;
 ALTER TABLE public.placement_purchases ADD COLUMN IF NOT EXISTS guest_name TEXT;
+ALTER TABLE public.placement_purchases ADD COLUMN IF NOT EXISTS guest_phone TEXT;
 ALTER TABLE public.placement_purchases ADD COLUMN IF NOT EXISTS guest_access_token TEXT;
 
 -- Enable RLS

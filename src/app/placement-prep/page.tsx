@@ -63,7 +63,7 @@ type RazorpayOptions = {
   name: string;
   description: string;
   order_id: string;
-  prefill: { email: string };
+  prefill: { email: string; contact: string; name: string };
   theme: { color: string };
   handler: (response: RazorpayResponse) => Promise<void>;
   modal: { ondismiss: () => void };
@@ -79,6 +79,7 @@ type RazorpayConstructor = new (options: RazorpayOptions) => RazorpayInstance;
 const ACCESS_TOKEN_KEY = 'zaya_placement_access_token';
 const GUEST_EMAIL_KEY = 'zaya_placement_guest_email';
 const GUEST_NAME_KEY = 'zaya_placement_guest_name';
+const GUEST_PHONE_KEY = 'zaya_placement_guest_phone';
 
 const CATEGORIES = ['All', 'IT', 'Product', 'Service-Based', 'Testing', 'Other'];
 
@@ -166,6 +167,8 @@ export default function PlacementPrepPage() {
   const [accessState, setAccessState] = useState<AccessState>('loading');
   const [guestName, setGuestName] = useState('');
   const [guestEmail, setGuestEmail] = useState('');
+  const [guestPhone, setGuestPhone] = useState('');
+  const [checkoutError, setCheckoutError] = useState('');
   const [contactMessage, setContactMessage] = useState('');
 
   useEffect(() => {
@@ -173,9 +176,11 @@ export default function PlacementPrepPage() {
       const storedToken = window.localStorage.getItem(ACCESS_TOKEN_KEY);
       const storedEmail = window.localStorage.getItem(GUEST_EMAIL_KEY);
       const storedName = window.localStorage.getItem(GUEST_NAME_KEY);
+      const storedPhone = window.localStorage.getItem(GUEST_PHONE_KEY);
 
       if (storedEmail) setGuestEmail(storedEmail);
       if (storedName) setGuestName(storedName);
+      if (storedPhone) setGuestPhone(storedPhone);
 
       const { data: { session } } = await supabase.auth.getSession();
       const currentUser = session?.user ?? null;
@@ -230,20 +235,23 @@ export default function PlacementPrepPage() {
 
   async function handlePayment() {
     const email = (user?.email || guestEmail).trim();
-    if (!email) {
-      alert('Please enter your email to continue.');
+    const name = guestName.trim() || user?.user_metadata?.full_name?.trim() || '';
+    const phone = guestPhone.trim();
+
+    if (!name || !phone || !email) {
+      setCheckoutError('Please enter your name, phone number, and Gmail to continue.');
       return;
     }
 
     setPaying(true);
+    setCheckoutError('');
     try {
       const accessToken = getAccessToken();
       const { data: { session } } = await supabase.auth.getSession();
 
-      if (guestName.trim()) {
-        window.localStorage.setItem(GUEST_NAME_KEY, guestName.trim());
-      }
+      window.localStorage.setItem(GUEST_NAME_KEY, name);
       window.localStorage.setItem(GUEST_EMAIL_KEY, email);
+      window.localStorage.setItem(GUEST_PHONE_KEY, phone);
 
       const orderRes = await fetch('/api/placement/order', {
         method: 'POST',
@@ -253,14 +261,15 @@ export default function PlacementPrepPage() {
         },
         body: JSON.stringify({
           guest_email: email,
-          guest_name: guestName.trim(),
+          guest_name: name,
+          guest_phone: phone,
           access_token: accessToken,
         }),
       });
 
       const orderData = (await orderRes.json()) as RazorpayOrder;
       if (!orderRes.ok) {
-        alert(orderData.error || 'Failed to initiate payment');
+        setCheckoutError(orderData.error || 'Failed to initiate payment');
         return;
       }
 
@@ -291,7 +300,7 @@ export default function PlacementPrepPage() {
         name: 'ZAYA CODE HUB',
         description: '₹199 Placement Bundle - Lifetime Access',
         order_id: orderData.id,
-        prefill: { email },
+        prefill: { email, contact: phone, name },
         theme: { color: '#2563eb' },
         handler: async (response: RazorpayResponse) => {
           try {
@@ -328,7 +337,7 @@ export default function PlacementPrepPage() {
       rzp.on('payment.failed', () => router.push('/placement-prep/payment-failed'));
       rzp.open();
     } catch (e: unknown) {
-      alert(e instanceof Error ? e.message : 'Payment initiation failed');
+      setCheckoutError(e instanceof Error ? e.message : 'Payment initiation failed');
       setPaying(false);
     }
   }
@@ -421,6 +430,16 @@ export default function PlacementPrepPage() {
 
               <div className="mt-6 grid gap-4">
                 <label className="grid gap-2">
+                  <span className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Name</span>
+                  <input
+                    type="text"
+                    value={guestName}
+                    onChange={(e) => setGuestName(e.target.value)}
+                    placeholder="Your name"
+                    className="rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-sm text-white outline-none ring-0 placeholder:text-slate-500 focus:border-blue-400"
+                  />
+                </label>
+                <label className="grid gap-2">
                   <span className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Email</span>
                   <input
                     type="email"
@@ -431,16 +450,23 @@ export default function PlacementPrepPage() {
                   />
                 </label>
                 <label className="grid gap-2">
-                  <span className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Name</span>
+                  <span className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Phone</span>
                   <input
-                    type="text"
-                    value={guestName}
-                    onChange={(e) => setGuestName(e.target.value)}
-                    placeholder="Your name"
+                    type="tel"
+                    inputMode="tel"
+                    value={guestPhone}
+                    onChange={(e) => setGuestPhone(e.target.value)}
+                    placeholder="10-digit mobile number"
                     className="rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-sm text-white outline-none ring-0 placeholder:text-slate-500 focus:border-blue-400"
                   />
                 </label>
               </div>
+
+              {checkoutError && (
+                <div className="mt-4 rounded-2xl border border-rose-500/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-100">
+                  {checkoutError}
+                </div>
+              )}
 
               <button
                 onClick={handlePayment}
