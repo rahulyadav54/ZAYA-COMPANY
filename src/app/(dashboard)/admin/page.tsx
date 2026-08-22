@@ -302,7 +302,7 @@ export default function AdminDashboard() {
                             </span>
                           </td>
                           <td className="px-6 py-4 text-xs text-slate-500">
-                            {new Date(app.applied_at || app.created_at).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' })}
+                            {formatAdminDate(app.applied_at ?? app.created_at)}
                           </td>
                           <td className="px-6 py-4">
                             <span className={`px-3 py-1 rounded-full text-[11px] font-extrabold tracking-wide uppercase inline-flex items-center gap-1.5 ${
@@ -428,4 +428,9 @@ export default function AdminDashboard() {
       </div>
     </div>
   );
+}
+
+function formatAdminDate(value: string | null | undefined) {
+  if (!value) return 'N/A';
+  return new Date(value).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
 }

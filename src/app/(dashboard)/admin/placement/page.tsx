@@ -425,7 +425,16 @@ export default function AdminPlacementPage() {
               {editingCompany ? 'Edit Company' : 'Add New Company'}
             </h3>
             <CompanyForm
-              initial={editingCompany}
+              initial={editingCompany ? {
+                id: editingCompany.id,
+                company_name: editingCompany.company_name,
+                company_image: editingCompany.company_image ?? '',
+                drive_link: editingCompany.drive_link ?? '',
+                description: editingCompany.description ?? '',
+                category: editingCompany.category ?? 'IT',
+                status: editingCompany.status,
+                display_order: editingCompany.display_order,
+              } : undefined}
               onSuccess={() => { setShowModal(false); setEditingCompany(undefined); fetchData(); }}
               onCancel={() => { setShowModal(false); setEditingCompany(undefined); }}
             />
