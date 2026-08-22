@@ -23,8 +23,24 @@ import Link from 'next/link';
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState({ totalApps: 0, activeInterns: 0, pendingReviews: 0, totalRevenue: 0 });
-  const [recentApps, setRecentApps] = useState<any[]>([]);
-  const [recentActiveInterns, setRecentActiveInterns] = useState<any[]>([]);
+  type ApplicationRecord = {
+    id: string;
+    full_name: string | null;
+    email: string;
+    position: string;
+    applied_at?: string | null;
+    created_at?: string | null;
+    status: string;
+  };
+  type ActiveInternRecord = {
+    id: string;
+    full_name: string | null;
+    position: string | null;
+    last_login: string;
+    login_count: number | null;
+  };
+  const [recentApps, setRecentApps] = useState<ApplicationRecord[]>([]);
+  const [recentActiveInterns, setRecentActiveInterns] = useState<ActiveInternRecord[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isSendingEmails, setIsSendingEmails] = useState(false);
@@ -43,8 +59,8 @@ export default function AdminDashboard() {
       } else {
         alert(json.message || `Task notification emails sent successfully!`);
       }
-    } catch (err: any) {
-      alert(`Network error: ${err.message}`);
+    } catch (err: unknown) {
+      alert(`Network error: ${err instanceof Error ? err.message : 'Unknown error'}`);
     } finally {
       setIsSendingEmails(false);
     }
@@ -53,16 +69,16 @@ export default function AdminDashboard() {
   const fetchData = async () => {
     setIsRefreshing(true);
     
-    let applicationList: any[] = [];
+    let applicationList: ApplicationRecord[] = [];
     
     // 1. Try fetching applications via API route first (bypasses browser RLS)
     try {
       const res = await fetch('/api/admin/applications');
-      const json = await res.json();
+      const json = (await res.json()) as { success?: boolean; applications?: ApplicationRecord[] };
       if (json.success && Array.isArray(json.applications) && json.applications.length > 0) {
         applicationList = json.applications;
       }
-    } catch (e) {
+    } catch (e: unknown) {
       console.warn("API applications fetch error:", e);
     }
 
@@ -74,7 +90,7 @@ export default function AdminDashboard() {
         .order('applied_at', { ascending: false });
 
       if (apps && apps.length > 0) {
-        applicationList = apps;
+        applicationList = apps as ApplicationRecord[];
       }
     }
 
@@ -82,11 +98,11 @@ export default function AdminDashboard() {
     let activeInternCount = 0;
     try {
       const resInt = await fetch('/api/admin/interns');
-      const jsonInt = await resInt.json();
+      const jsonInt = (await resInt.json()) as { success?: boolean; interns?: ActiveInternRecord[] };
       if (jsonInt.success && Array.isArray(jsonInt.interns)) {
         activeInternCount = jsonInt.interns.length;
       }
-    } catch (e) {
+    } catch (e: unknown) {
       console.warn('API interns count error:', e);
     }
 
@@ -135,7 +151,10 @@ export default function AdminDashboard() {
   };
 
   useEffect(() => {
-    fetchData();
+    const timer = window.setTimeout(() => {
+      void fetchData();
+    }, 0);
+    return () => window.clearTimeout(timer);
   }, []);
 
   return (
@@ -390,6 +409,16 @@ export default function AdminDashboard() {
                     <FileText className="h-4 w-4" />
                   </div>
                   <span className="font-bold text-xs text-slate-800 dark:text-slate-200">Broadcast Announcement</span>
+                </div>
+                <ArrowUpRight className="h-4 w-4 text-slate-400 group-hover:text-blue-600 transition-colors" />
+              </Link>
+
+              <Link href="/admin/placement" className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200/80 dark:border-slate-800 hover:border-blue-500/50 hover:bg-blue-50/50 dark:hover:bg-blue-900/20 transition-all group">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                    <ShieldCheck className="h-4 w-4" />
+                  </div>
+                  <span className="font-bold text-xs text-slate-800 dark:text-slate-200">Manage Placement Portal</span>
                 </div>
                 <ArrowUpRight className="h-4 w-4 text-slate-400 group-hover:text-blue-600 transition-colors" />
               </Link>

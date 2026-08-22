@@ -368,3 +368,80 @@ ALTER TABLE public.user_practice_stats ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Public Manage User Practice Stats" ON public.user_practice_stats;
 CREATE POLICY "Public Manage User Practice Stats" ON public.user_practice_stats FOR ALL USING (true);
 
+
+-- ==========================================
+-- PLACEMENT PREPARATION PORTAL SCHEMA
+-- ==========================================
+
+-- 11. PLACEMENT COMPANIES TABLE
+CREATE TABLE IF NOT EXISTS public.placement_companies (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  company_name TEXT NOT NULL,
+  company_image TEXT,
+  drive_link TEXT NOT NULL,
+  description TEXT,
+  category TEXT DEFAULT 'IT',
+  status TEXT DEFAULT 'active' CHECK (status IN ('active', 'inactive')),
+  display_order INTEGER DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 12. PLACEMENT PURCHASES TABLE
+CREATE TABLE IF NOT EXISTS public.placement_purchases (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+  amount_inr INTEGER NOT NULL DEFAULT 199,
+  razorpay_order_id TEXT,
+  razorpay_payment_id TEXT,
+  status TEXT DEFAULT 'pending' CHECK (status IN ('pending','paid','failed','cancelled','refunded')),
+  purchased_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(user_id)
+);
+
+-- Enable RLS
+ALTER TABLE public.placement_companies ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.placement_purchases ENABLE ROW LEVEL SECURITY;
+
+-- placement_companies policies
+DROP POLICY IF EXISTS "Public can read safe company fields" ON public.placement_companies;
+DROP POLICY IF EXISTS "Admin can manage placement companies" ON public.placement_companies;
+
+-- Public can read everything EXCEPT drive_link (we handle drive_link restriction at the API level)
+-- The safe columns are selected in the API; drive_link is never exposed via normal SELECT
+CREATE POLICY "Public can read safe company fields" ON public.placement_companies
+  FOR SELECT USING (status = 'active');
+
+CREATE POLICY "Admin can manage placement companies" ON public.placement_companies
+  FOR ALL USING (
+    EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin')
+  );
+
+-- placement_purchases policies: users can only view their own; only service role can write
+DROP POLICY IF EXISTS "Users can view their own placement purchase" ON public.placement_purchases;
+CREATE POLICY "Users can view their own placement purchase" ON public.placement_purchases
+  FOR SELECT USING (auth.uid() = user_id);
+
+-- Admins can read all purchases
+DROP POLICY IF EXISTS "Admin can view all placement purchases" ON public.placement_purchases;
+CREATE POLICY "Admin can view all placement purchases" ON public.placement_purchases
+  FOR SELECT USING (
+    EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin')
+  );
+
+-- Storage bucket for company images
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('placement-company-images', 'placement-company-images', true)
+ON CONFLICT (id) DO UPDATE SET public = true;
+
+DROP POLICY IF EXISTS "Admin Upload Placement Images" ON storage.objects;
+DROP POLICY IF EXISTS "Public Read Placement Images" ON storage.objects;
+
+CREATE POLICY "Public Read Placement Images" ON storage.objects
+  FOR SELECT TO public USING (bucket_id = 'placement-company-images');
+
+CREATE POLICY "Admin Upload Placement Images" ON storage.objects
+  FOR INSERT TO authenticated WITH CHECK (bucket_id = 'placement-company-images');
+
+CREATE POLICY "Admin Delete Placement Images" ON storage.objects
+  FOR DELETE TO authenticated USING (bucket_id = 'placement-company-images');

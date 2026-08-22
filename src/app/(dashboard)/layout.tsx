@@ -103,10 +103,6 @@ export default function DashboardLayout({
   React.useEffect(() => {
     if (!userId || isAdminPath) return;
 
-    if (pathname === '/intern/messages') {
-      setHasNewMessage(false);
-    }
-
     const channel = supabase
       .channel('message_notifications')
       .on('postgres_changes', { 
@@ -157,6 +153,7 @@ export default function DashboardLayout({
   }
 
   const isAdmin = isAdminPath;
+  const showNewMessage = hasNewMessage && pathname !== '/intern/messages';
 
   const links = isAdmin 
     ? [
@@ -172,6 +169,7 @@ export default function DashboardLayout({
           { name: 'Messages', href: '/admin/messages', icon: Mail },
           { name: 'Manage Careers', href: '/admin/careers', icon: Briefcase },
           { name: 'Manage Magazine', href: '/admin/magazine', icon: Newspaper },
+          { name: 'Placement Portal', href: '/admin/placement', icon: Briefcase },
         ]},
         { section: 'SYSTEM', items: [
           { name: 'Settings', href: '/admin/settings', icon: Settings },
@@ -264,7 +262,7 @@ export default function DashboardLayout({
                           <span>{link.name}</span>
                         </div>
 
-                        {link.name === 'Messages' && hasNewMessage && !pathname.includes(link.href) && (
+                        {link.name === 'Messages' && showNewMessage && !pathname.includes(link.href) && (
                           <span className="w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse shadow-md shadow-red-500/50" />
                         )}
                       </Link>
@@ -316,7 +314,7 @@ export default function DashboardLayout({
               title="Notifications"
             >
               <Bell className="h-5 w-5" />
-              {hasNewMessage && (
+              {showNewMessage && (
                 <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white dark:border-slate-900 animate-pulse" />
               )}
             </button>

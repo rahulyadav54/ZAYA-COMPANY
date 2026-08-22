@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Code2, Moon, Sun, User as UserIcon } from 'lucide-react';
+import { Menu, X, Moon, Sun, User as UserIcon } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/lib/supabaseClient';
@@ -14,6 +14,7 @@ const navLinks = [
   { name: 'Home', href: '/' },
   { name: 'AI ZAYA', href: '/ai-zaya', badge: 'NEW' },
   { name: 'Practice Tests', href: '/practice', badge: 'FREE' },
+  { name: 'Placement Prep', href: '/placement-prep', badge: 'PAID' },
   { name: 'About', href: '/about' },
   { name: 'Services', href: '/services' },
   { name: 'Portfolio', href: '/portfolio' },
@@ -25,7 +26,10 @@ const navLinks = [
 function ThemeToggle() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    const id = window.setTimeout(() => setMounted(true), 0);
+    return () => window.clearTimeout(id);
+  }, []);
   if (!mounted) return <div className="w-9 h-9" />;
   return (
     <button
@@ -41,7 +45,11 @@ function ThemeToggle() {
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [user, setUser] = useState<any>(null);
+  type SessionUser = {
+    id: string;
+    email?: string | null;
+  };
+  const [user, setUser] = useState<SessionUser | null>(null);
   const [role, setRole] = useState<string>('intern');
   const pathname = usePathname();
 
@@ -52,7 +60,7 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
-    const fetchUserAndRole = async (sessionUser: any) => {
+    const fetchUserAndRole = async (sessionUser: SessionUser | null) => {
       setUser(sessionUser);
       if (sessionUser) {
         const { data } = await supabase.from('profiles').select('role').eq('id', sessionUser.id).maybeSingle();
