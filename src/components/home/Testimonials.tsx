@@ -48,10 +48,10 @@ export default function Testimonials() {
     <section className="py-20 sm:py-24 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-200 dark:border-slate-800 transition-colors duration-300">
       <div className="container mx-auto px-4 sm:px-6">
         <div className="max-w-3xl mx-auto text-center mb-16 space-y-3">
-          <span className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20">
+          <span className="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-widest">
             TESTIMONIALS & REVIEWS
           </span>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-slate-900 dark:text-white">
             What Our Partners & Alumni Say
           </h2>
           <p className="text-slate-600 dark:text-slate-300 text-base sm:text-lg">
@@ -67,19 +67,19 @@ export default function Testimonials() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
-              className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-xl transition-all flex flex-col justify-between"
+              className="p-6 sm:p-8 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
             >
               <div>
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center space-x-3">
-                    <div className={`w-12 h-12 rounded-2xl bg-gradient-to-tr ${t.gradient} text-white font-extrabold text-base flex items-center justify-center shadow-md shrink-0`}>
+                    <div className={`w-12 h-12 rounded-xl bg-gradient-to-tr ${t.gradient} text-white font-bold text-base flex items-center justify-center shadow-sm shrink-0`}>
                       {t.initials}
                     </div>
                     <div>
-                      <h4 className="font-extrabold text-slate-900 dark:text-white text-base leading-tight">
+                      <h4 className="font-bold text-slate-900 dark:text-white text-base leading-tight">
                         {t.name}
                       </h4>
-                      <p className="text-xs font-semibold text-blue-600 dark:text-blue-400 mt-0.5">
+                      <p className="text-xs font-medium text-blue-600 dark:text-blue-400 mt-0.5">
                         {t.role}
                       </p>
                     </div>
@@ -100,10 +100,10 @@ export default function Testimonials() {
                       className="h-4 w-4 text-amber-400 fill-amber-400"
                     />
                   ))}
-                  <span className="font-bold text-slate-700 dark:text-slate-300 ml-1">5.0</span>
+                  <span className="font-semibold text-slate-700 dark:text-slate-300 ml-1">5.0</span>
                 </div>
 
-                <div className="flex items-center gap-1 text-slate-500 dark:text-slate-400 font-semibold">
+                <div className="flex items-center gap-1 text-slate-500 dark:text-slate-400 font-medium">
                   <MapPin className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
                   <span>{t.location}</span>
                 </div>

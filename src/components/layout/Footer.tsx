@@ -8,7 +8,7 @@ import { Globe, ExternalLink, GitFork, Mail, Phone, MapPin } from 'lucide-react'
 
 const footerLinks = {
   company: [
-    { name: 'AI ZAYA App', href: '/ai-zaya', badge: 'NEW' },
+    { name: 'AI ZAYA App', href: '/ai-zaya' },
     { name: 'About Us', href: '/about' },
     { name: 'Careers', href: '/careers' },
     { name: 'Portfolio', href: '/portfolio' },
@@ -40,13 +40,13 @@ export default function Footer() {
   if (isDashboard) return null;
 
   return (
-    <footer className="bg-slate-900 dark:bg-slate-950 border-t border-slate-800 pt-16 pb-8">
+    <footer className="bg-slate-50 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 pt-16 pb-8">
       <div className="container mx-auto px-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
           {/* Brand */}
           <div className="space-y-6">
-            <Logo size="md" forceWhite={true} />
-            <p className="text-slate-100 leading-relaxed font-bold">
+            <Logo size="md" forceWhite={false} />
+            <p className="text-slate-600 dark:text-slate-300 leading-relaxed text-sm">
               Empowering businesses through cutting-edge software solutions and nurturing the next generation of IT professionals.
             </p>
             <div className="flex space-x-4">
@@ -55,7 +55,7 @@ export default function Footer() {
                   key={social.label}
                   href={social.href}
                   aria-label={social.label}
-                  className="p-2.5 rounded-full bg-slate-800 text-slate-300 hover:bg-blue-600 hover:text-white transition-colors"
+                  className="p-2 rounded-lg bg-white dark:bg-slate-800 text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors border border-slate-200 dark:border-slate-700"
                 >
                   <social.icon className="h-5 w-5" />
                 </Link>
@@ -65,17 +65,12 @@ export default function Footer() {
 
           {/* Links */}
           <div>
-            <h4 className="font-bold text-lg mb-6 text-white">Company</h4>
-            <ul className="space-y-4">
+            <h4 className="font-semibold text-base mb-6 text-slate-900 dark:text-white">Company</h4>
+            <ul className="space-y-3">
               {footerLinks.company.map((link) => (
                 <li key={link.name}>
-                  <Link href={link.href} className="text-slate-100 hover:text-white transition-colors font-bold inline-flex items-center">
-                    <span>{link.name}</span>
-                    {link.badge && (
-                      <span className="px-2 py-0.5 text-[10px] font-extrabold rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/30 ml-2">
-                        {link.badge}
-                      </span>
-                    )}
+                  <Link href={link.href} className="text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-sm">
+                    {link.name}
                   </Link>
                 </li>
               ))}
@@ -83,11 +78,11 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4 className="font-bold text-lg mb-6 text-white">Services</h4>
-            <ul className="space-y-4">
+            <h4 className="font-semibold text-base mb-6 text-slate-900 dark:text-white">Services</h4>
+            <ul className="space-y-3">
               {footerLinks.services.map((link) => (
                 <li key={link.name}>
-                  <Link href={link.href} className="text-slate-100 hover:text-white transition-colors font-bold">
+                  <Link href={link.href} className="text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-sm">
                     {link.name}
                   </Link>
                 </li>
@@ -97,31 +92,31 @@ export default function Footer() {
 
           {/* Contact Info */}
           <div className="space-y-6">
-            <h4 className="font-bold text-lg mb-6 text-white">Get in Touch</h4>
+            <h4 className="font-semibold text-base mb-6 text-slate-900 dark:text-white">Get in Touch</h4>
             <div className="space-y-4">
-              <div className="flex items-start space-x-3 text-slate-100 font-bold">
-                <MapPin className="h-5 w-5 text-blue-500 mt-1 shrink-0" />
+              <div className="flex items-start space-x-3 text-slate-600 dark:text-slate-300 text-sm">
+                <MapPin className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5 shrink-0" />
                 <span>Subramania Nagar, Salem, Tamil Nadu – 636005</span>
               </div>
-              <div className="flex items-center space-x-3 text-slate-100 font-bold">
-                <Phone className="h-5 w-5 text-blue-500 shrink-0" />
+              <div className="flex items-center space-x-3 text-slate-600 dark:text-slate-300 text-sm">
+                <Phone className="h-5 w-5 text-blue-600 dark:text-blue-400 shrink-0" />
                 <span>+91 7033399183</span>
               </div>
-              <div className="flex items-center space-x-3 text-slate-100 font-bold">
-                <Mail className="h-5 w-5 text-blue-500 shrink-0" />
+              <div className="flex items-center space-x-3 text-slate-600 dark:text-slate-300 text-sm">
+                <Mail className="h-5 w-5 text-blue-600 dark:text-blue-400 shrink-0" />
                 <span>zayacodehub@gmail.com</span>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-          <p className="text-sm text-slate-200 font-bold">
+        <div className="border-t border-slate-200 dark:border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+          <p className="text-sm text-slate-500">
             © {new Date().getFullYear()} ZAYA CODE HUB. All rights reserved.
           </p>
           <div className="flex space-x-6">
             {footerLinks.legal.map((link) => (
-              <Link key={link.name} href={link.href} className="text-sm text-slate-200 hover:text-white transition-colors font-bold">
+              <Link key={link.name} href={link.href} className="text-sm text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
                 {link.name}
               </Link>
             ))}

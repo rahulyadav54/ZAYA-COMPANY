@@ -231,7 +231,7 @@ export default function CareersPage() {
                     <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0 pt-4 md:pt-0 border-t md:border-t-0 border-slate-100 dark:border-slate-800">
                       <button
                         onClick={() => setDetailPosition(pos)}
-                        className="px-5 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold text-sm transition-all flex items-center justify-center gap-2 border border-slate-200 dark:border-slate-700"
+                        className="px-5 py-3 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-medium text-sm transition-colors flex items-center justify-center gap-2 border border-slate-200 dark:border-slate-700"
                       >
                         <Eye className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                         <span>View Details</span>
@@ -239,7 +239,7 @@ export default function CareersPage() {
 
                       <button
                         onClick={() => setApplyPositionTitle(pos.title)}
-                        className="px-6 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-sm shadow-md shadow-blue-600/20 hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-1.5"
+                        className="px-6 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm transition-colors flex items-center justify-center gap-1.5"
                       >
                         <span>Apply Now</span>
                         <ChevronRight className="h-4 w-4" />
@@ -269,15 +269,15 @@ export default function CareersPage() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-3xl bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden z-10 my-8 max-h-[85vh] flex flex-col"
+              className="relative w-full max-w-3xl bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-xl shadow-lg border border-slate-200 dark:border-slate-800 overflow-hidden z-10 my-8 max-h-[85vh] flex flex-col"
             >
               {/* Modal Header */}
               <div className="p-6 sm:p-8 bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 flex justify-between items-start sticky top-0 z-10">
                 <div>
-                  <span className="px-3 py-1 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 text-xs font-bold border border-blue-500/20 uppercase tracking-wider">
+                  <span className="px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-medium border border-blue-200 dark:border-blue-800">
                     {detailPosition.type || 'Internship'}
                   </span>
-                  <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mt-2">
+                  <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mt-2">
                     {detailPosition.title}
                   </h2>
                   <div className="flex flex-wrap items-center gap-4 text-xs font-semibold text-slate-500 dark:text-slate-400 mt-2">
@@ -346,7 +346,7 @@ export default function CareersPage() {
                 <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
                   <button
                     onClick={() => setDetailPosition(null)}
-                    className="px-5 py-3 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold text-sm hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
+                    className="px-5 py-3 rounded-lg border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-medium text-sm hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                   >
                     Close
                   </button>
@@ -356,7 +356,7 @@ export default function CareersPage() {
                       setDetailPosition(null);
                       setApplyPositionTitle(title);
                     }}
-                    className="px-7 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-sm shadow-lg shadow-blue-600/30 hover:scale-105 active:scale-95 transition-all flex items-center gap-2"
+                    className="px-7 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm transition-colors flex items-center gap-2"
                   >
                     <span>Apply For This Position</span>
                     <ArrowRight className="h-4 w-4" />
@@ -383,13 +383,13 @@ export default function CareersPage() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-2xl bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden z-10 my-8 max-h-[90vh] flex flex-col"
+              className="relative w-full max-w-2xl bg-white dark:bg-slate-900 rounded-xl shadow-lg border border-slate-200 dark:border-slate-800 overflow-hidden z-10 my-8 max-h-[90vh] flex flex-col"
             >
               <div className="p-6 sm:p-8 overflow-y-auto">
                 <div className="flex justify-between items-center mb-6 pb-4 border-b border-slate-100 dark:border-slate-800">
                   <div>
-                    <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">Internship Application</h2>
-                    <p className="text-blue-600 dark:text-blue-400 font-bold text-sm mt-1">{applyPositionTitle}</p>
+                    <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">Internship Application</h2>
+                    <p className="text-blue-600 dark:text-blue-400 font-medium text-sm mt-1">{applyPositionTitle}</p>
                   </div>
                   <button
                     onClick={() => setApplyPositionTitle(null)}

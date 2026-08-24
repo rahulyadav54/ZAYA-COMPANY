@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Sparkles, ArrowRight, X, Smartphone } from 'lucide-react';
+import { X } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 
 export default function TopPromoBanner() {
@@ -13,30 +13,22 @@ export default function TopPromoBanner() {
   if (isDashboard || !isVisible) return null;
 
   return (
-    <div className="bg-gradient-to-r from-blue-700 via-indigo-600 to-purple-700 text-white text-xs sm:text-sm py-2 px-4 relative z-50 flex items-center justify-between shadow-md">
+    <div className="bg-slate-900 text-white text-xs sm:text-sm py-2 px-4 relative z-50 flex items-center justify-between">
       <div className="container mx-auto flex items-center justify-center gap-2 sm:gap-3 text-center">
-        <span className="inline-flex items-center gap-1 bg-amber-400/20 text-amber-300 font-bold px-2 py-0.5 rounded-full text-[11px] border border-amber-400/30">
-          <Sparkles className="h-3.5 w-3.5 text-amber-300 animate-spin" />
-          NEW LAUNCH
+        <span className="text-slate-300">
+          AI ZAYA App — AI Assistant
         </span>
-
-        <span className="font-medium text-slate-100 flex items-center gap-1.5 truncate">
-          <Smartphone className="h-4 w-4 hidden sm:inline text-blue-200" />
-          <span>AI ZAYA App <span className="hidden sm:inline">— AI Assistant</span></span>
-        </span>
-
         <Link
           href="/ai-zaya"
-          className="inline-flex items-center gap-1 bg-white text-blue-700 hover:bg-blue-50 font-bold px-3 py-1 rounded-full transition-all text-xs shadow-sm hover:scale-105 active:scale-95 ml-1"
+          className="inline-flex items-center gap-1 text-blue-400 hover:text-blue-300 font-medium transition-colors"
         >
-          <span>Install Now</span>
-          <ArrowRight className="h-3 w-3" />
+          <span>Learn more</span>
         </Link>
       </div>
 
       <button
         onClick={() => setIsVisible(false)}
-        className="text-white/80 hover:text-white p-1 rounded-full hover:bg-white/10 transition-colors ml-2"
+        className="text-white/60 hover:text-white p-1 rounded hover:bg-white/10 transition-colors absolute right-4"
         aria-label="Close Announcement"
       >
         <X className="h-4 w-4" />

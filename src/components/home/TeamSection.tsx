@@ -59,7 +59,7 @@ const teamMembers = [
 
 export default function TeamSection() {
   return (
-    <section id="team-section" className="py-16 md:py-24 bg-slate-50 dark:bg-slate-950/50">
+    <section id="team-section" className="py-16 md:py-24 bg-slate-50 dark:bg-slate-900/50">
       <div className="container mx-auto px-6">
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-12 md:mb-20">
@@ -67,7 +67,7 @@ export default function TeamSection() {
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="px-4 py-2 rounded-full bg-blue-600/10 text-blue-600 text-xs font-black uppercase tracking-widest border border-blue-600/20"
+            className="px-4 py-2 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-xs font-semibold uppercase tracking-widest border border-blue-200 dark:border-blue-800"
           >
             Our Experts
           </motion.span>
@@ -76,7 +76,7 @@ export default function TeamSection() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
             viewport={{ once: true }}
-            className="text-3xl md:text-5xl font-black text-foreground mt-6 mb-6"
+            className="text-3xl md:text-5xl font-bold text-foreground mt-6 mb-6"
           >
             Meet the Team Behind <span className="text-blue-600">ZAYA CODE HUB</span>
           </motion.h2>
@@ -100,12 +100,11 @@ export default function TeamSection() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
               viewport={{ once: true }}
-              className="group relative bg-white dark:bg-slate-900 rounded-[32px] p-8 border border-slate-200 dark:border-slate-800 hover:shadow-2xl hover:border-blue-600/50 transition-all duration-500 hover:-translate-y-2 flex flex-col h-full"
+              className="group relative bg-white dark:bg-slate-900 rounded-2xl p-8 border border-slate-200 dark:border-slate-800 hover:shadow-lg hover:border-blue-300 dark:hover:border-blue-700 transition-all duration-300 hover:-translate-y-1 flex flex-col h-full"
             >
               {/* Profile Image */}
               <div className="relative w-24 h-24 mb-6">
-                <div className="absolute inset-0 bg-blue-600 rounded-full blur-2xl opacity-20 group-hover:opacity-40 transition-opacity"></div>
-                <div className="relative w-full h-full rounded-full overflow-hidden border-2 border-white dark:border-slate-800 shadow-xl z-10">
+                <div className="relative w-full h-full rounded-full overflow-hidden border-2 border-white dark:border-slate-800 shadow-md z-10">
                   <Image 
                     src={member.image} 
                     alt={member.name} 
@@ -117,10 +116,10 @@ export default function TeamSection() {
 
               {/* Info */}
               <div className="mb-6">
-                <h3 className="text-xl font-bold text-foreground group-hover:text-blue-600 transition-colors uppercase tracking-tight">
+                <h3 className="text-xl font-semibold text-foreground group-hover:text-blue-600 transition-colors">
                   {member.name}
                 </h3>
-                <p className="text-blue-600 font-bold text-xs uppercase tracking-widest mt-1">
+                <p className="text-blue-600 dark:text-blue-400 font-medium text-xs uppercase tracking-widest mt-1">
                   {member.role}
                 </p>
               </div>
@@ -132,7 +131,7 @@ export default function TeamSection() {
               {/* Skills */}
               <div className="flex flex-wrap gap-2 mb-8 mt-auto">
                 {member.skills.map(skill => (
-                  <span key={skill} className="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-[10px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-tighter">
+                  <span key={skill} className="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-[10px] font-medium text-slate-600 dark:text-slate-300 uppercase tracking-tight">
                     {skill}
                   </span>
                 ))}
@@ -158,13 +157,13 @@ export default function TeamSection() {
         <div className="mt-20 flex flex-col sm:flex-row items-center justify-center gap-6">
           <Link 
             href="/careers"
-            className="w-full sm:w-auto px-10 py-5 rounded-2xl bg-blue-600 text-white font-black uppercase tracking-widest text-sm hover:bg-blue-700 transition-all shadow-xl shadow-blue-600/20 flex items-center justify-center group"
+            className="w-full sm:w-auto px-10 py-5 rounded-lg bg-blue-600 text-white font-medium uppercase tracking-wider text-sm hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
           >
-            Join Our Team <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+            Join Our Team <ArrowRight className="ml-2 h-5 w-5" />
           </Link>
           <Link 
             href="/contact"
-            className="w-full sm:w-auto px-10 py-5 rounded-2xl border-2 border-slate-200 dark:border-slate-800 text-foreground font-black uppercase tracking-widest text-sm hover:border-blue-600 hover:text-blue-600 transition-all flex items-center justify-center"
+            className="w-full sm:w-auto px-10 py-5 rounded-lg border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-medium uppercase tracking-wider text-sm hover:border-blue-600 hover:text-blue-600 transition-colors flex items-center justify-center"
           >
             Contact Us
           </Link>

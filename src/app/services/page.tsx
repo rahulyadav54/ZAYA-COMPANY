@@ -59,7 +59,7 @@ export default function ServicesPage() {
           <h1 className="text-4xl lg:text-6xl font-bold text-foreground mb-6">
             Services That <span className="text-blue-600">Empower</span>
           </h1>
-          <p className="text-xl text-foreground max-w-3xl mx-auto">
+          <p className="text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto">
             From mobile apps to custom enterprise solutions, we provide the technical expertise you need to succeed in a digital-first world.
           </p>
         </div>
@@ -79,23 +79,22 @@ export default function ServicesPage() {
                 className="flex flex-col h-full group"
               >
                 <div className="mb-8 relative">
-                  <div className={`w-16 h-16 rounded-2xl ${service.color} flex items-center justify-center text-white shadow-lg shadow-blue-600/20 group-hover:scale-110 transition-transform`}>
+                  <div className={`w-16 h-16 rounded-xl ${service.color} flex items-center justify-center text-white shadow-md group-hover:scale-110 transition-transform`}>
                     <service.icon className="h-8 w-8" />
                   </div>
-                  <div className="absolute top-4 left-4 w-16 h-16 bg-blue-600/10 rounded-2xl blur-xl -z-10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 </div>
                 
-                <h3 className="text-2xl font-bold text-foreground mb-4 group-hover:text-blue-600 transition-colors">
+                <h3 className="text-2xl font-semibold text-foreground mb-4 group-hover:text-blue-600 transition-colors">
                   {service.title}
                 </h3>
                 
-                <p className="text-foreground mb-8 leading-relaxed">
+                <p className="text-slate-600 dark:text-slate-300 mb-8 leading-relaxed">
                   {service.description}
                 </p>
                 
                 <ul className="space-y-3 mb-10 flex-grow">
                   {service.features.map((feature) => (
-                    <li key={feature} className="flex items-center text-sm font-medium text-foreground">
+                    <li key={feature} className="flex items-center text-sm text-slate-600 dark:text-slate-300">
                       <div className="w-1.5 h-1.5 rounded-full bg-blue-600 mr-3"></div>
                       {feature}
                     </li>
@@ -104,7 +103,7 @@ export default function ServicesPage() {
                 
                 <Link
                   href="/contact"
-                  className="inline-flex items-center text-blue-600 font-bold hover:underline"
+                  className="inline-flex items-center text-blue-600 font-medium hover:underline"
                 >
                   Get Started <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
@@ -115,11 +114,11 @@ export default function ServicesPage() {
       </section>
 
       {/* Process Section */}
-      <section className="py-24 bg-slate-900 text-white overflow-hidden relative">
+      <section className="py-24 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-200 dark:border-slate-800">
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-6">Our Working Process</h2>
-            <p className="text-slate-100 max-w-2xl mx-auto font-bold">
+            <h2 className="text-4xl font-bold mb-6 text-slate-900 dark:text-white">Our Working Process</h2>
+            <p className="text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
               We follow a streamlined development lifecycle to ensure quality and timely delivery.
             </p>
           </div>
@@ -132,11 +131,11 @@ export default function ServicesPage() {
               { step: '04', title: 'Deployment', desc: 'Rigorous testing and successful launch.' },
             ].map((item) => (
               <div key={item.step} className="relative group text-center md:text-left">
-                <div className="text-6xl font-black text-white/10 mb-4 group-hover:text-blue-600/30 transition-colors">
+                <div className="text-5xl font-bold text-slate-200 dark:text-slate-700 mb-4 group-hover:text-blue-600/30 transition-colors">
                   {item.step}
                 </div>
-                <h4 className="text-xl font-bold mb-3">{item.title}</h4>
-                <p className="text-slate-100 text-sm leading-relaxed font-bold">{item.desc}</p>
+                <h4 className="text-xl font-semibold mb-3 text-slate-900 dark:text-white">{item.title}</h4>
+                <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed">{item.desc}</p>
               </div>
             ))}
           </div>
