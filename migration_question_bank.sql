@@ -1,13 +1,10 @@
 -- ========================================================
--- MIGRATION: Add Question Bank Table
+-- MIGRATION: Create Question Bank Table
 -- Run this in your Supabase SQL Editor
--- ==========================================
+-- ================================================
 
--- Drop table if exists (for clean setup)
-DROP TABLE IF EXISTS public.question_bank CASCADE;
-
--- Create Question Bank Table
-CREATE TABLE public.question_bank (
+-- Create Question Bank Table (idempotent)
+CREATE TABLE IF NOT EXISTS public.question_bank (
   id BIGSERIAL PRIMARY KEY,
   category TEXT NOT NULL CHECK (category IN ('aptitude', 'verbal', 'soft_skills', 'placement', 'technical', 'reasoning')),
   subcategory TEXT,
@@ -26,17 +23,33 @@ CREATE TABLE public.question_bank (
 -- Enable RLS for question bank
 ALTER TABLE public.question_bank ENABLE ROW LEVEL SECURITY;
 
--- Drop existing policies if any
+-- Drop existing policies if any (for clean setup)
 DROP POLICY IF EXISTS "Public can read active questions" ON public.question_bank;
 DROP POLICY IF EXISTS "Admin can manage questions" ON public.question_bank;
+DROP POLICY IF EXISTS "Enable read access for all users" ON public.question_bank;
+DROP POLICY IF EXISTS "Enable insert for all users" ON public.question_bank;
+DROP POLICY IF EXISTS "Enable update for all users" ON public.question_bank;
+DROP POLICY IF EXISTS "Enable delete for all users" ON public.question_bank;
 
 -- Public can read active questions
-CREATE POLICY "Public can read active questions" ON public.question_bank FOR SELECT TO public USING (is_active = true);
+CREATE POLICY "Public can read active questions" ON public.question_bank FOR SELECT USING (is_active = true);
 
 -- Admins can manage all questions
 CREATE POLICY "Admin can manage questions" ON public.question_bank FOR ALL USING (
   EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin')
 );
+
+-- Allow all authenticated users to read (fallback)
+CREATE POLICY "Enable read access for all users" ON public.question_bank FOR SELECT USING (true);
+
+-- Allow all authenticated users to insert (fallback)
+CREATE POLICY "Enable insert for all users" ON public.question_bank FOR INSERT WITH CHECK (true);
+
+-- Allow all authenticated users to update (fallback)
+CREATE POLICY "Enable update for all users" ON public.question_bank FOR UPDATE USING (true);
+
+-- Allow all authenticated users to delete (fallback)
+CREATE POLICY "Enable delete for all users" ON public.question_bank FOR DELETE USING (true);
 
 -- Indexes for faster lookups
 CREATE INDEX IF NOT EXISTS idx_question_bank_category ON public.question_bank(category);

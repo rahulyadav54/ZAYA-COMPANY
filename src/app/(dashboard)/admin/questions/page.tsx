@@ -66,6 +66,8 @@ export default function AdminQuestionBankPage() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingQuestion, setEditingQuestion] = useState<Question | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Form state
@@ -88,23 +90,40 @@ export default function AdminQuestionBankPage() {
     filterQuestions();
   }, [questions, searchTerm, selectedCategory, selectedDifficulty]);
 
+  // Clear messages after 5 seconds
+  useEffect(() => {
+    if (errorMessage || successMessage) {
+      const timer = setTimeout(() => {
+        setErrorMessage(null);
+        setSuccessMessage(null);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [errorMessage, successMessage]);
+
   async function fetchQuestions() {
     setIsLoading(true);
+    setErrorMessage(null);
     try {
       const { data, error } = await supabase
         .from('question_bank')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Fetch questions error:', error);
+        setErrorMessage(`Failed to load questions: ${error.message}`);
+        return;
+      }
       if (data) {
         setQuestions(data.map(q => ({
           ...q,
           options: Array.isArray(q.options) ? q.options : [],
         })));
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Fetch questions error:', err);
+      setErrorMessage(`Failed to load questions: ${err.message || 'Unknown error'}`);
     } finally {
       setIsLoading(false);
     }
@@ -169,7 +188,18 @@ export default function AdminQuestionBankPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!formData.question_text.trim() || formData.options.some(o => !o.trim()) || isSubmitting) return;
+    setErrorMessage(null);
+    setSuccessMessage(null);
+    
+    if (!formData.question_text.trim()) {
+      setErrorMessage('Question text is required.');
+      return;
+    }
+    if (formData.options.some(o => !o.trim())) {
+      setErrorMessage('All four options are required.');
+      return;
+    }
+    if (isSubmitting) return;
 
     setIsSubmitting(true);
     try {
@@ -191,19 +221,21 @@ export default function AdminQuestionBankPage() {
           .update(questionData)
           .eq('id', editingQuestion.id);
         if (error) throw error;
+        setSuccessMessage('Question updated successfully!');
       } else {
         const { error } = await supabase
           .from('question_bank')
           .insert(questionData);
         if (error) throw error;
+        setSuccessMessage('Question added successfully!');
       }
 
       setShowAddModal(false);
       resetForm();
       fetchQuestions();
-    } catch (err) {
+    } catch (err: any) {
       console.error('Save question error:', err);
-      alert('Failed to save question. Please try again.');
+      setErrorMessage(`Failed to save question: ${err.message || 'Unknown error'}`);
     } finally {
       setIsSubmitting(false);
     }
@@ -261,6 +293,8 @@ export default function AdminQuestionBankPage() {
 
   async function bulkUploadQuestions(questions: any[]) {
     setIsLoading(true);
+    setErrorMessage(null);
+    setSuccessMessage(null);
     try {
       const formattedQuestions = questions.map(q => ({
         category: q.category || 'aptitude',
@@ -275,7 +309,7 @@ export default function AdminQuestionBankPage() {
       })).filter(q => q.question_text && q.options.length >= 2);
 
       if (formattedQuestions.length === 0) {
-        alert('No valid questions found in the file.');
+        setErrorMessage('No valid questions found in the file. Please check the format.');
         return;
       }
 
@@ -285,11 +319,11 @@ export default function AdminQuestionBankPage() {
 
       if (error) throw error;
 
-      alert(`Successfully uploaded ${formattedQuestions.length} questions!`);
+      setSuccessMessage(`Successfully uploaded ${formattedQuestions.length} questions!`);
       fetchQuestions();
-    } catch (err) {
+    } catch (err: any) {
       console.error('Bulk upload error:', err);
-      alert('Failed to upload questions.');
+      setErrorMessage(`Failed to upload questions: ${err.message || 'Unknown error'}`);
     } finally {
       setIsLoading(false);
     }
@@ -408,6 +442,18 @@ export default function AdminQuestionBankPage() {
           </button>
         </div>
       </div>
+
+      {/* Error/Success Messages */}
+      {errorMessage && (
+        <div className="rounded-lg border border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-900/20 px-4 py-3 text-sm text-red-700 dark:text-red-400">
+          {errorMessage}
+        </div>
+      )}
+      {successMessage && (
+        <div className="rounded-lg border border-emerald-200 bg-emerald-50 dark:border-emerald-800 dark:bg-emerald-900/20 px-4 py-3 text-sm text-emerald-700 dark:text-emerald-400">
+          {successMessage}
+        </div>
+      )}
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
