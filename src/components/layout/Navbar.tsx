@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Moon, Sun, User as UserIcon } from 'lucide-react';
+import { Menu, X, Moon, Sun, User as UserIcon, ChevronDown } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/lib/supabaseClient';
@@ -13,7 +13,15 @@ import Logo from '@/components/common/Logo';
 const navLinks = [
   { name: 'Home', href: '/' },
   { name: 'AI ZAYA', href: '/ai-zaya' },
-  { name: 'Practice Tests', href: '/practice' },
+  { 
+    name: 'Practice Tests', 
+    href: '/practice',
+    dropdown: [
+      { name: 'Aptitude Test', href: '/aptitude-test', description: 'Reasoning & logic assessment' },
+      { name: 'Coding Practice', href: '/practice/code', description: 'Programming challenges' },
+      { name: 'Mock Exams', href: '/practice', description: 'Proctored test simulations' },
+    ]
+  },
   { name: 'Placement Prep', href: '/placement-prep' },
   { name: 'About', href: '/about' },
   { name: 'Services', href: '/services' },
@@ -79,6 +87,23 @@ export default function Navbar() {
     return () => subscription.unsubscribe();
   }, []);
 
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const dropdownTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleDropdownEnter = (name: string) => {
+    if (dropdownTimeoutRef.current) {
+      clearTimeout(dropdownTimeoutRef.current);
+      dropdownTimeoutRef.current = null;
+    }
+    setOpenDropdown(name);
+  };
+
+  const handleDropdownLeave = () => {
+    dropdownTimeoutRef.current = setTimeout(() => {
+      setOpenDropdown(null);
+    }, 150);
+  };
+
   const isDashboard = pathname?.startsWith('/admin') || pathname?.startsWith('/intern');
   if (isDashboard) return null;
 
@@ -106,18 +131,55 @@ export default function Navbar() {
           {/* Desktop Navigation Links (Visible only on lg: 1024px+) */}
           <div className="hidden lg:flex items-center space-x-8">
             {navLinks.map((link) => (
-              <Link
+              <div
                 key={link.name}
-                href={link.href}
-                className={cn(
-                  'text-sm font-medium transition-all hover:text-blue-600 py-1',
-                  pathname === link.href
-                    ? 'text-blue-600 dark:text-blue-400'
-                    : 'text-slate-600 dark:text-slate-300'
-                )}
+                className="relative"
+                onMouseEnter={() => link.dropdown && handleDropdownEnter(link.name)}
+                onMouseLeave={handleDropdownLeave}
               >
-                {link.name}
-              </Link>
+                <Link
+                  href={link.href}
+                  className={cn(
+                    'text-sm font-medium transition-all hover:text-blue-600 py-1 flex items-center gap-1',
+                    pathname === link.href || (link.dropdown && link.dropdown.some(item => pathname === item.href))
+                      ? 'text-blue-600 dark:text-blue-400'
+                      : 'text-slate-600 dark:text-slate-300'
+                  )}
+                >
+                  {link.name}
+                  {link.dropdown && <ChevronDown className="h-3.5 w-3.5 opacity-60" />}
+                </Link>
+
+                {/* Dropdown Menu */}
+                {link.dropdown && openDropdown === link.name && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 8 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute top-full left-0 mt-2 w-72 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl z-50 overflow-hidden"
+                  >
+                    <div className="p-2">
+                      {link.dropdown.map((item) => (
+                        <Link
+                          key={item.name}
+                          href={item.href}
+                          onClick={() => setOpenDropdown(null)}
+                          className={cn(
+                            'block px-4 py-3 rounded-lg transition-colors',
+                            pathname === item.href
+                              ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
+                              : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
+                          )}
+                        >
+                          <p className="text-sm font-medium">{item.name}</p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{item.description}</p>
+                        </Link>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </div>
             ))}
           </div>
 
@@ -166,19 +228,44 @@ export default function Navbar() {
             >
               <div className="container mx-auto px-4 py-4 flex flex-col space-y-1">
                 {navLinks.map((link) => (
-                  <Link
-                    key={link.name}
-                    href={link.href}
-                    onClick={() => setIsOpen(false)}
-                    className={cn(
-                      'text-sm font-medium py-2.5 px-4 rounded-lg transition-all flex items-center justify-between',
-                      pathname === link.href
-                        ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
-                        : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
+                  <div key={link.name}>
+                    <Link
+                      href={link.href}
+                      onClick={() => setIsOpen(false)}
+                      className={cn(
+                        'text-sm font-medium py-2.5 px-4 rounded-lg transition-all flex items-center justify-between',
+                        pathname === link.href
+                          ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
+                          : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
+                      )}
+                    >
+                      <span>{link.name}</span>
+                      {link.dropdown && (
+                        <span className="text-xs text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">
+                          {link.dropdown.length}
+                        </span>
+                      )}
+                    </Link>
+                    {link.dropdown && (
+                      <div className="ml-4 mt-1 space-y-1 border-l-2 border-slate-200 dark:border-slate-700 pl-3">
+                        {link.dropdown.map((item) => (
+                          <Link
+                            key={item.name}
+                            href={item.href}
+                            onClick={() => setIsOpen(false)}
+                            className={cn(
+                              'block text-sm py-2 px-3 rounded-lg transition-colors',
+                              pathname === item.href
+                                ? 'text-blue-600 dark:text-blue-400 font-medium'
+                                : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
+                            )}
+                          >
+                            {item.name}
+                          </Link>
+                        ))}
+                      </div>
                     )}
-                  >
-                    <span>{link.name}</span>
-                  </Link>
+                  </div>
                 ))}
                 <div className="pt-3 border-t border-slate-100 dark:border-slate-800 mt-2">
                   {user ? (

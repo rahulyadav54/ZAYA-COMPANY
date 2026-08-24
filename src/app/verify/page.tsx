@@ -264,7 +264,7 @@ function VerifyForm() {
                      <div>
                         <h2 className="text-3xl font-semibold italic tracking-tight">Verified Authentic</h2>
                         <p className="text-slate-400 font-medium uppercase text-xs tracking-widest">
-                          {result.credential_type === 'iq_test' ? 'Zaya IQ Test Official Record' : 'Zaya Code Hub Official Record'}
+                          {result.credential_type === 'iq_test' ? 'Aptitude Test Official Record' : 'Zaya Code Hub Official Record'}
                         </p>
                      </div>
                   </div>
@@ -291,7 +291,7 @@ function VerifyForm() {
                          <BookOpen className="h-3 w-3" />
                          Assessment
                       </div>
-                      <p className="text-2xl font-semibold text-white leading-tight">Zaya IQ Test</p>
+                      <p className="text-2xl font-semibold text-white leading-tight">Aptitude Test</p>
                    </div>
                    <div className="p-8 bg-white/5 rounded-lg border border-white/5 space-y-2">
                       <div className="flex items-center gap-2 text-slate-500 uppercase font-medium text-[10px] tracking-widest">
@@ -358,7 +358,7 @@ function VerifyForm() {
                <div className="pt-8 border-t border-white/5 text-center">
                   <p className="text-slate-500 text-sm font-medium">
                     {result.credential_type === 'iq_test'
-                      ? 'This certificate was officially issued by Zaya IQ Test upon successful completion of the reasoning assessment.'
+                      ? 'This certificate was officially issued by Aptitude Test upon successful completion of the reasoning assessment.'
                       : 'This record was officially issued by Zaya Code Hub upon successful completion of the internship requirements.'}
                   </p>
                </div>

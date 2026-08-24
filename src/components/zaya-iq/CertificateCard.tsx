@@ -42,7 +42,7 @@ const CertificateCard = forwardRef<HTMLDivElement, CertificateCardProps>(functio
                 <span className="text-sm font-bold">Z</span>
               </div>
               <div>
-                <p className="text-sm font-semibold text-slate-900">ZAYA IQ TEST</p>
+                <p className="text-sm font-semibold text-slate-900">APTITUDE TEST</p>
                 <p className="text-xs text-slate-500">Reasoning Assessment</p>
               </div>
             </div>
@@ -64,7 +64,7 @@ const CertificateCard = forwardRef<HTMLDivElement, CertificateCardProps>(functio
               <div className="h-px w-12 bg-slate-300" />
             </div>
             <p className="mt-8 text-base leading-relaxed text-slate-600">
-              for successfully completing the Zaya IQ Test assessment and demonstrating measured reasoning performance across numerical, logical, pattern, verbal, and analytical tasks.
+              for successfully completing the Aptitude Test assessment and demonstrating measured reasoning performance across numerical, logical, pattern, verbal, and analytical tasks.
             </p>
           </div>
         </section>

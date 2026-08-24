@@ -53,8 +53,8 @@ type ProfileForm = {
 type AnalysisData = ReturnType<typeof buildPerformanceAnalysis> | null;
 
 const TEST_DURATION_SECONDS = 20 * 60;
-const STORAGE_KEY = 'zaya-iq-test-session';
-const CERTIFICATE_STORAGE_KEY = 'zaya-iq-test-certificates';
+const STORAGE_KEY = 'aptitude-test-session';
+const CERTIFICATE_STORAGE_KEY = 'aptitude-test-certificates';
 
 function bucketAndShuffleQuestions(seed: string) {
   const ordered = difficultyOrder.flatMap((difficulty) =>
@@ -84,7 +84,7 @@ function getCategoryAccent(category: string) {
   return 'bg-slate-600';
 }
 
-export default function ZayaIqTestPage() {
+export default function AptitudeTestPage() {
   const [stage, setStage] = useState<Stage>('landing');
   const [sampleSelection, setSampleSelection] = useState('');
   const [sampleFeedback, setSampleFeedback] = useState<{ correct: boolean; message: string } | null>(null);
@@ -169,7 +169,7 @@ export default function ZayaIqTestPage() {
         setProfileComplete(Boolean(parsed.profileComplete));
       }
     } catch (error) {
-      console.warn('Unable to restore ZAYA IQ Test session:', error);
+      console.warn('Unable to restore Aptitude Test session:', error);
     }
   }, []);
 
@@ -426,7 +426,7 @@ export default function ZayaIqTestPage() {
 
   const downloadCertificate = async () => {
     if (!certificateRef.current) return;
-    const filename = `ZAYA_IQ_Certificate_${certificateId || 'certificate'}`;
+    const filename = `Aptitude_Test_Certificate_${certificateId || 'certificate'}`;
     const ok = await downloadAsPDF({ element: certificateRef.current, filename: `${filename}.pdf`, pdfOrientation: 'landscape', scale: 2 });
     if (!ok) {
       await downloadAsPNG({ element: certificateRef.current, filename: `${filename}.png`, scale: 2 });
@@ -435,7 +435,7 @@ export default function ZayaIqTestPage() {
 
   const downloadReport = async () => {
     if (!reportRef.current) return;
-    const filename = `ZAYA_IQ_Performance_Report_${certificateId || 'report'}`;
+    const filename = `Aptitude_Test_Report_${certificateId || 'report'}`;
     const ok = await downloadAsPDF({ element: reportRef.current, filename: `${filename}.pdf`, pdfOrientation: 'portrait', scale: 2 });
     if (!ok) {
       await downloadAsPNG({ element: reportRef.current, filename: `${filename}.png`, scale: 2 });
@@ -444,7 +444,7 @@ export default function ZayaIqTestPage() {
 
   const downloadChart = async () => {
     if (!chartRef.current) return;
-    const filename = `ZAYA_IQ_Performance_Chart_${certificateId || 'chart'}`;
+    const filename = `Aptitude_Test_Chart_${certificateId || 'chart'}`;
     const ok = await downloadAsPDF({ element: chartRef.current, filename: `${filename}.pdf`, pdfOrientation: 'portrait', scale: 2 });
     if (!ok) {
       await downloadAsPNG({ element: chartRef.current, filename: `${filename}.png`, scale: 2 });
@@ -465,7 +465,7 @@ export default function ZayaIqTestPage() {
               <span className="text-sm font-bold">Z</span>
             </div>
             <div>
-              <p className="text-sm font-semibold text-slate-900">ZAYA IQ TEST</p>
+              <p className="text-sm font-semibold text-slate-900">APTITUDE TEST</p>
               <p className="text-xs text-slate-500">Reasoning Assessment</p>
             </div>
           </Link>
@@ -685,7 +685,7 @@ export default function ZayaIqTestPage() {
               <div className="flex flex-wrap items-center justify-between gap-4">
                 <div>
                   <p className="text-xs font-medium uppercase tracking-wider text-slate-400">Question {currentIndex + 1} of {questions.length}</p>
-                  <h2 className="mt-1 text-2xl font-semibold text-slate-900">ZAYA IQ Test</h2>
+                  <h2 className="mt-1 text-2xl font-semibold text-slate-900">Aptitude Test</h2>
                 </div>
                 <div className="flex items-center gap-3">
                   <button
@@ -836,7 +836,7 @@ export default function ZayaIqTestPage() {
                     Test completed
                   </div>
                   <div>
-                    <p className="text-xs font-medium uppercase tracking-wider text-slate-400">Your ZAYA Reasoning Score</p>
+                    <p className="text-xs font-medium uppercase tracking-wider text-slate-400">Your Aptitude Score</p>
                     <p className="mt-2 text-6xl font-semibold tracking-tight text-slate-900 font-serif">{result.reasoningScore}</p>
                     <p className="mt-4 max-w-xl text-sm leading-relaxed text-slate-600">
                       {buildPerformanceAnalysis({
@@ -870,7 +870,7 @@ export default function ZayaIqTestPage() {
               </div>
 
               <div className="mt-8 rounded-lg bg-slate-50 p-4 text-sm text-slate-600">
-                Assessment notice: ZAYA IQ TEST is an educational reasoning assessment. Unless independently validated and normed, its score should not be interpreted as a clinically validated IQ measurement, psychological diagnosis, or definitive measure of intelligence.
+                Assessment notice: Aptitude Test is an educational reasoning assessment. Unless independently validated and normed, its score should not be interpreted as a clinically validated IQ measurement, psychological diagnosis, or definitive measure of intelligence.
               </div>
             </div>
 
@@ -911,7 +911,7 @@ export default function ZayaIqTestPage() {
                     onChange={(event) => setGmailConsent(event.target.checked)}
                     className="mt-1 h-4 w-4 rounded border-slate-300"
                   />
-                  <span>I agree to receive my ZAYA assessment result and certificate at this email address.</span>
+                  <span>I agree to receive my Aptitude Test result and certificate at this email address.</span>
                 </label>
 
                 {gmailError && <p className="mt-4 text-sm text-red-600">{gmailError}</p>}
@@ -1029,7 +1029,7 @@ export default function ZayaIqTestPage() {
                     <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
                       <p className="text-xs font-medium uppercase tracking-wider text-slate-400">Certificate preview</p>
                       <p className="mt-3 text-sm leading-relaxed text-slate-600">
-                        Your certificate includes the ZAYA branding, completion date, score summary, certificate ID, and a verification QR code.
+                         Your certificate includes the Aptitude Test branding, completion date, score summary, certificate ID, and a verification QR code.
                       </p>
                       <div className="mt-4 rounded-lg bg-slate-50 p-4 text-sm text-slate-600">
                         <p className="font-medium text-slate-900">Verification page</p>

@@ -27,7 +27,7 @@ export default function PrivacyPolicyPage() {
             <ul className="list-disc pl-6 space-y-2">
               <li><strong>Personal Data:</strong> Name, email address, phone number, and location when you register for an account or apply for an internship.</li>
               <li><strong>Professional Data:</strong> Resumes, portfolios, GitHub links, and educational background provided during the application process.</li>
-              <li><strong>IQ Test Data:</strong> When you take the Zaya IQ Test, we collect your Gmail address, first name, last name, age, gender, country, and assessment results (score, accuracy, completion time) for the purpose of generating your certificate and performance report.</li>
+              <li><strong>IQ Test Data:</strong> When you take the Aptitude Test, we collect your Gmail address, first name, last name, age, gender, country, and assessment results (score, accuracy, completion time) for the purpose of generating your certificate and performance report.</li>
               <li><strong>Usage Data:</strong> Information on how the Service is accessed and used, including your IP address, browser type, and page interactions.</li>
             </ul>
           </section>

@@ -37,9 +37,9 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold mb-4">3. Zaya IQ Test</h2>
+            <h2 className="text-2xl font-bold mb-4">3. Aptitude Test</h2>
             <p className="leading-relaxed mb-4">
-              The Zaya IQ Test is an educational reasoning assessment. By taking the test, you acknowledge:
+              The Aptitude Test is an educational reasoning assessment. By taking the test, you acknowledge:
             </p>
             <ul className="list-disc pl-6 space-y-2">
               <li>The assessment is not a clinically validated IQ examination or psychological diagnosis.</li>

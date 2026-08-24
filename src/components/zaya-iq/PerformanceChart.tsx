@@ -71,7 +71,7 @@ const PerformanceChart = forwardRef<HTMLDivElement, PerformanceChartProps>(funct
       <div className="border-b border-slate-200 px-6 py-4">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-xs font-medium uppercase tracking-wider text-slate-400">ZAYA IQ TEST</p>
+            <p className="text-xs font-medium uppercase tracking-wider text-slate-400">APTITUDE TEST</p>
             <h3 className="mt-1 text-lg font-semibold text-slate-900">Performance Report</h3>
           </div>
           <div className="text-right">
