@@ -107,16 +107,16 @@ export default function PlacementDashboardPage() {
   return (
     <main className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-16">
       {/* Header */}
-      <section className="bg-gradient-to-r from-slate-900 via-blue-950 to-indigo-950 px-4 py-10">
+      <section className="bg-slate-900 px-4 py-10">
         <div className="container mx-auto max-w-6xl">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
             <div>
-              <p className="text-blue-300/70 text-xs font-black uppercase tracking-widest mb-2">Placement Preparation Portal</p>
-              <h1 className="text-2xl sm:text-3xl font-black text-white mb-1">
+              <p className="text-blue-300/70 text-xs font-medium uppercase tracking-widest mb-2">Placement Preparation Portal</p>
+              <h1 className="text-2xl sm:text-3xl font-semibold text-white mb-1">
                 Welcome, {userName} 👋
               </h1>
               <div className="flex items-center gap-2 mt-2">
-                <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-xs font-black uppercase tracking-widest">
+                <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-xs font-medium uppercase tracking-widest">
                   <ShieldCheck className="h-3.5 w-3.5" />
                   Placement Access Active
                 </span>
@@ -124,17 +124,17 @@ export default function PlacementDashboardPage() {
             </div>
             {purchase && (
               <div className="flex flex-wrap gap-4">
-                <div className="bg-white/5 border border-white/10 rounded-2xl px-5 py-3 text-center">
-                  <p className="text-white/50 text-[9px] font-black uppercase tracking-widest mb-1">Amount Paid</p>
-                  <p className="text-white font-black text-lg">₹{purchase.amount_inr}</p>
+                <div className="bg-white/5 border border-white/10 rounded-lg px-5 py-3 text-center">
+                  <p className="text-white/50 text-[9px] font-medium uppercase tracking-widest mb-1">Amount Paid</p>
+                  <p className="text-white font-semibold text-lg">₹{purchase.amount_inr}</p>
                 </div>
-                <div className="bg-white/5 border border-white/10 rounded-2xl px-5 py-3 text-center">
-                  <p className="text-white/50 text-[9px] font-black uppercase tracking-widest mb-1">Access</p>
-                  <p className="text-white font-black text-lg">Lifetime</p>
+                <div className="bg-white/5 border border-white/10 rounded-lg px-5 py-3 text-center">
+                  <p className="text-white/50 text-[9px] font-medium uppercase tracking-widest mb-1">Access</p>
+                  <p className="text-white font-semibold text-lg">Lifetime</p>
                 </div>
-                <div className="bg-white/5 border border-white/10 rounded-2xl px-5 py-3 text-center">
-                  <p className="text-white/50 text-[9px] font-black uppercase tracking-widest mb-1">Date</p>
-                  <p className="text-white font-black text-sm">
+                <div className="bg-white/5 border border-white/10 rounded-lg px-5 py-3 text-center">
+                  <p className="text-white/50 text-[9px] font-medium uppercase tracking-widest mb-1">Date</p>
+                  <p className="text-white font-semibold text-sm">
                     {new Date(purchase.purchased_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
                   </p>
                 </div>
@@ -147,9 +147,9 @@ export default function PlacementDashboardPage() {
       {/* Companies Section */}
       <section className="container mx-auto max-w-6xl px-4 mt-10">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
-          <h2 className="text-xl font-black text-slate-900 dark:text-white">
+          <h2 className="text-xl font-semibold text-slate-900 dark:text-white">
             Preparation Materials
-            <span className="ml-2 text-xs font-bold text-slate-400 normal-case">({filteredCompanies.length} companies)</span>
+            <span className="ml-2 text-xs font-medium text-slate-400 normal-case">({filteredCompanies.length} companies)</span>
           </h2>
         </div>
 
@@ -170,9 +170,9 @@ export default function PlacementDashboardPage() {
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
-                className={`px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider whitespace-nowrap transition-all ${
+                className={`px-4 py-2.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all ${
                   activeCategory === cat
-                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-600/20'
+                    ? 'bg-blue-600 text-white'
                     : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'
                 }`}
               >

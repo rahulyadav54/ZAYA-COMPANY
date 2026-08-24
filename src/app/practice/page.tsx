@@ -9,7 +9,6 @@ import {
   ShieldCheck, 
   Clock, 
   CheckCircle2, 
-  Sparkles, 
   Play, 
   Search, 
   Award, 
@@ -26,7 +25,6 @@ export default function PublicPracticeHubPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDomain, setSelectedDomain] = useState('ALL');
   
-  // Student Auth & Gamification State
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [userStats, setUserStats] = useState<{
     xp_points: number;
@@ -46,11 +44,9 @@ export default function PublicPracticeHubPage() {
     async function loadData() {
       setIsLoading(true);
       try {
-        // Fetch Real Supabase Auth User
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
           setCurrentUser(user);
-          // Fetch User Practice Stats
           const { data: stats } = await supabase
             .from('user_practice_stats')
             .select('*')
@@ -70,7 +66,6 @@ export default function PublicPracticeHubPage() {
           setCurrentUser(null);
         }
 
-        // Fetch Public Exams
         const { data } = await supabase
           .from('exams')
           .select('*, exam_questions(id)')
@@ -108,44 +103,44 @@ export default function PublicPracticeHubPage() {
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col transition-colors duration-300">
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="relative py-20 px-6 bg-gradient-to-br from-slate-900 via-indigo-950 to-blue-950 text-white overflow-hidden">
+        <section className="relative py-20 px-6 bg-slate-900 text-white overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(59,130,246,0.15),transparent_70%)] pointer-events-none" />
           
           <div className="container mx-auto max-w-6xl relative z-10 space-y-8 text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-blue-500/20 text-blue-300 rounded-full text-xs font-black uppercase tracking-widest border border-blue-500/30">
-              <Sparkles className="h-4 w-4 text-cyan-400" />
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 text-xs font-medium uppercase tracking-wider rounded-full">
+              <GraduationCap className="h-4 w-4" />
               <span>Free Student Coding & Tech Skill Assessment</span>
             </div>
 
             <div className="max-w-3xl mx-auto space-y-4">
-              <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tight italic leading-tight">
-                Practice & Benchmark <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-400 to-indigo-300">Your Coding Skills</span>
+              <h1 className="text-4xl md:text-6xl font-bold tracking-tight leading-tight">
+                Practice & Benchmark <span className="text-blue-600 dark:text-blue-400">Your Coding Skills</span>
               </h1>
-              <p className="text-slate-300 text-sm md:text-base font-medium leading-relaxed max-w-2xl mx-auto">
+              <p className="text-slate-300 text-sm md:text-base leading-relaxed max-w-2xl mx-auto">
                 Test your knowledge across Full Stack Web Engineering, Frontend Frameworks, Backend Systems, Python & AI Data Science. Open to all students & developers nationwide.
               </p>
             </div>
 
             {/* Feature Badges */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto pt-4 text-left">
-              <div className="p-4 bg-white/10 backdrop-blur-md rounded-2xl border border-white/10 flex items-center gap-3">
+              <div className="p-4 bg-white/5 border border-slate-700 rounded-lg flex items-center gap-3">
                 <ShieldCheck className="h-8 w-8 text-emerald-400 shrink-0" />
                 <div>
-                  <h4 className="font-black text-xs uppercase tracking-wider text-white">Proctored Sandbox</h4>
+                  <h4 className="font-semibold text-xs uppercase tracking-wider text-white">Proctored Sandbox</h4>
                   <p className="text-[10px] text-slate-300">Anti-cheating environment</p>
                 </div>
               </div>
-              <div className="p-4 bg-white/10 backdrop-blur-md rounded-2xl border border-white/10 flex items-center gap-3">
+              <div className="p-4 bg-white/5 border border-slate-700 rounded-lg flex items-center gap-3">
                 <Zap className="h-8 w-8 text-amber-400 shrink-0" />
                 <div>
-                  <h4 className="font-black text-xs uppercase tracking-wider text-white">Instant Scorecard</h4>
+                  <h4 className="font-semibold text-xs uppercase tracking-wider text-white">Instant Scorecard</h4>
                   <p className="text-[10px] text-slate-300">Immediate skill feedback</p>
                 </div>
               </div>
-              <div className="p-4 bg-white/10 backdrop-blur-md rounded-2xl border border-white/10 flex items-center gap-3">
+              <div className="p-4 bg-white/5 border border-slate-700 rounded-lg flex items-center gap-3">
                 <Award className="h-8 w-8 text-cyan-400 shrink-0" />
                 <div>
-                  <h4 className="font-black text-xs uppercase tracking-wider text-white">Verified Badge</h4>
+                  <h4 className="font-semibold text-xs uppercase tracking-wider text-white">Verified Badge</h4>
                   <p className="text-[10px] text-slate-300">Sharable student report</p>
                 </div>
               </div>
@@ -157,27 +152,27 @@ export default function PublicPracticeHubPage() {
         <section className="py-8 px-6 bg-slate-900 border-b border-slate-800 text-white">
           <div className="container mx-auto max-w-6xl">
             {currentUser ? (
-              <div className="p-6 bg-gradient-to-r from-slate-950 via-indigo-950/80 to-blue-950 rounded-3xl border border-blue-500/30 shadow-2xl flex flex-col lg:flex-row items-center justify-between gap-6">
+              <div className="p-6 bg-slate-950 border border-slate-800 rounded-lg flex flex-col lg:flex-row items-center justify-between gap-6">
                 <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-blue-600 to-cyan-500 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-blue-500/30 shrink-0">
+                  <div className="w-14 h-14 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-xl shadow-md shrink-0">
                     ⚡
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="px-2.5 py-0.5 bg-amber-500/20 text-amber-300 text-[10px] font-black rounded-full uppercase tracking-widest border border-amber-500/30">
+                      <span className="px-2.5 py-0.5 bg-amber-500/20 text-amber-300 text-[10px] font-medium rounded-full uppercase tracking-widest border border-amber-500/30">
                         LEVEL {Math.floor(userStats.xp_points / 250) + 1} ARCHITECT
                       </span>
-                      <span className="px-2.5 py-0.5 bg-emerald-500/20 text-emerald-300 text-[10px] font-black rounded-full uppercase tracking-widest border border-emerald-500/30 flex items-center gap-1">
+                      <span className="px-2.5 py-0.5 bg-emerald-500/20 text-emerald-300 text-[10px] font-medium rounded-full uppercase tracking-widest border border-emerald-500/30 flex items-center gap-1">
                         🔥 {userStats.streak_days} DAY STREAK
                       </span>
                     </div>
                     <div className="flex items-center gap-2 mt-1">
-                      <h3 className="text-xl font-black uppercase tracking-tight italic text-white">
+                      <h3 className="text-xl font-semibold uppercase tracking-tight text-white">
                         Welcome Back, {currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0]}!
                       </h3>
                       <button
                         onClick={handleLogout}
-                        className="px-2.5 py-1 bg-red-500/20 hover:bg-red-500/30 text-red-300 text-[9px] font-black rounded-lg uppercase tracking-wider border border-red-500/30 transition-all ml-2"
+                        className="px-2.5 py-1 bg-red-500/20 hover:bg-red-500/30 text-red-300 text-[9px] font-medium rounded-lg uppercase tracking-wider border border-red-500/30 transition-all ml-2"
                       >
                         Logout
                       </button>
@@ -187,39 +182,39 @@ export default function PublicPracticeHubPage() {
 
                 {/* Performance Stats Grid */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 w-full lg:w-auto">
-                  <div className="p-3 bg-white/5 rounded-2xl border border-white/10 text-center">
-                    <p className="text-[9px] text-slate-400 font-black uppercase tracking-widest">Total XP</p>
-                    <p className="text-lg font-black text-amber-400 font-mono">{userStats.xp_points} ⚡</p>
+                  <div className="p-3 bg-white/5 rounded-lg border border-slate-700 text-center">
+                    <p className="text-[9px] text-slate-400 font-medium uppercase tracking-widest">Total XP</p>
+                    <p className="text-lg font-semibold text-amber-400 font-mono">{userStats.xp_points} ⚡</p>
                   </div>
-                  <div className="p-3 bg-white/5 rounded-2xl border border-white/10 text-center">
-                    <p className="text-[9px] text-slate-400 font-black uppercase tracking-widest">Tests Passed</p>
-                    <p className="text-lg font-black text-emerald-400 font-mono">{userStats.tests_completed}</p>
+                  <div className="p-3 bg-white/5 rounded-lg border border-slate-700 text-center">
+                    <p className="text-[9px] text-slate-400 font-medium uppercase tracking-widest">Tests Passed</p>
+                    <p className="text-lg font-semibold text-emerald-400 font-mono">{userStats.tests_completed}</p>
                   </div>
-                  <div className="p-3 bg-white/5 rounded-2xl border border-white/10 text-center">
-                    <p className="text-[9px] text-slate-400 font-black uppercase tracking-widest">Coding Solved</p>
-                    <p className="text-lg font-black text-cyan-400 font-mono">{userStats.coding_problems_solved}</p>
+                  <div className="p-3 bg-white/5 rounded-lg border border-slate-700 text-center">
+                    <p className="text-[9px] text-slate-400 font-medium uppercase tracking-widest">Coding Solved</p>
+                    <p className="text-lg font-semibold text-cyan-400 font-mono">{userStats.coding_problems_solved}</p>
                   </div>
-                  <div className="p-3 bg-white/5 rounded-2xl border border-white/10 text-center">
-                    <p className="text-[9px] text-slate-400 font-black uppercase tracking-widest">Badges</p>
-                    <p className="text-lg font-black text-indigo-300 font-mono">🏆 {userStats.badges.length}</p>
+                  <div className="p-3 bg-white/5 rounded-lg border border-slate-700 text-center">
+                    <p className="text-[9px] text-slate-400 font-medium uppercase tracking-widest">Badges</p>
+                    <p className="text-lg font-semibold text-indigo-300 font-mono">🏆 {userStats.badges.length}</p>
                   </div>
                 </div>
               </div>
             ) : (
-              <div className="p-6 bg-gradient-to-r from-blue-900/40 via-indigo-900/40 to-slate-900 rounded-3xl border border-blue-500/30 flex flex-col md:flex-row items-center justify-between gap-6">
+              <div className="p-6 bg-blue-900/20 border border-blue-500/30 rounded-lg flex flex-col md:flex-row items-center justify-between gap-6">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-blue-600/20 text-blue-400 flex items-center justify-center shrink-0">
+                  <div className="w-12 h-12 rounded-lg bg-blue-600/20 text-blue-400 flex items-center justify-center shrink-0">
                     <Award className="h-6 w-6" />
                   </div>
                   <div>
-                    <h3 className="font-black text-base uppercase tracking-tight text-white italic">Login First to Track Your Performance & Earn Badges!</h3>
+                    <h3 className="font-semibold text-base text-white">Login First to Track Your Performance & Earn Badges!</h3>
                     <p className="text-xs text-slate-300 font-medium">Log in to save solved coding problems, track daily streaks, earn XP points, and generate verified skill certificates.</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3 shrink-0">
                   <Link
                     href="/login"
-                    className="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-black text-xs uppercase tracking-widest rounded-xl transition-all shadow-lg shadow-blue-600/30"
+                    className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
                   >
                     Login / Register
                   </Link>
@@ -233,18 +228,18 @@ export default function PublicPracticeHubPage() {
         <section className="py-8 px-6 bg-slate-900 text-white border-y border-slate-800">
           <div className="container mx-auto max-w-6xl flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-500 to-emerald-500 flex items-center justify-center text-white font-black text-xl shadow-lg shrink-0">
+              <div className="w-12 h-12 rounded-lg bg-blue-600 flex items-center justify-center text-white shadow-md shrink-0">
                 <Code2 className="h-6 w-6" />
               </div>
               <div>
-                <h3 className="font-black text-lg uppercase tracking-tight italic">LeetCode & HackerRank Coding Benchmark</h3>
+                <h3 className="font-semibold text-lg text-white">LeetCode & HackerRank Coding Benchmark</h3>
                 <p className="text-xs text-slate-300 font-medium">Link your LeetCode and HackerRank profiles to automatically sync your solved problems & badges to your ZAYA Code Hub Intern Profile.</p>
               </div>
             </div>
             <div className="flex items-center gap-3 shrink-0">
               <Link
                 href="/practice/code"
-                className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-black text-xs uppercase tracking-widest rounded-xl transition-all shadow-lg shadow-blue-500/20 flex items-center gap-2"
+                className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors flex items-center gap-2"
               >
                 <Code2 className="h-4 w-4" />
                 <span>Open In-House Coding Arena</span>
@@ -262,9 +257,9 @@ export default function PublicPracticeHubPage() {
                 <button
                   key={domain}
                   onClick={() => setSelectedDomain(domain)}
-                  className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all shrink-0 ${
+                  className={`px-4 py-2 rounded-lg text-xs font-medium transition-all shrink-0 ${
                     selectedDomain === domain
-                      ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/25'
+                      ? 'bg-blue-600 text-white'
                       : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:bg-slate-100'
                   }`}
                 >
@@ -281,7 +276,7 @@ export default function PublicPracticeHubPage() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search practice test topic..."
-                className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs font-bold focus:border-blue-600 outline-none transition-all"
+                className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-xs font-medium focus:border-blue-600 outline-none transition-all"
               />
             </div>
           </div>
@@ -290,13 +285,13 @@ export default function PublicPracticeHubPage() {
           {isLoading ? (
             <div className="py-20 flex flex-col items-center justify-center gap-3">
               <Loader2 className="h-10 w-10 animate-spin text-blue-600" />
-              <p className="text-xs font-black text-slate-400 uppercase tracking-widest">Loading Practice Tests...</p>
+              <p className="text-xs font-medium text-slate-400">Loading Practice Tests...</p>
             </div>
           ) : filteredExams.length === 0 ? (
-            <div className="py-16 text-center bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 p-8 space-y-3">
+            <div className="py-16 text-center bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-8 space-y-3">
               <BookOpen className="h-12 w-12 text-slate-300 mx-auto" />
-              <h3 className="text-lg font-black text-slate-800 dark:text-white uppercase">No Practice Tests Found</h3>
-              <p className="text-xs text-slate-500 font-bold">Try searching for another topic or domain.</p>
+              <h3 className="text-lg font-semibold text-slate-800 dark:text-white">No Practice Tests Found</h3>
+              <p className="text-xs text-slate-500 font-medium">Try searching for another topic or domain.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -305,20 +300,20 @@ export default function PublicPracticeHubPage() {
                   key={exam.id}
                   initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-200/80 dark:border-slate-800 shadow-xl overflow-hidden p-6 md:p-8 flex flex-col justify-between space-y-6 hover:border-blue-500/50 transition-all group"
+                  className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200/80 dark:border-slate-800 shadow-sm overflow-hidden p-6 md:p-8 flex flex-col justify-between space-y-6 hover:border-blue-300 dark:hover:border-blue-700 transition-all group"
                 >
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <span className="px-3 py-1 bg-blue-500/10 text-blue-600 dark:text-blue-400 text-[10px] font-black rounded-full uppercase tracking-widest border border-blue-500/20">
+                      <span className="px-3 py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-[10px] font-medium rounded-full border border-blue-200 dark:border-blue-800">
                         {exam.domain}
                       </span>
-                      <span className="px-2.5 py-0.5 bg-emerald-500/10 text-emerald-600 text-[9px] font-black rounded-full uppercase tracking-widest border border-emerald-500/20">
+                      <span className="px-2.5 py-0.5 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 text-[9px] font-medium rounded-full border border-emerald-200 dark:border-emerald-800">
                         FREE TEST
                       </span>
                     </div>
 
                     <div>
-                      <h3 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tight group-hover:text-blue-600 transition-colors">
+                      <h3 className="text-xl font-semibold text-slate-900 dark:text-white group-hover:text-blue-600 transition-colors">
                         {exam.title}
                       </h3>
                       <p className="text-xs text-slate-500 dark:text-slate-400 font-medium leading-relaxed mt-1 line-clamp-2">
@@ -326,16 +321,16 @@ export default function PublicPracticeHubPage() {
                       </p>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-3 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-800 text-[11px]">
+                    <div className="grid grid-cols-2 gap-3 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-100 dark:border-slate-800 text-[11px]">
                       <div>
-                        <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Duration</span>
-                        <span className="font-black text-slate-800 dark:text-slate-200 flex items-center gap-1">
+                        <span className="text-[9px] font-medium text-slate-400 uppercase tracking-wider block">Duration</span>
+                        <span className="font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1">
                           <Clock className="h-3.5 w-3.5 text-blue-500" /> {exam.duration_minutes} Mins
                         </span>
                       </div>
                       <div>
-                        <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Pass Score</span>
-                        <span className="font-black text-slate-800 dark:text-slate-200 flex items-center gap-1">
+                        <span className="text-[9px] font-medium text-slate-400 uppercase tracking-wider block">Pass Score</span>
+                        <span className="font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1">
                           <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" /> {exam.passing_score}%
                         </span>
                       </div>
@@ -343,13 +338,13 @@ export default function PublicPracticeHubPage() {
                   </div>
 
                   <div className="pt-2 flex items-center justify-between gap-4">
-                    <span className="text-xs font-black text-slate-400 uppercase tracking-widest">
+                    <span className="text-xs font-medium text-slate-400">
                       {exam.exam_questions?.length || 0} Questions
                     </span>
 
                     <Link
                       href={`/practice/${exam.id}`}
-                      className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-lg shadow-blue-600/25 transition-all active:scale-95"
+                      className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors"
                     >
                       <span>Start Practice</span>
                       <ArrowRight className="h-4 w-4" />

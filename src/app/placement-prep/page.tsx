@@ -359,26 +359,25 @@ export default function PlacementPrepPage() {
 
   return (
     <main className="min-h-screen bg-white dark:bg-slate-950">
-      <section className="relative overflow-hidden bg-gradient-to-br from-slate-950 via-blue-950 to-indigo-950 px-4 pb-20 pt-24">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(59,130,246,0.25),_transparent_30%)] pointer-events-none" />
+      <section className="relative overflow-hidden bg-slate-900 text-white px-4 pb-20 pt-24">
         <div className="container mx-auto grid max-w-6xl gap-12 lg:grid-cols-[1.2fr_0.8fr]">
           <div className="relative z-10">
-            <div className="inline-flex items-center gap-2 rounded-full border border-blue-400/30 bg-blue-500/10 px-4 py-2 text-xs font-black uppercase tracking-[0.28em] text-blue-200">
+            <div className="inline-flex items-center gap-2 rounded-full border border-blue-400/30 bg-blue-500/10 px-4 py-2 text-xs font-medium uppercase tracking-wider text-blue-200">
               <Crown className="h-3.5 w-3.5" />
               199 Placement Bundle That Can Change Your Career
             </div>
-            <h1 className="mt-6 max-w-3xl text-4xl font-black leading-tight text-white sm:text-5xl lg:text-6xl">
+            <h1 className="mt-6 max-w-3xl text-4xl font-bold leading-tight text-white sm:text-5xl lg:text-6xl">
               All Companies Placement Material
-              <span className="block bg-gradient-to-r from-blue-300 via-cyan-200 to-indigo-200 bg-clip-text text-transparent">
+              <span className="block text-blue-300 mt-2">
                 Complete Bundle for 2026 Ready Prep
               </span>
             </h1>
-            <p className="mt-6 max-w-2xl text-base leading-8 text-slate-300 sm:text-lg">
+            <p className="mt-6 max-w-2xl text-base leading-7 text-slate-300 sm:text-lg">
               Stop wasting time searching scattered resources. This all-in-one placement bundle gives you company-wise preparation, previous year questions, aptitude practice, interview material, and exam-focused notes in one place.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               {['TCS', 'Wipro', 'Infosys', 'Accenture', 'Amazon', 'Capgemini', 'Cognizant'].map((company) => (
-                <span key={company} className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-bold text-slate-200">
+                <span key={company} className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-medium text-slate-200">
                   {company}
                 </span>
               ))}
@@ -386,13 +385,13 @@ export default function PlacementPrepPage() {
             <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:items-center">
               <a
                 href="#buy"
-                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-blue-500 to-indigo-500 px-7 py-4 text-sm font-black uppercase tracking-wider text-white shadow-xl shadow-blue-600/25 transition-all hover:shadow-blue-500/40 active:scale-[0.98]"
+                className="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 hover:bg-blue-700 px-7 py-4 text-sm font-medium text-white transition-colors"
               >
                 Buy Now for &#8377;199 <ArrowRight className="h-4 w-4" />
               </a>
               <a
                 href="#about"
-                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/15 bg-white/5 px-7 py-4 text-sm font-black uppercase tracking-wider text-white/85 transition-colors hover:bg-white/10"
+                className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/15 bg-white/5 px-7 py-4 text-sm font-medium text-white/85 transition-colors hover:bg-white/10"
               >
                 View Details <ChevronDown className="h-4 w-4" />
               </a>
@@ -405,22 +404,22 @@ export default function PlacementPrepPage() {
           </div>
 
           <div className="relative z-10" id="buy">
-            <div className="rounded-[2rem] border border-white/10 bg-slate-950/70 p-6 shadow-2xl shadow-blue-950/50 backdrop-blur-xl">
+            <div className="rounded-lg border border-white/10 bg-slate-950/70 p-6 shadow-lg">
               <div className="flex items-center gap-3">
-                <div className="rounded-2xl bg-blue-500/15 p-3 text-blue-300">
+                <div className="rounded-lg bg-blue-500/15 p-3 text-blue-300">
                   <Lock className="h-5 w-5" />
                 </div>
                 <div>
-                  <p className="text-xs font-black uppercase tracking-[0.25em] text-blue-200/70">Instant Purchase</p>
-                  <h2 className="text-xl font-black text-white">No login required</h2>
+                  <p className="text-xs font-medium uppercase tracking-wider text-blue-200/70">Instant Purchase</p>
+                  <h2 className="text-xl font-semibold text-white">No login required</h2>
                 </div>
               </div>
 
-              <div className="mt-6 rounded-3xl border border-white/10 bg-white/5 p-5">
-                <p className="text-xs font-black uppercase tracking-[0.25em] text-slate-400">Price</p>
+              <div className="mt-6 rounded-lg border border-white/10 bg-white/5 p-5">
+                <p className="text-xs font-medium uppercase tracking-wider text-slate-400">Price</p>
                 <div className="mt-2 flex items-end gap-2 text-white">
                   <span className="text-sm text-slate-300">&#8377;</span>
-                  <span className="text-5xl font-black">199</span>
+                  <span className="text-5xl font-bold">199</span>
                   <span className="pb-1 text-sm text-slate-400">one-time</span>
                 </div>
                 <p className="mt-3 text-sm leading-6 text-slate-300">
@@ -430,40 +429,40 @@ export default function PlacementPrepPage() {
 
               <div className="mt-6 grid gap-4">
                 <label className="grid gap-2">
-                  <span className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Name</span>
+                  <span className="text-xs font-medium uppercase tracking-wider text-slate-400">Name</span>
                   <input
                     type="text"
                     value={guestName}
                     onChange={(e) => setGuestName(e.target.value)}
                     placeholder="Your name"
-                    className="rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-sm text-white outline-none ring-0 placeholder:text-slate-500 focus:border-blue-400"
+                    className="rounded-lg border border-white/10 bg-slate-900 px-4 py-3 text-sm text-white outline-none ring-0 placeholder:text-slate-500 focus:border-blue-400"
                   />
                 </label>
                 <label className="grid gap-2">
-                  <span className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Email</span>
+                  <span className="text-xs font-medium uppercase tracking-wider text-slate-400">Email</span>
                   <input
                     type="email"
                     value={guestEmail}
                     onChange={(e) => setGuestEmail(e.target.value)}
                     placeholder="you@example.com"
-                    className="rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-sm text-white outline-none ring-0 placeholder:text-slate-500 focus:border-blue-400"
+                    className="rounded-lg border border-white/10 bg-slate-900 px-4 py-3 text-sm text-white outline-none ring-0 placeholder:text-slate-500 focus:border-blue-400"
                   />
                 </label>
                 <label className="grid gap-2">
-                  <span className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Phone</span>
+                  <span className="text-xs font-medium uppercase tracking-wider text-slate-400">Phone</span>
                   <input
                     type="tel"
                     inputMode="tel"
                     value={guestPhone}
                     onChange={(e) => setGuestPhone(e.target.value)}
                     placeholder="10-digit mobile number"
-                    className="rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-sm text-white outline-none ring-0 placeholder:text-slate-500 focus:border-blue-400"
+                    className="rounded-lg border border-white/10 bg-slate-900 px-4 py-3 text-sm text-white outline-none ring-0 placeholder:text-slate-500 focus:border-blue-400"
                   />
                 </label>
               </div>
 
               {checkoutError && (
-                <div className="mt-4 rounded-2xl border border-rose-500/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-100">
+                <div className="mt-4 rounded-lg border border-rose-500/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-100">
                   {checkoutError}
                 </div>
               )}
@@ -471,7 +470,7 @@ export default function PlacementPrepPage() {
               <button
                 onClick={handlePayment}
                 disabled={paying}
-                className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-white px-5 py-4 text-sm font-black uppercase tracking-wider text-slate-950 transition-all hover:bg-slate-100 active:scale-[0.98] disabled:opacity-70"
+                className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-white px-5 py-4 text-sm font-medium text-slate-950 transition-all hover:bg-slate-100 active:scale-[0.98] disabled:opacity-70"
               >
                 {paying ? <Loader2 className="h-4 w-4 animate-spin" /> : <Zap className="h-4 w-4" />}
                 {paying ? 'Processing...' : 'Pay and Get Access'}
@@ -488,22 +487,22 @@ export default function PlacementPrepPage() {
       <section id="about" className="bg-slate-50 px-4 py-20 dark:bg-slate-900/40">
         <div className="container mx-auto max-w-6xl">
           <div className="max-w-3xl">
-            <p className="text-xs font-black uppercase tracking-[0.28em] text-blue-600 dark:text-blue-400">About the page</p>
-            <h2 className="mt-3 text-3xl font-black text-slate-950 dark:text-white sm:text-4xl">
+            <p className="text-xs font-medium uppercase tracking-wider text-blue-600 dark:text-blue-400">About the page</p>
+            <h2 className="mt-3 text-3xl font-semibold text-slate-950 dark:text-white sm:text-4xl">
               Complete placement bundle built for serious candidates
             </h2>
-            <p className="mt-4 text-base leading-8 text-slate-600 dark:text-slate-300">
+            <p className="mt-4 text-base leading-7 text-slate-600 dark:text-slate-300">
               Are you serious about cracking your dream job in top companies? This bundle is designed to give you company-wise material, latest questions, previous year papers, pseudocode, aptitude practice, interview prep, and exam-pattern content in one organized place.
             </p>
           </div>
 
           <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
             {BENEFITS.map((item) => (
-              <div key={item.title} className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition-transform hover:-translate-y-1 hover:shadow-lg dark:border-slate-800 dark:bg-slate-950">
-                <div className="mb-4 inline-flex rounded-2xl bg-gradient-to-r from-blue-500 to-indigo-500 p-3 text-white">
+              <div key={item.title} className="rounded-lg border border-slate-200 bg-white p-6 transition-transform hover:-translate-y-1 hover:shadow-md dark:border-slate-800 dark:bg-slate-950">
+                <div className="mb-4 inline-flex rounded-lg bg-blue-600 p-3 text-white">
                   <item.icon className="h-5 w-5" />
                 </div>
-                <h3 className="text-sm font-black uppercase tracking-wide text-slate-950 dark:text-white">{item.title}</h3>
+                <h3 className="text-sm font-semibold text-slate-950 dark:text-white">{item.title}</h3>
                 <p className="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">{item.desc}</p>
               </div>
             ))}
@@ -514,8 +513,8 @@ export default function PlacementPrepPage() {
       <section className="px-4 py-20">
         <div className="container mx-auto max-w-6xl">
           <div className="grid gap-8 lg:grid-cols-2">
-            <InfoPanel title="What You'll Get" icon={FileText} items={FEATURES} accent="from-blue-600 to-indigo-600" />
-            <InfoPanel title="Premium Features" icon={Layers3} items={PREMIUM_FEATURES} accent="from-emerald-500 to-teal-500" />
+            <InfoPanel title="What You'll Get" icon={FileText} items={FEATURES} accent="bg-blue-600" />
+            <InfoPanel title="Premium Features" icon={Layers3} items={PREMIUM_FEATURES} accent="bg-emerald-600" />
           </div>
         </div>
       </section>
@@ -523,12 +522,12 @@ export default function PlacementPrepPage() {
       <section className="bg-slate-50 px-4 py-20 dark:bg-slate-900/40">
         <div className="container mx-auto max-w-6xl">
           <div className="grid gap-8 lg:grid-cols-2">
-            <div className="rounded-[2rem] border border-slate-200 bg-white p-8 shadow-sm dark:border-slate-800 dark:bg-slate-950">
-              <p className="text-xs font-black uppercase tracking-[0.28em] text-blue-600 dark:text-blue-400">Why this is worth it</p>
-              <h3 className="mt-3 text-2xl font-black text-slate-950 dark:text-white">
+            <div className="rounded-lg border border-slate-200 bg-white p-8 shadow-sm dark:border-slate-800 dark:bg-slate-950">
+              <p className="text-xs font-medium uppercase tracking-wider text-blue-600 dark:text-blue-400">Why this is worth it</p>
+              <h3 className="mt-3 text-2xl font-semibold text-slate-950 dark:text-white">
                 Stop collecting random resources from everywhere
               </h3>
-              <p className="mt-4 text-base leading-8 text-slate-600 dark:text-slate-300">
+              <p className="mt-4 text-base leading-7 text-slate-600 dark:text-slate-300">
                 Most students lose time because the right material is scattered across multiple places. This bundle saves your time, boosts your preparation, and gives you a clear path to study smarter.
               </p>
               <div className="mt-6 grid gap-3">
@@ -538,33 +537,33 @@ export default function PlacementPrepPage() {
                   'Easy for beginners and final year students',
                   'Works great for IT and core company prep',
                 ].map((point) => (
-                  <div key={point} className="flex items-center gap-3 rounded-2xl border border-slate-200 px-4 py-3 dark:border-slate-800">
+                  <div key={point} className="flex items-center gap-3 rounded-lg border border-slate-200 px-4 py-3 dark:border-slate-800">
                     <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-                    <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{point}</span>
+                    <span className="text-sm text-slate-700 dark:text-slate-300">{point}</span>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div className="rounded-[2rem] border border-slate-200 bg-white p-8 shadow-sm dark:border-slate-800 dark:bg-slate-950">
-              <p className="text-xs font-black uppercase tracking-[0.28em] text-blue-600 dark:text-blue-400">Perfect for</p>
-              <h3 className="mt-3 text-2xl font-black text-slate-950 dark:text-white">Who should buy this bundle?</h3>
+            <div className="rounded-lg border border-slate-200 bg-white p-8 shadow-sm dark:border-slate-800 dark:bg-slate-950">
+              <p className="text-xs font-medium uppercase tracking-wider text-blue-600 dark:text-blue-400">Perfect for</p>
+              <h3 className="mt-3 text-2xl font-semibold text-slate-950 dark:text-white">Who should buy this bundle?</h3>
               <div className="mt-6 grid gap-3 sm:grid-cols-2">
                 {PERFECT_FOR.map((label) => (
-                  <div key={label} className="rounded-2xl border border-slate-200 px-4 py-4 text-sm font-bold text-slate-700 dark:border-slate-800 dark:text-slate-300">
+                  <div key={label} className="rounded-lg border border-slate-200 px-4 py-4 text-sm font-medium text-slate-700 dark:border-slate-800 dark:text-slate-300">
                     {label}
                   </div>
                 ))}
               </div>
-              <div className="mt-6 rounded-3xl bg-gradient-to-r from-blue-600 to-indigo-600 p-6 text-white">
-                <p className="text-xs font-black uppercase tracking-[0.28em] text-white/70">Take action now</p>
-                <p className="mt-2 text-lg font-black">Don&apos;t wait until it&apos;s too late.</p>
+              <div className="mt-6 rounded-lg bg-blue-600 p-6 text-white">
+                <p className="text-xs font-medium uppercase tracking-wider text-white/70">Take action now</p>
+                <p className="mt-2 text-lg font-semibold">Don&apos;t wait until it&apos;s too late.</p>
                 <p className="mt-2 text-sm leading-7 text-blue-100">
                   Thousands of students are already preparing smart. Buy now and start your placement journey today.
                 </p>
                 <a
                   href="#buy"
-                  className="mt-5 inline-flex items-center gap-2 rounded-2xl bg-white px-5 py-3 text-xs font-black uppercase tracking-wider text-blue-700"
+                  className="mt-5 inline-flex items-center gap-2 rounded-lg bg-white px-5 py-3 text-xs font-medium text-blue-700"
                 >
                   Buy Now &amp; Start Preparing <ArrowRight className="h-4 w-4" />
                 </a>
@@ -577,8 +576,8 @@ export default function PlacementPrepPage() {
       <section id="companies" className="px-4 py-20">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center">
-            <p className="text-xs font-black uppercase tracking-[0.28em] text-blue-600 dark:text-blue-400">Companies covered</p>
-            <h2 className="mt-3 text-3xl font-black text-slate-950 dark:text-white sm:text-4xl">Available Companies</h2>
+            <p className="text-xs font-medium uppercase tracking-wider text-blue-600 dark:text-blue-400">Companies covered</p>
+            <h2 className="mt-3 text-3xl font-semibold text-slate-950 dark:text-white sm:text-4xl">Available Companies</h2>
             <p className="mt-3 text-slate-600 dark:text-slate-400">
               {companies.length > 0
                 ? `${companies.length} companies available. Pay once, access everything.`
@@ -603,9 +602,9 @@ export default function PlacementPrepPage() {
                   <button
                     key={cat}
                     onClick={() => setActiveCategory(cat)}
-                    className={`whitespace-nowrap rounded-xl px-4 py-2.5 text-xs font-black uppercase tracking-wider transition-all ${
+                    className={`whitespace-nowrap rounded-lg px-4 py-2.5 text-xs font-medium transition-all ${
                       activeCategory === cat
-                        ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-600/20'
+                        ? 'bg-blue-600 text-white'
                         : 'border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-400 dark:hover:bg-slate-900'
                     }`}
                   >
@@ -634,17 +633,17 @@ export default function PlacementPrepPage() {
       <section className="bg-slate-50 px-4 py-20 dark:bg-slate-900/40">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center">
-            <p className="text-xs font-black uppercase tracking-[0.28em] text-blue-600 dark:text-blue-400">Testimonials</p>
-            <h2 className="mt-3 text-3xl font-black text-slate-950 dark:text-white sm:text-4xl">Students are already using it</h2>
+            <p className="text-xs font-medium uppercase tracking-wider text-blue-600 dark:text-blue-400">Testimonials</p>
+            <h2 className="mt-3 text-3xl font-semibold text-slate-950 dark:text-white sm:text-4xl">Students are already using it</h2>
           </div>
           <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
             {TESTIMONIALS.map((item) => (
-              <figure key={item.name} className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950">
+              <figure key={item.name} className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950">
                 <MessageCircle className="h-5 w-5 text-blue-500" />
                 <blockquote className="mt-4 text-sm leading-7 text-slate-600 dark:text-slate-300">"{item.quote}"</blockquote>
                 <figcaption className="mt-6">
-                  <p className="font-black text-slate-950 dark:text-white">{item.name}</p>
-                  <p className="text-xs uppercase tracking-[0.18em] text-slate-400">{item.role}</p>
+                  <p className="font-semibold text-slate-950 dark:text-white">{item.name}</p>
+                  <p className="text-xs uppercase tracking-wider text-slate-400">{item.role}</p>
                 </figcaption>
               </figure>
             ))}
@@ -655,13 +654,13 @@ export default function PlacementPrepPage() {
       <section className="px-4 py-20" id="faq">
         <div className="container mx-auto max-w-4xl">
           <div className="text-center">
-            <p className="text-xs font-black uppercase tracking-[0.28em] text-blue-600 dark:text-blue-400">Frequently asked questions</p>
-            <h2 className="mt-3 text-3xl font-black text-slate-950 dark:text-white sm:text-4xl">Common questions, answered</h2>
+            <p className="text-xs font-medium uppercase tracking-wider text-blue-600 dark:text-blue-400">Frequently asked questions</p>
+            <h2 className="mt-3 text-3xl font-semibold text-slate-950 dark:text-white sm:text-4xl">Common questions, answered</h2>
           </div>
           <div className="mt-10 grid gap-4">
             {FAQS.map((faq, index) => (
-              <details key={faq.q} className="group rounded-3xl border border-slate-200 bg-white p-5 shadow-sm open:shadow-lg dark:border-slate-800 dark:bg-slate-950">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-left text-sm font-black text-slate-950 dark:text-white">
+              <details key={faq.q} className="group rounded-lg border border-slate-200 bg-white p-5 shadow-sm open:shadow-md dark:border-slate-800 dark:bg-slate-950">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-left text-sm font-medium text-slate-950 dark:text-white">
                   <span>{index + 1}. {faq.q}</span>
                   <ChevronDown className="h-4 w-4 shrink-0 text-slate-400 transition-transform group-open:rotate-180" />
                 </summary>
@@ -672,46 +671,46 @@ export default function PlacementPrepPage() {
         </div>
       </section>
 
-      <section id="contact" className="bg-gradient-to-r from-slate-950 via-blue-950 to-indigo-950 px-4 py-20 text-white">
+      <section id="contact" className="bg-slate-900 px-4 py-20 text-white">
         <div className="container mx-auto grid max-w-6xl gap-8 lg:grid-cols-[0.9fr_1.1fr]">
           <div>
-            <p className="text-xs font-black uppercase tracking-[0.28em] text-blue-200/70">Contact me for any issues or queries</p>
-            <h2 className="mt-3 text-3xl font-black sm:text-4xl">Need help after payment?</h2>
-            <p className="mt-4 max-w-xl text-base leading-8 text-slate-300">
+            <p className="text-xs font-medium uppercase tracking-wider text-blue-200/70">Contact me for any issues or queries</p>
+            <h2 className="mt-3 text-3xl font-semibold sm:text-4xl">Need help after payment?</h2>
+            <p className="mt-4 max-w-xl text-base leading-7 text-slate-300">
               If you have any issue with payment or access, reach out and we will help you quickly.
             </p>
             <a
               href="mailto:zayacodehub@gmail.com?subject=Placement%20Bundle%20Support"
-              className="mt-6 inline-flex items-center gap-2 rounded-2xl bg-white px-6 py-4 text-sm font-black uppercase tracking-wider text-slate-950"
+              className="mt-6 inline-flex items-center gap-2 rounded-lg bg-white px-6 py-4 text-sm font-medium text-slate-950"
             >
               <Mail className="h-4 w-4" />
               Email Support
             </a>
           </div>
 
-          <div className="rounded-[2rem] border border-white/10 bg-white/5 p-8 backdrop-blur-xl">
-            <p className="text-xs font-black uppercase tracking-[0.28em] text-blue-200/70">Want a direct message?</p>
+          <div className="rounded-lg border border-white/10 bg-white/5 p-8">
+            <p className="text-xs font-medium uppercase tracking-wider text-blue-200/70">Want a direct message?</p>
             <label className="mt-5 block">
-              <span className="text-xs font-black uppercase tracking-[0.2em] text-slate-300">Message</span>
+              <span className="text-xs font-medium uppercase tracking-wider text-slate-300">Message</span>
               <textarea
                 value={contactMessage}
                 onChange={(e) => setContactMessage(e.target.value)}
                 rows={5}
                 placeholder="Tell us what you need help with..."
-                className="mt-2 w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-sm text-white outline-none placeholder:text-slate-500 focus:border-blue-400"
+                className="mt-2 w-full rounded-lg border border-white/10 bg-slate-950/60 px-4 py-3 text-sm text-white outline-none placeholder:text-slate-500 focus:border-blue-400"
               />
             </label>
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               <a
                 href="mailto:zayacodehub@gmail.com"
-                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-3.5 text-xs font-black uppercase tracking-wider text-white"
+                className="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 hover:bg-blue-700 px-5 py-3.5 text-xs font-medium text-white transition-colors"
               >
                 <Mail className="h-4 w-4" />
                 Send Email
               </a>
               <a
                 href="#buy"
-                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/15 bg-white/5 px-5 py-3.5 text-xs font-black uppercase tracking-wider text-white"
+                className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/15 bg-white/5 px-5 py-3.5 text-xs font-medium text-white transition-colors hover:bg-white/10"
               >
                 <ArrowRight className="h-4 w-4" />
                 Buy Access
@@ -754,18 +753,18 @@ function InfoPanel({
   accent: string;
 }) {
   return (
-    <div className="rounded-[2rem] border border-slate-200 bg-white p-8 shadow-sm dark:border-slate-800 dark:bg-slate-950">
+    <div className="rounded-lg border border-slate-200 bg-white p-8 shadow-sm dark:border-slate-800 dark:bg-slate-950">
       <div className="flex items-center gap-3">
-        <div className={`rounded-2xl bg-gradient-to-r ${accent} p-3 text-white`}>
+        <div className={`rounded-lg ${accent} p-3 text-white`}>
           <Icon className="h-5 w-5" />
         </div>
-        <h3 className="text-2xl font-black text-slate-950 dark:text-white">{title}</h3>
+        <h3 className="text-xl font-semibold text-slate-950 dark:text-white">{title}</h3>
       </div>
       <div className="mt-6 grid gap-3">
         {items.map((item) => (
-          <div key={item} className="flex items-center gap-3 rounded-2xl border border-slate-200 px-4 py-3 dark:border-slate-800">
+          <div key={item} className="flex items-center gap-3 rounded-lg border border-slate-200 px-4 py-3 dark:border-slate-800">
             <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-500" />
-            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{item}</span>
+            <span className="text-sm text-slate-700 dark:text-slate-300">{item}</span>
           </div>
         ))}
       </div>

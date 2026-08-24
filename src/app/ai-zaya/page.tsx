@@ -226,7 +226,7 @@ export default function AiZayaPage() {
                 href={playStoreLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-lg shadow-xl shadow-blue-600/20 hover:scale-[1.02] active:scale-95 transition-all"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium text-base transition-colors"
               >
                 <Download className="h-6 w-6" />
                 <span>Install on Google Play</span>
@@ -234,7 +234,7 @@ export default function AiZayaPage() {
 
               <a
                 href="#download-section"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-blue-500 text-slate-800 dark:text-slate-200 font-semibold text-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-all shadow-sm"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-blue-500 text-slate-800 dark:text-slate-200 font-medium text-base hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
               >
                 <Smartphone className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                 <span>Quick Scan QR Code</span>
@@ -259,13 +259,13 @@ export default function AiZayaPage() {
           {/* App Preview Image */}
           <div className="flex-1 w-full max-w-md lg:max-w-xl relative flex justify-center">
             <div className="absolute inset-0 bg-gradient-to-tr from-blue-600/20 to-purple-600/20 blur-2xl rounded-full transform scale-90" />
-            <div className="relative rounded-3xl p-3 bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden hover:border-blue-500/50 transition-colors">
+            <div className="relative rounded-lg p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 overflow-hidden hover:border-blue-300 dark:hover:border-blue-700 transition-colors">
               <Image
                 src="/images/ai-zaya-app.png"
                 alt="AI ZAYA Mobile Application Developed by ZAYA CODE HUB"
                 width={600}
                 height={600}
-                className="rounded-2xl object-cover shadow-md w-full h-auto"
+                className="rounded-lg object-cover shadow-sm w-full h-auto"
                 priority
               />
             </div>
@@ -316,7 +316,7 @@ export default function AiZayaPage() {
           {keyFeatures.map((f, index) => (
             <div 
               key={index}
-              className="p-8 rounded-3xl bg-white dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800 hover:border-blue-500/40 transition-all duration-300 flex flex-col justify-between group shadow-sm dark:shadow-lg"
+               className="p-8 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 hover:border-blue-300 dark:hover:border-blue-700 transition-all flex flex-col justify-between group"
             >
               <div>
                 <div className="p-3.5 rounded-2xl bg-slate-100 dark:bg-slate-800/80 w-fit mb-6 group-hover:scale-110 transition-transform">
@@ -419,7 +419,7 @@ export default function AiZayaPage() {
               </p>
             </div>
 
-            <div className="p-8 rounded-3xl bg-white dark:bg-gradient-to-br dark:from-slate-900 dark:to-slate-950 border border-slate-200 dark:border-blue-500/30 shadow-md dark:shadow-xl">
+            <div className="p-8 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-blue-500/30">
               <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
                 <Cpu className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                 Developed by ZAYA CODE HUB
@@ -445,14 +445,14 @@ export default function AiZayaPage() {
 
       {/* Download Section & QR Code Box */}
       <section id="download-section" className="py-20 container mx-auto px-6">
-        <div className="max-w-4xl mx-auto rounded-3xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-700 text-white border border-blue-400/30 p-8 sm:p-12 relative overflow-hidden shadow-2xl">
+        <div className="max-w-4xl mx-auto rounded-lg bg-blue-600 text-white border border-blue-400/30 p-8 sm:p-12">
           <div className="flex flex-col md:flex-row items-center gap-8 justify-between">
             <div className="flex-1 text-center md:text-left">
-              <span className="text-xs font-bold text-amber-300 uppercase tracking-widest">GET THE APP NOW</span>
-              <h3 className="text-2xl sm:text-4xl font-extrabold text-white mt-2 mb-4">
+              <span className="text-xs font-medium text-amber-300 uppercase tracking-wider mb-4 block">GET THE APP NOW</span>
+              <h3 className="text-2xl sm:text-4xl font-semibold text-white mt-2 mb-4">
                 Install AI ZAYA Today
               </h3>
-              <p className="text-slate-100 text-sm sm:text-base mb-6 max-w-lg">
+              <p className="text-blue-100 text-sm sm:text-base mb-6 max-w-lg">
                 Experience AI-powered conversations, brain games, and productivity assistance directly on your Android phone.
               </p>
               
@@ -461,7 +461,7 @@ export default function AiZayaPage() {
                   href={playStoreLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-8 py-4 rounded-2xl bg-white text-blue-700 hover:bg-blue-50 font-bold text-base transition-all shadow-xl hover:scale-105 active:scale-95"
+                  className="px-8 py-4 rounded-lg bg-white text-blue-700 hover:bg-blue-50 font-medium text-base transition-colors"
                 >
                   Install from Google Play
                 </a>
@@ -469,7 +469,7 @@ export default function AiZayaPage() {
             </div>
 
             {/* QR Code Container */}
-            <div className="flex flex-col items-center p-5 rounded-2xl bg-white text-slate-900 shadow-2xl shrink-0 border-2 border-white/80 group">
+            <div className="flex flex-col items-center p-5 rounded-lg bg-white text-slate-900 shrink-0 border border-white/80">
               <div className="relative p-1 bg-white rounded-xl">
                 <Image
                   src="/images/ai-zaya-qr.png"

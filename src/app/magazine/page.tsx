@@ -82,7 +82,7 @@ export default function MagazinePage() {
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
                   viewport={{ once: true }}
-                  className="group flex flex-col bg-white dark:bg-slate-900 rounded-[32px] overflow-hidden border border-slate-200 dark:border-slate-800 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500"
+                   className="group flex flex-col bg-white dark:bg-slate-900 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-800 hover:shadow-md transition-all"
                 >
                   {/* Image Container */}
                   <div className="relative h-64 overflow-hidden">
@@ -101,7 +101,7 @@ export default function MagazinePage() {
                       </div>
                     )}
                     <div className="absolute top-6 left-6">
-                      <span className="px-4 py-2 rounded-full bg-white/90 dark:bg-slate-900/90 backdrop-blur-md text-[10px] font-black uppercase tracking-widest text-blue-600 shadow-lg">
+                      <span className="px-4 py-2 rounded-full bg-white/90 dark:bg-slate-900/90 backdrop-blur-md text-[10px] font-medium uppercase tracking-wider text-blue-600 shadow-sm">
                         {post.category}
                       </span>
                     </div>
@@ -109,7 +109,7 @@ export default function MagazinePage() {
 
                   {/* Content Container */}
                   <div className="p-8 flex-1 flex flex-col">
-                    <div className="flex items-center space-x-4 mb-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                    <div className="flex items-center space-x-4 mb-4 text-[10px] font-medium text-slate-400 uppercase tracking-wider">
                       <div className="flex items-center">
                         <Calendar className="h-3 w-3 mr-1 text-blue-500" />
                         {new Date(post.created_at).toLocaleDateString()}
@@ -131,7 +131,7 @@ export default function MagazinePage() {
                     <div className="mt-auto">
                       <Link
                         href={`/magazine/${post.id}`}
-                        className="inline-flex items-center text-blue-600 font-black text-sm uppercase tracking-widest hover:translate-x-2 transition-transform"
+                        className="inline-flex items-center text-blue-600 font-medium text-sm hover:translate-x-2 transition-transform"
                       >
                         Read Full Story <ChevronRight className="ml-2 h-4 w-4" />
                       </Link>
@@ -155,9 +155,9 @@ export default function MagazinePage() {
             <input 
               type="email" 
               placeholder="Enter your email" 
-              className="flex-1 px-6 py-4 rounded-2xl bg-white text-slate-900 focus:outline-none font-bold"
+              className="flex-1 px-6 py-4 rounded-lg bg-white text-slate-900 focus:outline-none text-sm"
             />
-            <button className="px-8 py-4 rounded-2xl bg-slate-900 text-white font-bold hover:bg-slate-800 transition-colors">
+            <button className="px-8 py-4 rounded-lg bg-slate-900 text-white font-medium hover:bg-slate-800 transition-colors">
               Subscribe
             </button>
           </div>
