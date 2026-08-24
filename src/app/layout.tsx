@@ -69,7 +69,7 @@ export const metadata: Metadata = {
   // ✅ AdSense Verification & Search Engine Crawlers
   verification: {
     other: {
-      "google-adsense-account": "ca-pub-1411920894777921",
+      "google-adsense-account": "ca-pub-4459539500189568",
     },
   },
 
@@ -210,7 +210,7 @@ export default function RootLayout({
       <head>
         <Script
           async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1411920894777921"
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4459539500189568"
           crossOrigin="anonymous"
           strategy="afterInteractive"
         />
