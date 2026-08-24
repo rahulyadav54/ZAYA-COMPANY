@@ -102,6 +102,8 @@ export default function AptitudeTestPage() {
   const [integrityNotice, setIntegrityNotice] = useState('Test integrity tools are active.');
   const [timerEnabled, setTimerEnabled] = useState(true);
   const [timeRemaining, setTimeRemaining] = useState(TEST_DURATION_SECONDS);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   const [result, setResult] = useState<ZayaIqScoreBreakdown | null>(null);
   const [analysis, setAnalysis] = useState<AnalysisData>(null);
@@ -123,10 +125,76 @@ export default function AptitudeTestPage() {
   const certificateRef = useRef<HTMLDivElement>(null);
   const reportRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<HTMLDivElement>(null);
+  const testContainerRef = useRef<HTMLDivElement>(null);
 
   const currentQuestion = questions[currentIndex];
   const answeredCount = Object.keys(answers).length;
   const completionPercent = questions.length ? Math.round((answeredCount / questions.length) * 100) : 0;
+
+  // Detect mobile device
+  useEffect(() => {
+    const checkMobile = () => {
+      const mobile = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      setIsMobile(mobile);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Auto-enter fullscreen on mobile when test starts
+  useEffect(() => {
+    if (stage === 'test' && isMobile && !isFullscreen) {
+      enterFullscreen();
+    }
+  }, [stage, isMobile]);
+
+  // Fullscreen functions with cross-browser support
+  const enterFullscreen = async () => {
+    try {
+      const elem = testContainerRef.current || document.documentElement;
+      if (elem.requestFullscreen) {
+        await elem.requestFullscreen();
+      } else if ((elem as any).webkitRequestFullscreen) {
+        await (elem as any).webkitRequestFullscreen();
+      } else if ((elem as any).msRequestFullscreen) {
+        await (elem as any).msRequestFullscreen();
+      }
+      setIsFullscreen(true);
+    } catch (err) {
+      console.warn('Fullscreen not supported:', err);
+    }
+  };
+
+  const exitFullscreen = async () => {
+    try {
+      if (document.exitFullscreen) {
+        await document.exitFullscreen();
+      } else if ((document as any).webkitExitFullscreen) {
+        await (document as any).webkitExitFullscreen();
+      } else if ((document as any).msExitFullscreen) {
+        await (document as any).msExitFullscreen();
+      }
+      setIsFullscreen(false);
+    } catch (err) {
+      console.warn('Exit fullscreen error:', err);
+    }
+  };
+
+  // Listen for fullscreen changes
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement || !!(document as any).webkitFullscreenElement || !!(document as any).msFullscreenElement);
+    };
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+      document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
+      document.removeEventListener('MSFullscreenChange', handleFullscreenChange);
+    };
+  }, []);
 
   useEffect(() => {
     const saved = window.localStorage.getItem(STORAGE_KEY);
@@ -680,7 +748,27 @@ export default function AptitudeTestPage() {
 
         {/* Test Stage */}
         {stage === 'test' && currentQuestion && (
-          <div className="grid gap-8 lg:grid-cols-[1fr_280px]">
+          <div 
+            ref={testContainerRef}
+            className={`${
+              isFullscreen 
+                ? 'fixed inset-0 z-50 bg-slate-50 overflow-y-auto' 
+                : ''
+            }`}
+          >
+            {/* Fullscreen toggle button for mobile */}
+            {isMobile && (
+              <div className="sticky top-0 z-10 bg-white border-b border-slate-200 px-4 py-2 flex items-center justify-between">
+                <span className="text-sm font-medium text-slate-700">Question {currentIndex + 1}/{questions.length}</span>
+                <button
+                  onClick={isFullscreen ? exitFullscreen : enterFullscreen}
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-700"
+                >
+                  {isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
+                </button>
+              </div>
+            )}
+            <div className={`grid gap-8 lg:grid-cols-[1fr_280px] ${isFullscreen ? 'p-4 max-w-4xl mx-auto' : ''}`}>
             <div className="space-y-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
               <div className="flex flex-wrap items-center justify-between gap-4">
                 <div>
@@ -821,6 +909,7 @@ export default function AptitudeTestPage() {
                 </p>
               </div>
             </aside>
+          </div>
           </div>
         )}
 
