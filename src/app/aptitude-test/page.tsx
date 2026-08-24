@@ -19,6 +19,9 @@ import {
   Trophy,
   TriangleAlert,
   UserRound,
+  Maximize,
+  Minimize,
+  AlertTriangle,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
 import { downloadAsPDF, downloadAsPNG } from '@/lib/downloadHelper';
@@ -39,6 +42,23 @@ import {
   type ZayaIqScoreBreakdown,
 } from '@/lib/zayaIqTestUtils';
 import { difficultyOrder, sampleQuestion, zayaIqQuestions } from '@/lib/zayaIqTestData';
+import { useAntiCheat } from '@/lib/useAntiCheat';
+
+function getViolationMessage(type: string, details?: string): string {
+  const messages: Record<string, string> = {
+    tab_switch: 'Tab switching detected! This violation has been recorded.',
+    window_blur: 'Window focus changed! Stay on the test screen.',
+    copy_attempt: 'Copying is not allowed during the test.',
+    cut_attempt: 'Cutting is not allowed during the test.',
+    paste_attempt: 'Pasting is not allowed during the test.',
+    right_click: 'Right-click is disabled during the test.',
+    blocked_shortcut: 'Keyboard shortcuts are blocked during the test.',
+    devtools_open: 'Developer tools detected! This is a violation.',
+    fullscreen_exit: 'Exiting fullscreen is not allowed!',
+    print_screen: 'Screenshots are not allowed during the test.',
+  };
+  return messages[type] || details || 'Violation detected!';
+}
 
 type Stage = 'landing' | 'sample' | 'test' | 'result';
 
@@ -125,11 +145,52 @@ export default function AptitudeTestPage() {
   const certificateRef = useRef<HTMLDivElement>(null);
   const reportRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<HTMLDivElement>(null);
-  const testContainerRef = useRef<HTMLDivElement>(null);
 
   const currentQuestion = questions[currentIndex];
   const answeredCount = Object.keys(answers).length;
   const completionPercent = questions.length ? Math.round((answeredCount / questions.length) * 100) : 0;
+
+  // Comprehensive anti-cheat system
+  const {
+    state: antiCheatState,
+    containerRef: testContainerRef,
+    enterFullscreen,
+    exitFullscreen,
+    setActive: setAntiCheatActive,
+  } = useAntiCheat({
+    enabled: stage === 'test',
+    maxViolations: 5,
+    onViolation: (type, details) => {
+      setWarningCount(prev => prev + 1);
+      setIntegrityNotice(getViolationMessage(type, details));
+    },
+    onAutoSubmit: () => {
+      handleSubmitConfirm();
+    },
+    enableFullscreen: true,
+    enableTabDetection: true,
+    enableCopyBlock: true,
+    enableRightClickBlock: true,
+    enableKeyboardBlock: true,
+    enableDevToolsBlock: true,
+    enableResizeDetection: true,
+    enableWatermark: true,
+    candidateName: `${profileForm.firstName} ${profileForm.lastName}`.trim() || 'Candidate',
+    candidateId: attemptId,
+  });
+
+  // Sync anti-cheat active state
+  useEffect(() => {
+    setAntiCheatActive(stage === 'test');
+  }, [stage, setAntiCheatActive]);
+
+  // Auto-enter fullscreen on mobile when test starts
+  useEffect(() => {
+    const isMobileDevice = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    if (stage === 'test' && isMobileDevice && !antiCheatState.isFullscreen) {
+      enterFullscreen();
+    }
+  }, [stage, antiCheatState.isFullscreen, enterFullscreen]);
 
   // Detect mobile device
   useEffect(() => {
@@ -142,59 +203,12 @@ export default function AptitudeTestPage() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Auto-enter fullscreen on mobile when test starts
+  // Sync warning count with anti-cheat state
   useEffect(() => {
-    if (stage === 'test' && isMobile && !isFullscreen) {
-      enterFullscreen();
+    if (antiCheatState.violationCount !== warningCount) {
+      setWarningCount(antiCheatState.violationCount);
     }
-  }, [stage, isMobile]);
-
-  // Fullscreen functions with cross-browser support
-  const enterFullscreen = async () => {
-    try {
-      const elem = testContainerRef.current || document.documentElement;
-      if (elem.requestFullscreen) {
-        await elem.requestFullscreen();
-      } else if ((elem as any).webkitRequestFullscreen) {
-        await (elem as any).webkitRequestFullscreen();
-      } else if ((elem as any).msRequestFullscreen) {
-        await (elem as any).msRequestFullscreen();
-      }
-      setIsFullscreen(true);
-    } catch (err) {
-      console.warn('Fullscreen not supported:', err);
-    }
-  };
-
-  const exitFullscreen = async () => {
-    try {
-      if (document.exitFullscreen) {
-        await document.exitFullscreen();
-      } else if ((document as any).webkitExitFullscreen) {
-        await (document as any).webkitExitFullscreen();
-      } else if ((document as any).msExitFullscreen) {
-        await (document as any).msExitFullscreen();
-      }
-      setIsFullscreen(false);
-    } catch (err) {
-      console.warn('Exit fullscreen error:', err);
-    }
-  };
-
-  // Listen for fullscreen changes
-  useEffect(() => {
-    const handleFullscreenChange = () => {
-      setIsFullscreen(!!document.fullscreenElement || !!(document as any).webkitFullscreenElement || !!(document as any).msFullscreenElement);
-    };
-    document.addEventListener('fullscreenchange', handleFullscreenChange);
-    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
-    document.addEventListener('MSFullscreenChange', handleFullscreenChange);
-    return () => {
-      document.removeEventListener('fullscreenchange', handleFullscreenChange);
-      document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
-      document.removeEventListener('MSFullscreenChange', handleFullscreenChange);
-    };
-  }, []);
+  }, [antiCheatState.violationCount]);
 
   useEffect(() => {
     const saved = window.localStorage.getItem(STORAGE_KEY);
@@ -274,38 +288,6 @@ export default function AptitudeTestPage() {
     }, 1000);
     return () => window.clearInterval(interval);
   }, [stage, timerEnabled, timeRemaining]);
-
-  useEffect(() => {
-    if (stage !== 'test') return;
-
-    const handleVisibility = () => {
-      if (document.hidden) {
-        setWarningCount((value) => value + 1);
-        setIntegrityNotice('Tab switching detected. Please stay on the assessment screen.');
-      }
-    };
-
-    const handleBlur = () => {
-      setWarningCount((value) => value + 1);
-      setIntegrityNotice('Window focus changed. This is logged as a fairness signal.');
-    };
-
-    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
-      event.preventDefault();
-      event.returnValue = '';
-      return '';
-    };
-
-    document.addEventListener('visibilitychange', handleVisibility);
-    window.addEventListener('blur', handleBlur);
-    window.addEventListener('beforeunload', handleBeforeUnload);
-
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibility);
-      window.removeEventListener('blur', handleBlur);
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-    };
-  }, [stage]);
 
   useEffect(() => {
     if (!certificateId) return;
@@ -751,24 +733,31 @@ export default function AptitudeTestPage() {
           <div 
             ref={testContainerRef}
             className={`${
-              isFullscreen 
+              antiCheatState.isFullscreen 
                 ? 'fixed inset-0 z-50 bg-slate-50 overflow-y-auto' 
                 : ''
             }`}
           >
-            {/* Fullscreen toggle button for mobile */}
-            {isMobile && (
-              <div className="sticky top-0 z-10 bg-white border-b border-slate-200 px-4 py-2 flex items-center justify-between">
-                <span className="text-sm font-medium text-slate-700">Question {currentIndex + 1}/{questions.length}</span>
-                <button
-                  onClick={isFullscreen ? exitFullscreen : enterFullscreen}
-                  className="inline-flex items-center gap-1.5 rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-700"
-                >
-                  {isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
-                </button>
+            {/* Fullscreen & Warning Bar */}
+            <div className="sticky top-0 z-10 bg-white border-b border-slate-200 px-4 py-2 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span className="text-sm font-medium text-slate-700">Q {currentIndex + 1}/{questions.length}</span>
+                {warningCount > 0 && (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-red-50 px-2 py-0.5 text-xs font-medium text-red-600">
+                    <AlertTriangle className="h-3 w-3" />
+                    {warningCount} violations
+                  </span>
+                )}
               </div>
-            )}
-            <div className={`grid gap-8 lg:grid-cols-[1fr_280px] ${isFullscreen ? 'p-4 max-w-4xl mx-auto' : ''}`}>
+              <button
+                onClick={antiCheatState.isFullscreen ? exitFullscreen : enterFullscreen}
+                className="inline-flex items-center gap-1.5 rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-200 transition-colors"
+              >
+                {antiCheatState.isFullscreen ? <Minimize className="h-3 w-3" /> : <Maximize className="h-3 w-3" />}
+                {antiCheatState.isFullscreen ? 'Exit' : 'Fullscreen'}
+              </button>
+            </div>
+            <div className={`grid gap-8 lg:grid-cols-[1fr_280px] ${antiCheatState.isFullscreen ? 'p-4 max-w-4xl mx-auto' : ''}`}>
             <div className="space-y-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
               <div className="flex flex-wrap items-center justify-between gap-4">
                 <div>
