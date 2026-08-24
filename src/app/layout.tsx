@@ -115,6 +115,7 @@ const jsonLdOrg = {
       "url": "https://zayacodehub.in",
       "logo": "https://zayacodehub.in/favicon.png",
       "description": "ZAYA CODE HUB is a software product engineering and IT services company delivering web, mobile, AI, and cloud solutions to businesses and startups.",
+      "founder": { "@id": "https://zayacodehub.in/ceo/rahul-kumar-yadav#person" },
       "areaServed": { "@type": "Country", "name": "India" },
       "serviceType": ["Software development", "IT consulting", "Mobile app development", "AI automation"],
       "sameAs": [
