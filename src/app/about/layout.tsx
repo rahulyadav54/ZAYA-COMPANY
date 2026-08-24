@@ -1,22 +1,21 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'About Us | Leading IT Solutions & Developer Education',
-  description: 'Learn about ZAYA CODE HUB — our vision, mission, leadership team, cutting-edge software engineering capabilities, and commitment to empowering developers across India.',
+  title: 'About Us | IT Services, Product Engineering & Software Development',
+  description: 'Discover ZAYA CODE HUB — our mission, leadership, product engineering expertise, and the enterprise software services we deliver to businesses and startups.',
   keywords: [
     'About ZAYA CODE HUB',
-    'ZAYA Company',
     'software engineering firm Salem',
-    'developer training institute India',
-    'remote tech internships',
-    'AI education and web development'
+    'it services company',
+    'product engineering',
+    'enterprise software development'
   ],
   alternates: {
     canonical: 'https://zayacodehub.in/about',
   },
   openGraph: {
     title: 'About Us | ZAYA CODE HUB',
-    description: 'Empowering future developers with hands-on practice, AI-assisted proctored testing, and enterprise-grade software development.',
+    description: 'Product engineering, custom software development, AI solutions and cloud services delivered by ZAYA CODE HUB.',
     url: 'https://zayacodehub.in/about',
     type: 'website',
   },

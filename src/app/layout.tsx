@@ -19,36 +19,27 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL("https://zayacodehub.in"),
   title: {
-    default: "ZAYA CODE HUB | Practice Code, DSA Problems & Proctored Skill Tests",
+    default: "ZAYA CODE HUB | Software Development & IT Services",
     template: "%s | ZAYA CODE HUB",
   },
   description:
-    "ZAYA CODE HUB is the official coding arena, proctored examination portal, and remote software internship platform. Practice 20+ DSA challenges in JavaScript, Python, C++, Java, take anti-cheating skill tests, and verify verified certificates.",
+    "ZAYA CODE HUB is a software development and IT services company based in Salem, Tamil Nadu. We build custom web and mobile applications, AI & automation solutions, cloud integrations, and enterprise software for startups and businesses.",
   keywords: [
-    "ZAYA Code Hub",
     "ZAYA CODE HUB",
+    "ZAYA",
+    "software development company",
+    "it services",
+    "web development",
+    "mobile app development",
+    "ai automation",
+    "cloud solutions",
+    "ui ux design",
+    "enterprise software",
+    "custom software development",
+    "product engineering",
     "zayacodehub.in",
-    "practice code online",
-    "practice dsa problems",
-    "data structures and algorithms practice",
-    "online coding arena",
-    "proctored skill test online",
-    "online examination portal",
-    "zaya exam portal",
-    "zaya skill assessment",
-    "leetcode practice online",
-    "hackerrank coding challenges",
-    "online code runner js python cpp java",
-    "remote internship with certificate",
-    "full stack web developer internship",
-    "ui ux design internship",
-    "python developer internship",
-    "android developer internship",
-    "software development internship India",
-    "zaya code hub certificate verify",
-    "verify intern id card zaya",
-    "zaya ai app",
-    "ai zaya",
+    "salem software company",
+    "technology consultancy",
   ],
   authors: [{ name: "ZAYA CODE HUB Team", url: "https://zayacodehub.in" }],
   creator: "ZAYA CODE HUB",
@@ -79,9 +70,9 @@ export const metadata: Metadata = {
   },
 
   openGraph: {
-    title: "ZAYA CODE HUB | Practice Code, DSA & Proctored Skill Tests",
+    title: "ZAYA CODE HUB | Software Development & IT Services",
     description:
-      "Practice 20+ algorithmic DSA challenges, evaluate multi-language code, take proctored skill qualification tests, and apply for remote software development internships at ZAYA CODE HUB.",
+      "Custom software, web & mobile apps, AI solutions, and cloud services delivered by an experienced product engineering team based in Salem, India.",
     url: "https://zayacodehub.in",
     siteName: "ZAYA CODE HUB",
     type: "website",
@@ -91,16 +82,16 @@ export const metadata: Metadata = {
         url: "https://zayacodehub.in/favicon.png",
         width: 800,
         height: 800,
-        alt: "ZAYA CODE HUB Platform",
+        alt: "ZAYA CODE HUB",
       },
     ],
   },
 
   twitter: {
     card: "summary_large_image",
-    title: "ZAYA CODE HUB | Practice Code, DSA & Proctored Skill Tests",
+    title: "ZAYA CODE HUB | Software Development & IT Services",
     description:
-      "Solve DSA problems online in JavaScript, Python, C++, and Java. Take proctored skill tests and get remote internships at ZAYA CODE HUB.",
+      "Product engineering, web & mobile apps, AI automation, and cloud services for businesses and startups.",
     images: ["https://zayacodehub.in/favicon.png"],
   },
 
@@ -115,12 +106,12 @@ const jsonLdOrg = {
   "@context": "https://schema.org",
   "@graph": [
     {
-      "@type": "EducationalOrganization",
+      "@type": "Organization",
       "@id": "https://zayacodehub.in/#organization",
       "name": "ZAYA CODE HUB",
       "url": "https://zayacodehub.in",
       "logo": "https://zayacodehub.in/favicon.png",
-      "description": "ZAYA CODE HUB is an advanced coding arena, proctored examination engine, and remote software development internship platform.",
+      "description": "ZAYA CODE HUB is a software product engineering and IT services company delivering web, mobile, AI, and cloud solutions to businesses and startups.",
       "sameAs": [
         "https://github.com/rahulyadav54/ZAYA-COMPANY",
         "https://play.google.com/store/apps/details?id=com.zayaai.app"
@@ -150,55 +141,47 @@ const jsonLdOrg = {
       },
       "potentialAction": {
         "@type": "SearchAction",
-        "target": "https://zayacodehub.in/practice/code?search={search_term_string}",
+        "target": "https://zayacodehub.in/?s={search_term_string}",
         "query-input": "required name=search_term_string"
       }
     },
     {
       "@type": "SoftwareApplication",
-      "name": "ZAYA CODE HUB Coding Skill Arena",
+      "name": "ZAYA CODE HUB - Product Suite",
       "operatingSystem": "All",
-      "applicationCategory": "EducationalApplication",
+      "applicationCategory": "BusinessApplication",
       "offers": {
         "@type": "Offer",
-        "price": "0",
+        "price": "Contact",
         "priceCurrency": "INR"
       },
-      "description": "Interactive multi-language online code execution runner for Data Structures & Algorithms (DSA) practice in JavaScript, Python, C++, and Java."
+      "description": "A portfolio of enterprise and consumer products built and maintained by ZAYA CODE HUB including AI assistants, school management, telemedicine, and e-commerce solutions."
     },
     {
       "@type": "FAQPage",
       "mainEntity": [
         {
           "@type": "Question",
-          "name": "What is ZAYA CODE HUB?",
+          "name": "What services does ZAYA CODE HUB provide?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "ZAYA CODE HUB is a premier developer ecosystem providing an interactive online coding arena for DSA problems, AI-proctored domain examinations, real-time certificate verification, and remote tech internships."
+            "text": "We provide custom web and mobile application development, AI & automation, UI/UX design, cloud integration, and long-term product engineering partnerships."
           }
         },
         {
           "@type": "Question",
-          "name": "How can I take online proctored exams on ZAYA CODE HUB?",
+          "name": "Who are your typical clients?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Navigate to https://zayacodehub.in/practice to view all active skill qualification exams. Select your domain (Full Stack, Python, DSA, AI), enter your details, and take the live proctored examination."
+            "text": "Startups, small businesses, educational institutions, and enterprises looking for end-to-end software development and maintenance."
           }
         },
         {
           "@type": "Question",
-          "name": "How to verify a ZAYA CODE HUB internship certificate or ID card?",
+          "name": "How can I contact ZAYA CODE HUB for a project?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Visit https://zayacodehub.in/verify to verify certificate IDs or https://zayacodehub.in/verify-id to verify student intern ID cards with real-time official verification records."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Which programming languages are supported in the ZAYA Code Arena?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "ZAYA Code Hub's Coding Arena supports JavaScript, Python, C++, and Java with real-time test case execution and algorithmic benchmarking."
+            "text": "Visit our contact page at https://zayacodehub.in/contact or email zayacodehub@gmail.com to request a consultation and project estimate."
           }
         }
       ]
