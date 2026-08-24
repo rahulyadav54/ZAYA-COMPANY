@@ -59,6 +59,12 @@ export default function Hero() {
                 <ChevronRight className="h-4 w-4 text-slate-400" />
               </Link>
             </div>
+            <Link
+              href="/best-it-company-in-india"
+              className="inline-flex items-center text-sm font-semibold text-blue-600 hover:text-blue-500 dark:text-blue-400"
+            >
+              Explore ZAYA CODE HUB, an IT company in India <ArrowRight className="ml-2 h-4 w-4" />
+            </Link>
 
             {/* Micro Specs Bar */}
             <div className="pt-6 border-t border-slate-100 dark:border-slate-800 flex items-center justify-center lg:justify-start gap-6 text-xs font-medium text-slate-500 dark:text-slate-400">

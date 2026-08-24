@@ -1,6 +1,6 @@
 export const metadata = {
-  title: 'ZAYA CODE HUB | Software Development & IT Services',
-  description: 'ZAYA CODE HUB builds custom web & mobile applications, AI solutions, cloud integrations, and enterprise software for businesses and startups.',
+  title: 'ZAYA CODE HUB | IT Company in India & Software Development',
+  description: 'ZAYA CODE HUB is an IT company in India building custom web and mobile applications, AI solutions, cloud integrations, and enterprise software for businesses and startups.',
 }
 
 import Hero from "@/components/home/Hero";

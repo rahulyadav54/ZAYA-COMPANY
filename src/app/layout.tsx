@@ -20,11 +20,11 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL("https://zayacodehub.in"),
   title: {
-    default: "ZAYA CODE HUB | Software Development & IT Services",
+    default: "ZAYA CODE HUB | IT Company in India & Software Development",
     template: "%s | ZAYA CODE HUB",
   },
   description:
-    "ZAYA CODE HUB is a software development and IT services company based in Salem, Tamil Nadu. We build custom web and mobile applications, AI & automation solutions, cloud integrations, and enterprise software for startups and businesses.",
+    "ZAYA CODE HUB is an IT company in India building custom web and mobile applications, AI automation, cloud integrations, and enterprise software for startups and businesses.",
   keywords: [
     "ZAYA CODE HUB",
     "ZAYA",
@@ -41,6 +41,8 @@ export const metadata: Metadata = {
     "zayacodehub.in",
     "salem software company",
     "technology consultancy",
+    "IT company in India",
+    "best IT company in India",
   ],
   authors: [{ name: "ZAYA CODE HUB Team", url: "https://zayacodehub.in" }],
   creator: "ZAYA CODE HUB",
@@ -71,9 +73,9 @@ export const metadata: Metadata = {
   },
 
   openGraph: {
-    title: "ZAYA CODE HUB | Software Development & IT Services",
+    title: "ZAYA CODE HUB | IT Company in India & Software Development",
     description:
-      "Custom software, web & mobile apps, AI solutions, and cloud services delivered by an experienced product engineering team based in Salem, India.",
+      "Custom software, web and mobile apps, AI solutions, and cloud services from an India-based product engineering team.",
     url: "https://zayacodehub.in",
     siteName: "ZAYA CODE HUB",
     type: "website",
@@ -113,6 +115,8 @@ const jsonLdOrg = {
       "url": "https://zayacodehub.in",
       "logo": "https://zayacodehub.in/favicon.png",
       "description": "ZAYA CODE HUB is a software product engineering and IT services company delivering web, mobile, AI, and cloud solutions to businesses and startups.",
+      "areaServed": { "@type": "Country", "name": "India" },
+      "serviceType": ["Software development", "IT consulting", "Mobile app development", "AI automation"],
       "sameAs": [
         "https://github.com/rahulyadav54/ZAYA-COMPANY",
         "https://play.google.com/store/apps/details?id=com.zayaai.app"
