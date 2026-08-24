@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
+import { practiceSlug } from '@/lib/practiceSlug';
 import Link from 'next/link';
 import { 
   GraduationCap, 
@@ -343,7 +344,7 @@ export default function PublicPracticeHubPage() {
                     </span>
 
                     <Link
-                      href={`/practice/${exam.id}`}
+                      href={`/practice/${practiceSlug(exam.title)}`}
                       className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors"
                     >
                       <span>Start Practice</span>

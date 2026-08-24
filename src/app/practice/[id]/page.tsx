@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
+import { practiceSlug } from '@/lib/practiceSlug';
 import { 
   ShieldAlert, 
   Clock, 
@@ -134,11 +135,20 @@ export default function PublicProctoredExamRoomPage() {
     async function loadExamDetails() {
       if (!id) return;
       try {
-        const { data: examData } = await supabase
+        let { data: examData } = await supabase
           .from('exams')
           .select('*')
           .eq('id', id)
-          .single();
+          .maybeSingle();
+
+        // New links use a readable title slug; keep old UUID links working.
+        if (!examData) {
+          const { data: exams } = await supabase
+            .from('exams')
+            .select('*')
+            .eq('is_active', true);
+          examData = exams?.find((candidate) => practiceSlug(candidate.title) === id) || null;
+        }
 
         if (examData) {
           setExam(examData);
@@ -147,7 +157,7 @@ export default function PublicProctoredExamRoomPage() {
           const { data: qData } = await supabase
             .from('exam_questions')
             .select('*')
-            .eq('exam_id', id)
+            .eq('exam_id', examData.id)
             .order('created_at', { ascending: true });
 
           if (qData && qData.length > 0) {

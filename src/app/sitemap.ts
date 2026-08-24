@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next'
 import { createClient } from '@supabase/supabase-js'
+import { practiceSlug } from '@/lib/practiceSlug'
 
 export const dynamic = 'force-dynamic'
 
@@ -30,21 +31,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         }))
       }
 
-      // 2. Fetch all public exams & quizzes
       const { data: exams } = await supabase
         .from('exams')
-        .select('id, created_at, updated_at')
+        .select('title, created_at, updated_at')
         .eq('is_active', true)
         .order('created_at', { ascending: false })
 
       if (exams) {
         examUrls = exams.map((exam) => ({
-          url: `${baseUrl}/practice/${exam.id}`,
+          url: `${baseUrl}/practice/${practiceSlug(exam.title)}`,
           lastModified: new Date(exam.updated_at || exam.created_at || new Date()),
           changeFrequency: 'daily',
           priority: 0.6,
         }))
       }
+
     } catch (error) {
       console.error('Error fetching dynamic sitemap items:', error)
     }
@@ -91,6 +92,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/cookie-policy`, lastModified: new Date(), changeFrequency: 'yearly', priority: 0.5 },
   ]
 
-  return [...staticRoutes, ...examUrls, ...codingUrls, ...magazineUrls]
+  return [...staticRoutes, ...codingUrls, ...examUrls, ...magazineUrls]
 }
 

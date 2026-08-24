@@ -98,34 +98,7 @@ function LoginForm() {
       if (!authError && authData?.user) {
         loggedInUser = authData.user;
       } else {
-        console.warn('Standard auth failed, trying API login fallback:', authError?.message);
-        
-        // 2. Try Server API Login Fallback (handles personal vs official email and auto-confirmed passwords)
-        try {
-          const apiRes = await fetch('/api/auth/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: email.trim(), password })
-          });
-          const apiJson = await apiRes.json();
-
-          if (apiJson.success && apiJson.session) {
-            try {
-              await supabase.auth.setSession(apiJson.session);
-            } catch (e) { console.warn('setSession notice:', e); }
-            
-            try {
-              localStorage.setItem('zaya_intern_session', JSON.stringify(apiJson.session));
-            } catch (e) { console.warn('localStorage notice:', e); }
-
-            loggedInUser = apiJson.user || apiJson.session.user;
-            userRole = apiJson.role || 'intern';
-          } else {
-            throw new Error(apiJson.error || authError?.message || 'Invalid login credentials.');
-          }
-        } catch (apiErr: any) {
-          throw new Error(apiErr.message || authError?.message || 'Invalid email or password.');
-        }
+        throw new Error(authError?.message || 'Invalid email or password.');
       }
 
       if (loggedInUser) {

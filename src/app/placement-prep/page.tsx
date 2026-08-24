@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import type { User } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabaseClient';
 import CompanyCard from '@/components/placement/CompanyCard';
+import UpiQrPayment from '@/components/placement/UpiQrPayment';
 import {
   ArrowRight,
   Award,
@@ -475,6 +476,13 @@ export default function PlacementPrepPage() {
                 {paying ? <Loader2 className="h-4 w-4 animate-spin" /> : <Zap className="h-4 w-4" />}
                 {paying ? 'Processing...' : 'Pay and Get Access'}
               </button>
+
+              <div className="mt-6 flex items-center gap-3 text-[10px] font-medium uppercase tracking-wider text-slate-500">
+                <span className="h-px flex-1 bg-white/10" />
+                Or pay by UPI QR
+                <span className="h-px flex-1 bg-white/10" />
+              </div>
+              <UpiQrPayment />
 
               <p className="mt-3 text-center text-[11px] leading-5 text-slate-400">
                 After payment, your access token is saved in this browser so you can reopen the bundle without logging in.
