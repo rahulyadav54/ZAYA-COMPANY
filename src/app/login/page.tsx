@@ -226,11 +226,11 @@ function LoginForm() {
         </div>
 
         <div className="relative z-10 max-w-lg">
-          <h1 className="text-5xl font-black mb-6 leading-tight">Secure Access to Your Workspace</h1>
+          <h1 className="text-5xl font-semibold mb-6 leading-tight">Secure Access to Your Workspace</h1>
           <p className="text-lg text-blue-100/80 leading-relaxed mb-8">
             Manage your internships, track project progress, and access verified certificates all in one centralized hub.
           </p>
-          <div className="flex items-center gap-4 text-sm font-bold tracking-widest uppercase text-blue-300">
+          <div className="flex items-center gap-4 text-sm font-medium tracking-widest uppercase text-blue-300">
              <div className="w-12 h-[2px] bg-blue-500" />
              Internship Portal
           </div>
@@ -257,12 +257,12 @@ function LoginForm() {
                 Zaya<span className="text-blue-600">Code</span>Hub
               </span>
             </Link>
-            <h1 className="text-3xl font-black text-foreground">Welcome Back</h1>
+             <h1 className="text-3xl font-semibold text-foreground">Welcome Back</h1>
             <p className="text-slate-500 mt-2">Sign in to your account</p>
           </div>
 
           <div className="hidden lg:block mb-10">
-            <h1 className="text-4xl font-black text-slate-900 dark:text-white mb-2">Welcome Back</h1>
+            <h1 className="text-4xl font-semibold text-slate-900 dark:text-white mb-2">Welcome Back</h1>
             <p className="text-slate-500 font-medium">Please enter your credentials to sign in.</p>
           </div>
 
@@ -335,7 +335,7 @@ function LoginForm() {
             <button
               disabled={isLoading}
               type="submit"
-              className="w-full py-4 mt-4 rounded-2xl bg-[#002855] text-white font-black text-lg hover:bg-blue-700 disabled:bg-slate-400 transition-all flex items-center justify-center shadow-[0_10px_20px_rgba(0,40,85,0.2)] hover:shadow-[0_15px_25px_rgba(37,99,235,0.3)] active:scale-[0.98]"
+              className="w-full py-4 mt-4 rounded-lg bg-[#002855] text-white font-medium text-base hover:bg-blue-700 disabled:bg-slate-400 transition-all flex items-center justify-center"
             >
               {isLoading ? (
                 <Loader2 className="h-6 w-6 animate-spin" />
