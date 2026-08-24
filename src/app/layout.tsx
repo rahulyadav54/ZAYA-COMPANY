@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import ClientLayout from "@/components/layout/ClientLayout";
+import CookieBanner from "@/components/layout/CookieBanner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -79,7 +80,7 @@ export const metadata: Metadata = {
     locale: "en_US",
     images: [
       {
-        url: "https://zayacodehub.in/favicon.png",
+        url: "https://zayacodehub.in/logo.png",
         width: 800,
         height: 800,
         alt: "ZAYA CODE HUB",
@@ -92,13 +93,13 @@ export const metadata: Metadata = {
     title: "ZAYA CODE HUB | Software Development & IT Services",
     description:
       "Product engineering, web & mobile apps, AI automation, and cloud services for businesses and startups.",
-    images: ["https://zayacodehub.in/favicon.png"],
+    images: ["https://zayacodehub.in/logo.png"],
   },
 
   icons: {
-    icon: "/favicon.png",
-    shortcut: "/favicon.png",
-    apple: "/favicon.png",
+    icon: "/logo.png",
+    shortcut: "/logo.png",
+    apple: "/logo.png",
   },
 };
 
@@ -211,6 +212,7 @@ export default function RootLayout({
           <ClientLayout>
             {children}
           </ClientLayout>
+          <CookieBanner />
           <Analytics />
           <SpeedInsights />
         </ThemeProvider>
