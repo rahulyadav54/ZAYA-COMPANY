@@ -20,67 +20,93 @@ const CertificateCard = forwardRef<HTMLDivElement, CertificateCardProps>(functio
   return (
     <div
       ref={ref}
-      className="relative overflow-hidden rounded-[34px] border border-amber-200 bg-[#fdfbf7] text-slate-950 shadow-[0_30px_80px_rgba(15,23,42,0.16)]"
+      className="relative overflow-hidden rounded-lg border border-slate-200 bg-white text-slate-900 shadow-sm"
       style={{ width: '1123px', minHeight: '794px' }}
     >
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(217,119,6,0.14),_transparent_38%),radial-gradient(circle_at_bottom_left,_rgba(15,23,42,0.08),_transparent_42%)]" />
-      <div className="absolute inset-0 border-[18px] border-white/70 pointer-events-none" />
-      <div className="absolute inset-6 border border-amber-300/60 pointer-events-none" />
+      {/* Border decoration */}
+      <div className="absolute inset-4 border-2 border-slate-900 pointer-events-none" />
+      <div className="absolute inset-6 border border-slate-300 pointer-events-none" />
 
-      <div className="relative z-10 flex h-full flex-col justify-between px-14 py-12">
-        <header className="flex items-start justify-between gap-8">
+      {/* Corner ornaments */}
+      <div className="absolute top-6 left-6 h-16 w-16 border-t-2 border-l-2 border-slate-900" />
+      <div className="absolute top-6 right-6 h-16 w-16 border-t-2 border-r-2 border-slate-900" />
+      <div className="absolute bottom-6 left-6 h-16 w-16 border-b-2 border-l-2 border-slate-900" />
+      <div className="absolute bottom-6 right-6 h-16 w-16 border-b-2 border-r-2 border-slate-900" />
+
+      <div className="relative z-10 flex h-full flex-col justify-between px-16 py-14">
+        {/* Header */}
+        <header className="flex items-start justify-between">
           <div>
-            <p className="text-[11px] uppercase tracking-[0.45em] text-slate-500">ZAYA IQ TEST</p>
-            <h1 className="mt-3 text-5xl font-semibold tracking-tight text-slate-950">Certificate of Completion</h1>
-            <p className="mt-2 text-sm text-slate-500">Professional reasoning assessment record</p>
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded bg-slate-900 text-white">
+                <span className="text-sm font-bold">Z</span>
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-slate-900">ZAYA IQ TEST</p>
+                <p className="text-xs text-slate-500">Reasoning Assessment</p>
+              </div>
+            </div>
           </div>
-          <div className="rounded-3xl border border-amber-200 bg-white px-5 py-4 text-right shadow-sm">
-            <p className="text-[10px] uppercase tracking-[0.35em] text-slate-500">Verification ID</p>
-            <p className="mt-1 font-mono text-sm font-semibold text-slate-900">{certificateId}</p>
+          <div className="text-right">
+            <p className="text-xs font-medium uppercase tracking-wider text-slate-400">Certificate ID</p>
+            <p className="mt-1 font-mono text-sm font-medium text-slate-700">{certificateId}</p>
           </div>
         </header>
 
-        <section className="grid flex-1 place-items-center py-8">
-          <div className="max-w-4xl text-center">
-            <p className="text-[11px] uppercase tracking-[0.45em] text-slate-500">This certificate is awarded to</p>
-            <h2 className="mt-5 text-6xl font-semibold tracking-tight text-slate-950">{fullName}</h2>
-            <p className="mt-5 text-lg leading-8 text-slate-700">
-              for successfully completing the ZAYA IQ TEST assessment and demonstrating measured reasoning performance across numerical, logical, pattern, verbal, and analytical tasks.
+        {/* Main content */}
+        <section className="flex-1 grid place-items-center py-10">
+          <div className="text-center max-w-3xl">
+            <p className="text-xs font-medium uppercase tracking-[0.3em] text-slate-400">This certificate is awarded to</p>
+            <h2 className="mt-6 text-5xl font-semibold tracking-tight text-slate-900 font-serif">{fullName}</h2>
+            <div className="mt-6 flex items-center justify-center gap-2">
+              <div className="h-px w-12 bg-slate-300" />
+              <p className="text-sm text-slate-500">{country}</p>
+              <div className="h-px w-12 bg-slate-300" />
+            </div>
+            <p className="mt-8 text-base leading-relaxed text-slate-600">
+              for successfully completing the Zaya IQ Test assessment and demonstrating measured reasoning performance across numerical, logical, pattern, verbal, and analytical tasks.
             </p>
           </div>
         </section>
 
-        <footer className="grid grid-cols-[1.4fr_0.9fr_0.9fr] gap-6">
-          <div className="rounded-[28px] border border-slate-200 bg-white p-5">
-            <p className="text-[10px] uppercase tracking-[0.35em] text-slate-500">Assessment Summary</p>
-            <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
-              <SummaryItem label="Reasoning Score" value={score.reasoningScore} />
-              <SummaryItem label="Accuracy" value={`${score.accuracy}%`} />
-              <SummaryItem label="Correct" value={`${score.correct}/${score.totalQuestions}`} />
-              <SummaryItem label="Country" value={country || 'Not specified'} />
+        {/* Footer */}
+        <footer className="grid grid-cols-3 gap-8 border-t border-slate-200 pt-8">
+          <div>
+            <p className="text-xs font-medium uppercase tracking-wider text-slate-400">Reasoning Score</p>
+            <p className="mt-2 text-3xl font-semibold text-slate-900 font-serif">{score.reasoningScore}</p>
+          </div>
+          <div>
+            <p className="text-xs font-medium uppercase tracking-wider text-slate-400">Accuracy</p>
+            <p className="mt-2 text-3xl font-semibold text-slate-900">{score.accuracy}%</p>
+          </div>
+          <div>
+            <p className="text-xs font-medium uppercase tracking-wider text-slate-400">Correct Answers</p>
+            <p className="mt-2 text-3xl font-semibold text-slate-900">{score.correct}/{score.totalQuestions}</p>
+          </div>
+        </footer>
+
+        {/* Verification section */}
+        <footer className="mt-8 flex items-end justify-between border-t border-slate-200 pt-6">
+          <div className="flex items-center gap-6">
+            <div>
+              <p className="text-xs font-medium uppercase tracking-wider text-slate-400">Completion Date</p>
+              <p className="mt-1 text-sm font-medium text-slate-700">{completedAt}</p>
+            </div>
+            <div className="h-8 w-px bg-slate-200" />
+            <div>
+              <p className="text-xs font-medium uppercase tracking-wider text-slate-400">Verification</p>
+              <p className="mt-1 text-xs text-slate-500">{verificationUrl}</p>
             </div>
           </div>
-
-          <div className="rounded-[28px] border border-slate-200 bg-white p-5">
-            <p className="text-[10px] uppercase tracking-[0.35em] text-slate-500">Completion Date</p>
-            <p className="mt-4 text-lg font-semibold text-slate-950">{completedAt}</p>
-            <p className="mt-4 text-sm text-slate-600">Digital signature and verification are available at the public certificate page.</p>
-          </div>
-
-          <div className="rounded-[28px] border border-slate-200 bg-slate-950 p-5 text-white">
-            <p className="text-[10px] uppercase tracking-[0.35em] text-amber-300">Verify Online</p>
-            <div className="mt-4 flex items-end gap-4">
-              <div className="rounded-2xl bg-white p-2">
-                {qrDataUrl ? (
-                  <img src={qrDataUrl} alt="QR code for verification" className="h-24 w-24" />
-                ) : (
-                  <div className="flex h-24 w-24 items-center justify-center text-[10px] text-slate-400">QR</div>
-                )}
-              </div>
-              <div className="text-sm text-slate-200">
-                <p className="font-semibold text-white">Scan to verify</p>
-                <p className="mt-2 break-all text-xs text-slate-400">{verificationUrl}</p>
-              </div>
+          <div className="flex items-center gap-4">
+            {qrDataUrl ? (
+              <img src={qrDataUrl} alt="QR code for verification" className="h-20 w-20" />
+            ) : (
+              <div className="flex h-20 w-20 items-center justify-center rounded border border-slate-200 text-xs text-slate-400">QR</div>
+            )}
+            <div className="text-right">
+              <p className="text-xs font-medium text-slate-500">Digital Signature</p>
+              <p className="mt-1 text-sm font-semibold text-slate-700">Zaya Assessment Authority</p>
             </div>
           </div>
         </footer>
@@ -88,14 +114,5 @@ const CertificateCard = forwardRef<HTMLDivElement, CertificateCardProps>(functio
     </div>
   );
 });
-
-function SummaryItem({ label, value }: { label: string; value: string | number }) {
-  return (
-    <div>
-      <p className="text-[10px] uppercase tracking-[0.3em] text-slate-500">{label}</p>
-      <p className="mt-1 text-base font-semibold text-slate-950">{value}</p>
-    </div>
-  );
-}
 
 export default CertificateCard;

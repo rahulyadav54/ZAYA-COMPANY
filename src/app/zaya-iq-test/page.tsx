@@ -3,10 +3,8 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import QRCode from 'qrcode';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowRight,
-  BadgeCheck,
   BarChart3,
   CheckCircle2,
   ChevronLeft,
@@ -17,12 +15,10 @@ import {
   MailCheck,
   Play,
   Shield,
-  Sparkles,
   TimerReset,
   Trophy,
   TriangleAlert,
   UserRound,
-  type LucideIcon,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
 import { downloadAsPDF, downloadAsPNG } from '@/lib/downloadHelper';
@@ -175,7 +171,6 @@ export default function ZayaIqTestPage() {
     } catch (error) {
       console.warn('Unable to restore ZAYA IQ Test session:', error);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -185,46 +180,16 @@ export default function ZayaIqTestPage() {
     }
 
     const session = {
-      stage,
-      attemptId,
-      certificateId,
-      questions,
-      currentIndex,
-      answers,
-      startedAt,
-      submittedAt,
-      timerEnabled,
-      timeRemaining,
-      warningCount,
-      integrityNotice,
-      result,
-      analysis,
-      gmail,
-      gmailConsent,
-      profileForm,
-      profileComplete,
+      stage, attemptId, certificateId, questions, currentIndex, answers, startedAt,
+      submittedAt, timerEnabled, timeRemaining, warningCount, integrityNotice,
+      result, analysis, gmail, gmailConsent, profileForm, profileComplete,
     };
 
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
   }, [
-    stage,
-    attemptId,
-    certificateId,
-    questions,
-    currentIndex,
-    answers,
-    startedAt,
-    submittedAt,
-    timerEnabled,
-    timeRemaining,
-    warningCount,
-    integrityNotice,
-    result,
-    analysis,
-    gmail,
-    gmailConsent,
-    profileForm,
-    profileComplete,
+    stage, attemptId, certificateId, questions, currentIndex, answers, startedAt, submittedAt,
+    timerEnabled, timeRemaining, warningCount, integrityNotice, result, analysis, gmail,
+    gmailConsent, profileForm, profileComplete,
   ]);
 
   useEffect(() => {
@@ -240,7 +205,6 @@ export default function ZayaIqTestPage() {
       });
     }, 1000);
     return () => window.clearInterval(interval);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stage, timerEnabled, timeRemaining]);
 
   useEffect(() => {
@@ -282,10 +246,7 @@ export default function ZayaIqTestPage() {
       errorCorrectionLevel: 'M',
       margin: 1,
       width: 360,
-      color: {
-        dark: '#0f172a',
-        light: '#ffffff',
-      },
+      color: { dark: '#0f172a', light: '#ffffff' },
     })
       .then((value) => setQrDataUrl(value))
       .catch((error) => {
@@ -313,13 +274,7 @@ export default function ZayaIqTestPage() {
     setProfileComplete(false);
     setGmail('');
     setGmailConsent(false);
-    setProfileForm({
-      firstName: '',
-      lastName: '',
-      age: '',
-      gender: '',
-      country: '',
-    });
+    setProfileForm({ firstName: '', lastName: '', age: '', gender: '', country: '' });
     setTimeRemaining(TEST_DURATION_SECONDS);
     setWarningCount(0);
     setIntegrityNotice('Test integrity tools are active.');
@@ -376,23 +331,9 @@ export default function ZayaIqTestPage() {
     setStage('result');
 
     const session = {
-      stage: 'result',
-      attemptId,
-      questions,
-      currentIndex,
-      answers,
-      startedAt,
-      submittedAt: now,
-      timerEnabled,
-      timeRemaining,
-      warningCount,
-      integrityNotice,
-      result: scored,
-      analysis: null,
-      gmail,
-      gmailConsent,
-      profileForm,
-      profileComplete: false,
+      stage: 'result', attemptId, questions, currentIndex, answers, startedAt,
+      submittedAt: now, timerEnabled, timeRemaining, warningCount, integrityNotice,
+      result: scored, analysis: null, gmail, gmailConsent, profileForm, profileComplete: false,
     };
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
   }
@@ -450,22 +391,12 @@ export default function ZayaIqTestPage() {
     setSaveState('saving');
 
     const record = {
-      certificate_id: certificate,
-      attempt_id: attemptId,
-      full_name: fullName,
-      email: gmail,
-      age: ageValue,
-      gender: profileForm.gender,
-      country: profileForm.country.trim(),
-      reasoning_score: result.reasoningScore,
-      accuracy: result.accuracy,
-      correct_count: result.correct,
-      incorrect_count: result.incorrect,
-      completion_seconds: result.completionSeconds,
-      category_accuracy: result.categoryAccuracy,
-      difficulty_accuracy: result.difficultyAccuracy,
-      analysis: generatedAnalysis,
-      completed_at: completedAt,
+      certificate_id: certificate, attempt_id: attemptId, full_name: fullName, email: gmail,
+      age: ageValue, gender: profileForm.gender, country: profileForm.country.trim(),
+      reasoning_score: result.reasoningScore, accuracy: result.accuracy,
+      correct_count: result.correct, incorrect_count: result.incorrect,
+      completion_seconds: result.completionSeconds, category_accuracy: result.categoryAccuracy,
+      difficulty_accuracy: result.difficultyAccuracy, analysis: generatedAnalysis, completed_at: completedAt,
     };
 
     try {
@@ -485,82 +416,38 @@ export default function ZayaIqTestPage() {
       setSaveState('failed');
     }
 
-    window.localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify({
-        stage: 'result',
-        attemptId,
-        certificateId: certificate,
-        questions,
-        currentIndex,
-        answers,
-        startedAt,
-        submittedAt,
-        timerEnabled,
-        timeRemaining,
-        warningCount,
-        integrityNotice,
-        result,
-        analysis: generatedAnalysis,
-        gmail,
-        gmailConsent,
-        profileForm,
-        profileComplete: true,
-      }),
-    );
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      stage: 'result', attemptId, certificateId: certificate, questions, currentIndex,
+      answers, startedAt, submittedAt, timerEnabled, timeRemaining, warningCount,
+      integrityNotice, result, analysis: generatedAnalysis, gmail, gmailConsent,
+      profileForm, profileComplete: true,
+    }));
   };
 
   const downloadCertificate = async () => {
     if (!certificateRef.current) return;
     const filename = `ZAYA_IQ_Certificate_${certificateId || 'certificate'}`;
-    const ok = await downloadAsPDF({
-      element: certificateRef.current,
-      filename: `${filename}.pdf`,
-      pdfOrientation: 'landscape',
-      scale: 2,
-    });
+    const ok = await downloadAsPDF({ element: certificateRef.current, filename: `${filename}.pdf`, pdfOrientation: 'landscape', scale: 2 });
     if (!ok) {
-      await downloadAsPNG({
-        element: certificateRef.current,
-        filename: `${filename}.png`,
-        scale: 2,
-      });
+      await downloadAsPNG({ element: certificateRef.current, filename: `${filename}.png`, scale: 2 });
     }
   };
 
   const downloadReport = async () => {
     if (!reportRef.current) return;
     const filename = `ZAYA_IQ_Performance_Report_${certificateId || 'report'}`;
-    const ok = await downloadAsPDF({
-      element: reportRef.current,
-      filename: `${filename}.pdf`,
-      pdfOrientation: 'portrait',
-      scale: 2,
-    });
+    const ok = await downloadAsPDF({ element: reportRef.current, filename: `${filename}.pdf`, pdfOrientation: 'portrait', scale: 2 });
     if (!ok) {
-      await downloadAsPNG({
-        element: reportRef.current,
-        filename: `${filename}.png`,
-        scale: 2,
-      });
+      await downloadAsPNG({ element: reportRef.current, filename: `${filename}.png`, scale: 2 });
     }
   };
 
   const downloadChart = async () => {
     if (!chartRef.current) return;
     const filename = `ZAYA_IQ_Performance_Chart_${certificateId || 'chart'}`;
-    const ok = await downloadAsPDF({
-      element: chartRef.current,
-      filename: `${filename}.pdf`,
-      pdfOrientation: 'portrait',
-      scale: 2,
-    });
+    const ok = await downloadAsPDF({ element: chartRef.current, filename: `${filename}.pdf`, pdfOrientation: 'portrait', scale: 2 });
     if (!ok) {
-      await downloadAsPNG({
-        element: chartRef.current,
-        filename: `${filename}.png`,
-        scale: 2,
-      });
+      await downloadAsPNG({ element: chartRef.current, filename: `${filename}.png`, scale: 2 });
     }
   };
 
@@ -569,692 +456,653 @@ export default function ZayaIqTestPage() {
   const performanceLabel = result ? getPerformanceLabel(result.reasoningScore) : '';
 
   return (
-    <div className="min-h-screen bg-[#08111f] text-white">
-      <div className="absolute inset-0 -z-10 overflow-hidden">
-        <div className="absolute -top-24 left-1/2 h-96 w-96 -translate-x-1/2 rounded-full bg-amber-500/20 blur-3xl" />
-        <div className="absolute bottom-0 right-0 h-[32rem] w-[32rem] rounded-full bg-blue-500/10 blur-3xl" />
-      </div>
-
-      <header className="sticky top-0 z-40 border-b border-white/10 bg-[#08111f]/85 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-slate-50">
+      {/* Header */}
+      <header className="sticky top-0 z-40 bg-white border-b border-slate-200">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
           <Link href="/" className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 text-slate-950 shadow-lg shadow-amber-500/30">
-              <Sparkles className="h-5 w-5" />
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-900 text-white">
+              <span className="text-sm font-bold">Z</span>
             </div>
             <div>
-              <p className="text-[10px] uppercase tracking-[0.4em] text-amber-300">ZAYA</p>
-              <h1 className="text-lg font-semibold tracking-tight">ZAYA IQ TEST</h1>
+              <p className="text-sm font-semibold text-slate-900">ZAYA IQ TEST</p>
+              <p className="text-xs text-slate-500">Reasoning Assessment</p>
             </div>
           </Link>
-          <div className="hidden items-center gap-3 md:flex">
-            <a href="#how" className="text-sm text-slate-300 hover:text-white">How it works</a>
-            <a href="#faq" className="text-sm text-slate-300 hover:text-white">FAQ</a>
-            <Link href="/verify" className="text-sm text-slate-300 hover:text-white">Verify</Link>
-          </div>
+          <nav className="hidden items-center gap-6 md:flex">
+            <a href="#how" className="text-sm text-slate-600 hover:text-slate-900 transition-colors">How it works</a>
+            <a href="#faq" className="text-sm text-slate-600 hover:text-slate-900 transition-colors">FAQ</a>
+            <Link href="/verify" className="text-sm text-slate-600 hover:text-slate-900 transition-colors">Verify</Link>
+          </nav>
         </div>
       </header>
 
-      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <AnimatePresence mode="wait">
-          {stage === 'landing' && (
-            <motion.section
-              key="landing"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              className="grid gap-10 py-12 lg:grid-cols-[1.1fr_0.9fr]"
-            >
+      <main className="mx-auto max-w-6xl px-6 py-12">
+        {/* Landing Stage */}
+        {stage === 'landing' && (
+          <div className="space-y-16">
+            {/* Hero */}
+            <section className="grid gap-12 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
               <div className="space-y-8">
-                <div className="inline-flex items-center gap-2 rounded-full border border-amber-400/20 bg-amber-400/10 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.35em] text-amber-200">
-                  <BadgeCheck className="h-4 w-4" />
+                <div className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-4 py-2 text-xs font-medium text-slate-700">
+                  <Shield className="h-3.5 w-3.5" />
                   Educational reasoning assessment
                 </div>
-                <div className="space-y-5">
-                  <h2 className="max-w-3xl text-4xl font-semibold tracking-tight text-white sm:text-5xl lg:text-6xl">
-                    Challenge Your Mind.
-                    <span className="block text-amber-300">Measure Your Reasoning.</span>
-                  </h2>
-                  <p className="max-w-2xl text-base leading-8 text-slate-300 sm:text-lg">
-                    Test logical reasoning, numerical ability, pattern recognition, verbal reasoning, and problem-solving skills through a carefully structured 30-question experience.
-                  </p>
-                </div>
-
+                <h1 className="text-4xl font-semibold tracking-tight text-slate-900 sm:text-5xl lg:text-6xl font-serif">
+                  Challenge Your Mind.
+                  <span className="block text-slate-400">Measure Your Reasoning.</span>
+                </h1>
+                <p className="max-w-xl text-lg leading-relaxed text-slate-600">
+                  Test logical reasoning, numerical ability, pattern recognition, verbal reasoning, and problem-solving skills through a carefully structured 30-question assessment.
+                </p>
                 <div className="flex flex-wrap gap-4">
                   <button
                     onClick={() => setStage('sample')}
-                    className="inline-flex items-center gap-2 rounded-2xl bg-amber-400 px-6 py-4 text-sm font-semibold text-slate-950 shadow-lg shadow-amber-500/25 transition hover:-translate-y-0.5"
+                    className="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-6 py-3.5 text-sm font-medium text-white shadow-sm transition hover:bg-slate-800"
                   >
                     Start IQ Test
                     <ArrowRight className="h-4 w-4" />
                   </button>
                   <a
                     href="#how"
-                    className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-6 py-4 text-sm font-semibold text-white transition hover:bg-white/10"
+                    className="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-6 py-3.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
                   >
                     How it works
                   </a>
                 </div>
-
-                <div className="grid gap-4 sm:grid-cols-3">
-                  <InfoCard icon={Shield} title="Integrity aware" text="Tab-switch and refresh warnings improve fairness without claiming perfection." />
-                  <InfoCard icon={Trophy} title="Reasoning score" text="Transparent scoring converts raw accuracy into a ZAYA Reasoning Score." />
-                  <InfoCard icon={BarChart3} title="Downloadable reports" text="Generate a certificate, chart, and performance report for sharing." />
-                </div>
-              </div>
-
-              <div className="space-y-6">
-                <div className="rounded-[32px] border border-white/10 bg-white/5 p-6 shadow-2xl shadow-black/30 backdrop-blur-xl">
-                  <div className="mb-5 flex items-center justify-between">
-                    <div>
-                      <p className="text-[10px] uppercase tracking-[0.35em] text-slate-400">Sample question</p>
-                      <h3 className="mt-1 text-xl font-semibold">Try before you start</h3>
-                    </div>
-                    <div className="rounded-full bg-emerald-500/15 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.3em] text-emerald-300">
-                      Sample
-                    </div>
-                  </div>
-
-                  <div className="space-y-5 rounded-[28px] border border-white/10 bg-[#0d1727] p-5">
-                    <p className="whitespace-pre-line text-lg font-medium leading-8 text-white">{sampleQuestion.question}</p>
-                    <div className="grid gap-3 sm:grid-cols-2">
-                      {sampleOptions.map((option) => (
-                        <button
-                          key={option}
-                          onClick={() => setSampleSelection(option)}
-                          className={`rounded-2xl border px-4 py-3 text-left text-sm transition ${
-                            sampleSelection === option
-                              ? 'border-amber-400 bg-amber-400/15 text-amber-200'
-                              : 'border-white/10 bg-white/5 text-slate-200 hover:bg-white/10'
-                          }`}
-                        >
-                          {option}
-                        </button>
-                      ))}
-                    </div>
-
-                    <div className="flex items-center gap-3">
-                      <button
-                        onClick={handleSampleSubmit}
-                        className="rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-slate-100"
-                      >
-                        Check Answer
-                      </button>
-                      <span className="text-xs uppercase tracking-[0.3em] text-slate-400">{sampleQuestion.category}</span>
-                    </div>
-
-                    {sampleFeedback && (
-                      <div className={`rounded-2xl border p-4 text-sm ${sampleFeedback.correct ? 'border-emerald-400/30 bg-emerald-500/10 text-emerald-100' : 'border-amber-400/30 bg-amber-500/10 text-amber-100'}`}>
-                        {sampleFeedback.message}
-                      </div>
-                    )}
-
-                    <button
-                      onClick={startAssessment}
-                      className="inline-flex items-center gap-2 rounded-2xl bg-amber-400 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:-translate-y-0.5"
-                    >
-                      Start 30-Question Test
-                      <Play className="h-4 w-4" />
-                    </button>
-                  </div>
-                </div>
-
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <StatCard label="Question count" value="30" />
-                  <StatCard label="Assessment label" value="ZAYA Reasoning Score" />
-                </div>
-              </div>
-            </motion.section>
-          )}
-
-          {stage === 'sample' && (
-            <motion.section
-              key="sample"
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mx-auto max-w-3xl py-16"
-            >
-              <div className="rounded-[32px] border border-white/10 bg-white/5 p-8 backdrop-blur-xl">
-                <div className="mb-8 flex items-center justify-between">
+                <div className="flex gap-8 pt-4">
                   <div>
-                    <p className="text-[10px] uppercase tracking-[0.35em] text-slate-400">Sample question</p>
-                    <h2 className="mt-2 text-3xl font-semibold text-white">Warm up before the main test</h2>
+                    <p className="text-2xl font-semibold text-slate-900">30</p>
+                    <p className="text-sm text-slate-500">Questions</p>
                   </div>
-                  <button onClick={() => { setSampleSelection(''); setSampleFeedback(null); setStage('landing'); }} className="text-sm text-slate-300 hover:text-white">Back</button>
+                  <div>
+                    <p className="text-2xl font-semibold text-slate-900">20 min</p>
+                    <p className="text-sm text-slate-500">Duration</p>
+                  </div>
+                  <div>
+                    <p className="text-2xl font-semibold text-slate-900">5</p>
+                    <p className="text-sm text-slate-500">Categories</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Sample Question Card */}
+              <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+                <div className="mb-5 flex items-center justify-between">
+                  <div>
+                    <p className="text-xs font-medium uppercase tracking-wider text-slate-400">Sample question</p>
+                    <h3 className="mt-1 text-lg font-semibold text-slate-900">Try before you start</h3>
+                  </div>
+                  <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">Sample</span>
                 </div>
 
-                <div className="space-y-5">
-                  <p className="whitespace-pre-line text-2xl font-medium leading-10 text-white">{sampleQuestion.question}</p>
-                  <div className="grid gap-3 sm:grid-cols-2">
+                <div className="space-y-4 rounded-lg bg-slate-50 p-5">
+                  <p className="text-base font-medium leading-relaxed text-slate-800">{sampleQuestion.question}</p>
+                  <div className="grid gap-2 sm:grid-cols-2">
                     {sampleOptions.map((option) => (
                       <button
                         key={option}
                         onClick={() => setSampleSelection(option)}
-                        className={`rounded-2xl border px-5 py-4 text-left text-sm transition ${
+                        className={`rounded-lg border px-4 py-3 text-left text-sm transition ${
                           sampleSelection === option
-                            ? 'border-amber-400 bg-amber-400/15 text-amber-200'
-                            : 'border-white/10 bg-white/5 text-slate-200 hover:bg-white/10'
+                            ? 'border-slate-900 bg-slate-900 text-white'
+                            : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
                         }`}
                       >
                         {option}
                       </button>
                     ))}
                   </div>
-                  <div className="flex flex-wrap gap-3">
-                    <button onClick={handleSampleSubmit} className="rounded-2xl bg-amber-400 px-6 py-3 text-sm font-semibold text-slate-950">Check Answer</button>
-                    <button onClick={startAssessment} className="rounded-2xl border border-white/10 bg-white/5 px-6 py-3 text-sm font-semibold text-white">Start 30-question test</button>
+
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={handleSampleSubmit}
+                      className="rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-slate-800"
+                    >
+                      Check Answer
+                    </button>
+                    <span className="text-xs text-slate-400">{sampleQuestion.category}</span>
                   </div>
+
                   {sampleFeedback && (
-                    <div className={`rounded-2xl border p-4 text-sm ${sampleFeedback.correct ? 'border-emerald-400/30 bg-emerald-500/10 text-emerald-100' : 'border-amber-400/30 bg-amber-500/10 text-amber-100'}`}>
-                      <p className="font-semibold">{sampleFeedback.correct ? 'Correct answer' : 'Review the reasoning'}</p>
-                      <p className="mt-1">{sampleFeedback.message}</p>
+                    <div className={`rounded-lg border p-4 text-sm ${sampleFeedback.correct ? 'border-emerald-200 bg-emerald-50 text-emerald-800' : 'border-amber-200 bg-amber-50 text-amber-800'}`}>
+                      {sampleFeedback.message}
+                    </div>
+                  )}
+
+                  <button
+                    onClick={startAssessment}
+                    className="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-slate-800"
+                  >
+                    Start 30-Question Test
+                    <Play className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              </div>
+            </section>
+
+            {/* How it works */}
+            <section id="how" className="space-y-8">
+              <h2 className="text-2xl font-semibold text-slate-900">How it works</h2>
+              <div className="grid gap-6 md:grid-cols-3">
+                <div className="rounded-xl border border-slate-200 bg-white p-6">
+                  <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100">
+                    <span className="text-sm font-semibold text-slate-600">1</span>
+                  </div>
+                  <h3 className="font-semibold text-slate-900">Start the test</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-slate-600">Begin with a sample question, then proceed to the full 30-question assessment.</p>
+                </div>
+                <div className="rounded-xl border border-slate-200 bg-white p-6">
+                  <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100">
+                    <span className="text-sm font-semibold text-slate-600">2</span>
+                  </div>
+                  <h3 className="font-semibold text-slate-900">Answer questions</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-slate-600">Work through questions at your own pace with optional timer. Navigate freely between questions.</p>
+                </div>
+                <div className="rounded-xl border border-slate-200 bg-white p-6">
+                  <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100">
+                    <span className="text-sm font-semibold text-slate-600">3</span>
+                  </div>
+                  <h3 className="font-semibold text-slate-900">Get certified</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-slate-600">Receive your score, performance analysis, and downloadable certificate.</p>
+                </div>
+              </div>
+            </section>
+
+            {/* FAQ */}
+            <section id="faq" className="space-y-6">
+              <h2 className="text-2xl font-semibold text-slate-900">Frequently asked questions</h2>
+              <div className="grid gap-4 lg:grid-cols-2">
+                <div className="rounded-xl border border-slate-200 bg-white p-6">
+                  <h3 className="font-semibold text-slate-900">Is this a clinical IQ test?</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-slate-600">No. It is an educational reasoning assessment with transparent scoring and a clear disclaimer.</p>
+                </div>
+                <div className="rounded-xl border border-slate-200 bg-white p-6">
+                  <h3 className="font-semibold text-slate-900">Can I verify my certificate later?</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-slate-600">Yes. The generated certificate ID can be checked on the public verification page.</p>
+                </div>
+                <div className="rounded-xl border border-slate-200 bg-white p-6">
+                  <h3 className="font-semibold text-slate-900">Does the timer have to be enabled?</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-slate-600">No. The timer is optional. You can turn it off before or during the assessment.</p>
+                </div>
+                <div className="rounded-xl border border-slate-200 bg-white p-6">
+                  <h3 className="font-semibold text-slate-900">What is stored?</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-slate-600">Only certificate-related details needed for generation and verification. The verifier does not reveal email addresses.</p>
+                </div>
+              </div>
+            </section>
+          </div>
+        )}
+
+        {/* Sample Stage */}
+        {stage === 'sample' && (
+          <div className="mx-auto max-w-2xl py-8">
+            <div className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
+              <div className="mb-8 flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-medium uppercase tracking-wider text-slate-400">Sample question</p>
+                  <h2 className="mt-2 text-2xl font-semibold text-slate-900">Warm up before the main test</h2>
+                </div>
+                <button onClick={() => { setSampleSelection(''); setSampleFeedback(null); setStage('landing'); }} className="text-sm text-slate-500 hover:text-slate-900">Back</button>
+              </div>
+
+              <div className="space-y-5">
+                <p className="text-xl font-medium leading-relaxed text-slate-800">{sampleQuestion.question}</p>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {sampleOptions.map((option) => (
+                    <button
+                      key={option}
+                      onClick={() => setSampleSelection(option)}
+                      className={`rounded-lg border px-5 py-4 text-left text-sm transition ${
+                        sampleSelection === option
+                          ? 'border-slate-900 bg-slate-900 text-white'
+                          : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
+                      }`}
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
+                <div className="flex flex-wrap gap-3">
+                  <button onClick={handleSampleSubmit} className="rounded-lg bg-slate-900 px-5 py-2.5 text-sm font-medium text-white">Check Answer</button>
+                  <button onClick={startAssessment} className="rounded-lg border border-slate-300 bg-white px-5 py-2.5 text-sm font-medium text-slate-700">Start 30-question test</button>
+                </div>
+                {sampleFeedback && (
+                  <div className={`rounded-lg border p-4 text-sm ${sampleFeedback.correct ? 'border-emerald-200 bg-emerald-50 text-emerald-800' : 'border-amber-200 bg-amber-50 text-amber-800'}`}>
+                    <p className="font-medium">{sampleFeedback.correct ? 'Correct answer' : 'Review the reasoning'}</p>
+                    <p className="mt-1">{sampleFeedback.message}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Test Stage */}
+        {stage === 'test' && currentQuestion && (
+          <div className="grid gap-8 lg:grid-cols-[1fr_280px]">
+            <div className="space-y-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+              <div className="flex flex-wrap items-center justify-between gap-4">
+                <div>
+                  <p className="text-xs font-medium uppercase tracking-wider text-slate-400">Question {currentIndex + 1} of {questions.length}</p>
+                  <h2 className="mt-1 text-2xl font-semibold text-slate-900">ZAYA IQ Test</h2>
+                </div>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => setTimerEnabled((value) => !value)}
+                    className={`inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-xs font-medium transition ${
+                      timerEnabled ? 'border-slate-900 bg-slate-900 text-white' : 'border-slate-300 bg-white text-slate-700'
+                    }`}
+                  >
+                    <TimerReset className="h-3.5 w-3.5" />
+                    Timer {timerEnabled ? 'On' : 'Off'}
+                  </button>
+                  {timerEnabled && (
+                    <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium text-slate-700">
+                      <Clock3 className="mr-1.5 inline h-3.5 w-3.5 text-slate-500" />
+                      {formatDuration(timeRemaining)}
                     </div>
                   )}
                 </div>
               </div>
-            </motion.section>
-          )}
 
-          {stage === 'test' && currentQuestion && (
-            <motion.section key="test" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid gap-6 py-8 lg:grid-cols-[1.1fr_0.9fr]">
-              <div className="space-y-6 rounded-[32px] border border-white/10 bg-white/5 p-6 backdrop-blur-xl sm:p-8">
-                <div className="flex flex-wrap items-center justify-between gap-4">
-                  <div>
-                    <p className="text-[10px] uppercase tracking-[0.35em] text-slate-400">Question {currentIndex + 1} of {questions.length}</p>
-                    <h2 className="mt-2 text-3xl font-semibold text-white">ZAYA IQ Test</h2>
-                  </div>
-                  <div className="flex items-center gap-3">
+              <div className="space-y-2">
+                <div className="h-1.5 overflow-hidden rounded-full bg-slate-100">
+                  <div className="h-full rounded-full bg-slate-900 transition-all" style={{ width: `${completionPercent}%` }} />
+                </div>
+                <p className="text-xs text-slate-500">{completionPercent}% complete</p>
+              </div>
+
+              <div className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">
+                <span className={`h-2 w-2 rounded-full ${getCategoryAccent(currentQuestion.category)}`} />
+                {currentQuestion.category}
+                <span className="text-slate-300">|</span>
+                {currentQuestion.difficulty}
+              </div>
+
+              <div className="rounded-lg bg-slate-50 p-6">
+                <p className="text-xl font-medium leading-relaxed text-slate-800">{currentQuestion.question}</p>
+              </div>
+
+              <div className="grid gap-3">
+                {currentQuestion.shuffledOptions.map((option) => {
+                  const selected = answers[currentQuestion.id] === option;
+                  return (
                     <button
-                      onClick={() => setTimerEnabled((value) => !value)}
-                      className={`inline-flex items-center gap-2 rounded-2xl border px-4 py-3 text-xs font-semibold uppercase tracking-[0.25em] transition ${
-                        timerEnabled ? 'border-amber-400/30 bg-amber-400/10 text-amber-200' : 'border-white/10 bg-white/5 text-slate-200'
+                      key={option}
+                      onClick={() => saveAnswer(option)}
+                      className={`rounded-lg border px-5 py-4 text-left text-sm transition ${
+                        selected
+                          ? 'border-slate-900 bg-slate-900 text-white'
+                          : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50'
                       }`}
                     >
-                      <TimerReset className="h-4 w-4" />
-                      Timer {timerEnabled ? 'On' : 'Off'}
+                      <span className="mr-3 inline-flex h-6 w-6 items-center justify-center rounded border border-current text-xs font-medium opacity-60">
+                        {String.fromCharCode(65 + currentQuestion.shuffledOptions.indexOf(option))}
+                      </span>
+                      {option}
                     </button>
-                    {timerEnabled && (
-                      <div className="rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm font-semibold text-white">
-                        <Clock3 className="mr-2 inline h-4 w-4 text-amber-300" />
-                        {formatDuration(timeRemaining)}
-                      </div>
-                    )}
+                  );
+                })}
+              </div>
+
+              {testError && (
+                <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                  {testError}
+                </div>
+              )}
+
+              <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+                <button
+                  onClick={goPrevious}
+                  disabled={currentIndex === 0}
+                  className="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 disabled:opacity-40"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                  Previous
+                </button>
+
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => setShowSubmitModal(true)}
+                    className="rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700"
+                  >
+                    Review Answers
+                  </button>
+                  <button
+                    onClick={goNext}
+                    className="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-medium text-white"
+                  >
+                    {currentIndex === questions.length - 1 ? 'Submit Test' : 'Next'}
+                    <ChevronRight className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Sidebar */}
+            <aside className="space-y-6">
+              <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+                <p className="text-xs font-medium uppercase tracking-wider text-slate-400">Integrity</p>
+                <div className="mt-4 space-y-3">
+                  <div className="rounded-lg bg-slate-50 p-4">
+                    <p className="text-sm font-medium text-slate-700">Warnings</p>
+                    <p className="mt-1 text-2xl font-semibold text-slate-900">{warningCount}</p>
                   </div>
+                  <p className="text-xs leading-relaxed text-slate-500">{integrityNotice}</p>
                 </div>
+              </div>
 
-                <div className="space-y-3">
-                  <div className="h-2 overflow-hidden rounded-full bg-white/10">
-                    <div className="h-full rounded-full bg-gradient-to-r from-amber-400 to-orange-500 transition-all" style={{ width: `${completionPercent}%` }} />
-                  </div>
-                  <p className="text-xs text-slate-400">{completionPercent}% complete</p>
-                </div>
-
-                <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] uppercase tracking-[0.3em] text-slate-300">
-                  <span className={`h-2 w-2 rounded-full ${getCategoryAccent(currentQuestion.category)}`} />
-                  {currentQuestion.category}
-                  <span className="text-slate-500">|</span>
-                  {currentQuestion.difficulty}
-                </div>
-
-                <div className="rounded-[28px] border border-white/10 bg-[#0d1727] p-6">
-                  <p className="whitespace-pre-line text-2xl font-medium leading-10 text-white">{currentQuestion.question}</p>
-                </div>
-
-                <div className="grid gap-3">
-                  {currentQuestion.shuffledOptions.map((option) => {
-                    const selected = answers[currentQuestion.id] === option;
+              <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+                <p className="text-xs font-medium uppercase tracking-wider text-slate-400">Progress</p>
+                <div className="mt-4 grid grid-cols-5 gap-2">
+                  {questions.map((question, index) => {
+                    const answered = Boolean(answers[question.id]);
+                    const current = index === currentIndex;
                     return (
                       <button
-                        key={option}
-                        onClick={() => saveAnswer(option)}
-                        className={`rounded-2xl border px-5 py-4 text-left text-sm transition ${
-                          selected
-                            ? 'border-amber-400 bg-amber-400/15 text-amber-100'
-                            : 'border-white/10 bg-white/5 text-slate-200 hover:bg-white/10'
+                        key={question.id}
+                        onClick={() => setCurrentIndex(index)}
+                        className={`rounded-lg border px-0 py-2 text-xs font-medium transition ${
+                          current
+                            ? 'border-slate-900 bg-slate-900 text-white'
+                            : answered
+                              ? 'border-emerald-300 bg-emerald-50 text-emerald-700'
+                              : 'border-slate-200 bg-white text-slate-600'
                         }`}
                       >
-                        <span className="mr-3 inline-flex h-7 w-7 items-center justify-center rounded-full border border-white/10 bg-slate-950/50 text-[10px] font-semibold text-slate-300">
-                          {String.fromCharCode(65 + currentQuestion.shuffledOptions.indexOf(option))}
-                        </span>
-                        {option}
+                        {index + 1}
                       </button>
                     );
                   })}
                 </div>
-
-                {testError && (
-                  <div className="rounded-2xl border border-amber-400/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">
-                    {testError}
-                  </div>
-                )}
-
-                <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
-                  <button
-                    onClick={goPrevious}
-                    disabled={currentIndex === 0}
-                    className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-white disabled:opacity-40"
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                    Previous
-                  </button>
-
-                  <div className="flex items-center gap-3">
-                    <button
-                      onClick={() => setShowSubmitModal(true)}
-                      className="rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-white"
-                    >
-                      Review Answers
-                    </button>
-                    <button
-                      onClick={goNext}
-                      className="inline-flex items-center gap-2 rounded-2xl bg-amber-400 px-5 py-3 text-sm font-semibold text-slate-950"
-                    >
-                      {currentIndex === questions.length - 1 ? 'Submit Test' : 'Next'}
-                      <ChevronRight className="h-4 w-4" />
-                    </button>
-                  </div>
-                </div>
+                <p className="mt-4 text-xs text-slate-500">
+                  You have answered {answeredCount} of {questions.length} questions.
+                </p>
               </div>
+            </aside>
+          </div>
+        )}
 
-              <aside className="space-y-6">
-                <div className="rounded-[32px] border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
-                  <p className="text-[10px] uppercase tracking-[0.35em] text-slate-400">Assessment integrity</p>
-                  <div className="mt-4 space-y-4">
-                    <div className="rounded-2xl border border-white/10 bg-slate-950/70 p-4">
-                      <p className="text-sm font-semibold text-white">Warnings logged</p>
-                      <p className="mt-2 text-3xl font-semibold text-amber-300">{warningCount}</p>
-                    </div>
-                    <div className="rounded-2xl border border-white/10 bg-slate-950/70 p-4 text-sm text-slate-300">
-                      {integrityNotice}
-                    </div>
+        {/* Result Stage */}
+        {stage === 'result' && result && (
+          <div className="space-y-8">
+            {/* Score Card */}
+            <div className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
+              <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
+                <div className="space-y-6">
+                  <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-4 py-2 text-xs font-medium text-emerald-700">
+                    <CheckCircle2 className="h-3.5 w-3.5" />
+                    Test completed
                   </div>
-                </div>
-
-                <div className="rounded-[32px] border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
-                  <p className="text-[10px] uppercase tracking-[0.35em] text-slate-400">Question palette</p>
-                  <div className="mt-4 grid grid-cols-5 gap-2">
-                    {questions.map((question, index) => {
-                      const answered = Boolean(answers[question.id]);
-                      const current = index === currentIndex;
-                      return (
-                        <button
-                          key={question.id}
-                          onClick={() => setCurrentIndex(index)}
-                          className={`rounded-xl border px-0 py-2 text-xs font-semibold transition ${
-                            current
-                              ? 'border-amber-400 bg-amber-400 text-slate-950'
-                              : answered
-                                ? 'border-emerald-400/30 bg-emerald-500/10 text-emerald-200'
-                                : 'border-white/10 bg-white/5 text-slate-300'
-                          }`}
-                        >
-                          {index + 1}
-                        </button>
-                      );
-                    })}
-                  </div>
-                  <p className="mt-4 text-xs text-slate-400">
-                    You have answered {answeredCount} of {questions.length} questions.
-                  </p>
-                </div>
-              </aside>
-            </motion.section>
-          )}
-
-          {stage === 'result' && result && (
-            <motion.section key="result" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="space-y-8 py-8">
-              <div className="rounded-[34px] border border-white/10 bg-white/5 p-6 backdrop-blur-xl sm:p-8">
-                <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-                  <div className="space-y-4">
-                    <div className="inline-flex items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-500/10 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.35em] text-emerald-200">
-                      <CheckCircle2 className="h-4 w-4" />
-                      Test completed
-                    </div>
-                    <div>
-                      <p className="text-[10px] uppercase tracking-[0.35em] text-slate-400">Your ZAYA Reasoning Score</p>
-                      <h2 className="mt-2 text-5xl font-semibold text-white sm:text-6xl">{result.reasoningScore}</h2>
-                      <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-300 sm:text-base">
-                        {buildPerformanceAnalysis({
-                          score: result,
-                          firstName: profileForm.firstName || 'Participant',
-                          lastName: profileForm.lastName || '',
-                          timerEnabled,
-                        }).summary}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="grid gap-3 sm:grid-cols-2 lg:w-[30rem]">
-                    <ResultTile label="Correct" value={`${result.correct}/${result.totalQuestions}`} />
-                    <ResultTile label="Incorrect" value={`${result.incorrect}`} />
-                    <ResultTile label="Accuracy" value={`${result.accuracy}%`} />
-                    <ResultTile label="Performance" value={performanceLabel} />
-                  </div>
-                </div>
-
-                <div className="mt-8 rounded-[28px] border border-white/10 bg-slate-950/70 p-5 text-sm text-slate-300">
-                  Assessment notice: ZAYA IQ TEST is an educational reasoning assessment. Unless independently validated and normed, its score should not be interpreted as a clinically validated IQ measurement, psychological diagnosis, or definitive measure of intelligence.
-                </div>
-              </div>
-
-              {!gmail ? (
-                <div className="rounded-[34px] border border-white/10 bg-white/5 p-6 backdrop-blur-xl sm:p-8">
-                  <div className="mb-6 flex items-center gap-3">
-                    <MailCheck className="h-6 w-6 text-amber-300" />
-                    <div>
-                      <p className="text-[10px] uppercase tracking-[0.35em] text-slate-400">Receive your certificate</p>
-                      <h3 className="text-2xl font-semibold text-white">Enter your Gmail address</h3>
-                    </div>
-                  </div>
-
-                  <div className="grid gap-4 lg:grid-cols-[1fr_auto]">
-                    <label className="space-y-2">
-                      <span className="text-sm text-slate-300">Gmail Address</span>
-                      <input
-                        value={gmail}
-                        onChange={(event) => setGmail(event.target.value)}
-                        placeholder="name@gmail.com"
-                        className="w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-4 text-white outline-none ring-0 placeholder:text-slate-500 focus:border-amber-400"
-                      />
-                    </label>
-
-                    <button
-                      onClick={submitGmail}
-                      className="h-fit self-end rounded-2xl bg-amber-400 px-6 py-4 text-sm font-semibold text-slate-950"
-                    >
-                      Continue
-                    </button>
-                  </div>
-
-                  <label className="mt-4 flex items-start gap-3 text-sm text-slate-300">
-                    <input
-                      type="checkbox"
-                      checked={gmailConsent}
-                      onChange={(event) => setGmailConsent(event.target.checked)}
-                      className="mt-1 h-4 w-4 rounded border-white/20 bg-transparent text-amber-400"
-                    />
-                    <span>
-                      I agree to receive my ZAYA assessment result and certificate at this email address.
-                    </span>
-                  </label>
-
-                  {gmailError && <p className="mt-4 text-sm text-amber-300">{gmailError}</p>}
-                  <p className="mt-4 text-xs leading-6 text-slate-400">
-                    Only the email address is collected here. We do not ask for extra personal details until the certificate step.
-                  </p>
-                </div>
-              ) : !profileComplete ? (
-                <div className="rounded-[34px] border border-white/10 bg-white/5 p-6 backdrop-blur-xl sm:p-8">
-                  <div className="mb-6 flex items-center gap-3">
-                    <UserRound className="h-6 w-6 text-amber-300" />
-                    <div>
-                      <p className="text-[10px] uppercase tracking-[0.35em] text-slate-400">Certificate information</p>
-                      <h3 className="text-2xl font-semibold text-white">Enter your details</h3>
-                    </div>
-                  </div>
-
-                  <div className="grid gap-4 md:grid-cols-2">
-                    <Field label="First Name" value={profileForm.firstName} onChange={(value) => setProfileForm((prev) => ({ ...prev, firstName: value }))} />
-                    <Field label="Last Name" value={profileForm.lastName} onChange={(value) => setProfileForm((prev) => ({ ...prev, lastName: value }))} />
-                    <Field label="Age" value={profileForm.age} onChange={(value) => setProfileForm((prev) => ({ ...prev, age: value }))} />
-                    <Field label="Country" value={profileForm.country} onChange={(value) => setProfileForm((prev) => ({ ...prev, country: value }))} />
-                    <SelectField
-                      label="Gender"
-                      value={profileForm.gender}
-                      onChange={(value) => setProfileForm((prev) => ({ ...prev, gender: value }))}
-                    />
-                  </div>
-
-                  {profileError && <p className="mt-4 text-sm text-amber-300">{profileError}</p>}
-                  <div className="mt-6 flex flex-wrap gap-3">
-                    <button
-                      onClick={submitProfile}
-                      className="rounded-2xl bg-amber-400 px-6 py-4 text-sm font-semibold text-slate-950"
-                    >
-                      Generate Certificate
-                    </button>
-                    <p className="self-center text-xs text-slate-400">
-                      This information is used only for your certificate and verification record.
+                  <div>
+                    <p className="text-xs font-medium uppercase tracking-wider text-slate-400">Your ZAYA Reasoning Score</p>
+                    <p className="mt-2 text-6xl font-semibold tracking-tight text-slate-900 font-serif">{result.reasoningScore}</p>
+                    <p className="mt-4 max-w-xl text-sm leading-relaxed text-slate-600">
+                      {buildPerformanceAnalysis({
+                        score: result,
+                        firstName: profileForm.firstName || 'Participant',
+                        lastName: profileForm.lastName || '',
+                        timerEnabled,
+                      }).summary}
                     </p>
                   </div>
                 </div>
-              ) : (
-                <>
-                  <div className="grid gap-6 lg:grid-cols-[1fr_1fr]">
-                    <div ref={reportRef} className="space-y-6 rounded-[34px] border border-white/10 bg-white p-6 text-slate-900 shadow-2xl shadow-black/20">
+
+                <div className="grid gap-4 sm:grid-cols-2 lg:w-[28rem]">
+                  <div className="rounded-lg border border-slate-200 bg-slate-50 p-5">
+                    <p className="text-xs font-medium text-slate-500">Correct</p>
+                    <p className="mt-2 text-2xl font-semibold text-slate-900">{result.correct}/{result.totalQuestions}</p>
+                  </div>
+                  <div className="rounded-lg border border-slate-200 bg-slate-50 p-5">
+                    <p className="text-xs font-medium text-slate-500">Incorrect</p>
+                    <p className="mt-2 text-2xl font-semibold text-slate-900">{result.incorrect}</p>
+                  </div>
+                  <div className="rounded-lg border border-slate-200 bg-slate-50 p-5">
+                    <p className="text-xs font-medium text-slate-500">Accuracy</p>
+                    <p className="mt-2 text-2xl font-semibold text-slate-900">{result.accuracy}%</p>
+                  </div>
+                  <div className="rounded-lg border border-slate-200 bg-slate-50 p-5">
+                    <p className="text-xs font-medium text-slate-500">Performance</p>
+                    <p className="mt-2 text-2xl font-semibold text-slate-900">{performanceLabel}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-8 rounded-lg bg-slate-50 p-4 text-sm text-slate-600">
+                Assessment notice: ZAYA IQ TEST is an educational reasoning assessment. Unless independently validated and normed, its score should not be interpreted as a clinically validated IQ measurement, psychological diagnosis, or definitive measure of intelligence.
+              </div>
+            </div>
+
+            {/* Gmail Collection */}
+            {!gmail ? (
+              <div className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
+                <div className="mb-6 flex items-center gap-3">
+                  <MailCheck className="h-5 w-5 text-slate-700" />
+                  <div>
+                    <p className="text-xs font-medium uppercase tracking-wider text-slate-400">Receive your certificate</p>
+                    <h3 className="text-xl font-semibold text-slate-900">Enter your Gmail address</h3>
+                  </div>
+                </div>
+
+                <div className="grid gap-4 lg:grid-cols-[1fr_auto]">
+                  <label className="space-y-2">
+                    <span className="text-sm font-medium text-slate-700">Gmail Address</span>
+                    <input
+                      value={gmail}
+                      onChange={(event) => setGmail(event.target.value)}
+                      placeholder="name@gmail.com"
+                      className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 outline-none ring-0 placeholder:text-slate-400 focus:border-slate-900"
+                    />
+                  </label>
+
+                  <button
+                    onClick={submitGmail}
+                    className="h-fit self-end rounded-lg bg-slate-900 px-6 py-3 text-sm font-medium text-white"
+                  >
+                    Continue
+                  </button>
+                </div>
+
+                <label className="mt-4 flex items-start gap-3 text-sm text-slate-600">
+                  <input
+                    type="checkbox"
+                    checked={gmailConsent}
+                    onChange={(event) => setGmailConsent(event.target.checked)}
+                    className="mt-1 h-4 w-4 rounded border-slate-300"
+                  />
+                  <span>I agree to receive my ZAYA assessment result and certificate at this email address.</span>
+                </label>
+
+                {gmailError && <p className="mt-4 text-sm text-red-600">{gmailError}</p>}
+                <p className="mt-4 text-xs text-slate-500">
+                  Only the email address is collected here. We do not ask for extra personal details until the certificate step.
+                </p>
+              </div>
+            ) : !profileComplete ? (
+              <div className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
+                <div className="mb-6 flex items-center gap-3">
+                  <UserRound className="h-5 w-5 text-slate-700" />
+                  <div>
+                    <p className="text-xs font-medium uppercase tracking-wider text-slate-400">Certificate information</p>
+                    <h3 className="text-xl font-semibold text-slate-900">Enter your details</h3>
+                  </div>
+                </div>
+
+                <div className="grid gap-4 md:grid-cols-2">
+                  <Field label="First Name" value={profileForm.firstName} onChange={(value) => setProfileForm((prev) => ({ ...prev, firstName: value }))} />
+                  <Field label="Last Name" value={profileForm.lastName} onChange={(value) => setProfileForm((prev) => ({ ...prev, lastName: value }))} />
+                  <Field label="Age" value={profileForm.age} onChange={(value) => setProfileForm((prev) => ({ ...prev, age: value }))} />
+                  <Field label="Country" value={profileForm.country} onChange={(value) => setProfileForm((prev) => ({ ...prev, country: value }))} />
+                  <SelectField label="Gender" value={profileForm.gender} onChange={(value) => setProfileForm((prev) => ({ ...prev, gender: value }))} />
+                </div>
+
+                {profileError && <p className="mt-4 text-sm text-red-600">{profileError}</p>}
+                <div className="mt-6 flex flex-wrap gap-3">
+                  <button
+                    onClick={submitProfile}
+                    className="rounded-lg bg-slate-900 px-6 py-3 text-sm font-medium text-white"
+                  >
+                    Generate Certificate
+                  </button>
+                  <p className="self-center text-xs text-slate-500">
+                    This information is used only for your certificate and verification record.
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className="grid gap-6 lg:grid-cols-[1fr_1fr]">
+                  <div ref={reportRef} className="space-y-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-xs font-medium uppercase tracking-wider text-slate-400">AI performance analysis</p>
+                        <h3 className="mt-1 text-xl font-semibold text-slate-900">Personalized feedback</h3>
+                      </div>
+                      <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700">{performanceLabel}</span>
+                    </div>
+
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <InsightPanel title="Summary" items={analysis?.summary ? [analysis.summary] : []} />
+                      <InsightPanel title="Strongest skills" items={analysis?.strengths || []} />
+                      <InsightPanel title="Areas for improvement" items={analysis?.improvements || []} />
+                      <InsightPanel title="Recommended practice" items={analysis?.recommendations || []} />
+                    </div>
+
+                    <div className="rounded-lg bg-slate-50 p-5">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-[10px] uppercase tracking-[0.35em] text-slate-500">AI performance analysis</p>
-                          <h3 className="mt-1 text-2xl font-semibold text-slate-950">Personalized feedback</h3>
+                          <p className="text-xs font-medium uppercase tracking-wider text-slate-400">Verification</p>
+                          <h4 className="mt-1 text-base font-semibold text-slate-900">Certificate ID</h4>
                         </div>
-                        <div className="rounded-full bg-amber-100 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.3em] text-amber-700">
-                          {performanceLabel}
-                        </div>
+                        <a href={verificationUrl} className="text-sm font-medium text-slate-900 hover:underline">Open verifier</a>
                       </div>
-
-                      <div className="grid gap-4 md:grid-cols-2">
-                        <InsightPanel title="Summary" items={analysis?.summary ? [analysis.summary] : []} />
-                        <InsightPanel title="Strongest skills" items={analysis?.strengths || []} />
-                        <InsightPanel title="Areas for improvement" items={analysis?.improvements || []} />
-                        <InsightPanel title="Recommended practice" items={analysis?.recommendations || []} />
-                      </div>
-
-                      <div className="rounded-[28px] border border-slate-200 bg-slate-50 p-5">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-[10px] uppercase tracking-[0.35em] text-slate-500">Verification</p>
-                            <h4 className="mt-1 text-lg font-semibold text-slate-950">Certificate ID</h4>
-                          </div>
-                          <a href={verificationUrl} className="text-sm font-semibold text-amber-700 hover:underline">
-                            Open verifier
-                          </a>
-                        </div>
-                        <p className="mt-3 break-all font-mono text-sm text-slate-700">{certificateId}</p>
-                      </div>
-                    </div>
-
-                    <div className="space-y-6">
-                      <PerformanceChart
-                        ref={chartRef}
-                        name={verifiedName || 'Participant'}
-                        reasoningScore={result.reasoningScore}
-                        accuracy={result.accuracy}
-                        correct={result.correct}
-                        incorrect={result.incorrect}
-                        completionSeconds={result.completionSeconds}
-                        categoryAccuracy={result.categoryAccuracy}
-                        difficultyAccuracy={result.difficultyAccuracy}
-                      />
-                      <div className="grid gap-3 sm:grid-cols-3">
-                        <button
-                          onClick={downloadCertificate}
-                          className="inline-flex items-center justify-center gap-2 rounded-2xl bg-amber-400 px-5 py-4 text-sm font-semibold text-slate-950"
-                        >
-                          <Download className="h-4 w-4" />
-                          Download Certificate
-                        </button>
-                        <button
-                          onClick={downloadReport}
-                          className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-sm font-semibold text-white"
-                        >
-                          <Download className="h-4 w-4" />
-                          Download Report
-                        </button>
-                        <button
-                          onClick={downloadChart}
-                          className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-sm font-semibold text-white"
-                        >
-                          <Eye className="h-4 w-4" />
-                          Download Chart
-                        </button>
-                      </div>
-                      <div className="rounded-[28px] border border-white/10 bg-white/5 p-5 text-sm text-slate-300">
-                        Status: {saveState === 'saved' ? 'Certificate saved and ready for verification.' : saveState === 'failed' ? 'Certificate generated locally. Remote save was skipped or unavailable.' : 'Generating certificate record...'}
-                      </div>
+                      <p className="mt-2 break-all font-mono text-sm text-slate-600">{certificateId}</p>
                     </div>
                   </div>
 
-                  <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-                    <CertificateCard
-                      ref={certificateRef}
-                      fullName={verifiedName || 'Participant'}
-                      country={profileForm.country}
-                      certificateId={certificateId}
-                      completedAt={new Date(submittedAt || Date.now()).toLocaleDateString('en-US', {
-                        month: 'long',
-                        day: 'numeric',
-                        year: 'numeric',
-                      })}
-                      score={result}
-                      verificationUrl={verificationUrl}
-                      qrDataUrl={qrDataUrl}
+                  <div className="space-y-6">
+                    <PerformanceChart
+                      ref={chartRef}
+                      name={verifiedName || 'Participant'}
+                      reasoningScore={result.reasoningScore}
+                      accuracy={result.accuracy}
+                      correct={result.correct}
+                      incorrect={result.incorrect}
+                      completionSeconds={result.completionSeconds}
+                      categoryAccuracy={result.categoryAccuracy}
+                      difficultyAccuracy={result.difficultyAccuracy}
                     />
-
-                    <div className="space-y-6">
-                      <div className="rounded-[34px] border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
-                        <p className="text-[10px] uppercase tracking-[0.35em] text-slate-400">Certificate preview</p>
-                        <p className="mt-3 text-sm leading-7 text-slate-300">
-                          Your certificate includes the ZAYA branding, completion date, score summary, certificate ID, and a verification QR code.
-                        </p>
-                        <div className="mt-5 rounded-[28px] border border-white/10 bg-slate-950/70 p-5 text-sm text-slate-300">
-                          <p className="font-semibold text-white">Verification page</p>
-                          <p className="mt-2 break-all text-xs text-slate-400">{verificationUrl}</p>
-                        </div>
-                      </div>
-
-                      <div className="rounded-[34px] border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
-                        <p className="text-[10px] uppercase tracking-[0.35em] text-slate-400">Privacy</p>
-                        <ul className="mt-4 space-y-3 text-sm text-slate-300">
-                          <li>Only the fields needed for the certificate are collected.</li>
-                          <li>Gmail is used to continue the certificate workflow.</li>
-                          <li>The verifier does not expose email addresses or extra personal details.</li>
-                        </ul>
-                      </div>
+                    <div className="grid gap-3 sm:grid-cols-3">
+                      <button onClick={downloadCertificate} className="inline-flex items-center justify-center gap-2 rounded-lg bg-slate-900 px-4 py-3 text-sm font-medium text-white">
+                        <Download className="h-4 w-4" />
+                        Certificate
+                      </button>
+                      <button onClick={downloadReport} className="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm font-medium text-slate-700">
+                        <Download className="h-4 w-4" />
+                        Report
+                      </button>
+                      <button onClick={downloadChart} className="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm font-medium text-slate-700">
+                        <Eye className="h-4 w-4" />
+                        Chart
+                      </button>
+                    </div>
+                    <div className="rounded-lg bg-slate-50 p-4 text-sm text-slate-600">
+                      {saveState === 'saved' ? 'Certificate saved and ready for verification.' : saveState === 'failed' ? 'Certificate generated locally. Remote save was skipped.' : 'Generating certificate record...'}
                     </div>
                   </div>
-                </>
-              )}
-            </motion.section>
-          )}
-        </AnimatePresence>
+                </div>
 
-        {stage === 'landing' && (
-          <section id="how" className="grid gap-6 py-8 md:grid-cols-3">
-            <HowCard title="1. Start from the landing page" text="Open the sample question and review how the test behaves before beginning the full 30-question assessment." />
-            <HowCard title="2. Take the assessment" text="Work through one question at a time, use Previous/Next navigation, and submit only when you are ready." />
-            <HowCard title="3. Download and verify" text="Enter your Gmail and certificate details, then download the certificate, report, and chart." />
-          </section>
-        )}
+                <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
+                  <CertificateCard
+                    ref={certificateRef}
+                    fullName={verifiedName || 'Participant'}
+                    country={profileForm.country}
+                    certificateId={certificateId}
+                    completedAt={new Date(submittedAt || Date.now()).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                    score={result}
+                    verificationUrl={verificationUrl}
+                    qrDataUrl={qrDataUrl}
+                  />
 
-        {stage === 'landing' && (
-          <section id="faq" className="grid gap-4 py-4 lg:grid-cols-2">
-            <FaqCard question="Is this a clinical IQ test?" answer="No. It is an educational reasoning assessment with transparent scoring and a clear disclaimer." />
-            <FaqCard question="Can I verify my certificate later?" answer="Yes. The generated certificate ID can be checked on the public verification page." />
-            <FaqCard question="Does the timer have to be enabled?" answer="No. The timer is optional. You can turn it off before or during the assessment if you prefer." />
-            <FaqCard question="What is stored?" answer="Only the certificate-related details needed for generation and verification are used. The verifier does not reveal email addresses." />
-          </section>
+                  <div className="space-y-6">
+                    <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+                      <p className="text-xs font-medium uppercase tracking-wider text-slate-400">Certificate preview</p>
+                      <p className="mt-3 text-sm leading-relaxed text-slate-600">
+                        Your certificate includes the ZAYA branding, completion date, score summary, certificate ID, and a verification QR code.
+                      </p>
+                      <div className="mt-4 rounded-lg bg-slate-50 p-4 text-sm text-slate-600">
+                        <p className="font-medium text-slate-900">Verification page</p>
+                        <p className="mt-1 break-all text-xs text-slate-500">{verificationUrl}</p>
+                      </div>
+                    </div>
+
+                    <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+                      <p className="text-xs font-medium uppercase tracking-wider text-slate-400">Privacy</p>
+                      <ul className="mt-4 space-y-2 text-sm text-slate-600">
+                        <li>Only the fields needed for the certificate are collected.</li>
+                        <li>Gmail is used to continue the certificate workflow.</li>
+                        <li>The verifier does not expose email addresses or extra personal details.</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
         )}
       </main>
 
-      <AnimatePresence>
-        {showSubmitModal && stage === 'test' && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 px-4 py-8 backdrop-blur-md">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.96 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.96 }}
-              className="w-full max-w-lg rounded-[32px] border border-white/10 bg-[#0d1727] p-6 shadow-2xl"
-            >
-              <div className="mb-5 flex items-center gap-3">
-                <TriangleAlert className="h-6 w-6 text-amber-300" />
-                <div>
-                  <p className="text-[10px] uppercase tracking-[0.35em] text-slate-400">Final confirmation</p>
-                  <h3 className="text-2xl font-semibold text-white">Submit the test?</h3>
-                </div>
+      {/* Submit Modal */}
+      {showSubmitModal && stage === 'test' && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 px-4 py-8">
+          <div className="w-full max-w-md rounded-xl border border-slate-200 bg-white p-6 shadow-xl">
+            <div className="mb-5 flex items-center gap-3">
+              <TriangleAlert className="h-5 w-5 text-amber-600" />
+              <div>
+                <p className="text-xs font-medium uppercase tracking-wider text-slate-400">Final confirmation</p>
+                <h3 className="text-xl font-semibold text-slate-900">Submit the test?</h3>
               </div>
-              <p className="text-sm leading-7 text-slate-300">
-                You have answered {answeredCount} of {questions.length} questions. Are you ready to submit?
-              </p>
-              <div className="mt-6 flex flex-wrap gap-3">
-                <button onClick={() => setShowSubmitModal(false)} className="rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-white">
-                  Review Answers
-                </button>
-                <button onClick={handleSubmitConfirm} className="rounded-2xl bg-amber-400 px-5 py-3 text-sm font-semibold text-slate-950">
-                  Submit Test
-                </button>
-              </div>
-            </motion.div>
+            </div>
+            <p className="text-sm leading-relaxed text-slate-600">
+              You have answered {answeredCount} of {questions.length} questions. Are you ready to submit?
+            </p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <button onClick={() => setShowSubmitModal(false)} className="rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700">
+                Review Answers
+              </button>
+              <button onClick={handleSubmitConfirm} className="rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-medium text-white">
+                Submit Test
+              </button>
+            </div>
           </div>
-        )}
-      </AnimatePresence>
+        </div>
+      )}
     </div>
   );
 }
 
-function InfoCard({ icon: Icon, title, text }: { icon: LucideIcon; title: string; text: string }) {
-  return (
-    <div className="rounded-[28px] border border-white/10 bg-white/5 p-5 backdrop-blur-xl">
-      <Icon className="h-6 w-6 text-amber-300" />
-      <h3 className="mt-4 text-sm font-semibold uppercase tracking-[0.25em] text-white">{title}</h3>
-      <p className="mt-3 text-sm leading-7 text-slate-300">{text}</p>
-    </div>
-  );
-}
-
-function StatCard({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-[28px] border border-white/10 bg-white/5 p-5 backdrop-blur-xl">
-      <p className="text-[10px] uppercase tracking-[0.35em] text-slate-400">{label}</p>
-      <p className="mt-3 text-lg font-semibold text-white">{value}</p>
-    </div>
-  );
-}
-
-function ResultTile({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-[24px] border border-white/10 bg-slate-950/60 p-5">
-      <p className="text-[10px] uppercase tracking-[0.35em] text-slate-400">{label}</p>
-      <p className="mt-3 text-2xl font-semibold text-white">{value}</p>
-    </div>
-  );
-}
-
-function Field({
-  label,
-  value,
-  onChange,
-}: {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-}) {
+function Field({ label, value, onChange }: { label: string; value: string; onChange: (value: string) => void }) {
   return (
     <label className="space-y-2">
-      <span className="text-sm text-slate-300">{label}</span>
+      <span className="text-sm font-medium text-slate-700">{label}</span>
       <input
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-4 text-white outline-none placeholder:text-slate-500 focus:border-amber-400"
+        className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 outline-none placeholder:text-slate-400 focus:border-slate-900"
       />
     </label>
   );
 }
 
-function SelectField({
-  label,
-  value,
-  onChange,
-}: {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-}) {
+function SelectField({ label, value, onChange }: { label: string; value: string; onChange: (value: string) => void }) {
   return (
     <label className="space-y-2">
-      <span className="text-sm text-slate-300">{label}</span>
+      <span className="text-sm font-medium text-slate-700">{label}</span>
       <select
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-4 text-white outline-none focus:border-amber-400"
+        className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 outline-none focus:border-slate-900"
       >
         <option value="">Select</option>
         <option value="Female">Female</option>
@@ -1267,29 +1115,11 @@ function SelectField({
 
 function InsightPanel({ title, items }: { title: string; items: string[] }) {
   return (
-    <div className="rounded-[28px] border border-slate-200 bg-slate-50 p-5">
-      <p className="text-[10px] uppercase tracking-[0.35em] text-slate-500">{title}</p>
-      <ul className="mt-4 space-y-3 text-sm leading-7 text-slate-700">
+    <div className="rounded-lg bg-slate-50 p-5">
+      <p className="text-xs font-medium uppercase tracking-wider text-slate-500">{title}</p>
+      <ul className="mt-3 space-y-2 text-sm leading-relaxed text-slate-700">
         {items.length ? items.map((item) => <li key={item}>- {item}</li>) : <li>- No data yet.</li>}
       </ul>
-    </div>
-  );
-}
-
-function HowCard({ title, text }: { title: string; text: string }) {
-  return (
-    <div className="rounded-[28px] border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
-      <p className="text-[10px] uppercase tracking-[0.35em] text-amber-300">{title}</p>
-      <p className="mt-3 text-sm leading-7 text-slate-300">{text}</p>
-    </div>
-  );
-}
-
-function FaqCard({ question, answer }: { question: string; answer: string }) {
-  return (
-    <div className="rounded-[28px] border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
-      <p className="text-sm font-semibold text-white">{question}</p>
-      <p className="mt-3 text-sm leading-7 text-slate-300">{answer}</p>
     </div>
   );
 }
