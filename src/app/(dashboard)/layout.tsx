@@ -21,7 +21,8 @@ import {
   Mail,
   Award,
   IdCard,
-  GraduationCap
+  GraduationCap,
+  BookOpen
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Logo from '@/components/common/Logo';
@@ -164,6 +165,7 @@ export default function DashboardLayout({
         ]},
         { section: 'MANAGEMENT', items: [
           { name: 'Exam Portal', href: '/admin/exams', icon: GraduationCap },
+          { name: 'Question Bank', href: '/admin/questions', icon: BookOpen },
           { name: 'Submissions', href: '/admin/submissions', icon: CheckSquare },
           { name: 'User Management', href: '/admin/users', icon: ShieldCheck },
           { name: 'Messages', href: '/admin/messages', icon: Mail },
