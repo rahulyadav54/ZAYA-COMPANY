@@ -1,5 +1,3 @@
-'use client';
-
 export const metadata = {
   title: 'ZAYA CODE HUB | Software Development & IT Services',
   description: 'ZAYA CODE HUB builds custom web & mobile applications, AI solutions, cloud integrations, and enterprise software for businesses and startups.',
