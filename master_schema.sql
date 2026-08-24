@@ -455,3 +455,49 @@ CREATE POLICY "Admin Upload Placement Images" ON storage.objects
 
 CREATE POLICY "Admin Delete Placement Images" ON storage.objects
   FOR DELETE TO authenticated USING (bucket_id = 'placement-company-images');
+
+-- ==========================================
+-- 13. ZAYA IQ TEST CERTIFICATES TABLE
+-- ==========================================
+
+CREATE TABLE IF NOT EXISTS public.zaya_iq_certificates (
+  id BIGSERIAL PRIMARY KEY,
+  certificate_id TEXT UNIQUE NOT NULL,
+  attempt_id TEXT,
+  full_name TEXT NOT NULL,
+  email TEXT,
+  age INTEGER,
+  gender TEXT,
+  country TEXT,
+  reasoning_score INTEGER,
+  accuracy INTEGER,
+  correct_count INTEGER,
+  incorrect_count INTEGER,
+  completion_seconds INTEGER,
+  category_accuracy JSONB DEFAULT '{}'::jsonb,
+  difficulty_accuracy JSONB DEFAULT '{}'::jsonb,
+  analysis JSONB DEFAULT '{}'::jsonb,
+  completed_at TIMESTAMPTZ DEFAULT NOW(),
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Enable RLS for IQ certificates
+ALTER TABLE public.zaya_iq_certificates ENABLE ROW LEVEL SECURITY;
+
+-- Public can insert certificates (for certificate generation)
+DROP POLICY IF EXISTS "Public can insert IQ certificates" ON public.zaya_iq_certificates;
+CREATE POLICY "Public can insert IQ certificates" ON public.zaya_iq_certificates FOR INSERT TO public WITH CHECK (true);
+
+-- Public can select certificates (for verification - only non-sensitive fields exposed via API)
+DROP POLICY IF EXISTS "Public can select IQ certificates" ON public.zaya_iq_certificates;
+CREATE POLICY "Public can select IQ certificates" ON public.zaya_iq_certificates FOR SELECT TO public USING (true);
+
+-- Admins can manage all IQ certificates
+DROP POLICY IF EXISTS "Admin can manage IQ certificates" ON public.zaya_iq_certificates;
+CREATE POLICY "Admin can manage IQ certificates" ON public.zaya_iq_certificates FOR ALL USING (
+  EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin')
+);
+
+-- Index for faster certificate lookups
+CREATE INDEX IF NOT EXISTS idx_zaya_iq_certificates_certificate_id ON public.zaya_iq_certificates(certificate_id);
+CREATE INDEX IF NOT EXISTS idx_zaya_iq_certificates_completed_at ON public.zaya_iq_certificates(completed_at DESC);

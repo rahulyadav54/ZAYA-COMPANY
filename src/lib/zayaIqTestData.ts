@@ -1,0 +1,307 @@
+export type ZayaIqDifficulty = 'Easy' | 'Moderate' | 'Difficult' | 'Advanced';
+
+export type ZayaIqCategory =
+  | 'Numerical reasoning'
+  | 'Logical reasoning'
+  | 'Pattern recognition'
+  | 'Verbal reasoning'
+  | 'Sequence completion'
+  | 'Analytical reasoning'
+  | 'Mathematical reasoning'
+  | 'Problem solving';
+
+export interface ZayaIqQuestion {
+  id: string;
+  question: string;
+  category: ZayaIqCategory;
+  difficulty: ZayaIqDifficulty;
+  options: string[];
+  correctIndex: number;
+  explanation: string;
+}
+
+export const sampleQuestion: ZayaIqQuestion = {
+  id: 'sample-1',
+  question: 'What number comes next?\n\n2, 4, 8, 16, ?',
+  category: 'Numerical reasoning',
+  difficulty: 'Easy',
+  options: ['20', '24', '32', '36'],
+  correctIndex: 2,
+  explanation: 'The sequence doubles each time: 2, 4, 8, 16, 32.',
+};
+
+export const zayaIqQuestions: ZayaIqQuestion[] = [
+  {
+    id: 'q01',
+    question: 'What number comes next in the sequence?\n\n3, 6, 12, 24, ?',
+    category: 'Sequence completion',
+    difficulty: 'Easy',
+    options: ['30', '36', '48', '54'],
+    correctIndex: 2,
+    explanation: 'Each term doubles the previous one, so 24 doubles to 48.',
+  },
+  {
+    id: 'q02',
+    question: 'If all desks are tables and all tables are furniture, which statement must be true?',
+    category: 'Logical reasoning',
+    difficulty: 'Easy',
+    options: ['All desks are furniture', 'All furniture is a desk', 'Some tables are not desks', 'No desks are furniture'],
+    correctIndex: 0,
+    explanation: 'The relationship flows upward: desks are tables, and tables are furniture, so desks are furniture.',
+  },
+  {
+    id: 'q03',
+    question: 'What comes next in the pattern?\n\n1, 3, 6, 10, ?',
+    category: 'Pattern recognition',
+    difficulty: 'Easy',
+    options: ['12', '14', '15', '16'],
+    correctIndex: 2,
+    explanation: 'The differences grow by 1 each time: +2, +3, +4, so the next difference is +5.',
+  },
+  {
+    id: 'q04',
+    question: 'Choose the best antonym for "scarce".',
+    category: 'Verbal reasoning',
+    difficulty: 'Easy',
+    options: ['Rare', 'Abundant', 'Thin', 'Limited'],
+    correctIndex: 1,
+    explanation: '"Scarce" means limited or hard to find, and "abundant" is the opposite.',
+  },
+  {
+    id: 'q05',
+    question: 'What number comes next?\n\n5, 9, 13, 17, ?',
+    category: 'Sequence completion',
+    difficulty: 'Easy',
+    options: ['20', '21', '22', '23'],
+    correctIndex: 1,
+    explanation: 'The sequence adds 4 each time, so 17 + 4 = 21.',
+  },
+  {
+    id: 'q06',
+    question: 'What is 75% of 40?',
+    category: 'Mathematical reasoning',
+    difficulty: 'Easy',
+    options: ['20', '25', '30', '35'],
+    correctIndex: 2,
+    explanation: '75% of 40 is 0.75 x 40 = 30.',
+  },
+  {
+    id: 'q07',
+    question: 'A number multiplied by 3 and then increased by 6 gives 24. What is the number?',
+    category: 'Analytical reasoning',
+    difficulty: 'Easy',
+    options: ['4', '5', '6', '7'],
+    correctIndex: 2,
+    explanation: 'Solve 3x + 6 = 24, so 3x = 18 and x = 6.',
+  },
+  {
+    id: 'q08',
+    question: 'What comes next in the sequence?\n\nA, C, F, J, ?',
+    category: 'Pattern recognition',
+    difficulty: 'Easy',
+    options: ['M', 'N', 'O', 'P'],
+    correctIndex: 2,
+    explanation: 'The jumps are +2, +3, +4, +5 in the alphabet, so J moves to O.',
+  },
+  {
+    id: 'q09',
+    question: 'Choose the word closest in meaning to "concise".',
+    category: 'Verbal reasoning',
+    difficulty: 'Easy',
+    options: ['Brief', 'Loud', 'Complex', 'Slow'],
+    correctIndex: 0,
+    explanation: '"Concise" means short and to the point.',
+  },
+  {
+    id: 'q10',
+    question: 'Which number is the odd one out?',
+    category: 'Numerical reasoning',
+    difficulty: 'Easy',
+    options: ['8', '27', '64', '80'],
+    correctIndex: 3,
+    explanation: '8, 27, and 64 are perfect cubes, while 80 is not.',
+  },
+  {
+    id: 'q11',
+    question: 'What number comes next in the sequence?\n\n1, 2, 4, 7, 11, 16, ?',
+    category: 'Sequence completion',
+    difficulty: 'Moderate',
+    options: ['20', '21', '22', '23'],
+    correctIndex: 2,
+    explanation: 'The differences increase by 1 each step: +1, +2, +3, +4, +5, so the next is +6.',
+  },
+  {
+    id: 'q12',
+    question: 'If all rafts are boats and no boats are silent, which statement is true?',
+    category: 'Logical reasoning',
+    difficulty: 'Moderate',
+    options: ['Some rafts are silent', 'No rafts are silent', 'All silent things are boats', 'Some boats are not rafts'],
+    correctIndex: 1,
+    explanation: 'If no boats are silent, then rafts, which are boats, cannot be silent either.',
+  },
+  {
+    id: 'q13',
+    question: 'Half of a number is 18. What is the number?',
+    category: 'Mathematical reasoning',
+    difficulty: 'Moderate',
+    options: ['24', '30', '36', '42'],
+    correctIndex: 2,
+    explanation: 'If half is 18, the full number is 36.',
+  },
+  {
+    id: 'q14',
+    question: 'What letter comes next in the pattern?\n\nB, E, I, N, ?',
+    category: 'Pattern recognition',
+    difficulty: 'Moderate',
+    options: ['R', 'S', 'T', 'U'],
+    correctIndex: 2,
+    explanation: 'The positions increase by 3, 4, 5, and 6, so N advances to T.',
+  },
+  {
+    id: 'q15',
+    question: 'Architect is to building as composer is to what?',
+    category: 'Verbal reasoning',
+    difficulty: 'Moderate',
+    options: ['Novel', 'Symphony', 'Camera', 'Gallery'],
+    correctIndex: 1,
+    explanation: 'An architect designs a building, and a composer creates a symphony.',
+  },
+  {
+    id: 'q16',
+    question: 'A train travels 180 km in 3 hours. At the same speed, how far will it travel in 5 hours?',
+    category: 'Problem solving',
+    difficulty: 'Moderate',
+    options: ['250 km', '280 km', '300 km', '320 km'],
+    correctIndex: 2,
+    explanation: 'The speed is 60 km/h, so in 5 hours it travels 300 km.',
+  },
+  {
+    id: 'q17',
+    question: 'What is the average of 7, 9, 11, 13, and 15?',
+    category: 'Numerical reasoning',
+    difficulty: 'Moderate',
+    options: ['9', '10', '11', '12'],
+    correctIndex: 2,
+    explanation: 'The numbers are evenly spaced around 11, so the average is 11.',
+  },
+  {
+    id: 'q18',
+    question: 'What number comes next in the sequence?\n\n4, 9, 19, 39, 79, ?',
+    category: 'Sequence completion',
+    difficulty: 'Moderate',
+    options: ['149', '159', '169', '179'],
+    correctIndex: 1,
+    explanation: 'Each number is doubled and then 1 is subtracted, so 79 becomes 159.',
+  },
+  {
+    id: 'q19',
+    question: 'Choose the word that best completes the sentence:\n\n"Her explanation was so ____ that even beginners understood the process."',
+    category: 'Verbal reasoning',
+    difficulty: 'Moderate',
+    options: ['clear', 'opaque', 'vague', 'narrow'],
+    correctIndex: 0,
+    explanation: 'A clear explanation is easy to understand.',
+  },
+  {
+    id: 'q20',
+    question: 'Some designers are coders. All coders are problem solvers. Which statement is definitely true?',
+    category: 'Logical reasoning',
+    difficulty: 'Moderate',
+    options: ['Some designers are problem solvers', 'All designers are coders', 'No coders are designers', 'All problem solvers are coders'],
+    correctIndex: 0,
+    explanation: 'If some designers are coders, and all coders are problem solvers, then some designers are problem solvers.',
+  },
+  {
+    id: 'q21',
+    question: 'What is 3/4 of 64, plus 10?',
+    category: 'Mathematical reasoning',
+    difficulty: 'Difficult',
+    options: ['46', '54', '58', '62'],
+    correctIndex: 2,
+    explanation: '3/4 of 64 is 48, and 48 + 10 = 58.',
+  },
+  {
+    id: 'q22',
+    question: 'What number comes next in the sequence?\n\n2, 6, 24, 120, ?',
+    category: 'Sequence completion',
+    difficulty: 'Difficult',
+    options: ['360', '480', '600', '720'],
+    correctIndex: 3,
+    explanation: 'These are factorials: 2!, 3!, 4!, 5!, so the next is 6! = 720.',
+  },
+  {
+    id: 'q23',
+    question: 'If 3 printers make 3 posters in 3 minutes, how long will 9 printers take to make 9 posters at the same rate?',
+    category: 'Problem solving',
+    difficulty: 'Difficult',
+    options: ['1 minute', '3 minutes', '6 minutes', '9 minutes'],
+    correctIndex: 1,
+    explanation: 'The rate stays the same, so 9 printers making 9 posters still takes 3 minutes.',
+  },
+  {
+    id: 'q24',
+    question: 'Select the best analogy:\n\nEmber is to fire as seed is to ____.',
+    category: 'Verbal reasoning',
+    difficulty: 'Difficult',
+    options: ['plant', 'leaf', 'soil', 'branch'],
+    correctIndex: 0,
+    explanation: 'An ember can become a fire, just as a seed can become a plant.',
+  },
+  {
+    id: 'q25',
+    question: 'What letter comes next in the pattern?\n\nZ, X, U, Q, L, ?',
+    category: 'Pattern recognition',
+    difficulty: 'Difficult',
+    options: ['H', 'I', 'F', 'G'],
+    correctIndex: 2,
+    explanation: 'The backward jumps grow by 2 each time: -2, -3, -4, -5, -6. From L, the next letter is F.',
+  },
+  {
+    id: 'q26',
+    question: 'A product is marked 25% above cost and then discounted by 20%. What happens overall?',
+    category: 'Analytical reasoning',
+    difficulty: 'Difficult',
+    options: ['5% loss', 'Break-even', '5% profit', '20% profit'],
+    correctIndex: 1,
+    explanation: 'A 25% markup makes the price 125% of cost. A 20% discount on that brings it back to 100% of cost.',
+  },
+  {
+    id: 'q27',
+    question: 'Four friends sit in a row. A sits left of B, C sits right of B, and D sits left of A. Who is immediately to the left of B?',
+    category: 'Logical reasoning',
+    difficulty: 'Difficult',
+    options: ['A', 'C', 'D', 'No one'],
+    correctIndex: 0,
+    explanation: 'The only order that fits is D, A, B, C, so A is immediately left of B.',
+  },
+  {
+    id: 'q28',
+    question: 'What number comes next in the sequence?\n\n2, 5, 11, 23, 47, ?',
+    category: 'Sequence completion',
+    difficulty: 'Advanced',
+    options: ['71', '93', '95', '97'],
+    correctIndex: 2,
+    explanation: 'Each term doubles the previous one and adds 1: 2, 5, 11, 23, 47, 95.',
+  },
+  {
+    id: 'q29',
+    question: 'A shopkeeper buys an item for 240 and sells it after a 20% discount on a marked price that still yields 15% profit. What was the marked price?',
+    category: 'Problem solving',
+    difficulty: 'Advanced',
+    options: ['320', '340', '345', '360'],
+    correctIndex: 2,
+    explanation: 'A 15% profit on 240 means the selling price is 276. If that is 80% of the marked price, the marked price is 345.',
+  },
+  {
+    id: 'q30',
+    question: 'All artists are observant. Some observant people are quiet. No quiet people are loud. Which conclusion is definitely valid?',
+    category: 'Logical reasoning',
+    difficulty: 'Advanced',
+    options: ['Some observant people are not loud', 'All loud people are artists', 'No artists are observant', 'All quiet people are artists'],
+    correctIndex: 0,
+    explanation: 'Some observant people are quiet, and quiet people are not loud, so some observant people are not loud.',
+  },
+];
+
+export const difficultyOrder: ZayaIqDifficulty[] = ['Easy', 'Moderate', 'Difficult', 'Advanced'];
+

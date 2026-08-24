@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
-import { Search, ShieldCheck, AlertCircle, Calendar, User, BookOpen, Loader2, Award } from 'lucide-react';
+import { Search, ShieldCheck, AlertCircle, Calendar, User, BookOpen, Loader2, Award, FileCheck } from 'lucide-react';
 import Link from 'next/link';
 import { extractNameFromEmail } from '@/lib/resolveInternDetails';
 
@@ -15,26 +15,39 @@ function VerifyForm() {
   const [isVerifying, setIsVerifying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [statusMsg, setStatusMsg] = useState('Initializing Scan...');
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const clearProgressInterval = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+  };
+
+  useEffect(() => {
+    return () => clearProgressInterval();
+  }, []);
 
   const executeVerify = async (targetId: string) => {
     if (!targetId.trim()) return;
 
+    clearProgressInterval();
     setIsVerifying(true);
     setError('');
     setResult(null);
     setProgress(0);
     setStatusMsg('Connecting to Zaya Registry...');
 
-    const interval = setInterval(() => {
+    intervalRef.current = setInterval(() => {
       setProgress((prev) => {
         const next = prev + Math.floor(Math.random() * 15) + 5;
         if (next >= 10) setStatusMsg('Searching Records...');
         if (next >= 40) setStatusMsg('Verifying Digital Signature...');
         if (next >= 70) setStatusMsg('Authenticating Credential ID...');
         if (next >= 90) setStatusMsg('Finalizing Result...');
-        
+
         if (next >= 100) {
-          clearInterval(interval);
+          clearProgressInterval();
           return 100;
         }
         return next;
@@ -84,14 +97,41 @@ function VerifyForm() {
         setTimeout(() => {
           setResult({
             ...data,
-            resolved_name: recipientName
+            resolved_name: recipientName,
+            credential_type: 'internship',
           });
           setIsVerifying(false);
         }, 2000);
         return;
       }
 
-      // 2. Search applications table if certificate_id or intern_id matches
+      // 2. Search IQ test certificates table
+      const { data: iqCert, error: iqError } = await supabase
+        .from('zaya_iq_certificates')
+        .select('*')
+        .ilike('certificate_id', cleanId)
+        .maybeSingle();
+
+      if (iqCert) {
+        setTimeout(() => {
+          setResult({
+            certificate_id: iqCert.certificate_id,
+            resolved_name: iqCert.full_name,
+            reasoning_score: iqCert.reasoning_score,
+            accuracy: iqCert.accuracy,
+            correct_count: iqCert.correct_count,
+            incorrect_count: iqCert.incorrect_count,
+            completion_seconds: iqCert.completion_seconds,
+            country: iqCert.country,
+            created_at: iqCert.completed_at,
+            credential_type: 'iq_test',
+          });
+          setIsVerifying(false);
+        }, 2000);
+        return;
+      }
+
+      // 3. Search applications table if certificate_id or intern_id matches
       const { data: appByCert } = await supabase
         .from('applications')
         .select('*')
@@ -104,7 +144,8 @@ function VerifyForm() {
             certificate_id: cleanId,
             resolved_name: appByCert.full_name,
             tasks: { title: appByCert.position || 'Internship Program' },
-            created_at: appByCert.created_at || appByCert.applied_at || new Date().toISOString()
+            created_at: appByCert.created_at || appByCert.applied_at || new Date().toISOString(),
+            credential_type: 'internship',
           });
           setIsVerifying(false);
         }, 2000);
@@ -120,6 +161,7 @@ function VerifyForm() {
     } catch (err) {
       setError('An error occurred while verifying. Please try again later.');
       setIsVerifying(false);
+      clearProgressInterval();
     }
   };
 
@@ -166,7 +208,7 @@ function VerifyForm() {
               type="text" 
               value={certId}
               onChange={(e) => setCertId(e.target.value)}
-              placeholder="e.g. ZCH-2026-X7Y9"
+              placeholder="e.g. ZCH-2026-X7Y9 or ZAYA-2026-XXXXXXXX"
               className="w-full px-8 py-6 bg-slate-900/50 backdrop-blur-xl rounded-2xl border-2 border-white/10 focus:border-blue-500 focus:ring-0 transition-all text-xl font-medium uppercase tracking-widest placeholder:text-slate-600 placeholder:normal-case"
             />
             <button 
@@ -221,51 +263,108 @@ function VerifyForm() {
                      </div>
                      <div>
                         <h2 className="text-3xl font-semibold italic tracking-tight">Verified Authentic</h2>
-                        <p className="text-slate-400 font-medium uppercase text-xs tracking-widest">Zaya Code Hub Official Record</p>
+                        <p className="text-slate-400 font-medium uppercase text-xs tracking-widest">
+                          {result.credential_type === 'iq_test' ? 'Zaya IQ Test Official Record' : 'Zaya Code Hub Official Record'}
+                        </p>
                      </div>
                   </div>
                   <div className="hidden md:block">
-                     <Award className="h-20 w-20 text-blue-500/20" />
+                     {result.credential_type === 'iq_test' ? (
+                       <FileCheck className="h-20 w-20 text-amber-500/20" />
+                     ) : (
+                       <Award className="h-20 w-20 text-blue-500/20" />
+                     )}
                   </div>
                </div>
 
-               <div className="grid md:grid-cols-2 gap-8">
-                 <div className="p-8 bg-white/5 rounded-lg border border-white/5 space-y-2">
-                    <div className="flex items-center gap-2 text-slate-500 uppercase font-medium text-[10px] tracking-widest">
-                       <User className="h-3 w-3" />
-                       Recipient Name
-                    </div>
-                   <p className="text-2xl font-bold text-white leading-tight">{result.resolved_name || result.cert_full_name || result.profiles?.full_name || 'Verified Intern'}</p>
-                </div>
-                 <div className="p-8 bg-white/5 rounded-lg border border-white/5 space-y-2">
-                    <div className="flex items-center gap-2 text-slate-500 uppercase font-medium text-[10px] tracking-widest">
-                       <BookOpen className="h-3 w-3" />
-                       Internship Program
-                    </div>
-                    <p className="text-2xl font-semibold text-white leading-tight">{result.tasks?.title || 'Web Designer Intern'}</p>
+               {result.credential_type === 'iq_test' ? (
+                 <div className="grid md:grid-cols-2 gap-8">
+                   <div className="p-8 bg-white/5 rounded-lg border border-white/5 space-y-2">
+                      <div className="flex items-center gap-2 text-slate-500 uppercase font-medium text-[10px] tracking-widest">
+                         <User className="h-3 w-3" />
+                         Candidate Name
+                      </div>
+                      <p className="text-2xl font-bold text-white leading-tight">{result.resolved_name || 'Verified Candidate'}</p>
+                   </div>
+                   <div className="p-8 bg-white/5 rounded-lg border border-white/5 space-y-2">
+                      <div className="flex items-center gap-2 text-slate-500 uppercase font-medium text-[10px] tracking-widest">
+                         <BookOpen className="h-3 w-3" />
+                         Assessment
+                      </div>
+                      <p className="text-2xl font-semibold text-white leading-tight">Zaya IQ Test</p>
+                   </div>
+                   <div className="p-8 bg-white/5 rounded-lg border border-white/5 space-y-2">
+                      <div className="flex items-center gap-2 text-slate-500 uppercase font-medium text-[10px] tracking-widest">
+                         <Award className="h-3 w-3" />
+                         Reasoning Score
+                      </div>
+                      <p className="text-2xl font-semibold text-amber-400 leading-tight">{result.reasoning_score || 'N/A'}</p>
+                   </div>
+                   <div className="p-8 bg-white/5 rounded-lg border border-white/5 space-y-2">
+                      <div className="flex items-center gap-2 text-slate-500 uppercase font-medium text-[10px] tracking-widest">
+                         <ShieldCheck className="h-3 w-3" />
+                         Accuracy
+                      </div>
+                      <p className="text-2xl font-semibold text-white leading-tight">{result.accuracy ? `${result.accuracy}%` : 'N/A'}</p>
+                   </div>
+                   <div className="p-8 bg-white/5 rounded-lg border border-white/5 space-y-2">
+                      <div className="flex items-center gap-2 text-slate-500 uppercase font-medium text-[10px] tracking-widest">
+                         <Calendar className="h-3 w-3" />
+                         Completion Date
+                      </div>
+                      <p className="text-2xl font-semibold text-white leading-tight">{new Date(result.created_at || Date.now()).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
+                   </div>
+                   <div className="p-8 bg-amber-600/10 rounded-lg border border-amber-500/20 space-y-2">
+                      <div className="flex items-center gap-2 text-amber-500 uppercase font-medium text-[10px] tracking-widest">
+                         <Award className="h-3 w-3" />
+                         Credential ID
+                      </div>
+                      <p className="text-2xl font-semibold text-amber-400 tracking-tight italic">{result.certificate_id}</p>
+                   </div>
                  </div>
-                 <div className="p-8 bg-white/5 rounded-lg border border-white/5 space-y-2">
-                    <div className="flex items-center gap-2 text-slate-500 uppercase font-medium text-[10px] tracking-widest">
-                       <Calendar className="h-3 w-3" />
-                       Completion Date
-                    </div>
-                    <p className="text-2xl font-semibold text-white leading-tight">{new Date(result.created_at || result.submitted_at || Date.now()).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
+               ) : (
+                 <div className="grid md:grid-cols-2 gap-8">
+                   <div className="p-8 bg-white/5 rounded-lg border border-white/5 space-y-2">
+                      <div className="flex items-center gap-2 text-slate-500 uppercase font-medium text-[10px] tracking-widest">
+                         <User className="h-3 w-3" />
+                         Recipient Name
+                      </div>
+                     <p className="text-2xl font-bold text-white leading-tight">{result.resolved_name || result.cert_full_name || result.profiles?.full_name || 'Verified Intern'}</p>
+                  </div>
+                   <div className="p-8 bg-white/5 rounded-lg border border-white/5 space-y-2">
+                      <div className="flex items-center gap-2 text-slate-500 uppercase font-medium text-[10px] tracking-widest">
+                         <BookOpen className="h-3 w-3" />
+                         Internship Program
+                      </div>
+                      <p className="text-2xl font-semibold text-white leading-tight">{result.tasks?.title || 'Web Designer Intern'}</p>
+                   </div>
+                   <div className="p-8 bg-white/5 rounded-lg border border-white/5 space-y-2">
+                      <div className="flex items-center gap-2 text-slate-500 uppercase font-medium text-[10px] tracking-widest">
+                         <Calendar className="h-3 w-3" />
+                         Completion Date
+                      </div>
+                      <p className="text-2xl font-semibold text-white leading-tight">{new Date(result.created_at || result.submitted_at || Date.now()).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
+                   </div>
+                   <div className="p-8 bg-blue-600/10 rounded-lg border border-blue-500/20 space-y-2">
+                      <div className="flex items-center gap-2 text-blue-500 uppercase font-medium text-[10px] tracking-widest">
+                         <Award className="h-3 w-3" />
+                         Credential ID
+                      </div>
+                      <p className="text-2xl font-semibold text-blue-400 tracking-tight italic">{result.certificate_id}</p>
+                   </div>
                  </div>
-                 <div className="p-8 bg-blue-600/10 rounded-lg border border-blue-500/20 space-y-2">
-                    <div className="flex items-center gap-2 text-blue-500 uppercase font-medium text-[10px] tracking-widest">
-                       <Award className="h-3 w-3" />
-                       Credential ID
-                    </div>
-                    <p className="text-2xl font-semibold text-blue-400 tracking-tight italic">{result.certificate_id}</p>
-                 </div>
-              </div>
+               )}
 
-              <div className="pt-8 border-t border-white/5 text-center">
-                 <p className="text-slate-500 text-sm font-medium">This record was officially issued by Zaya Code Hub upon successful completion of the internship requirements.</p>
-              </div>
-            </div>
-          </div>
-        )}
+               <div className="pt-8 border-t border-white/5 text-center">
+                  <p className="text-slate-500 text-sm font-medium">
+                    {result.credential_type === 'iq_test'
+                      ? 'This certificate was officially issued by Zaya IQ Test upon successful completion of the reasoning assessment.'
+                      : 'This record was officially issued by Zaya Code Hub upon successful completion of the internship requirements.'}
+                  </p>
+               </div>
+             </div>
+           </div>
+         )}
 
         {/* Footer */}
         <div className="mt-20 text-center">

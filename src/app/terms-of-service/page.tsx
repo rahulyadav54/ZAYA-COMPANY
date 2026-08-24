@@ -37,7 +37,21 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold mb-4">3. Internship Program Guidelines</h2>
+            <h2 className="text-2xl font-bold mb-4">3. Zaya IQ Test</h2>
+            <p className="leading-relaxed mb-4">
+              The Zaya IQ Test is an educational reasoning assessment. By taking the test, you acknowledge:
+            </p>
+            <ul className="list-disc pl-6 space-y-2">
+              <li>The assessment is not a clinically validated IQ examination or psychological diagnosis.</li>
+              <li>Results are provided for educational and self-assessment purposes only.</li>
+              <li>You consent to the collection of your name, Gmail address, age, gender, and country for certificate generation.</li>
+              <li>Your certificate ID and results may be stored for verification purposes.</li>
+              <li>You may request deletion of your assessment data by contacting us.</li>
+            </ul>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-bold mb-4">4. Internship Program Guidelines</h2>
             <p className="leading-relaxed">
               Interns admitted to the ZAYA CODE HUB internship program agree to comply with all assigned tasks, coding standards, 
               and submission deadlines. Access to the intern portal is strictly for the authorized user, and sharing login 
@@ -46,7 +60,7 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold mb-4">4. Disclaimer</h2>
+            <h2 className="text-2xl font-bold mb-4">5. Disclaimer</h2>
             <p className="leading-relaxed">
               The materials on ZAYA CODE HUB's website are provided on an 'as is' basis. ZAYA CODE HUB makes no warranties, 
               expressed or implied, and hereby disclaims and negates all other warranties including, without limitation, implied 
@@ -77,8 +91,8 @@ export default function TermsOfServicePage() {
           <section>
             <h2 className="text-2xl font-bold mb-4">7. Governing Law</h2>
             <p className="leading-relaxed">
-              These terms and conditions are governed by and construed in accordance with the laws of California, United States, 
-              and you irrevocably submit to the exclusive jurisdiction of the courts in that State or location.
+              These terms and conditions are governed by and construed in accordance with the laws of India, 
+              and you irrevocably submit to the exclusive jurisdiction of the courts in Tamil Nadu, India.
             </p>
           </section>
         </div>
