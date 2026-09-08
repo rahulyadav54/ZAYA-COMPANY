@@ -91,7 +91,7 @@ function LoginForm() {
 
       // 1. Try standard Supabase Auth
       const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-        email: email.trim(),
+        email: cleanEmail,
         password: password,
       });
 

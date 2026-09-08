@@ -114,6 +114,7 @@ export async function POST(request: Request) {
       const { data: signUpData, error: signUpError } = await supabaseAnon.auth.signUp({
         email: targetEmail,
         password: assignedPassword,
+        email_confirm: true,
         options: {
           data: {
             full_name: fullName,
@@ -132,12 +133,9 @@ export async function POST(request: Request) {
             .maybeSingle();
           if (existingProf?.id) {
             createdUserId = existingProf.id;
-          } else {
-            createdUserId = generateValidUUID();
           }
         } else {
           console.warn('signUp notice:', signUpError.message);
-          createdUserId = generateValidUUID();
         }
       } else if (signUpData?.user) {
         createdUserId = signUpData.user.id;
