@@ -73,30 +73,13 @@ export async function upsertInternProfile(
     email: input.email.toLowerCase().trim(),
     full_name: input.fullName,
     role: input.role || 'intern',
-    position: input.position || 'Internship',
+    department: input.position || 'Internship',
     phone: input.phone || '',
-    joining_date: input.joiningDate || new Date().toISOString().split('T')[0],
     intern_id:
       input.internId ||
       `ZCH-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`,
+    updated_at: new Date().toISOString(),
   });
 
   return error;
-}
-
-export async function findAcceptedApplication(
-  db: SupabaseClient,
-  cleanEmail: string,
-  officialEmail: string,
-) {
-  const { data } = await db
-    .from('applications')
-    .select('full_name, email, position, status, phone')
-    .eq('status', 'accepted')
-    .or(`email.eq.${cleanEmail},email.eq.${officialEmail}`)
-    .order('applied_at', { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
-  return data;
 }

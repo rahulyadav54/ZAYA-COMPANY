@@ -1,11 +1,13 @@
 import { NextResponse } from 'next/server';
 import type { SupabaseClient, User } from '@supabase/supabase-js';
 import {
+  findAcceptedApplicationForLogin,
+  ensureInternAccount,
+} from '@/lib/internAccount';
+import {
   createAnonServerClient,
   createServiceRoleClient,
-  findAcceptedApplication,
   findAuthUserByEmail,
-  upsertInternProfile,
 } from '@/lib/supabaseAdminAuth';
 
 type ProfileRow = {
@@ -13,10 +15,9 @@ type ProfileRow = {
   email: string;
   full_name?: string | null;
   role?: string | null;
-  position?: string | null;
+  department?: string | null;
   intern_id?: string | null;
   phone?: string | null;
-  joining_date?: string | null;
 };
 
 function resolveRole(email: string, profileRole?: string | null) {
@@ -58,84 +59,12 @@ async function findProfileByEmail(
   for (const email of emails) {
     const { data } = await supabase
       .from('profiles')
-      .select('id, email, full_name, role, position, intern_id, phone, joining_date')
+      .select('id, email, full_name, role, department, intern_id, phone')
       .ilike('email', email)
       .maybeSingle();
     if (data) return data as ProfileRow;
   }
   return null;
-}
-
-async function syncProfileWithAuthUser(
-  admin: SupabaseClient,
-  profile: ProfileRow,
-  authUser: User,
-) {
-  if (profile.id === authUser.id) return;
-
-  await upsertInternProfile(admin, {
-    id: authUser.id,
-    email: authUser.email || profile.email,
-    fullName: profile.full_name || 'Portal Intern',
-    role: profile.role || 'intern',
-    position: profile.position || 'Internship',
-    phone: profile.phone || '',
-    joiningDate: profile.joining_date || undefined,
-    internId: profile.intern_id || undefined,
-  });
-
-  await admin.from('profiles').delete().eq('id', profile.id);
-}
-
-async function ensureConfirmedAuthUser(
-  admin: SupabaseClient,
-  email: string,
-  password: string,
-  metadata?: Record<string, unknown>,
-  profile?: ProfileRow | null,
-) {
-  let authUser = await findAuthUserByEmail(admin, email);
-
-  if (!authUser) {
-    const { data, error } = await admin.auth.admin.createUser({
-      email,
-      password,
-      email_confirm: true,
-      user_metadata: metadata || {},
-    });
-
-    if (error) {
-      authUser = await findAuthUserByEmail(admin, email);
-      if (!authUser) return null;
-    } else {
-      authUser = data.user;
-    }
-  }
-
-  if (!authUser) return null;
-
-  await admin.auth.admin.updateUserById(authUser.id, {
-    password,
-    email_confirm: true,
-    user_metadata: {
-      ...(authUser.user_metadata || {}),
-      ...(metadata || {}),
-    },
-  });
-
-  if (profile && profile.id !== authUser.id) {
-    await syncProfileWithAuthUser(admin, profile, authUser);
-  } else if (!profile) {
-    await upsertInternProfile(admin, {
-      id: authUser.id,
-      email: authUser.email || email,
-      fullName: String(metadata?.full_name || 'Portal Intern'),
-      role: 'intern',
-      position: String(metadata?.position || 'Internship'),
-    });
-  }
-
-  return authUser;
 }
 
 export async function POST(request: Request) {
@@ -186,7 +115,7 @@ export async function POST(request: Request) {
     }
 
     const profile = await findProfileByEmail(admin, [...new Set(candidateEmails)]);
-    const application = await findAcceptedApplication(admin, cleanEmail, officialEmail);
+    const application = await findAcceptedApplicationForLogin(admin, cleanEmail, officialEmail);
     const hasInternRecord = Boolean(profile || application);
 
     if (!hasInternRecord || !officialEmail.endsWith('@zayacodehub.com')) {
@@ -199,25 +128,29 @@ export async function POST(request: Request) {
       );
     }
 
-    const targetEmail = profile?.email?.toLowerCase() || officialEmail;
-
-    const metadata = {
-      full_name: profile?.full_name || application?.full_name || 'Portal Intern',
-      position: profile?.position || application?.position || 'Internship',
-      personal_email:
+    const ensured = await ensureInternAccount(admin, {
+      fullName: profile?.full_name || application?.full_name || 'Portal Intern',
+      personalEmail:
         application?.email && !application.email.endsWith('@zayacodehub.com')
           ? application.email
           : undefined,
-    };
-
-    const authUser = await ensureConfirmedAuthUser(
-      admin,
-      targetEmail,
+      position: profile?.department || application?.position || 'Internship',
       password,
-      metadata,
-      profile,
-    );
+      preferredOfficialEmail: profile?.email || officialEmail,
+      phone: profile?.phone || application?.phone || '',
+    });
 
+    if (!ensured.success) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: ensured.error || 'Invalid login credentials. Please check your email address and password.',
+        },
+        { status: 401 },
+      );
+    }
+
+    const authUser = await findAuthUserByEmail(admin, ensured.officialEmail);
     if (!authUser) {
       return NextResponse.json(
         {
@@ -228,7 +161,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const loginEmail = (authUser.email || targetEmail).toLowerCase();
+    const loginEmail = (authUser.email || ensured.officialEmail).toLowerCase();
     const recovered = await trySignIn(supabaseAnon, loginEmail, password);
 
     if (!recovered) {
