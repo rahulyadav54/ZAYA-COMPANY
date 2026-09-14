@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
-import { Clock, CheckCircle2, AlertCircle, FileUp, Trophy, Calendar, Loader2, ArrowRight, X, Award, FileText, Maximize2 } from 'lucide-react';
+import { Clock, CheckCircle2, AlertCircle, FileUp, Trophy, Calendar, Loader2, ArrowRight, X, Award, FileText, Maximize2, ChevronDown, ChevronUp } from 'lucide-react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
@@ -15,6 +15,16 @@ export default function InternDashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedTask, setSelectedTask] = useState<any>(null);
+  const [expandedTaskIds, setExpandedTaskIds] = useState<Set<string>>(new Set());
+
+  const toggleTaskExpanded = (taskId: string) => {
+    setExpandedTaskIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(taskId)) next.delete(taskId);
+      else next.add(taskId);
+      return next;
+    });
+  };
 
   useEffect(() => {
     async function loadDashboardData() {
@@ -274,22 +284,55 @@ export default function InternDashboard() {
                  <p className="text-slate-500 font-medium">No tasks assigned to your profile yet.</p>
               </div>
             ) : (
-              tasks.map((task) => (
+              tasks.map((task) => {
+                const isExpanded = expandedTaskIds.has(task.id);
+
+                return (
                 <div key={task.id} className="p-8 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all group">
                   <div className="flex items-start justify-between gap-4">
-                    <div className="space-y-4 flex-1">
+                    <div className="space-y-4 flex-1 min-w-0">
                       <div className="flex items-center space-x-4">
-                        <div className={`h-3 w-3 rounded-full ${
+                        <div className={`h-3 w-3 rounded-full shrink-0 ${
                           task.status === 'completed' ? 'bg-green-500' : 
                           task.status === 'in review' ? 'bg-blue-500' : 
                           'bg-orange-500 animate-pulse'
                         }`} />
                         <h4 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">{task.title}</h4>
                       </div>
-                      <p className="text-slate-500 dark:text-slate-400 line-clamp-2 text-sm leading-relaxed font-medium">
-                        {task.description}
-                      </p>
-                      <div className="flex items-center gap-6">
+
+                      <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/80 dark:bg-slate-800/40 overflow-hidden">
+                        <div className={`px-5 py-4 ${isExpanded ? '' : 'max-h-24 overflow-hidden relative'}`}>
+                          {!isExpanded && (
+                            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-slate-50 dark:from-slate-800/90 to-transparent" />
+                          )}
+                          <div className={`prose prose-sm dark:prose-invert max-w-none prose-p:my-2 prose-headings:my-3 prose-li:my-1 prose-p:text-slate-600 dark:prose-p:text-slate-300 prose-p:font-medium prose-headings:font-black prose-headings:text-slate-900 dark:prose-headings:text-white ${isExpanded ? '' : 'line-clamp-3'}`}>
+                            <ReactMarkdown>{task.description || 'No description provided.'}</ReactMarkdown>
+                          </div>
+                        </div>
+                        <div className="px-5 py-3 border-t border-slate-200 dark:border-slate-700 flex flex-wrap items-center gap-3">
+                          <button
+                            type="button"
+                            onClick={() => toggleTaskExpanded(task.id)}
+                            className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-blue-600 hover:text-blue-700 transition-colors"
+                          >
+                            {isExpanded ? (
+                              <>Show less <ChevronUp className="h-4 w-4" /></>
+                            ) : (
+                              <>Expand task <ChevronDown className="h-4 w-4" /></>
+                            )}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setSelectedTask(task)}
+                            className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
+                          >
+                            <Maximize2 className="h-4 w-4" />
+                            Full view
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-6 flex-wrap">
                         <div className="flex items-center text-[10px] font-black text-slate-400 uppercase tracking-[0.1em]">
                           <Calendar className="h-4 w-4 mr-2 text-blue-500" />
                           Due: {task.deadline ? new Date(task.deadline).toLocaleDateString() : 'N/A'}
@@ -304,35 +347,38 @@ export default function InternDashboard() {
                         </div>
                       </div>
                     </div>
-                    {task.status === 'completed' ? (
-                       <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-2xl text-green-600">
-                         <CheckCircle2 className="h-6 w-6" />
-                       </div>
-                    ) : task.status === 'in review' ? (
-                       <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-2xl text-blue-600" title="Currently being reviewed by admin">
-                         <Clock className="h-6 w-6" />
-                       </div>
-                    ) : (
-                       <div className="flex items-center gap-2">
-                         <button 
-                           onClick={() => setSelectedTask(task)}
-                           className="p-4 bg-slate-100 dark:bg-slate-800 rounded-2xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-all shadow-sm"
-                           title="Read Full Assessment"
-                         >
-                           <Maximize2 className="h-6 w-6 text-blue-600" />
-                         </button>
-                         <button 
-                           onClick={() => window.location.href='/intern/submit'}
-                           className="p-4 bg-slate-100 dark:bg-slate-800 rounded-2xl group-hover:bg-blue-600 group-hover:text-white transition-all shadow-lg"
-                           title="Submit Task"
-                         >
-                           <FileUp className="h-6 w-6" />
-                         </button>
-                       </div>
-                    )}
+
+                    <div className="flex items-center gap-2 shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedTask(task)}
+                        className="p-4 bg-slate-100 dark:bg-slate-800 rounded-2xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-all shadow-sm"
+                        title="Read full task"
+                      >
+                        <Maximize2 className="h-6 w-6 text-blue-600" />
+                      </button>
+                      {task.status === 'completed' ? (
+                        <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-2xl text-green-600" title="Task completed">
+                          <CheckCircle2 className="h-6 w-6" />
+                        </div>
+                      ) : task.status === 'in review' ? (
+                        <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-2xl text-blue-600" title="Currently being reviewed by admin">
+                          <Clock className="h-6 w-6" />
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => window.location.href='/intern/submit'}
+                          className="p-4 bg-slate-100 dark:bg-slate-800 rounded-2xl group-hover:bg-blue-600 group-hover:text-white transition-all shadow-lg"
+                          title="Submit task"
+                        >
+                          <FileUp className="h-6 w-6" />
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
-              ))
+              )})
             )}
           </div>
         </div>
@@ -414,18 +460,30 @@ export default function InternDashboard() {
                 </div>
               </div>
 
-              <div className="p-8 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/50 flex justify-between items-center">
+              <div className="p-8 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div className="flex items-center text-xs font-black text-slate-500 uppercase tracking-widest">
                   <Calendar className="h-4 w-4 mr-2 text-blue-600" />
                   Submission Deadline: {selectedTask.deadline ? new Date(selectedTask.deadline).toLocaleDateString(undefined, { dateStyle: 'long' }) : 'N/A'}
                 </div>
-                <button 
-                  onClick={() => window.location.href='/intern/submit'}
-                  className="px-8 py-4 bg-blue-600 text-white rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-blue-700 transition-all shadow-xl shadow-blue-600/20 flex items-center gap-2"
-                >
-                  <FileUp className="h-5 w-5" />
-                  Submit Now
-                </button>
+                {selectedTask.status === 'completed' ? (
+                  <div className="px-8 py-4 bg-green-500/10 text-green-600 rounded-2xl font-black text-sm uppercase tracking-widest flex items-center gap-2">
+                    <CheckCircle2 className="h-5 w-5" />
+                    Completed
+                  </div>
+                ) : selectedTask.status === 'in review' ? (
+                  <div className="px-8 py-4 bg-blue-500/10 text-blue-600 rounded-2xl font-black text-sm uppercase tracking-widest flex items-center gap-2">
+                    <Clock className="h-5 w-5" />
+                    Under Review
+                  </div>
+                ) : (
+                  <button 
+                    onClick={() => window.location.href='/intern/submit'}
+                    className="px-8 py-4 bg-blue-600 text-white rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-blue-700 transition-all shadow-xl shadow-blue-600/20 flex items-center gap-2"
+                  >
+                    <FileUp className="h-5 w-5" />
+                    Submit Now
+                  </button>
+                )}
               </div>
             </motion.div>
           </div>
