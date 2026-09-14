@@ -1,36 +1,40 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ZAYA CODE HUB
 
-## Getting Started
+Next.js app for [zayacodehub.in](https://www.zayacodehub.in) — internships, coding practice, magazine, and admin portal.
 
-First, run the development server:
+## Local development
 
 ```bash
+npm install
+cp .env.example .env.local
+# Add your Supabase keys to .env.local
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Open [http://localhost:3000](http://localhost:3000).
 
 ## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Import [rahulyadav54/ZAYA-COMPANY](https://github.com/rahulyadav54/ZAYA-COMPANY) on Vercel
+2. Add environment variables (Project → Settings → Environment Variables):
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Variable | Required | Purpose |
+|----------|----------|---------|
+| `NEXT_PUBLIC_SUPABASE_URL` | Yes | Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes | Public Supabase key |
+| `SUPABASE_SERVICE_ROLE_KEY` | Yes | Intern account creation & login recovery |
+| `RESEND_API_KEY` | Optional | Transactional email |
+| `RAZORPAY_KEY_ID` | Optional | Payments |
+| `RAZORPAY_KEY_SECRET` | Optional | Payments |
+| `NEXT_PUBLIC_RAZORPAY_KEY_ID` | Optional | Client-side Razorpay |
+
+3. Redeploy after adding env vars
+
+**Note:** `SUPABASE_SERVICE_ROLE_KEY` is required for intern login and admin acceptance flow. Without it, interns cannot be created or repaired on login.
+
+## Build
+
+```bash
+npm run build
+npm start
+```
