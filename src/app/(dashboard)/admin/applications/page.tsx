@@ -206,40 +206,35 @@ export default function ApplicationsPage() {
 
   const updateStatus = async (id: string, newStatus: string, appData?: any) => {
     try {
-      const { error } = await supabase
-        .from('applications')
-        .update({ status: newStatus })
-        .eq('id', id);
-      
-      if (error) throw error;
-
       if (newStatus === 'accepted' && appData) {
-        let createdEmail = '';
         const createdPassword = 'ZayaIntern@2026';
-        
-        try {
-          // Automatically create intern account with unique @zayacodehub.com email
-          const createUserRes = await fetch('/api/admin/create-user', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              personalEmail: appData.email,
-              fullName: appData.full_name,
-              position: appData.position,
-              role: 'intern',
-              password: createdPassword
-            })
-          });
-          const createUserData = await createUserRes.json();
-          if (createUserData.success && createUserData.officialEmail) {
-            createdEmail = createUserData.officialEmail;
-          }
-        } catch (err) {
-          console.warn('Auto intern creation notice:', err);
+
+        const createUserRes = await fetch('/api/admin/create-user', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            personalEmail: appData.email,
+            fullName: appData.full_name,
+            position: appData.position,
+            role: 'intern',
+            password: createdPassword,
+          }),
+        });
+        const createUserData = await createUserRes.json();
+
+        if (!createUserRes.ok || !createUserData.success || !createUserData.officialEmail) {
+          await fetchApplications();
+          alert(
+            `Intern account was NOT created.\n\n${createUserData.error || 'Unknown error'}\n\n` +
+              'Fix: Add SUPABASE_SERVICE_ROLE_KEY in Vercel env vars, redeploy, then accept this candidate again.\n' +
+              'No login email was sent.',
+          );
+          return;
         }
 
+        const createdEmail = createUserData.officialEmail;
+
         try {
-          // Send acceptance email with official credentials directly to candidate email
           await fetch('/api/send-acceptance', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -249,7 +244,7 @@ export default function ApplicationsPage() {
               position: appData.position,
               status: 'accepted',
               officialEmail: createdEmail,
-              password: createdPassword
+              password: createdPassword,
             }),
           });
         } catch (err) {
@@ -257,9 +252,21 @@ export default function ApplicationsPage() {
         }
 
         await fetchApplications();
-        alert(`🎉 Application ACCEPTED!\n\nOfficial Intern Account Created:\n• Official Email: ${createdEmail || 'Generated'}\n• Password: ${createdPassword}\n\nSelection email and login credentials have been sent directly to candidate (${appData.email}).`);
+        alert(
+          `Application ACCEPTED!\n\nOfficial Intern Account Created:\n` +
+            `• Official Email: ${createdEmail}\n` +
+            `• Password: ${createdPassword}\n\n` +
+            `Selection email and login credentials have been sent to ${appData.email}.`,
+        );
         return;
       }
+
+      const { error } = await supabase
+        .from('applications')
+        .update({ status: newStatus })
+        .eq('id', id);
+
+      if (error) throw error;
 
       if (newStatus === 'rejected' && appData) {
         try {
