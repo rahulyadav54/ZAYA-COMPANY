@@ -5,7 +5,7 @@ import { supabase } from '@/lib/supabaseClient';
 import { Clock, CheckCircle2, AlertCircle, FileUp, Trophy, Calendar, Loader2, ArrowRight, X, Award, FileText, Maximize2, ChevronDown, ChevronUp } from 'lucide-react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import ReactMarkdown from 'react-markdown';
+import TaskDescription from '@/components/intern/TaskDescription';
 
 export default function InternDashboard() {
   const [profile, setProfile] = useState<any>(null);
@@ -305,8 +305,8 @@ export default function InternDashboard() {
                           {!isExpanded && (
                             <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-slate-50 dark:from-slate-800/90 to-transparent" />
                           )}
-                          <div className={`prose prose-sm dark:prose-invert max-w-none prose-p:my-2 prose-headings:my-3 prose-li:my-1 prose-p:text-slate-600 dark:prose-p:text-slate-300 prose-p:font-medium prose-headings:font-black prose-headings:text-slate-900 dark:prose-headings:text-white ${isExpanded ? '' : 'line-clamp-3'}`}>
-                            <ReactMarkdown>{task.description || 'No description provided.'}</ReactMarkdown>
+                          <div className={isExpanded ? '' : 'max-h-28 overflow-hidden'}>
+                            <TaskDescription description={task.description} compact />
                           </div>
                         </div>
                         <div className="px-5 py-3 border-t border-slate-200 dark:border-slate-700 flex flex-wrap items-center gap-3">
@@ -454,10 +454,8 @@ export default function InternDashboard() {
                 </button>
               </div>
 
-              <div className="flex-1 overflow-y-auto p-10 custom-scrollbar">
-                <div className="prose dark:prose-invert max-w-none prose-headings:font-black prose-headings:uppercase prose-headings:italic prose-headings:tracking-tight prose-p:font-medium prose-p:text-slate-600 dark:prose-p:text-slate-400 prose-li:font-medium">
-                  <ReactMarkdown>{selectedTask.description}</ReactMarkdown>
-                </div>
+              <div className="flex-1 overflow-y-auto p-8 md:p-10 custom-scrollbar bg-white dark:bg-slate-900">
+                <TaskDescription description={selectedTask.description} />
               </div>
 
               <div className="p-8 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
