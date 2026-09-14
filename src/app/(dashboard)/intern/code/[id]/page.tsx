@@ -18,7 +18,7 @@ import {
   Loader2,
   Check
 } from 'lucide-react';
-import { BUILTIN_CODING_PROBLEMS } from '@/app/practice/code/page';
+import { BUILTIN_CODING_PROBLEMS } from '@/lib/builtinCodingProblems';
 import { supabase } from '@/lib/supabaseClient';
 
 export default function InternCodeEditorPage() {

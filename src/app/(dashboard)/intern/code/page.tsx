@@ -17,7 +17,7 @@ import {
   BookOpen
 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { BUILTIN_CODING_PROBLEMS } from '@/app/practice/code/page';
+import { BUILTIN_CODING_PROBLEMS } from '@/lib/builtinCodingProblems';
 
 export default function InternCodingArenaPage() {
   const [searchTerm, setSearchTerm] = useState('');

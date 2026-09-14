@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabaseClient';
-import { BUILTIN_CODING_PROBLEMS } from '../page';
+import { BUILTIN_CODING_PROBLEMS } from '@/lib/builtinCodingProblems';
 import { 
   Code2, 
   Play, 
