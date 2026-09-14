@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import ApplicationForm from '@/components/careers/ApplicationForm';
 import { supabase } from '@/lib/supabaseClient';
+import ReactMarkdown from 'react-markdown';
 
 const getIconForCategory = (category: string) => {
   switch (category?.toLowerCase()) {
@@ -36,48 +37,6 @@ const getShortPreview = (text: string, maxLength: number = 130) => {
   const cleanText = text.replace(/Description:|Responsibilities:|Requirements:|What You Will Gain:/gi, '').trim();
   if (cleanText.length <= maxLength) return cleanText;
   return cleanText.substring(0, maxLength) + '...';
-};
-
-// Helper to format full description into clean structured sections
-const parseDescriptionSections = (text: string) => {
-  if (!text) return { overview: '', sections: [] };
-
-  const sections: { title: string; content: string[] }[] = [];
-  
-  // Try splitting by keywords
-  const keywords = ['Responsibilities:', 'Requirements:', 'What You Will Gain:', 'Duration:'];
-  let remainingText = text;
-  
-  // Extract overview (part before first major keyword)
-  let overview = remainingText;
-  const firstKeywordIdx = Math.min(
-    ...keywords.map(k => remainingText.indexOf(k)).filter(idx => idx !== -1)
-  );
-
-  if (firstKeywordIdx !== Infinity && firstKeywordIdx !== -1) {
-    overview = remainingText.substring(0, firstKeywordIdx).replace(/Description:/i, '').trim();
-    remainingText = remainingText.substring(firstKeywordIdx);
-  }
-
-  // Split sections
-  const regex = /(Responsibilities:|Requirements:|What You Will Gain:|Duration:)/gi;
-  const parts = remainingText.split(regex).filter(Boolean);
-
-  for (let i = 0; i < parts.length; i += 2) {
-    const title = parts[i]?.replace(':', '').trim();
-    const contentText = parts[i + 1]?.trim() || '';
-    if (title && contentText) {
-      // Split sentences or bullet points
-      const items = contentText
-        .split(/(?<=\.)\s+/)
-        .map(item => item.trim())
-        .filter(item => item.length > 3);
-
-      sections.push({ title, content: items.length > 0 ? items : [contentText] });
-    }
-  }
-
-  return { overview: overview || text, sections };
 };
 
 export default function CareersPage() {
@@ -301,41 +260,63 @@ export default function CareersPage() {
               </div>
 
               {/* Modal Scrollable Body */}
-              <div className="p-6 sm:p-8 overflow-y-auto space-y-6 flex-1">
-                {(() => {
-                  const { overview, sections } = parseDescriptionSections(detailPosition.description);
-                  return (
-                    <>
-                      {/* Overview */}
-                      <div>
-                        <h4 className="text-xs font-extrabold text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-2">
-                          Role Overview
+              <div className="p-6 sm:p-8 overflow-y-auto flex-1">
+                <h4 className="text-xs font-extrabold text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-4">
+                  Role Overview
+                </h4>
+                <div className="bg-slate-50 dark:bg-slate-950 p-5 sm:p-6 rounded-2xl border border-slate-200/80 dark:border-slate-800">
+                  <ReactMarkdown
+                    components={{
+                      h1: ({ children }) => (
+                        <h3 className="text-lg font-black text-slate-900 dark:text-white mt-0 mb-4 pb-2 border-b border-slate-200 dark:border-slate-700">
+                          {children}
+                        </h3>
+                      ),
+                      h2: ({ children }) => (
+                        <h4 className="text-base font-black text-slate-900 dark:text-white mt-8 mb-3 first:mt-0">
+                          {children}
                         </h4>
-                        <p className="text-slate-700 dark:text-slate-300 text-sm leading-relaxed bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800">
-                          {overview}
+                      ),
+                      h3: ({ children }) => (
+                        <h4 className="text-sm font-black uppercase tracking-wide text-slate-900 dark:text-white mt-8 mb-3 first:mt-0">
+                          {children}
+                        </h4>
+                      ),
+                      p: ({ children }) => (
+                        <p className="text-sm leading-7 text-slate-600 dark:text-slate-300 mb-4 font-medium">
+                          {children}
                         </p>
-                      </div>
-
-                      {/* Structured Sections */}
-                      {sections.map((sec, idx) => (
-                        <div key={idx} className="space-y-3">
-                          <h4 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                            <span className="w-2 h-2 rounded-full bg-blue-600 dark:text-blue-400" />
-                            <span>{sec.title}</span>
-                          </h4>
-                          <div className="space-y-2 pl-4">
-                            {sec.content.map((item, itemIdx) => (
-                              <div key={itemIdx} className="flex items-start gap-3 text-xs sm:text-sm text-slate-600 dark:text-slate-300">
-                                <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
-                                <span>{item}</span>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      ))}
-                    </>
-                  );
-                })()}
+                      ),
+                      strong: ({ children }) => (
+                        <strong className="font-bold text-slate-900 dark:text-white">{children}</strong>
+                      ),
+                      ul: ({ children }) => (
+                        <ul className="space-y-3 mb-6 list-none pl-0">{children}</ul>
+                      ),
+                      ol: ({ children }) => (
+                        <ol className="space-y-3 mb-6 list-decimal pl-5 marker:font-bold marker:text-blue-600">{children}</ol>
+                      ),
+                      li: ({ children }) => (
+                        <li className="flex gap-3 text-sm leading-7 text-slate-600 dark:text-slate-300">
+                          <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0 mt-1" />
+                          <span className="flex-1 font-medium">{children}</span>
+                        </li>
+                      ),
+                      a: ({ href, children }) => (
+                        <a
+                          href={href}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="font-semibold text-blue-600 underline underline-offset-2 break-all hover:text-blue-700"
+                        >
+                          {children}
+                        </a>
+                      ),
+                    }}
+                  >
+                    {detailPosition.description || 'No description available.'}
+                  </ReactMarkdown>
+                </div>
               </div>
 
               {/* Modal Footer Action */}
