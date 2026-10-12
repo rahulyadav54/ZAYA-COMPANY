@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Download, X, Star, Smartphone, ArrowRight, ShieldCheck, Zap } from 'lucide-react';
+import { Sparkles, Download, X, Smartphone, ArrowRight, Zap } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 
 export default function AiZayaLaunchModal() {
@@ -33,7 +33,7 @@ export default function AiZayaLaunchModal() {
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+      <div className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto p-4 sm:p-6">
         {/* Backdrop */}
         <motion.div
           initial={{ opacity: 0 }}
@@ -49,7 +49,12 @@ export default function AiZayaLaunchModal() {
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.9, y: 20 }}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          className="relative w-full max-w-lg bg-gradient-to-b from-slate-900 via-slate-950 to-slate-900 border border-blue-500/40 rounded-3xl p-6 sm:p-8 shadow-2xl shadow-blue-600/20 z-10 text-white overflow-hidden"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="ai-zaya-launch-title"
+          aria-describedby="ai-zaya-launch-description"
+          onKeyDown={(event) => { if (event.key === 'Escape') handleClose(); }}
+          className="relative z-10 my-auto w-full min-w-0 max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border border-slate-700 bg-slate-950 p-5 text-white shadow-2xl sm:max-w-lg sm:p-8"
         >
           {/* Background decorative glow */}
           <div className="absolute -top-24 -right-24 w-60 h-60 bg-blue-600/30 rounded-full blur-3xl pointer-events-none" />
@@ -71,10 +76,10 @@ export default function AiZayaLaunchModal() {
           </div>
 
           {/* Title & Description */}
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight mb-2">
+          <h2 id="ai-zaya-launch-title" className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight mb-2">
             Meet <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-300">AI ZAYA</span> App
           </h2>
-          <p className="text-slate-300 text-sm sm:text-base leading-relaxed mb-6">
+          <p id="ai-zaya-launch-description" className="text-slate-300 text-sm sm:text-base leading-relaxed mb-6">
             We are excited to launch <strong>AI ZAYA</strong> on the Google Play Store! Your personal AI assistant for coding, instant queries, and smart daily automation.
           </p>
 
@@ -87,10 +92,6 @@ export default function AiZayaLaunchModal() {
               height={300}
               className="rounded-xl w-full h-44 sm:h-48 object-cover group-hover:scale-[1.02] transition-transform duration-300"
             />
-            <div className="absolute top-4 left-4 bg-slate-950/80 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold text-amber-400 flex items-center gap-1 border border-amber-400/30">
-              <Star className="h-3.5 w-3.5 fill-amber-400" />
-              4.9 / 5 Rating on Play Store
-            </div>
           </div>
 
           {/* Feature Highlights */}

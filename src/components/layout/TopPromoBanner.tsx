@@ -13,16 +13,17 @@ export default function TopPromoBanner() {
   if (isDashboard || !isVisible) return null;
 
   return (
-    <div className="bg-slate-900 text-white text-xs sm:text-sm py-2 px-4 relative z-50 flex items-center justify-between">
+    <div className="bg-slate-900 text-white text-xs sm:text-sm py-1.5 px-4 relative z-50 flex items-center justify-between">
       <div className="container mx-auto flex items-center justify-center gap-2 sm:gap-3 text-center">
         <span className="text-slate-300">
-          AI ZAYA App — AI Assistant
+          <span className="hidden sm:inline">ZAYA CODE HUB · Bengaluru headquarters · Lalitpur office</span>
+          <span className="sm:hidden">Bengaluru, India · Lalitpur, Nepal</span>
         </span>
         <Link
-          href="/ai-zaya"
+          href="/contact"
           className="inline-flex items-center gap-1 text-blue-400 hover:text-blue-300 font-medium transition-colors"
         >
-          <span>Learn more</span>
+          <span>Contact us</span>
         </Link>
       </div>
 

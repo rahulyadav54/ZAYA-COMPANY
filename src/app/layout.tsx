@@ -7,6 +7,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import ClientLayout from "@/components/layout/ClientLayout";
 import CookieBanner from "@/components/layout/CookieBanner";
 import Script from "next/script";
+import { MotionConfig } from "framer-motion";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -271,9 +272,11 @@ export default function RootLayout({
       </head>
       <body className="min-h-full bg-background text-foreground">
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-          <ClientLayout>
-            {children}
-          </ClientLayout>
+          <MotionConfig reducedMotion="user">
+            <ClientLayout>
+              {children}
+            </ClientLayout>
+          </MotionConfig>
           <CookieBanner />
           <Analytics />
           <SpeedInsights />

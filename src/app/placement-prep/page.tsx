@@ -8,7 +8,6 @@ import CompanyCard from '@/components/placement/CompanyCard';
 import UpiQrPayment from '@/components/placement/UpiQrPayment';
 import {
   ArrowRight,
-  Award,
   BookOpen,
   Brain,
   Briefcase,
@@ -18,12 +17,10 @@ import {
   Code2,
   Crown,
   FileText,
-  Headphones,
   Layers3,
   Lock,
   LucideIcon,
   Mail,
-  MessageCircle,
   Search,
   ShieldCheck,
   Star,
@@ -82,8 +79,6 @@ const GUEST_EMAIL_KEY = 'zaya_placement_guest_email';
 const GUEST_NAME_KEY = 'zaya_placement_guest_name';
 const GUEST_PHONE_KEY = 'zaya_placement_guest_phone';
 
-const CATEGORIES = ['All', 'IT', 'Product', 'Service-Based', 'Testing', 'Other'];
-
 const BENEFITS: Array<{ icon: LucideIcon; title: string; desc: string }> = [
   { icon: Building2, title: 'Company-Wise Preparation', desc: 'Target the exact companies you want with organized, company-specific material.' },
   { icon: BookOpen, title: 'Previous Year Questions', desc: 'Practice the patterns that keep showing up in real placement tests.' },
@@ -119,29 +114,6 @@ const PERFECT_FOR = [
   'IT and core company aspirants',
 ];
 
-const TESTIMONIALS = [
-  {
-    quote: 'I was struggling with placement prep, but this bundle saved my time. Everything is perfectly organized.',
-    name: 'Rahul Sharma',
-    role: 'Final Year Student',
-  },
-  {
-    quote: 'Best investment for placement preparation. No need to search anywhere else. Everything is in one place.',
-    name: 'Priya Singh',
-    role: 'Job Seeker',
-  },
-  {
-    quote: 'Got almost similar questions in my test. This material is actually exam-focused and worth every rupee.',
-    name: 'Ankit Verma',
-    role: 'Placed in TCS',
-  },
-  {
-    quote: 'The pseudocode and aptitude practice sets are amazing. Helped me improve my speed and accuracy.',
-    name: 'Neha Gupta',
-    role: 'CGL Aspirant',
-  },
-];
-
 const FAQS = [
   { q: 'How will I receive the material after payment?', a: 'You will get instant access to the Google Drive link right after payment is verified.' },
   { q: 'What does this bundle include?', a: 'Company-wise placement material, previous year questions, aptitude practice, interview prep, and more.' },
@@ -165,7 +137,7 @@ export default function PlacementPrepPage() {
   const [paying, setPaying] = useState(false);
   const [search, setSearch] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
-  const [accessState, setAccessState] = useState<AccessState>('loading');
+  const [, setAccessState] = useState<AccessState>('loading');
   const [guestName, setGuestName] = useState('');
   const [guestEmail, setGuestEmail] = useState('');
   const [guestPhone, setGuestPhone] = useState('');
@@ -635,27 +607,6 @@ export default function PlacementPrepPage() {
               ))}
             </div>
           )}
-        </div>
-      </section>
-
-      <section className="bg-slate-50 px-4 py-20 dark:bg-slate-900/40">
-        <div className="container mx-auto max-w-6xl">
-          <div className="text-center">
-            <p className="text-xs font-medium uppercase tracking-wider text-blue-600 dark:text-blue-400">Testimonials</p>
-            <h2 className="mt-3 text-3xl font-semibold text-slate-950 dark:text-white sm:text-4xl">Students are already using it</h2>
-          </div>
-          <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-            {TESTIMONIALS.map((item) => (
-              <figure key={item.name} className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950">
-                <MessageCircle className="h-5 w-5 text-blue-500" />
-                <blockquote className="mt-4 text-sm leading-7 text-slate-600 dark:text-slate-300">"{item.quote}"</blockquote>
-                <figcaption className="mt-6">
-                  <p className="font-semibold text-slate-950 dark:text-white">{item.name}</p>
-                  <p className="text-xs uppercase tracking-wider text-slate-400">{item.role}</p>
-                </figcaption>
-              </figure>
-            ))}
-          </div>
         </div>
       </section>
 

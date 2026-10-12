@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Logo from '@/components/common/Logo';
-import { Globe, ExternalLink, GitFork, Mail, Phone, MapPin } from 'lucide-react';
+import { Mail, Phone, MapPin } from 'lucide-react';
 
 const footerLinks = {
   company: [
@@ -27,12 +27,6 @@ const footerLinks = {
   ],
 };
 
-const socialLinks = [
-  { icon: Globe, label: 'Twitter / X', href: '#' },
-  { icon: ExternalLink, label: 'LinkedIn', href: '#' },
-  { icon: GitFork, label: 'GitHub', href: '#' },
-];
-
 export default function Footer() {
   const pathname = usePathname();
   const isDashboard = pathname?.startsWith('/admin') || pathname?.startsWith('/intern');
@@ -49,18 +43,9 @@ export default function Footer() {
             <p className="text-slate-600 dark:text-slate-300 leading-relaxed text-sm">
               Empowering businesses through cutting-edge software solutions and nurturing the next generation of IT professionals.
             </p>
-            <div className="flex space-x-4">
-              {socialLinks.map((social) => (
-                <Link
-                  key={social.label}
-                  href={social.href}
-                  aria-label={social.label}
-                  className="p-2 rounded-lg bg-white dark:bg-slate-800 text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors border border-slate-200 dark:border-slate-700"
-                >
-                  <social.icon className="h-5 w-5" />
-                </Link>
-              ))}
-            </div>
+            <Link href="/contact" className="inline-flex min-h-10 items-center gap-2 text-sm font-medium text-blue-700 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
+              Talk to our team <span aria-hidden="true">→</span>
+            </Link>
           </div>
 
           {/* Links */}
@@ -96,7 +81,7 @@ export default function Footer() {
             <div className="space-y-4">
               <div className="flex items-start space-x-3 text-slate-600 dark:text-slate-300 text-sm">
                 <MapPin className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5 shrink-0" />
-                <span><strong>Headquarters:</strong> Bengaluru (Bangalore), Karnataka, India<br /><strong>Nepal office:</strong> Lalitpur, Nepal</span>
+                <span><strong>Headquarters:</strong> Bengaluru, Karnataka, India<br /><strong>Nepal office:</strong> Lalitpur, Nepal</span>
               </div>
               <div className="flex items-center space-x-3 text-slate-600 dark:text-slate-300 text-sm">
                 <Phone className="h-5 w-5 text-blue-600 dark:text-blue-400 shrink-0" />

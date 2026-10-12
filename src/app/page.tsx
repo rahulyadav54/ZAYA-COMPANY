@@ -6,22 +6,14 @@ export const metadata = {
 import Hero from "@/components/home/Hero";
 import ServicesGrid from "@/components/home/ServicesGrid";
 import TeamSection from "@/components/home/TeamSection";
-import Testimonials from "@/components/home/Testimonials";
 import { 
   ArrowRight, 
-  CheckCircle2, 
   Bot, 
   Stethoscope, 
   GraduationCap, 
   BookOpen, 
   ShieldAlert, 
   ShoppingBag, 
-  Sparkles,
-  ChevronRight,
-  Code2,
-  Cpu,
-  Globe,
-  Award
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -83,6 +75,7 @@ export default function Home() {
       shortDesc: 'Direct farmer-to-consumer digital marketplace enabling rapid delivery of fresh produce, organic food, and groceries within minutes/hours.',
     }
   ];
+  const [featuredProduct, ...otherProducts] = products;
 
   return (
     <div className="bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-300">
@@ -91,68 +84,42 @@ export default function Home() {
       {/* Flagship Products Showcase */}
       <section className="py-20 sm:py-24 bg-slate-50 dark:bg-slate-900/50 border-y border-slate-200 dark:border-slate-800">
         <div className="container mx-auto px-4 sm:px-6">
-          <div className="max-w-3xl mx-auto text-center mb-16 space-y-4">
-            <span className="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-widest bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20">
-              SOFTWARE PRODUCTS
-            </span>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-slate-900 dark:text-white">
+          <div className="mb-10 max-w-3xl space-y-4">
+            <p className="text-sm font-semibold text-blue-700 dark:text-blue-400">Software products</p>
+            <h2 className="text-3xl font-semibold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
               Our Flagship Products
             </h2>
-            <p className="text-slate-600 dark:text-slate-300 text-base sm:text-lg">
+            <p className="max-w-2xl text-base leading-7 text-slate-600 dark:text-slate-300">
               Explore the digital applications engineered by <strong>ZAYA CODE HUB</strong> across Artificial Intelligence, Healthcare, Education, Public Safety, and E-commerce.
             </p>
           </div>
 
-          {/* Product Cards Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-7xl mx-auto">
-            {products.map((prod) => (
-              <div 
-                key={prod.id}
-                className="rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 overflow-hidden shadow-sm hover:shadow-md hover:border-blue-300 dark:hover:border-blue-700 transition-all flex flex-col justify-between group"
-              >
-                <div>
-                  <div className="relative h-56 w-full bg-slate-100 dark:bg-slate-950 overflow-hidden">
-                    <Image
-                      src={prod.image}
-                      alt={prod.name}
-                      fill
-                      unoptimized
-                      className="object-cover object-top group-hover:scale-105 transition-transform duration-500"
-                    />
-                  </div>
-
-                  <div className="p-6 space-y-3">
-                    <div className="flex items-center space-x-3">
-                      <div className={`p-2.5 rounded-xl ${prod.iconBg} shrink-0`}>
-                        <prod.icon className="h-5 w-5" />
-                      </div>
-                      <div>
-                        <h3 className="text-xl font-semibold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                          {prod.name}
-                        </h3>
-                        <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
-                          {prod.category}
-                        </span>
-                      </div>
-                    </div>
-
-                    <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed">
-                      {prod.shortDesc}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="p-6 pt-0">
-                  <Link
-                    href="/portfolio"
-                    className="w-full py-3 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-medium text-xs transition-all flex items-center justify-center gap-1 border border-slate-200 dark:border-slate-700"
-                  >
-                    <span>View Product Details</span>
-                    <ChevronRight className="h-4 w-4" />
-                  </Link>
-                </div>
+          <div className="mx-auto max-w-7xl">
+            <article className="grid overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 md:grid-cols-2">
+              <div className="relative min-h-64 bg-slate-100 dark:bg-slate-950 sm:min-h-80">
+                <Image src={featuredProduct.image} alt={`${featuredProduct.name} product preview`} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover object-top" />
               </div>
-            ))}
+              <div className="flex flex-col justify-center p-6 sm:p-10 lg:p-12">
+                <p className="text-sm font-medium text-blue-700 dark:text-blue-400">{featuredProduct.category}</p>
+                <h3 className="mt-3 text-3xl font-semibold tracking-tight text-slate-900 dark:text-white">{featuredProduct.name}</h3>
+                <p className="mt-4 max-w-xl leading-7 text-slate-600 dark:text-slate-300">{featuredProduct.shortDesc}</p>
+                <Link href="/portfolio" className="mt-6 inline-flex min-h-11 w-fit items-center gap-2 font-medium text-blue-700 hover:text-blue-800 dark:text-blue-400">
+                  Explore the product portfolio <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+            </article>
+
+            <ul className="mt-8 grid grid-cols-1 gap-x-10 sm:grid-cols-2">
+              {otherProducts.map((prod) => (
+                <li key={prod.id} className="border-t border-slate-300 py-5 dark:border-slate-700">
+                  <div className="flex items-center gap-3">
+                    <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-md ${prod.iconBg}`}><prod.icon className="h-5 w-5" /></div>
+                    <div><h3 className="font-semibold text-slate-900 dark:text-white">{prod.name}</h3><p className="mt-1 text-xs font-medium text-slate-500 dark:text-slate-400">{prod.category}</p></div>
+                  </div>
+                  <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-300">{prod.shortDesc}</p>
+                </li>
+              ))}
+            </ul>
           </div>
 
           {/* View All Products CTA */}
@@ -161,7 +128,7 @@ export default function Home() {
               href="/portfolio"
               className="inline-flex items-center gap-2 px-8 py-4 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium text-base transition-colors"
             >
-              <span>Explore Complete Product Portfolio</span>
+              <span>View all products</span>
               <ArrowRight className="h-5 w-5" />
             </Link>
           </div>
@@ -174,16 +141,11 @@ export default function Home() {
       {/* Leadership & Engineering Team */}
       <TeamSection />
 
-      {/* Client & Product Reviews */}
-      <Testimonials />
-
       {/* Career & Internship Opportunities CTA */}
       <section className="py-20 bg-slate-900 text-white relative overflow-hidden">
         <div className="container mx-auto px-6 relative z-10">
           <div className="max-w-4xl mx-auto text-center space-y-6">
-            <span className="px-4 py-1.5 rounded-full bg-white/10 text-white text-xs font-medium uppercase tracking-wider border border-white/20">
-              CAREERS & INTERNSHIPS
-            </span>
+            <p className="text-sm font-medium text-blue-200">Careers & internships</p>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight">
               Launch Your Tech Career at ZAYA CODE HUB
             </h2>

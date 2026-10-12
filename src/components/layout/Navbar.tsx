@@ -11,23 +11,34 @@ import { supabase } from '@/lib/supabaseClient';
 import Logo from '@/components/common/Logo';
 
 const navLinks = [
-  { name: 'Home', href: '/' },
-  { name: 'AI ZAYA', href: '/ai-zaya' },
-  { 
-    name: 'Practice Tests', 
-    href: '/practice',
+  {
+    name: 'Products',
+    href: '/portfolio',
     dropdown: [
-      { name: 'Aptitude Test', href: '/aptitude-test', description: 'Reasoning & logic assessment' },
-      { name: 'Coding Practice', href: '/practice/code', description: 'Programming challenges' },
-      { name: 'Mock Exams', href: '/practice', description: 'Proctored test simulations' },
+      { name: 'Product portfolio', href: '/portfolio', description: 'Software products built by ZAYA' },
+      { name: 'AI ZAYA', href: '/ai-zaya', description: 'Explore our AI assistant' },
     ]
   },
-  { name: 'Placement Prep', href: '/placement-prep' },
-  { name: 'About', href: '/about' },
   { name: 'Services', href: '/services' },
-  { name: 'Portfolio', href: '/portfolio' },
-  { name: 'Careers', href: '/careers' },
-  { name: 'Magazine', href: '/magazine' },
+  {
+    name: 'Learning',
+    href: '/placement-prep',
+    dropdown: [
+      { name: 'Placement preparation', href: '/placement-prep', description: 'Explore preparation resources' },
+      { name: 'Practice tests', href: '/practice', description: 'Browse practice exams' },
+      { name: 'Aptitude test', href: '/aptitude-test', description: 'Reasoning and logic assessment' },
+      { name: 'Coding practice', href: '/practice/code', description: 'Programming challenges' },
+    ]
+  },
+  {
+    name: 'Company',
+    href: '/about',
+    dropdown: [
+      { name: 'About ZAYA', href: '/about', description: 'Our company and locations' },
+      { name: 'Careers', href: '/careers', description: 'Open roles and internships' },
+      { name: 'Magazine', href: '/magazine', description: 'Articles and updates' },
+    ]
+  },
   { name: 'Contact', href: '/contact' },
 ];
 
@@ -135,10 +146,15 @@ export default function Navbar() {
                 key={link.name}
                 className="relative"
                 onMouseEnter={() => link.dropdown && handleDropdownEnter(link.name)}
+                onFocus={() => link.dropdown && handleDropdownEnter(link.name)}
+                onBlur={(event) => {
+                  if (!event.currentTarget.contains(event.relatedTarget as Node)) setOpenDropdown(null);
+                }}
                 onMouseLeave={handleDropdownLeave}
               >
                 <Link
                   href={link.href}
+                  aria-expanded={link.dropdown ? openDropdown === link.name : undefined}
                   className={cn(
                     'text-sm font-medium transition-all hover:text-blue-600 py-1 flex items-center gap-1',
                     pathname === link.href || (link.dropdown && link.dropdown.some(item => pathname === item.href))
