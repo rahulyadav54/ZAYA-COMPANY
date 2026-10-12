@@ -90,11 +90,11 @@ export default function AboutPage() {
             </div>
 
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-slate-900 dark:text-white mb-8 leading-tight">
-              Transforming Ideas into <span className="text-blue-700 dark:text-blue-300">Modern Digital Products</span>
+              IT Company Headquartered in <span className="text-blue-700 dark:text-blue-300">Bengaluru, India</span>
             </h1>
 
             <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-300 leading-relaxed mb-10">
-              <strong>ZAYA CODE HUB</strong> is a technology and software development company focused on building innovative digital products, AI-powered applications, mobile apps, web applications, educational platforms, healthcare solutions, public safety systems, and custom software.
+              <strong>ZAYA CODE HUB</strong> is headquartered in Bengaluru, India, with an office in Lalitpur, Nepal. Our team designs and develops custom websites, mobile apps, AI-powered applications, educational platforms, healthcare solutions, public safety systems, and business software for organizations in both markets and beyond.
             </p>
 
             {/* Core Domain Badges */}

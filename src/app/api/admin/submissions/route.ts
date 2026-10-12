@@ -150,7 +150,7 @@ export async function PATCH(request: Request) {
 
               <div style="margin-top: 36px; padding-top: 20px; border-top: 1px solid #f1f5f9; text-align: center;">
                 <p style="font-size: 12px; font-weight: 800; color: #94a3b8; margin-bottom: 2px;">ZAYA CODE HUB</p>
-                <p style="font-size: 11px; color: #cbd5e1;">Empowering Next-Gen Developers • Subramania Nagar, Salem, Tamil Nadu</p>
+                <p style="font-size: 11px; color: #cbd5e1;">Empowering Next-Gen Developers • Bengaluru, India · Lalitpur, Nepal</p>
               </div>
             </div>
           `;

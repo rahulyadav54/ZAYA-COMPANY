@@ -46,10 +46,10 @@ export default function ContactPage() {
       <section className="py-20 bg-slate-50 dark:bg-slate-900/50">
         <div className="container mx-auto px-6 text-center">
           <h1 className="text-4xl lg:text-6xl font-bold text-foreground mb-6">
-            Let&apos;s <span className="text-blue-600">Connect</span>
+            Contact Our <span className="text-blue-600">Bengaluru & Nepal Offices</span>
           </h1>
           <p className="text-xl text-foreground max-w-3xl mx-auto">
-            Have a project in mind or just want to say hi? We&apos;d love to hear from you.
+            ZAYA CODE HUB is headquartered in Bengaluru, India, with an office in Lalitpur, Nepal. Contact us about software, apps, AI projects, and partnerships.
           </p>
         </div>
       </section>
@@ -87,9 +87,10 @@ export default function ContactPage() {
                     <MapPin className="h-6 w-6" />
                   </div>
                   <div>
-                    <h4 className="font-medium text-foreground mb-1">Visit Us</h4>
-                    <p className="text-slate-600 dark:text-slate-300">Subramania Nagar</p>
-                    <p className="text-slate-600 dark:text-slate-300">Salem, Tamil Nadu – 636005</p>
+                    <h4 className="font-medium text-foreground mb-1">Headquarters</h4>
+                    <p className="text-slate-600 dark:text-slate-300">Bengaluru (Bangalore), Karnataka, India</p>
+                    <h4 className="mt-3 font-medium text-foreground mb-1">Nepal Office</h4>
+                    <p className="text-slate-600 dark:text-slate-300">Lalitpur, Nepal</p>
                   </div>
                 </div>
                 </div>
@@ -165,14 +166,27 @@ export default function ContactPage() {
         </div>
       </section>
 
-      {/* Map Placeholder */}
-      <section className="h-[400px] w-full bg-slate-200 dark:bg-slate-800 relative">
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="text-center">
-            <MapPin className="h-12 w-12 text-blue-600 mx-auto mb-4" />
-            <p className="text-foreground font-bold">Interactive Google Map Placeholder</p>
-            <p className="text-sm text-foreground font-bold">Salem, Tamil Nadu</p>
-          </div>
+      {/* City-level office maps because street addresses were not provided. */}
+      <section className="grid gap-6 bg-slate-50 p-6 dark:bg-slate-900 sm:grid-cols-2">
+        <div className="overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-700">
+          <h2 className="bg-white px-5 py-4 font-semibold dark:bg-slate-950">Headquarters · Bengaluru (Bangalore), India</h2>
+          <iframe
+            title="Map showing ZAYA CODE HUB headquarters in Bengaluru, India"
+            src="https://maps.google.com/maps?q=Bengaluru%20(Bangalore)%2C%20Karnataka%2C%20India&output=embed"
+            className="h-[320px] w-full border-0"
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+          />
+        </div>
+        <div className="overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-700">
+          <h2 className="bg-white px-5 py-4 font-semibold dark:bg-slate-950">Nepal Office · Lalitpur, Nepal</h2>
+          <iframe
+            title="Map showing ZAYA CODE HUB Nepal office in Lalitpur"
+            src="https://maps.google.com/maps?q=Lalitpur%2C%20Nepal&output=embed"
+            className="h-[320px] w-full border-0"
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+          />
         </div>
       </section>
     </div>

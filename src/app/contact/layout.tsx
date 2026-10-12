@@ -1,20 +1,21 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Contact Us | Get in Touch with ZAYA CODE HUB',
-  description: 'Connect with ZAYA CODE HUB for technical support, business inquiries, partnership requests, or software project consultations.',
+  title: 'Contact ZAYA CODE HUB | Bengaluru HQ & Nepal Office',
+  description: 'Contact ZAYA CODE HUB, headquartered in Bengaluru with an office in Lalitpur, Nepal, about software, mobile apps, AI projects, partnerships, and support.',
   keywords: [
     'Contact ZAYA CODE HUB',
     'ZAYA support email',
     'ZAYA office phone number',
-    'Salem Tamil Nadu IT company'
+    'IT company Bengaluru',
+    'IT company Lalitpur Nepal'
   ],
   alternates: {
     canonical: 'https://zayacodehub.in/contact',
   },
   openGraph: {
-    title: 'Contact Us | ZAYA CODE HUB',
-    description: 'Reach out to the ZAYA CODE HUB team for inquiries, support, and technical partnerships.',
+    title: 'Contact ZAYA CODE HUB | Bengaluru and Nepal',
+    description: 'Reach our headquarters in Bengaluru or office in Lalitpur, Nepal about software, apps, AI, and partnerships.',
     url: 'https://zayacodehub.in/contact',
   },
 };

@@ -27,18 +27,18 @@ export default function Hero() {
             {/* Top Pill Badge */}
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 text-xs sm:text-sm font-medium uppercase tracking-wider">
               <Sparkles className="h-4 w-4 text-amber-500 shrink-0" />
-              <span>TECHNOLOGY & PRODUCT DEVELOPMENT</span>
+              <span>BENGALURU HEADQUARTERS · LALITPUR OFFICE</span>
             </div>
 
             <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold tracking-tight text-slate-900 dark:text-white leading-[1.1]">
-              Engineered for <br />
+              IT Company in <br />
               <span className="text-blue-600 dark:text-blue-400">
-                Real-World Impact
+                Bengaluru & Nepal
               </span>
             </h1>
 
             <p className="text-base sm:text-lg lg:text-xl text-slate-600 dark:text-slate-300 leading-relaxed">
-              <strong>ZAYA CODE HUB</strong> develops AI-powered software, healthcare systems, school platforms, emergency response networks, and custom digital solutions for organizations nationwide.
+              <strong>ZAYA CODE HUB</strong> is headquartered in Bengaluru, India, with an office in Lalitpur, Nepal. We build custom websites, mobile apps, AI solutions, and business software for organizations in both markets and beyond.
             </p>
 
             {/* CTAs */}
@@ -60,10 +60,10 @@ export default function Hero() {
               </Link>
             </div>
             <Link
-              href="/best-it-company-in-india"
+              href="/best-it-company-in-nepal"
               className="inline-flex items-center text-sm font-semibold text-blue-600 hover:text-blue-500 dark:text-blue-400"
             >
-              Explore ZAYA CODE HUB, an IT company in India <ArrowRight className="ml-2 h-4 w-4" />
+              See why businesses choose ZAYA CODE HUB for software development in Nepal <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
 
             {/* Micro Specs Bar */}

@@ -81,7 +81,13 @@ export default function CareersPage() {
       "@type": "Organization",
       "name": "ZAYA CODE HUB",
       "sameAs": "https://zayacodehub.in",
-      "logo": "https://zayacodehub.in/favicon.png"
+      "logo": "https://zayacodehub.in/favicon.png",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Bengaluru",
+        "addressRegion": "Karnataka",
+        "addressCountry": "IN"
+      }
     },
     "jobLocationType": "TELECOMMUTE",
     "applicantLocationRequirements": {
@@ -92,9 +98,9 @@ export default function CareersPage() {
       "@type": "Place",
       "address": {
         "@type": "PostalAddress",
-        "addressLocality": "Salem",
-        "addressRegion": "Tamil Nadu",
-        "addressCountry": "IN"
+        "addressLocality": "Lalitpur",
+        "addressRegion": "Bagmati Province",
+        "addressCountry": "NP"
       }
     }
   }));

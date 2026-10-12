@@ -3,9 +3,9 @@ import Link from 'next/link';
 import { ArrowRight, CheckCircle2, Code2, Globe2, Sparkles } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Best IT Company in India for Custom Software | ZAYA CODE HUB',
+  title: 'Bengaluru IT Company Serving India | ZAYA CODE HUB',
   description:
-    'Looking for a trusted IT company in India? ZAYA CODE HUB builds custom web applications, mobile apps, AI automation, cloud systems, and digital products for businesses and startups.',
+    'Looking for a software development partner in India? ZAYA CODE HUB is headquartered in Bengaluru, with an office in Lalitpur, Nepal, and builds websites, mobile apps, AI solutions, and custom software.',
   keywords: [
     'best IT company in India',
     'IT company in India',
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: 'https://zayacodehub.in/best-it-company-in-india' },
   openGraph: {
-    title: 'Best IT Company in India for Custom Software | ZAYA CODE HUB',
+    title: 'Bengaluru IT Company Serving India | ZAYA CODE HUB',
     description:
       'Custom software, web, mobile, AI, and cloud engineering for businesses and startups across India.',
     url: 'https://zayacodehub.in/best-it-company-in-india',
@@ -38,9 +38,9 @@ const pageSchema = {
       '@type': 'WebPage',
       '@id': 'https://zayacodehub.in/best-it-company-in-india#webpage',
       url: 'https://zayacodehub.in/best-it-company-in-india',
-      name: 'Best IT Company in India for Custom Software | ZAYA CODE HUB',
+      name: 'Bengaluru IT Company Serving India | ZAYA CODE HUB',
       description:
-        'ZAYA CODE HUB provides custom software development, mobile apps, AI automation, and cloud engineering in India.',
+        'ZAYA CODE HUB is headquartered in Bengaluru, India, with an office in Lalitpur, Nepal, and provides custom software development, mobile apps, AI automation, and cloud engineering to businesses in India.',
       isPartOf: { '@id': 'https://zayacodehub.in/#website' },
       about: { '@id': 'https://zayacodehub.in/#organization' },
     },
@@ -66,10 +66,10 @@ export default function BestItCompanyInIndiaPage() {
               <Sparkles className="h-4 w-4" /> Software engineering for India
             </p>
             <h1 className="text-4xl font-bold leading-tight sm:text-6xl">
-              A trusted IT company in India for ambitious digital products
+              A Bengaluru-headquartered IT company serving businesses in India
             </h1>
             <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-300">
-              ZAYA CODE HUB helps startups, growing businesses, and institutions turn ideas into reliable web apps, mobile apps, AI workflows, and cloud-connected software.
+              Headquartered in Bengaluru, India, with an office in Lalitpur, Nepal, ZAYA CODE HUB helps startups, growing businesses, and institutions turn ideas into reliable web apps, mobile apps, AI workflows, and cloud-connected software.
             </p>
             <div className="mt-9 flex flex-wrap gap-4">
               <Link href="/contact" className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-3.5 text-sm font-semibold text-white hover:bg-blue-500">

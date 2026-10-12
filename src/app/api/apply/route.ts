@@ -150,7 +150,7 @@ async function sendApplicationConfirmationEmail(email: string, fullName: string,
                 <tr>
                   <td align="center" style="background-color: #0f172a; padding: 18px 12px; color: #94a3b8; font-size: 10px; line-height: 1.5;">
                     <p style="margin: 0 0 3px 0; font-weight: 700; color: #cbd5e1;">ZAYA CODE HUB • Subhashish Learning & Tech Pvt Ltd</p>
-                    <p style="margin: 0; word-break: break-all;">Subramania Nagar, Salem, Tamil Nadu – 636005 | <a href="https://www.zayacodehub.in" style="color: #38bdf8; text-decoration: none;">www.zayacodehub.in</a></p>
+                    <p style="margin: 0; word-break: break-all;">Headquarters: Bengaluru, India | Nepal Office: Lalitpur, Nepal | <a href="https://www.zayacodehub.in" style="color: #38bdf8; text-decoration: none;">www.zayacodehub.in</a></p>
                   </td>
                 </tr>
 

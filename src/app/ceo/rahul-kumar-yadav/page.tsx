@@ -6,7 +6,7 @@ import { ArrowRight, Mail } from 'lucide-react';
 export const metadata: Metadata = {
   title: 'Rahul Kumar Yadav — CEO & Founder of ZAYA CODE HUB',
   description:
-    'Rahul Kumar Yadav is the CEO and Founder of ZAYA CODE HUB, an India-based software development and IT services company.',
+    'Rahul Kumar Yadav is the CEO and Founder of ZAYA CODE HUB, an IT company headquartered in Bengaluru, India, with an office in Lalitpur, Nepal.',
   alternates: { canonical: 'https://zayacodehub.in/ceo/rahul-kumar-yadav' },
   openGraph: {
     title: 'Rahul Kumar Yadav — CEO & Founder of ZAYA CODE HUB',
@@ -47,7 +47,7 @@ export default function CeoProfilePage() {
           <h1 className="mt-3 text-4xl font-bold text-slate-950 dark:text-white">Rahul Kumar Yadav</h1>
           <p className="mt-2 text-lg font-semibold text-blue-600 dark:text-blue-400">CEO &amp; Founder</p>
           <p className="mt-6 max-w-2xl text-base leading-8 text-slate-600 dark:text-slate-300">
-            Rahul Kumar Yadav leads ZAYA CODE HUB, an India-based software development and IT services company building web applications, mobile products, AI solutions, and practical digital platforms.
+            Rahul Kumar Yadav leads ZAYA CODE HUB, headquartered in Bengaluru, India, with an office in Lalitpur, Nepal. The company builds web applications, mobile products, AI solutions, and practical digital platforms.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <a href="mailto:rahul@zayacodehub.in" className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-3 text-sm font-semibold text-white hover:bg-blue-500"><Mail className="h-4 w-4" /> Contact Rahul</a>

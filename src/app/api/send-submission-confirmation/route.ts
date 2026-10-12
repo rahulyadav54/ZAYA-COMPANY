@@ -44,7 +44,7 @@ export async function POST(req: Request) {
         
         <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #f1f5f9; text-align: center;">
           <p style="font-size: 12px; color: #94a3b8; margin-bottom: 4px;">ZAYA CODE HUB</p>
-          <p style="font-size: 12px; color: #94a3b8;">Subramania Nagar, Salem, Tamil Nadu</p>
+          <p style="font-size: 12px; color: #94a3b8;">Headquarters: Bengaluru, India · Nepal Office: Lalitpur, Nepal</p>
         </div>
       </div>
     `;

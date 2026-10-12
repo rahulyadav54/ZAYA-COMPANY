@@ -18,7 +18,7 @@ export default function robots(): MetadataRoute.Robots {
       },
       {
         userAgent: 'Googlebot',
-        allow: ['/', '/careers', '/services', '/portfolio', '/about', '/magazine', '/magazine/*', '/contact', '/ai-zaya', '/verify', '/verify-id'],
+        allow: ['/', '/careers', '/services', '/portfolio', '/about', '/magazine', '/magazine/*', '/contact', '/ai-zaya', '/verify', '/verify-id', '/best-it-company-in-nepal', '/ne/it-company-nepal'],
         disallow: ['/admin/', '/intern/', '/api/admin/'],
       },
       {

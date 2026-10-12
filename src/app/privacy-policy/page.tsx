@@ -83,7 +83,8 @@ export default function PrivacyPolicyPage() {
               If you have any questions about this Privacy Policy, please contact us at:<br /><br />
               <strong>ZAYA CODE HUB</strong><br />
               Email: zayacodehub@gmail.com<br />
-              Address: Subramania Nagar, Salem, Tamil Nadu – 636005
+              Headquarters: Bengaluru, Karnataka, India<br />
+              Nepal Office: Lalitpur, Nepal
             </p>
           </section>
         </div>

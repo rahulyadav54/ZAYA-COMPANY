@@ -57,10 +57,10 @@ export default function ServicesPage() {
       <section className="py-20 bg-slate-50 dark:bg-slate-900/50">
         <div className="container mx-auto px-6 text-center">
           <h1 className="text-4xl lg:text-6xl font-bold text-foreground mb-6">
-            Services That <span className="text-blue-600">Empower</span>
+            Software Development Services in <span className="text-blue-600">Nepal</span>
           </h1>
           <p className="text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto">
-            From mobile apps to custom enterprise solutions, we provide the technical expertise you need to succeed in a digital-first world.
+            From our Bengaluru headquarters and Lalitpur office, ZAYA CODE HUB builds websites, mobile apps, AI solutions, and custom software for businesses, schools, and organizations in India and Nepal.
           </p>
         </div>
       </section>

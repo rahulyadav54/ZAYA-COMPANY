@@ -21,11 +21,11 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL("https://zayacodehub.in"),
   title: {
-    default: "ZAYA CODE HUB | IT Company in India & Software Development",
+    default: "ZAYA CODE HUB | IT Company in Bengaluru & Nepal",
     template: "%s | ZAYA CODE HUB",
   },
   description:
-    "ZAYA CODE HUB is an IT company in India building custom web and mobile applications, AI automation, cloud integrations, and enterprise software for startups and businesses.",
+    "ZAYA CODE HUB is an IT company headquartered in Bengaluru, India, with an office in Lalitpur, Nepal. We build custom websites, mobile apps, AI solutions, and business software.",
   keywords: [
     "ZAYA CODE HUB",
     "ZAYA",
@@ -40,10 +40,20 @@ export const metadata: Metadata = {
     "custom software development",
     "product engineering",
     "zayacodehub.in",
-    "salem software company",
+    "Lalitpur software company",
+    "Nepal software company",
+    "IT company in Nepal",
+    "software development company in Nepal",
+    "web development company in Nepal",
+    "mobile app development Nepal",
+    "custom software development Nepal",
     "technology consultancy",
-    "IT company in India",
-    "best IT company in India",
+    "IT services Nepal",
+    "AI development company Nepal",
+    "IT company Bengaluru",
+    "IT company in Bangalore",
+    "software company Bangalore",
+    "software development company Bangalore",
   ],
   authors: [{ name: "ZAYA CODE HUB Team", url: "https://zayacodehub.in" }],
   creator: "ZAYA CODE HUB",
@@ -74,9 +84,9 @@ export const metadata: Metadata = {
   },
 
   openGraph: {
-    title: "ZAYA CODE HUB | IT Company in India & Software Development",
+    title: "ZAYA CODE HUB | IT Company in Bengaluru & Nepal",
     description:
-      "Custom software, web and mobile apps, AI solutions, and cloud services from an India-based product engineering team.",
+      "Headquartered in Bengaluru, India, with an office in Lalitpur, Nepal, ZAYA CODE HUB builds custom software, websites, mobile apps, AI solutions, and cloud services.",
     url: "https://zayacodehub.in",
     siteName: "ZAYA CODE HUB",
     type: "website",
@@ -93,9 +103,9 @@ export const metadata: Metadata = {
 
   twitter: {
     card: "summary_large_image",
-    title: "ZAYA CODE HUB | Software Development & IT Services",
+    title: "ZAYA CODE HUB | Bengaluru Headquarters and Nepal Office",
     description:
-      "Product engineering, web & mobile apps, AI automation, and cloud services for businesses and startups.",
+      "ZAYA CODE HUB is headquartered in Bengaluru, India, with a Nepal office in Lalitpur. Explore our software, web, mobile, and AI services.",
     images: ["https://zayacodehub.in/logo.png"],
   },
 
@@ -115,22 +125,62 @@ const jsonLdOrg = {
       "name": "ZAYA CODE HUB",
       "url": "https://zayacodehub.in",
       "logo": "https://zayacodehub.in/favicon.png",
-      "description": "ZAYA CODE HUB is a software product engineering and IT services company delivering web, mobile, AI, and cloud solutions to businesses and startups.",
+      "description": "ZAYA CODE HUB is an IT and software development company headquartered in Bengaluru, India, with an office in Lalitpur, Nepal.",
       "founder": { "@id": "https://zayacodehub.in/ceo/rahul-kumar-yadav#person" },
-      "areaServed": { "@type": "Country", "name": "India" },
-      "serviceType": ["Software development", "IT consulting", "Mobile app development", "AI automation"],
+      "areaServed": [
+        { "@type": "Country", "name": "Nepal" },
+        { "@type": "Country", "name": "India" }
+      ],
+      "serviceType": [
+        "Software development",
+        "Website development",
+        "Mobile application development",
+        "Custom business software",
+        "AI application development",
+        "UI/UX design",
+        "Cloud integration"
+      ],
+      "knowsAbout": [
+        "Custom software development",
+        "Web application development",
+        "Mobile app development",
+        "Artificial intelligence applications",
+        "School management software",
+        "Healthcare technology",
+        "Emergency response software",
+        "E-commerce platforms"
+      ],
       "sameAs": [
         "https://github.com/rahulyadav54/ZAYA-COMPANY",
         "https://play.google.com/store/apps/details?id=com.zayaai.app"
       ],
       "address": {
         "@type": "PostalAddress",
-        "streetAddress": "Subramania Nagar",
-        "addressLocality": "Salem",
-        "addressRegion": "Tamil Nadu",
-        "postalCode": "636005",
+        "addressLocality": "Bengaluru",
+        "addressRegion": "Karnataka",
         "addressCountry": "IN"
       },
+      "location": [
+        {
+          "@type": "Place",
+          "name": "ZAYA CODE HUB Headquarters",
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Bengaluru",
+            "addressRegion": "Karnataka",
+            "addressCountry": "IN"
+          }
+        },
+        {
+          "@type": "Place",
+          "name": "ZAYA CODE HUB Nepal Office",
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Lalitpur",
+            "addressCountry": "NP"
+          }
+        }
+      ],
       "contactPoint": {
         "@type": "ContactPoint",
         "telephone": "+91-7033399183",

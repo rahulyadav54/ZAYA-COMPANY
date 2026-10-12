@@ -265,7 +265,7 @@ export default function AdminCareersPage() {
                   required 
                   name="location"
                   defaultValue={editingJob?.location || 'Remote / Office'}
-                  placeholder="e.g. Remote / Salem, India"
+                  placeholder="e.g. Remote / Bengaluru, India or Lalitpur, Nepal"
                   className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-foreground focus:ring-2 focus:ring-blue-600/50 outline-none" 
                 />
               </div>

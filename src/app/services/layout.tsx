@@ -1,12 +1,14 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Our Services | Full Stack Web, Mobile Apps, AI & Cloud Solutions',
-  description: 'Explore professional technology solutions by ZAYA CODE HUB: Custom Web Development, Mobile Apps (React Native/Android), Enterprise AI Integrations, Cloud Infrastructure, and Technical Training.',
+  title: 'Software Development Services in Nepal | ZAYA CODE HUB',
+  description: 'Explore website development, mobile app development, custom business software, AI solutions, UI/UX design, and cloud services from ZAYA CODE HUB in Bengaluru and Lalitpur.',
   keywords: [
     'ZAYA Services',
-    'web development services India',
-    'mobile app development company',
+    'web development company Nepal',
+    'mobile app development Nepal',
+    'custom software development Nepal',
+    'IT services Lalitpur',
     'custom AI solutions',
     'Next.js development services',
     'enterprise cloud architecture',
@@ -16,8 +18,8 @@ export const metadata: Metadata = {
     canonical: 'https://zayacodehub.in/services',
   },
   openGraph: {
-    title: 'Enterprise Tech & Development Services | ZAYA CODE HUB',
-    description: 'Custom Web Apps, Mobile Development, AI Integration, and Dedicated Developer Training Services.',
+    title: 'Software Development Services in Nepal | ZAYA CODE HUB',
+    description: 'Custom websites, mobile apps, AI integrations, and business software from teams in Bengaluru, India, and Lalitpur, Nepal.',
     url: 'https://zayacodehub.in/services',
   },
 };

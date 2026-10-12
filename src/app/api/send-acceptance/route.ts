@@ -224,7 +224,7 @@ export async function POST(request: Request) {
                   <tr>
                     <td align="center" style="background-color: #002855; padding: 22px 16px; color: #94a3b8; font-size: 11px; line-height: 1.6;">
                       <p style="margin: 0 0 4px 0; font-weight: 800; color: #f8fafc; font-size: 12px;">ZAYA CODE HUB • Subhashish Learning & Tech Pvt Ltd</p>
-                      <p style="margin: 0; color: #94a3b8;">Subramania Nagar, Salem, Tamil Nadu – 636005 | <a href="https://www.zayacodehub.in" style="color: #38bdf8; text-decoration: none; font-weight: 700;">www.zayacodehub.in</a></p>
+                      <p style="margin: 0; color: #94a3b8;">Headquarters: Bengaluru, India | Nepal Office: Lalitpur, Nepal | <a href="https://www.zayacodehub.in" style="color: #38bdf8; text-decoration: none; font-weight: 700;">www.zayacodehub.in</a></p>
                     </td>
                   </tr>
 
@@ -296,7 +296,7 @@ export async function POST(request: Request) {
                   <tr>
                     <td align="center" style="background-color: #002855; padding: 18px 12px; color: #94a3b8; font-size: 11px;">
                       <p style="margin: 0; font-weight: 700; color: #cbd5e1;">ZAYA CODE HUB • Subhashish Learning & Tech Pvt Ltd</p>
-                      <p style="margin: 3px 0 0 0;">Subramania Nagar, Salem, Tamil Nadu – 636005</p>
+                      <p style="margin: 3px 0 0 0;">Headquarters: Bengaluru, India · Nepal Office: Lalitpur, Nepal</p>
                     </td>
                   </tr>
 

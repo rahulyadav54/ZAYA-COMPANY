@@ -160,7 +160,7 @@ export default function OfferLetterPage() {
                 </div>
               </div>
               <div className="space-y-1 text-sm font-medium" style={{ color: '#64748b' }}>
-                <div className="flex items-center gap-2"><MapPin className="h-3 w-3" style={{ color: '#2563eb' }} /> Salem, Tamil Nadu, India</div>
+                <div className="flex items-center gap-2"><MapPin className="h-3 w-3" style={{ color: '#2563eb' }} /> Bengaluru HQ · Lalitpur Nepal Office</div>
                 <div className="flex items-center gap-2"><Mail className="h-3 w-3" style={{ color: '#2563eb' }} /> hr@zayacodehub.in</div>
                 <div className="flex items-center gap-2"><Phone className="h-3 w-3" style={{ color: '#2563eb' }} /> +91 70333 99183</div>
               </div>

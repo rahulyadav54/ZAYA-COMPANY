@@ -96,7 +96,7 @@ export default function Footer() {
             <div className="space-y-4">
               <div className="flex items-start space-x-3 text-slate-600 dark:text-slate-300 text-sm">
                 <MapPin className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5 shrink-0" />
-                <span>Subramania Nagar, Salem, Tamil Nadu – 636005</span>
+                <span><strong>Headquarters:</strong> Bengaluru (Bangalore), Karnataka, India<br /><strong>Nepal office:</strong> Lalitpur, Nepal</span>
               </div>
               <div className="flex items-center space-x-3 text-slate-600 dark:text-slate-300 text-sm">
                 <Phone className="h-5 w-5 text-blue-600 dark:text-blue-400 shrink-0" />
