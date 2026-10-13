@@ -67,7 +67,7 @@ export default function CookiePolicyPage() {
             <h2 className="text-2xl font-bold mb-4">6. Contact Information</h2>
             <p className="leading-relaxed">
               If you have any questions or concerns regarding our Cookie Policy, please contact us at 
-              <strong> zayacodehub@gmail.com</strong>.
+              <a href="mailto:zayacodehub@gmail.com">zayacodehub@gmail.com</a>. For HR and careers inquiries, email <a href="mailto:hr@zayacodehub.in">hr@zayacodehub.in</a>.
             </p>
           </section>
         </div>

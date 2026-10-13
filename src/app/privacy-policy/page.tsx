@@ -82,7 +82,8 @@ export default function PrivacyPolicyPage() {
             <p className="leading-relaxed">
               If you have any questions about this Privacy Policy, please contact us at:<br /><br />
               <strong>ZAYA CODE HUB</strong><br />
-              Email: zayacodehub@gmail.com<br />
+              General inquiries: <a href="mailto:zayacodehub@gmail.com">zayacodehub@gmail.com</a><br />
+              HR and careers: <a href="mailto:hr@zayacodehub.in">hr@zayacodehub.in</a><br />
               Headquarters: Bengaluru, Karnataka, India<br />
               Nepal Office: Lalitpur, Nepal
             </p>

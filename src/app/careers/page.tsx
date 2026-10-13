@@ -129,6 +129,9 @@ export default function CareersPage() {
           <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed">
             We are looking for passionate individuals who want to learn, grow, and build real-world products. Click on any internship below to view complete responsibilities and requirements.
           </p>
+          <p className="mt-5 text-sm text-slate-500 dark:text-slate-400">
+            Questions about applying? <a href="mailto:hr@zayacodehub.in" className="font-semibold text-blue-700 hover:underline dark:text-blue-300">Contact HR at hr@zayacodehub.in</a>
+          </p>
         </div>
       </section>
 

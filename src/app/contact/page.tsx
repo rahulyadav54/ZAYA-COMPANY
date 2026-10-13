@@ -68,7 +68,8 @@ export default function ContactPage() {
                     </div>
                   <div>
                     <h4 className="font-medium text-foreground mb-1">Email Us</h4>
-                    <p className="text-slate-600 dark:text-slate-300">zayacodehub@gmail.com</p>
+                    <a href="mailto:zayacodehub@gmail.com" className="block text-slate-600 hover:text-blue-700 dark:text-slate-300 dark:hover:text-blue-300">zayacodehub@gmail.com</a>
+                    <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">HR & careers: <a href="mailto:hr@zayacodehub.in" className="font-medium text-blue-700 hover:underline dark:text-blue-300">hr@zayacodehub.in</a></p>
                     <p className="text-slate-500 text-sm">Response within 24 hours</p>
                   </div>
                 </div>
@@ -144,7 +145,7 @@ export default function ContactPage() {
                       </div>
                       <div className="space-y-2">
                         <label className="text-sm font-bold text-foreground">Email</label>
-                        <input name="email" required type="email" className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-foreground focus:ring-2 focus:ring-blue-600/50 outline-none" placeholder="zayacodehub@gmail.com" />
+                        <input name="email" required type="email" className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-foreground focus:ring-2 focus:ring-blue-600/50 outline-none" placeholder="you@example.com" />
                       </div>
                     </div>
                      <div className="space-y-2">

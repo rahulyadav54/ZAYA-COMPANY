@@ -87,9 +87,12 @@ export default function Footer() {
                 <Phone className="h-5 w-5 shrink-0 text-blue-300" />
                 <span>+91 7033399183</span>
               </div>
-              <div className="flex items-center space-x-3 text-sm text-slate-400">
-                <Mail className="h-5 w-5 shrink-0 text-blue-300" />
-                <span>zayacodehub@gmail.com</span>
+              <div className="flex items-start space-x-3 text-sm text-slate-400">
+                <Mail className="mt-0.5 h-5 w-5 shrink-0 text-blue-300" />
+                <div className="space-y-2">
+                  <p><span className="text-slate-500">General:</span> <a href="mailto:zayacodehub@gmail.com" className="transition hover:text-white">zayacodehub@gmail.com</a></p>
+                  <p><span className="text-slate-500">HR & careers:</span> <a href="mailto:hr@zayacodehub.in" className="transition hover:text-white">hr@zayacodehub.in</a></p>
+                </div>
               </div>
             </div>
           </div>

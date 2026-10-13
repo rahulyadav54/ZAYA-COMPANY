@@ -182,12 +182,19 @@ const jsonLdOrg = {
           }
         }
       ],
-      "contactPoint": {
-        "@type": "ContactPoint",
-        "telephone": "+91-7033399183",
-        "contactType": "customer service",
-        "email": "zayacodehub@gmail.com"
-      }
+      "contactPoint": [
+        {
+          "@type": "ContactPoint",
+          "telephone": "+91-7033399183",
+          "contactType": "customer service",
+          "email": "zayacodehub@gmail.com"
+        },
+        {
+          "@type": "ContactPoint",
+          "contactType": "Human Resources and careers",
+          "email": "hr@zayacodehub.in"
+        }
+      ]
     },
     {
       "@type": "WebSite",
@@ -239,7 +246,7 @@ const jsonLdOrg = {
           "name": "How can I contact ZAYA CODE HUB for a project?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Visit our contact page at https://zayacodehub.in/contact or email zayacodehub@gmail.com to request a consultation and project estimate."
+            "text": "Visit our contact page at https://zayacodehub.in/contact or email zayacodehub@gmail.com to request a consultation and project estimate. For HR and careers inquiries, email hr@zayacodehub.in."
           }
         }
       ]
