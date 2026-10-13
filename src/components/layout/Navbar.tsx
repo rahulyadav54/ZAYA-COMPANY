@@ -35,9 +35,9 @@ const navLinks = [
     name: 'Company',
     href: '/about',
     dropdown: [
-      { name: 'About ZAYA', href: '/about', description: 'Our company and locations' },
-      { name: 'Careers', href: '/careers', description: 'Open roles and internships' },
-      { name: 'Magazine', href: '/magazine', description: 'Articles and updates' },
+      { name: 'About ZAYA', href: '/about', description: 'Our company and locations', external: false },
+      { name: 'Careers', href: '/careers', description: 'Open roles and internships', external: false },
+      { name: 'Magazine', href: '/magazine', description: 'Articles and updates', external: false },
     ]
   },
   { name: 'Contact', href: '/contact' },
@@ -131,17 +131,17 @@ export default function Navbar() {
 
       <nav
         className={cn(
-          'w-full sticky top-0 z-50 transition-all duration-300 border-b border-slate-200/80 dark:border-slate-800/80',
+          'w-full relative z-50 transition-all duration-300 border-b border-slate-200/80 dark:border-slate-800/80',
           isScrolled
-            ? 'bg-white/90 dark:bg-slate-900/90 backdrop-blur-md shadow-sm py-2.5'
-            : 'bg-white/80 dark:bg-slate-900/80 backdrop-blur-md py-3.5'
+            ? 'bg-white/95 dark:bg-slate-950/95 backdrop-blur-xl shadow-sm py-2'
+            : 'bg-white dark:bg-slate-950 py-2.5'
         )}
       >
-        <div className="container mx-auto px-4 sm:px-6 flex justify-between items-center">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
           <Logo size="sm" />
 
           {/* Desktop Navigation Links (Visible only on lg: 1024px+) */}
-          <div className="hidden lg:flex items-center space-x-8">
+          <div className="hidden lg:flex items-center space-x-7">
             {navLinks.map((link) => (
               <div
                 key={link.name}

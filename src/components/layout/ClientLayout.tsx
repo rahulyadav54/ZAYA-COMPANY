@@ -24,7 +24,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     <div className="min-h-full flex flex-col bg-background text-foreground">
       <Header />
       <AiZayaLaunchModal />
-      <main className="flex-grow pt-32 sm:pt-36">
+      <main className="flex-grow">
         {children}
       </main>
       <Footer />

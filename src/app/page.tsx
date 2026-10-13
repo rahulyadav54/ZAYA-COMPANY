@@ -78,40 +78,40 @@ export default function Home() {
   const [featuredProduct, ...otherProducts] = products;
 
   return (
-    <div className="bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-300">
+    <div className="bg-white text-slate-900 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100">
       <Hero />
 
       {/* Flagship Products Showcase */}
-      <section className="py-20 sm:py-24 bg-slate-50 dark:bg-slate-900/50 border-y border-slate-200 dark:border-slate-800">
-        <div className="container mx-auto px-4 sm:px-6">
-          <div className="mb-10 max-w-3xl space-y-4">
-            <p className="text-sm font-semibold text-blue-700 dark:text-blue-400">Software products</p>
-            <h2 className="text-3xl font-semibold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
-              Our Flagship Products
+      <section className="border-y border-slate-200 bg-[#f7f8fc] py-20 dark:border-slate-800 dark:bg-slate-900/50 sm:py-24">
+        <div className="container mx-auto max-w-7xl px-5 sm:px-8">
+          <div className="mb-11 max-w-3xl space-y-3">
+            <p className="text-xs font-bold uppercase tracking-[0.2em] text-blue-700 dark:text-blue-400">Made by ZAYA</p>
+            <h2 className="text-3xl font-semibold tracking-[-0.035em] text-slate-950 dark:text-white sm:text-4xl lg:text-5xl">
+              Products built around people.
             </h2>
-            <p className="max-w-2xl text-base leading-7 text-slate-600 dark:text-slate-300">
-              Explore the digital applications engineered by <strong>ZAYA CODE HUB</strong> across Artificial Intelligence, Healthcare, Education, Public Safety, and E-commerce.
+            <p className="max-w-2xl text-base leading-7 text-slate-600 dark:text-slate-300 sm:text-lg">
+              A growing collection of digital tools for learning, healthcare, safety, and everyday work.
             </p>
           </div>
 
           <div className="mx-auto max-w-7xl">
-            <article className="grid overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 md:grid-cols-2">
-              <div className="relative min-h-64 bg-slate-100 dark:bg-slate-950 sm:min-h-80">
-                <Image src={featuredProduct.image} alt={`${featuredProduct.name} product preview`} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover object-top" />
+            <article className="grid overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-xl shadow-slate-900/[0.04] dark:border-slate-800 dark:bg-slate-950 md:grid-cols-2">
+              <div className="relative min-h-72 bg-slate-100 dark:bg-slate-950 sm:min-h-96">
+                <Image src={featuredProduct.image} alt={`${featuredProduct.name} product preview`} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover object-center transition duration-700 hover:scale-[1.02]" />
               </div>
-              <div className="flex flex-col justify-center p-6 sm:p-10 lg:p-12">
-                <p className="text-sm font-medium text-blue-700 dark:text-blue-400">{featuredProduct.category}</p>
-                <h3 className="mt-3 text-3xl font-semibold tracking-tight text-slate-900 dark:text-white">{featuredProduct.name}</h3>
+              <div className="flex flex-col justify-center p-7 sm:p-10 lg:p-14">
+                <p className="text-xs font-bold uppercase tracking-[0.16em] text-blue-700 dark:text-blue-400">{featuredProduct.category}</p>
+                <h3 className="mt-3 text-3xl font-semibold tracking-tight text-slate-950 dark:text-white sm:text-4xl">{featuredProduct.name}</h3>
                 <p className="mt-4 max-w-xl leading-7 text-slate-600 dark:text-slate-300">{featuredProduct.shortDesc}</p>
-                <Link href="/portfolio" className="mt-6 inline-flex min-h-11 w-fit items-center gap-2 font-medium text-blue-700 hover:text-blue-800 dark:text-blue-400">
+                <Link href="/portfolio" className="mt-7 inline-flex min-h-12 w-fit items-center gap-2 rounded-xl bg-blue-700 px-5 font-semibold text-white transition hover:bg-blue-800">
                   Explore the product portfolio <ArrowRight className="h-4 w-4" />
                 </Link>
               </div>
             </article>
 
-            <ul className="mt-8 grid grid-cols-1 gap-x-10 sm:grid-cols-2">
+            <ul className="mt-8 grid grid-cols-1 gap-x-8 sm:grid-cols-2">
               {otherProducts.map((prod) => (
-                <li key={prod.id} className="border-t border-slate-300 py-5 dark:border-slate-700">
+                <li key={prod.id} className="rounded-2xl border border-slate-200 bg-white/80 p-5 dark:border-slate-800 dark:bg-slate-950/70">
                   <div className="flex items-center gap-3">
                     <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-md ${prod.iconBg}`}><prod.icon className="h-5 w-5" /></div>
                     <div><h3 className="font-semibold text-slate-900 dark:text-white">{prod.name}</h3><p className="mt-1 text-xs font-medium text-slate-500 dark:text-slate-400">{prod.category}</p></div>
@@ -123,10 +123,10 @@ export default function Home() {
           </div>
 
           {/* View All Products CTA */}
-          <div className="text-center mt-12">
+          <div className="mt-10 text-center">
             <Link
               href="/portfolio"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium text-base transition-colors"
+              className="inline-flex min-h-12 items-center gap-2 rounded-xl border border-slate-300 bg-white px-6 font-semibold text-slate-900 transition hover:border-blue-300 hover:text-blue-700 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:hover:border-blue-700 dark:hover:text-blue-300"
             >
               <span>View all products</span>
               <ArrowRight className="h-5 w-5" />
@@ -142,11 +142,12 @@ export default function Home() {
       <TeamSection />
 
       {/* Career & Internship Opportunities CTA */}
-      <section className="py-20 bg-slate-900 text-white relative overflow-hidden">
+      <section className="relative overflow-hidden bg-slate-950 py-20 text-white sm:py-24">
+        <div className="pointer-events-none absolute -right-20 -top-36 h-96 w-96 rounded-full bg-blue-600/25 blur-3xl" />
         <div className="container mx-auto px-6 relative z-10">
-          <div className="max-w-4xl mx-auto text-center space-y-6">
-            <p className="text-sm font-medium text-blue-200">Careers & internships</p>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight">
+          <div className="mx-auto max-w-4xl space-y-6 text-center">
+            <p className="text-xs font-bold uppercase tracking-[0.2em] text-blue-300">Careers & internships</p>
+            <h2 className="text-3xl font-semibold tracking-[-0.035em] sm:text-4xl lg:text-5xl">
               Launch Your Tech Career at ZAYA CODE HUB
             </h2>
             <p className="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">

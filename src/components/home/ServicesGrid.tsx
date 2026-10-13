@@ -1,86 +1,50 @@
 'use client';
 
-import React from 'react';
 import { motion } from 'framer-motion';
-import { Smartphone, Globe, Palette, Monitor, Rocket, GraduationCap, Cpu, ShieldCheck } from 'lucide-react';
+import Link from 'next/link';
+import { ArrowRight, Cpu, GraduationCap, Globe, Palette, Smartphone, Monitor } from 'lucide-react';
 
 const services = [
-  {
-    title: 'Mobile App Engineering',
-    description: 'High-performance Android and cross-platform mobile apps engineered with native efficiency and sleek user experiences.',
-    icon: Smartphone,
-    iconBg: 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400',
-  },
-  {
-    title: 'Web Application Platforms',
-    description: 'Fast, responsive, SEO-optimized web products and dashboards built with React, Next.js, and cloud backends.',
-    icon: Globe,
-    iconBg: 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400',
-  },
-  {
-    title: 'Artificial Intelligence & Automation',
-    description: 'AI assistants, natural language processing, intelligent voice interaction, and automated workflow systems.',
-    icon: Cpu,
-    iconBg: 'bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400',
-  },
-  {
-    title: 'UI/UX Product Design',
-    description: 'User research, wireframing, interactive prototyping, and accessible digital design systems tailored for conversions.',
-    icon: Palette,
-    iconBg: 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400',
-  },
-  {
-    title: 'Educational & Healthcare Software',
-    description: 'Multi-panel school administration platforms, telemedicine consultation portals, and interactive e-learning solutions.',
-    icon: Monitor,
-    iconBg: 'bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400',
-  },
-  {
-    title: 'Hands-on Technical Internships',
-    description: 'Industry-level mentorship, real-world project engineering, and verifiable career certification drives for aspiring developers.',
-    icon: GraduationCap,
-    iconBg: 'bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400',
-  },
+  { title: 'Web platforms', description: 'Fast, responsive websites, web applications, and dashboards made for your customers and team.', icon: Globe, number: '01' },
+  { title: 'Mobile applications', description: 'Useful Android and cross-platform apps, shaped around the way people actually work.', icon: Smartphone, number: '02' },
+  { title: 'AI & automation', description: 'AI assistants and practical workflow automation that help simplify everyday tasks.', icon: Cpu, number: '03' },
+  { title: 'Product design', description: 'Research, clear user flows, and accessible interfaces that make complex tools easier to use.', icon: Palette, number: '04' },
+  { title: 'Business software', description: 'Purpose-built platforms for education, healthcare, commerce, and operations.', icon: Monitor, number: '05' },
+  { title: 'Learning & internships', description: 'Programming resources and hands-on opportunities for people growing their skills.', icon: GraduationCap, number: '06' },
 ];
 
 export default function ServicesGrid() {
   return (
-    <section className="py-20 sm:py-24 bg-white dark:bg-slate-950 transition-colors duration-300">
-      <div className="container mx-auto px-4 sm:px-6">
-        <div className="max-w-3xl mx-auto text-center mb-16 space-y-4">
-          <span className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest">
-            OUR CAPABILITIES
-          </span>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-slate-900 dark:text-white">
-            End-to-End Digital Engineering
-          </h2>
-          <p className="text-slate-600 dark:text-slate-300 text-base sm:text-lg">
-            From initial product architecture to cloud deployment, we deliver reliable and scalable software solutions.
-          </p>
+    <section className="bg-white py-20 dark:bg-slate-950 sm:py-24">
+      <div className="container mx-auto max-w-7xl px-5 sm:px-8">
+        <div className="mb-12 flex flex-col gap-5 md:mb-14 md:flex-row md:items-end md:justify-between">
+          <div className="max-w-2xl">
+            <p className="text-xs font-bold uppercase tracking-[0.2em] text-blue-700 dark:text-blue-400">What we do</p>
+            <h2 className="mt-3 text-3xl font-semibold tracking-[-0.035em] text-slate-950 dark:text-white sm:text-4xl lg:text-5xl">Good technology should feel simple.</h2>
+          </div>
+          <div className="max-w-md">
+            <p className="text-base leading-7 text-slate-600 dark:text-slate-300">From the first sketch to a reliable launch, we bring product thinking and engineering together.</p>
+            <Link href="/services" className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-blue-700 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300">Explore our services <ArrowRight className="h-4 w-4" /></Link>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-7xl mx-auto">
-          {services.map((service, i) => (
-            <motion.div
+        <div className="grid overflow-hidden rounded-3xl border border-slate-200 bg-slate-200 dark:border-slate-800 dark:bg-slate-800 sm:grid-cols-2 lg:grid-cols-3 gap-px">
+          {services.map((service, index) => (
+            <motion.article
               key={service.title}
-              initial={{ opacity: 0, y: 15 }}
+              initial={{ opacity: 0, y: 12 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.08 }}
-              className="p-6 sm:p-8 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-blue-300 dark:hover:border-blue-700 transition-all flex flex-col justify-between"
+              viewport={{ once: true, margin: '-40px' }}
+              transition={{ delay: index * 0.05, duration: 0.35 }}
+              className="group min-h-56 bg-white p-6 transition-colors hover:bg-blue-50/60 dark:bg-slate-950 dark:hover:bg-slate-900 sm:p-8"
             >
-              <div>
-                <div className={`w-12 h-12 rounded-xl ${service.iconBg} flex items-center justify-center mb-6 transition-transform`}>
-                  <service.icon className="h-6 w-6" />
-                </div>
-                <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3 transition-colors">
-                  {service.title}
-                </h3>
-                <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed">
-                  {service.description}
-                </p>
+              <div className="flex items-start justify-between">
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-blue-700 transition group-hover:bg-blue-700 group-hover:text-white dark:bg-blue-950 dark:text-blue-300 dark:group-hover:bg-blue-600 dark:group-hover:text-white"><service.icon className="h-5 w-5" /></div>
+                <span className="font-mono text-xs text-slate-400 dark:text-slate-600">{service.number}</span>
               </div>
-            </motion.div>
+              <h3 className="mt-7 text-lg font-semibold tracking-tight text-slate-950 dark:text-white">{service.title}</h3>
+              <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-400">{service.description}</p>
+            </motion.article>
           ))}
         </div>
       </div>
