@@ -15,8 +15,8 @@ const navLinks = [
     name: 'Products',
     href: '/portfolio',
     dropdown: [
-      { name: 'Product portfolio', href: '/portfolio', description: 'Software products built by ZAYA' },
-      { name: 'AI ZAYA', href: '/ai-zaya', description: 'Explore our AI assistant' },
+      { name: 'Product portfolio', href: '/portfolio', description: 'Software products built by ZAYA', external: false },
+      { name: 'AI ZAYA', href: '/ai-zaya', description: 'Explore our AI assistant', external: false },
     ]
   },
   { name: 'Services', href: '/services' },
@@ -24,10 +24,11 @@ const navLinks = [
     name: 'Learning',
     href: '/placement-prep',
     dropdown: [
-      { name: 'Placement preparation', href: '/placement-prep', description: 'Explore preparation resources' },
-      { name: 'Practice tests', href: '/practice', description: 'Browse practice exams' },
-      { name: 'Aptitude test', href: '/aptitude-test', description: 'Reasoning and logic assessment' },
-      { name: 'Coding practice', href: '/practice/code', description: 'Programming challenges' },
+      { name: 'Placement preparation', href: '/placement-prep', description: 'Explore preparation resources', external: false },
+      { name: 'Practice tests', href: '/practice', description: 'Browse practice exams', external: false },
+      { name: 'Aptitude test', href: '/aptitude-test', description: 'Reasoning and logic assessment', external: false },
+      { name: 'Coding practice', href: '/practice/code', description: 'Programming challenges', external: false },
+      { name: 'Programming tutorials', href: 'https://zayacodehub.online', description: 'Explore programming languages, tutorials, and eBooks', external: true },
     ]
   },
   {
@@ -180,6 +181,8 @@ export default function Navbar() {
                         <Link
                           key={item.name}
                           href={item.href}
+                          target={item.external ? '_blank' : undefined}
+                          rel={item.external ? 'noopener noreferrer' : undefined}
                           onClick={() => setOpenDropdown(null)}
                           className={cn(
                             'block px-4 py-3 rounded-lg transition-colors',
@@ -268,6 +271,8 @@ export default function Navbar() {
                           <Link
                             key={item.name}
                             href={item.href}
+                            target={item.external ? '_blank' : undefined}
+                            rel={item.external ? 'noopener noreferrer' : undefined}
                             onClick={() => setIsOpen(false)}
                             className={cn(
                               'block text-sm py-2 px-3 rounded-lg transition-colors',
